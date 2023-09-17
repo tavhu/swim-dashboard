@@ -47,7 +47,7 @@ import { TwButton, TwDialog, TwFeather } from "vue3-tailwind";
                   </div>
                   <div class="py-2">
                     <div
-                      class="title text-gray-800 dark:text-gray-200 font-bold flex items-center"
+                      class="title text-gray-800 dark:text-gray-200 font-bold flex items-center "
                     >
                       {{ dialog.title }}
                     </div>
