@@ -11,6 +11,7 @@
     "@commitlint/cli": "^17.3.0",
     "@commitlint/config-conventional": "^17.3.0",
     "@kevinmarrec/nuxt-pwa": "^0.17.0",
+    "@nuxt/devtools": "^0.8.3",
     "@nuxtjs/google-fonts": "^3.0.2",
     "@pinia-plugin-persistedstate/nuxt": "^1.0.0",
     "@tailwindcss/typography": "^0.5.8",
