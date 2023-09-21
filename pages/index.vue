@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { TwFeather } from "vue3-tailwind";
 
+definePageMeta({ auth: false })
+
 useHead({
   title: "Dashboard",
 });
