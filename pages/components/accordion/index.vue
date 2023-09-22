@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { TwAccordion, TwButton, TwFeather } from "vue3-tailwind";
 
+
+definePageMeta({ auth: true })
+
 useHead({
   title: "Accordions",
 });

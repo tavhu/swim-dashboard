@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { TwFeather } from "vue3-tailwind";
+const { data, status, getCsrfToken, getProviders } = useAuth()
+definePageMeta({ auth: true })
 
-definePageMeta({ auth: false })
 
 useHead({
   title: "Dashboard",
@@ -10,7 +11,13 @@ useHead({
 
 <template>
   <div>
-    <h1 class="text-3xl font-bold">Dashboard</h1>
+    <h1 class="text-3xl font-bold">Dashboard {{ status }}</h1>
+    <span>
+
+      {{ getCsrfToken }} <br>
+      {{ data?.user?.name }} <br>
+      {{ getProviders }}
+    </span>
     <hr class="my-2 border dark:border-gray-700" />
     <div class="grid grid-cols-12 gap-2">
       <div class="col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-3">

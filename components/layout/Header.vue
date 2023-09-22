@@ -4,12 +4,13 @@ import { useSidebarStore } from "~~/store/sidebar";
 
 const sidebarStore = useSidebarStore();
 const animationOpenClose = useAnimationOpenClose();
+const { signOut } = useAuth()
 
-const router = useRouter();
+// const router = useRouter();
 
-const logout = () => {
-  router.push("/login");
-};
+// const logout = () => {
+//   router.push("/login");
+// };
 </script>
 <template>
   <header
@@ -57,7 +58,7 @@ const logout = () => {
                 </div>
               </button>
             </NuxtLink>
-            <TwButton @click="logout" variant="none" icon="log-out"
+            <TwButton @click="signOut({callbackUrl : '/'})" variant="none" icon="log-out"
               class="block w-full px-4 py-2 text-sm leading-5 text-gray-700 dark:text-gray-200 text-left hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-800 transition">
               Logout
             </TwButton>
