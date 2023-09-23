@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useToast } from 'vue3-tailwind';
+import { useToast,TwToast } from 'vue3-tailwind';
 
 useHead({
   htmlAttrs: {

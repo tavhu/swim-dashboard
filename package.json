@@ -5,7 +5,10 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "prisma:migrate:dev": "npx prisma migrate dev",
+    "prisma:migrate:generate": "npx prisma migrate generate",
+    "prisma:studio": "npx prisma studio"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.3.0",
@@ -25,11 +28,14 @@
     "nuxt": "3.7.1",
     "pinia": "^2.0.23",
     "postcss": "^8.4.19",
+    "prisma": "^5.3.1",
     "sass": "^1.56.1",
     "tailwindcss": "^3.2.4"
   },
   "dependencies": {
+    "@next-auth/prisma-adapter": "^1.0.7",
     "@pinia/nuxt": "^0.4.6",
+    "@prisma/client": "^5.3.1",
     "@vercel/analytics": "^1.0.0",
     "feather-icons": "^4.29.0",
     "next-auth": "^4.21.1",

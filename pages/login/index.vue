@@ -7,8 +7,15 @@ import {
   TwInput,
 } from "vue3-tailwind";
 
+
+const { signIn } = useAuth()
 definePageMeta({
   layout: "front",
+  auth: {
+     unauthenticatedOnly : true,
+     navigateAuthenticatedTo: '/'
+  }
+
 });
 
 useHead({
@@ -18,12 +25,12 @@ useHead({
 const toast = useToast();
 const formLogin = ref();
 const formError = ref(false);
-
+const result = ref()
 const formData: {
   [key: string]: any;
 } = reactive({
-  email: "user@mail.com",
-  password: "password",
+  email: "",
+  password: "",
 });
 
 const login = async () => {
@@ -39,28 +46,31 @@ const login = async () => {
     return;
   }
 
-  if (
-    !(formData.email === "user@mail.com" && formData.password === "password")
-  ) {
-    toast.error({
-      message: "Email & Password combination missmatch",
-      lifetime: 3000,
-    });
+  // if (
+  //   !(formData.email === "user@mail.com" && formData.password === "password")
+  // ) {
+  //   toast.error({
+  //     message: "Email & Password combination missmatch",
+  //     lifetime: 3000,
+  //   });
 
-    toggleFormError();
-    return;
-  }
+  //   toggleFormError();
+  //   return;
+  // }
 
-  const router = useRouter();
+   result.value = await signIn('credentials', { username: formData.email, password : formData.password , callbackUrl :'/'});
 
-  toast.success({
-    message: "Loggin success, youre being redirected",
-    lifetime: 1000,
-  });
 
-  setTimeout(() => {
-    router.push("/");
-  }, 1000);
+  // const router = useRouter();
+
+  // toast.success({
+  //   message: "Loggin success, youre being redirected",
+  //   lifetime: 1000,
+  // });
+
+  // setTimeout(() => {
+  //   router.push("/");
+  // }, 1000);
 };
 
 const toggleFormError = () => {
@@ -82,15 +92,16 @@ const toggleFormError = () => {
       <div
         class="header bg-white dark:bg-gray-900 border-b dark:border-gray-700 text-indigo-900 dark:text-gray-200 p-4 rounded-t"
       >
-        <h1 class="text-2xl font-bold text-center">Welcome</h1>
+        <h1 class="text-2xl font-bold text-center">Welcome {{ result }}</h1>
       </div>
       <TwForm
         ref="formLogin"
         name="login"
         :rules="{
-          email: ['required', 'email'],
+          email: ['required'],
           password: ['required'],
         }"
+      
         @submit="login"
         class="body bg-white dark:bg-gray-900 p-4 rounded-b-lg"
       >
@@ -100,7 +111,8 @@ const toggleFormError = () => {
               class="dark:text-gray-200"
               v-model="formData.email"
               name="email"
-              label="Email"
+              placeholder="Username"
+              label="Username"
             />
             <TwErrorMessage name="email"></TwErrorMessage>
           </div>
@@ -109,6 +121,7 @@ const toggleFormError = () => {
               class="dark:text-gray-200"
               v-model="formData.password"
               name="password"
+              placeholder="Password"
               label="Password"
               type="password"
             />

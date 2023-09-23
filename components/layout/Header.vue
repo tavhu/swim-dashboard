@@ -4,13 +4,14 @@ import { useSidebarStore } from "~~/store/sidebar";
 
 const sidebarStore = useSidebarStore();
 const animationOpenClose = useAnimationOpenClose();
-const { signOut } = useAuth()
+const { signOut, status, data  } = useAuth()
 
 // const router = useRouter();
 
 // const logout = () => {
 //   router.push("/login");
 // };
+
 </script>
 <template>
   <header
@@ -44,7 +45,7 @@ const { signOut } = useAuth()
         <TwDropdownMenu align="right" width="48">
           <template #trigger>
             <button>
-              <img class="w-10 h-10 rounded-full border border-[#1d152a7a]" src="/images/profile1.jpg" alt="" />
+              <img class="w-10 h-10 rounded-full border border-[#1d152a7a]" :src="data?.user?.image ? data?.user?.image : '/images/profile1.jpg'" alt="" />
             </button>
           </template>
 

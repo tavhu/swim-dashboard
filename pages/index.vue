@@ -3,6 +3,11 @@ import { TwFeather } from "vue3-tailwind";
 const { data, status, getCsrfToken, getProviders } = useAuth()
 definePageMeta({ auth: true })
 
+const  ss = await useFetch('/api/me')
+
+
+const headers = useRequestHeaders(['cookie']) as HeadersInit
+const {data: token }  = await useFetch('/api/token', { headers })
 
 useHead({
   title: "Dashboard",
@@ -12,12 +17,20 @@ useHead({
 <template>
   <div>
     <h1 class="text-3xl font-bold">Dashboard {{ status }}</h1>
-    <span>
-
+    <pre>
+        {{ token }}
+    </pre>
+    
+    <pre>
+      {{ ss }}
+    </pre>
+    
+    <!-- <span>      
       {{ getCsrfToken }} <br>
       {{ data?.user?.name }} <br>
       {{ getProviders }}
-    </span>
+    </span> -->
+
     <hr class="my-2 border dark:border-gray-700" />
     <div class="grid grid-cols-12 gap-2">
       <div class="col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-3">
