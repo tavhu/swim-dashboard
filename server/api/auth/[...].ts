@@ -8,19 +8,16 @@ const runtimeConfig = useRuntimeConfig()
 const prisma = new PrismaClient()
 
 
-
 async function getMe(session : any) {
-
-
+  console.log(session)
   return await $fetch('/api/me', {
     method : 'POST',
     body: {
       record: {
-        username : session?.user?.username
+        username : session?.user?.username,
       }
     }
   })
-
 }
 
 export default NuxtAuthHandler({
@@ -29,15 +26,14 @@ export default NuxtAuthHandler({
     pages :{
       signIn : '/login',
     },
-    // adapter : PrismaAdapter(prisma),
-
-    // callbacks : {           
-    //   session : async ({session , token})=>{
-    //     const me: any = await getMe(session)
-    //     ;(session as any).subscribed = me?.subscribed 
-    //     return Promise.resolve(session)
-    //   }
-    // },
+    adapter : PrismaAdapter(prisma),
+    callbacks : {           
+      session : async ({session , token})=>{
+        const me: any = await getMe(session)
+        ;(session as any).subscribed = me?.subscribed 
+        return Promise.resolve(session)
+      }
+    },
     providers: [
         // @ts-ignore Import is exported on .default during SSR, so we need to call it this way. May be fixed via Vite at some point
         // GithubProvider.default({
@@ -66,6 +62,7 @@ export default NuxtAuthHandler({
 
               if (credentials?.username === user.username && credentials?.password === user.password) {
                 // Any object returned will be saved in `user` property of the JWT
+                // console.log(user)
                 return user
               } else {
                 // eslint-disable-next-line no-console
