@@ -7,9 +7,7 @@ import { PrismaClient } from '@prisma/client';
 const runtimeConfig = useRuntimeConfig()
 const prisma = new PrismaClient()
 
-
 async function getMe(session : any) {
-  console.log(session)
   return await $fetch('/api/me', {
     method : 'POST',
     body: {
@@ -26,7 +24,7 @@ export default NuxtAuthHandler({
     pages :{
       signIn : '/login',
     },
-    adapter : PrismaAdapter(prisma),
+    // adapter : PrismaAdapter(prisma),
     callbacks : {           
       session : async ({session , token})=>{
         const me: any = await getMe(session)

@@ -4,6 +4,7 @@ export default eventHandler(async  event => {
     const session = await getServerSession(event)
     const body =  await readBody(event)
 
+    console.log('none first')
     if(!session){
         return { status: 'unauthenticated'}
     }    
@@ -16,5 +17,6 @@ export default eventHandler(async  event => {
         }
     })
 
+    // console.log(account || 'none')
     return account
 })
