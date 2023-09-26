@@ -1,12 +1,12 @@
 import CredentialsProvider from 'next-auth/providers/credentials'
 // import GithubProvider from 'next-auth/providers/github'
 import { NuxtAuthHandler } from "#auth";
-import { PrismaAdapter } from '@next-auth/prisma-adapter';
+// import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import { PrismaClient } from '@prisma/client';
+// import prisma  from '../../data/prisma'
 
 const runtimeConfig = useRuntimeConfig()
 const prisma = new PrismaClient()
-
 async function getMe(session : any) {
   return await $fetch('/api/me', {
     method : 'POST',
@@ -28,7 +28,7 @@ export default NuxtAuthHandler({
     callbacks : {           
       session : async ({session , token})=>{
         const me: any = await getMe(session)
-        ;(session as any).subscribed = me?.subscribed 
+        ;(session as any).subscribed =  me?.subscribed 
         return Promise.resolve(session)
       }
     },
@@ -60,7 +60,7 @@ export default NuxtAuthHandler({
 
               if (credentials?.username === user.username && credentials?.password === user.password) {
                 // Any object returned will be saved in `user` property of the JWT
-                // console.log(user)
+                console.log(user)
                 return user
               } else {
                 // eslint-disable-next-line no-console

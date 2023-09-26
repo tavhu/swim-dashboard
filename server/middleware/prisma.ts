@@ -13,4 +13,8 @@ export default eventHandler(event =>{
         prisma = new PrismaClient()
     }
     event.context.prisma = prisma
+    
+// console.log('test')
 })
+
+
