@@ -42,8 +42,7 @@ export const useFormExample = defineStore("formExample", () => {
     ],
   };
 
-  const isError = ref(false);
-
+  const isError = ref(false)
   const form = computed(() => composableForm.getForm(formName));
   const validator = computed(() => form.value.validator);
 

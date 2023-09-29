@@ -8,7 +8,7 @@ const sidebarStore = useSidebarStore();
 <template>
   <ul>
     <template v-for="sidebar in sidebarStore.items">
-      <SidebarItem :item="sidebar" :level="1" />
+      <SidebarItem :item="sidebar" :level="1" class="font-[battambang] text-md font-semibold" />
     </template>
   </ul>
 </template>

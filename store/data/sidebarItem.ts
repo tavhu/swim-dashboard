@@ -178,4 +178,40 @@ export default [
       },
     ],
   },
+  {
+    isTitle: true,
+    name: "គ្រប់គ្រងគណនីប្រើប្រាស់",
+    url: "",
+    icon: "",
+    submenu: [],
+  },
+  {
+    isTitle: false,
+    name: "គណនី",
+    url: "",
+    icon: "users",
+    submenu: [
+      {
+        isTitle: false,
+        name: "បញ្ចី",
+        url: "/login",
+        icon: "list",
+        submenu: [],
+      },
+      {
+        isTitle: false,
+        name: "ចុះឈ្មោះ",
+        url: "/register",
+        icon: "user",
+        submenu: [],
+      },
+      {
+        isTitle: false,
+        name: "តួនាទី និងការអនុញ្ញាត",
+        url: "/role",
+        icon: "lock",
+        submenu: [],
+      },
+    ],
+  },
 ];

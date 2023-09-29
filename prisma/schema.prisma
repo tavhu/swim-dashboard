@@ -39,12 +39,39 @@ model Session {
 
 model User {
   id            String    @id @default(cuid())
-  name          String?
+  firstname     String?
+  middlename    String?
+  lastname      String?
   username      String    @unique  
   password      String
   image         String?
   accounts      Account[]
   sessions      Session[]
+}
+
+model Role {
+  id           String    @id @default(cuid())
+  name         String    @unique
+  description  String?  
+}
+
+model Resources {
+  id           String    @id @default(cuid())
+  name         String    @unique
+}
+
+model UserToRole {
+  userID    String 
+  roleID    String 
+  @@id([userID,roleID])
+}
+
+model RoleToResource {
+  roleID  String
+  resourceID String
+
+  @@id([roleID, resourceID])
+
 }
 
 model VerificationToken {

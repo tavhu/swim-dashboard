@@ -29,9 +29,9 @@ const toggleOpen = () => {
 
 </script>
 
-<template>
+<template >
   <li class="my-2" v-if="item.isTitle" :item="item">
-    <div class="font-bold my-2 text-lg text-[#ffffff] hidden lg:block">
+    <div class="font-bold my-2 text-lg text-[#ffffff] hidden lg:block ">
       {{ item.name }}
     </div>
   </li>

@@ -8,6 +8,8 @@ import {
 } from "vue3-tailwind";
 
 
+const route = useRouter()
+
 const { signIn } = useAuth()
 definePageMeta({
   layout: "front",
@@ -21,6 +23,7 @@ definePageMeta({
 useHead({
   title: "Login",
 });
+
 
 const toast = useToast();
 const formLogin = ref();
@@ -79,6 +82,19 @@ const toggleFormError = () => {
     formError.value = false;
   }, 1250);
 };
+
+ onMounted( async  ()=>{
+
+  if(
+    route.currentRoute.value.query?.error &&  route.currentRoute.value.query?.error != 'undefined'
+  ){
+    toast.error({
+      message: route.currentRoute.value.query?.error ,
+    });
+  }
+
+ })
+
 </script>
 
 <template>
@@ -89,6 +105,8 @@ const toggleFormError = () => {
         'tw-shake': formError,
       }"
     >
+
+    
       <div
         class="header bg-white dark:bg-gray-900 border-b dark:border-gray-700 text-indigo-900 dark:text-gray-200 p-4 rounded-t"
       >
