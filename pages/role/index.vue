@@ -366,6 +366,9 @@ const sortClick = (event: any) => {
         </template>
         <template v-if="column.field === 'action'">
           <div class="flex gap-2 justify-center">
+            <TwButton :ripple="true" variant="success" class="border" >
+              ការអនុញ្ញាត
+            </TwButton>
             <TwButton variant="primary" class="border border-gray-900" @click="editRecord(data.id)">
               កែសម្រួល
             </TwButton>
@@ -395,8 +398,7 @@ const sortClick = (event: any) => {
               roleName: 'ឈ្មោះតួនាទី',
               roleDescription: 'ពិពណ៌នាតួនាទី',
             }"
-          >        
-        
+          > 
           
             <div class="col-span-12">
               <TwInput
@@ -418,7 +420,7 @@ const sortClick = (event: any) => {
               />
               <CustomErrorMessage name="roleDescription" />
             </div>  
-            <div class="col-span-12 flex justify-end gap-1">
+            <div class="col-span-12 flex justify-end gap-1">             
               <TwButton
                 :ripple="true"
                 variant="secondary"
@@ -436,5 +438,6 @@ const sortClick = (event: any) => {
         </div>
       </div>
   </TwOffcanvas>
+
   </div>  
   </template>
