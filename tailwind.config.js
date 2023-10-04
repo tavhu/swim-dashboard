@@ -7,12 +7,14 @@ module.exports = {
     "./plugins/**/*.{js,ts}",
     "./nuxt.config.{js,ts}",
     "./app.vue",
-  ],
+  ],  
   darkMode: "class", // or 'media' or 'class'
   theme: {
-    extend: {},
+    extend: {     
+    },
   },
   plugins: [
     require("@tailwindcss/typography")
   ],
+  
 }
