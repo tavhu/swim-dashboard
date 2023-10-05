@@ -10,6 +10,11 @@ import {
   DatatableColumn, DatatableData, TwDatatableServer,TwOffcanvas
 } from "vue3-tailwind";
 
+import { useResource } from '~~/store/resource'
+
+
+const resource = useResource()
+
 
 const toast = useToast();
 const composableForm = useForm();
@@ -76,9 +81,6 @@ const formName = "Role";
       validator.value.clearErrors();
     }, 100);   
   }
-
-
-
 
   const formNameEdit = "EditRole";
   const formDataEdit: {
@@ -376,7 +378,7 @@ const sortClick = (event: any) => {
         </template>
         <template v-if="column.field === 'action'">
           <div class="flex gap-2 justify-center">
-            <TwButton :ripple="true" variant="success" class="border" >
+            <TwButton :ripple="true" variant="success" @click="AddPermission()" class="border" >
               ការអនុញ្ញាត
             </TwButton>
             <TwButton variant="primary" class="border border-gray-900" @click="editRecord(data.id)">
@@ -447,6 +449,58 @@ const sortClick = (event: any) => {
           </TwForm>
         </div>
       </div>
+  </TwOffcanvas>
+
+  <TwOffcanvas position="right" width="800px"  ref="PopUPPermission" >
+        <template #headerTitle> <span class="font-[Moul] ">  ការអនុញ្ញាត </span></template>
+        <div class="p-4 overflow-auto font-[battambang]">
+          <div>
+            <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-sm md:text-md lg:text-lg">
+                               ព័ត៌មានលម្អិតអំពីការអនុញ្ញាត
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-sm md:text-md lg:text-lg text-center">
+                              អនុញ្ញាត
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-sm md:text-md lg:text-lg text-center"> 
+                              មិនអនុញ្ញាត
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                      
+                        <tr class="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
+                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                Add Super Admin
+                            </th>
+                            <td class="px-6 py-4 text-center">
+                                <input id="bordered-checkbox-1" type="radio" value="" name="bordered-checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                            </td>
+                            <td class="px-6 py-4 text-center">
+                                <input id="bordered-checkbox-1" type="radio" value="" name="bordered-checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                            </td>
+                        </tr>
+                        <tr class="border-b bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
+                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                 Add Admin
+                            </th>
+                            <td class="px-6 py-4 text-center">
+                                 <input id="bordered-checkbox-1" type="radio" value="" name="radio1" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                            </td>
+                            <td class="px-6 py-4 text-center" >
+                                <input id="bordered-checkbox-1" type="radio" value="" name="radio1" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+          </div>
+        </div>
   </TwOffcanvas>
 
   </div>  
