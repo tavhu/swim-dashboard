@@ -6,6 +6,7 @@ import {
   TwForm,
   TwTextarea,
   useToast ,
+  TwToggle,
   DatatableColumn, DatatableData, TwDatatableServer,TwOffcanvas
 } from "vue3-tailwind";
 
@@ -71,7 +72,6 @@ const formName = "Role";
   const clear  = () => {     
     formData.roleName = null;
     formData.roleDescription = null;     
-   
     setTimeout(() => {      
       validator.value.clearErrors();
     }, 100);   
@@ -247,7 +247,6 @@ const sortClick = (event: any) => {
 
 
   const deleteRecord = async ( id : string )=>{
-
     if(! await confirmDialog()) return;
 
     const { error } = await useFetch('/api/role/delete', {
@@ -282,6 +281,17 @@ const sortClick = (event: any) => {
     return true
   }
 
+
+
+  const PopUPPermission = ref()
+
+  const AddPermission = () =>{
+
+    PopUPPermission.value.openOffCanvas()
+  }
+
+
+  const toggleM = ref(false)
 
 </script>
 
