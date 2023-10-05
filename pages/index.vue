@@ -45,7 +45,7 @@ useHead({
       </div>
       <div class="col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-3">
         <div
-          class="p-2 rounded-lg bg-white dark:bg-gray-800 shadow flex justify-between gap-2 h-14"
+          class="p-2 rounded-lg bg-white dark:bg-gray-800 shadow flex justify-between gap-2 h-full"
         >
           <div class="flex flex-col justify-between">
             <div class="text-gray-500 dark:text-gray-400 font-medium">Today's Users</div>

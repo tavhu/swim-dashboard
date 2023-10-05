@@ -2,7 +2,7 @@
 import { defineStore } from 'pinia';
 import resource from './data/resource';
 
-export const useResource = defineStore('sidebar', () => {
+export const useResource = defineStore('resource', () => {
   const items = ref(resource)
 //   const mobileOpen = ref(false)
   return {
