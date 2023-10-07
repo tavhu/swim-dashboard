@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { TwFeather } from "vue3-tailwind";
-const { data, status } = useAuth()
-definePageMeta({ auth: true })
+const { data, status } = useAuth();
+definePageMeta({ auth: true });
 
 // const  ss = await useFetch('/api/me',{method :'post'})
 
-const headers = useRequestHeaders(['cookie']) as HeadersInit
-const {data: token }  = await useFetch('/api/token', { headers })
+const headers = useRequestHeaders(["cookie"]) as HeadersInit;
+const { data: token } = await useFetch("/api/token", { headers });
+
 useHead({
   title: "Dashboard",
 });
@@ -14,15 +15,14 @@ useHead({
 
 <template>
   <div>
-    <h1 class="text-3xl font-bold">Dashboard </h1>
+    <h1 class="text-3xl font-bold">Dashboard</h1>
     <pre>
-        <!-- {{ token }} -->
-    </pre>    
-    <pre>
-      {{ token }}
+        {{ token }}
     </pre>
-    
-    
+    <pre>
+      <!-- {{ status }} -->
+    </pre>
+
     <hr class="my-2 border dark:border-gray-700" />
     <div class="grid grid-cols-12 gap-2">
       <div class="col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-3">
@@ -30,7 +30,9 @@ useHead({
           class="p-2 rounded-lg bg-white dark:bg-gray-800 shadow flex justify-between gap-2 h-full"
         >
           <div class="flex flex-col justify-between">
-            <div class="text-gray-500 dark:text-gray-400 font-medium">Today's Money</div>
+            <div class="text-gray-500 dark:text-gray-400 font-medium">
+              Today's Money
+            </div>
             <div class="text-gray-700 dark:text-gray-200 font-bold text-lg">
               $53,000
               <span class="text-sm text-yellow-600">+55%</span>
@@ -48,7 +50,9 @@ useHead({
           class="p-2 rounded-lg bg-white dark:bg-gray-800 shadow flex justify-between gap-2 h-full"
         >
           <div class="flex flex-col justify-between">
-            <div class="text-gray-500 dark:text-gray-400 font-medium">Today's Users</div>
+            <div class="text-gray-500 dark:text-gray-400 font-medium">
+              Today's Users
+            </div>
             <div class="text-gray-700 dark:text-gray-200 font-bold text-lg">
               2,300
               <span class="text-sm text-yellow-600">+3%</span>
@@ -66,7 +70,9 @@ useHead({
           class="p-2 rounded-lg bg-white dark:bg-gray-800 shadow flex justify-between gap-2 h-full"
         >
           <div class="flex flex-col justify-between">
-            <div class="text-gray-500 dark:text-gray-400 font-medium">New Clients</div>
+            <div class="text-gray-500 dark:text-gray-400 font-medium">
+              New Clients
+            </div>
             <div class="text-gray-700 dark:text-gray-200 font-bold text-lg">
               +3,462
               <span class="text-sm text-red-600">+2%</span>
@@ -84,7 +90,9 @@ useHead({
           class="p-2 rounded-lg bg-white dark:bg-gray-800 shadow flex justify-between gap-2 h-full"
         >
           <div class="flex flex-col justify-between">
-            <div class="text-gray-500 dark:text-gray-400 font-medium">Sales</div>
+            <div class="text-gray-500 dark:text-gray-400 font-medium">
+              Sales
+            </div>
             <div class="text-gray-700 dark:text-gray-200 font-bold text-lg">
               $103,430
               <span class="text-sm text-yellow-600">+5%</span>
@@ -103,7 +111,9 @@ useHead({
         <div class="flex gap-2 rounded-lg p-4 shadow bg-white dark:bg-gray-800">
           <div class="flex flex-col justify-between">
             <div class="">
-              <div class="text-gray-500 dark:text-gray-400 font-medium">Built by developers</div>
+              <div class="text-gray-500 dark:text-gray-400 font-medium">
+                Built by developers
+              </div>
               <div class="text-gray-700 dark:text-gray-200 font-bold text-xl">
                 Nuxt 3 Admin Dashboard
               </div>
@@ -129,7 +139,9 @@ useHead({
         <div class="flex gap-2 bg-white dark:bg-gray-800 rounded-lg p-4 shadow">
           <div class="flex flex-col justify-between">
             <div class="">
-              <div class="text-gray-500 dark:text-gray-400 font-medium">Built by developers</div>
+              <div class="text-gray-500 dark:text-gray-400 font-medium">
+                Built by developers
+              </div>
               <div class="text-gray-700 dark:text-gray-200 font-bold text-xl">
                 Nuxt 3 Admin Dashboard
               </div>
