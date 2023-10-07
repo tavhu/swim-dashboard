@@ -9,10 +9,14 @@ import {
   DatatableColumn, DatatableData, TwDatatableServer,TwOffcanvas
 } from "vue3-tailwind";
 
-import { useResource } from '~~/store/resource'
+// import { useResource } from '~~/store/resource'
 
 
-const resource = useResource()
+// const resource = useResource()
+
+const { data : res } = await useFetch('/api/role/readResource', { method: 'POST' })
+//@ts-ignore
+const resource : any = res.value?.data 
 
 
 const toast = useToast();
@@ -470,22 +474,20 @@ const sortClick = (event: any) => {
                         </tr>
                     </thead>
                     <tbody>                      
-                        <tr v-for="(item,index) in resource.items" :key="item.id" :class="index%2 == 0 ? 'bg-white border-b dark:bg-gray-900 dark:border-gray-700' : 'border-b bg-gray-50 dark:bg-gray-800 dark:border-gray-700' " >
+                        <tr v-for="(item,index) in resource" :key="item?.id" :class="index%2 == 0 ? 'bg-white border-b dark:bg-gray-900 dark:border-gray-700' : 'border-b bg-gray-50 dark:bg-gray-800 dark:border-gray-700' " >
                             <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white" >                                
-                                {{ item.name }}
+                                {{ item?.name }}
                             </th>
                             <td class="px-6 py-4 text-center">
-                                <input id="bordered-checkbox-1" type="radio" value="" :name="'bordered-checkbox'+ item.id" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                <input id="bordered-checkbox-1" type="radio" value="" :name="'bordered-checkbox'+ item?.id" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                             </td>
                             <td class="px-6 py-4 text-center">
-                                <input id="bordered-checkbox-1" type="radio" value="" :name="'bordered-checkbox'+ item.id" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                <input id="bordered-checkbox-1" type="radio" value="" :name="'bordered-checkbox'+ item?.id" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                             </td>
                         </tr>                       
-
                     </tbody>
                 </table>
             </div>
-
           </div>
         </div>
   </TwOffcanvas>
