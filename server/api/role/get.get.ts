@@ -40,12 +40,6 @@ export default eventHandler(async  event => {
             error  : 'e',
         }
     }
-
-   
-   
-   
-    
-   
 })
 
 
