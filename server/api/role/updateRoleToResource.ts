@@ -1,12 +1,10 @@
 import { getServerSession } from "#auth";
 
-
 export default eventHandler(async  event => {
     const session = await getServerSession(event)
     const body =  await readBody(event)
 
-    console.log(body)    
-    
+    // console.log(body)    
     if(!session){
         return { status: 'unauthenticated'}
     }    
@@ -40,11 +38,6 @@ export default eventHandler(async  event => {
             error  : 'e',
         }
     }
-
-   
-   
-   
-    
    
 })
 
