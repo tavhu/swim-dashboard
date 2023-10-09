@@ -298,7 +298,7 @@ const grantedResourceToRole = async (resourceID: string, granted: boolean) => {
       roleID: refClickRoleID.value,
       resourceID: resourceID,
       granted: granted,
-      userID: token.value.sub,
+      userID: token.value?.sub,
     }),
   });
 
@@ -317,7 +317,7 @@ const grantedResourceToRole = async (resourceID: string, granted: boolean) => {
 const readRoleToResource = await useFetch("/api/role/getRoleToResource", {
   method: "POST",
   body: JSON.stringify({
-    userID: token.value.sub,
+    userID: token.value?.sub,
   }),
 });
 </script>
