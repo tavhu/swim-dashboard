@@ -281,6 +281,7 @@ const refClickRoleID = ref("");
 const AddPermission = (clickPermissionID: string) => {
   PopUPPermission.value.openOffCanvas();
   refClickRoleID.value = clickPermissionID;
+  refresh();
 };
 
 const toggleM = ref(false);
@@ -307,19 +308,23 @@ const grantedResourceToRole = async (resourceID: string, granted: boolean) => {
     toast.error({
       message: "មិនឈោកជ័យ",
     });
-  } else {
-    toast.success({
-      message: "ជោកជ័យ",
-    });
   }
+  //  else {
+  //   toast.success({
+  //     message: "ជោកជ័យ",
+  //   });
+  // }
 };
 
-const readRoleToResource = await useFetch("/api/role/getRoleToResource", {
-  method: "POST",
-  body: JSON.stringify({
-    userID: token.value?.sub,
-  }),
-});
+const { data: readRoleToResource, refresh } = await useFetch(
+  "/api/role/getRoleToResource",
+  {
+    method: "POST",
+    body: JSON.stringify({
+      userID: token.value.sub,
+    }),
+  }
+);
 </script>
 
 <template>
@@ -540,6 +545,14 @@ const readRoleToResource = await useFetch("/api/role/getRoleToResource", {
                       value=""
                       :name="'bordered-checkbox' + item?.id"
                       @click="grantedResourceToRole(item?.id, true)"
+                      :checked="
+                        readRoleToResource?.data.find(
+                          (e) =>
+                            e.resourceID == item?.id &&
+                            refClickRoleID == e.roleID &&
+                            token?.sub == e.userID
+                        )?.granted
+                      "
                       class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                     />
                   </td>
@@ -550,7 +563,14 @@ const readRoleToResource = await useFetch("/api/role/getRoleToResource", {
                       value=""
                       :name="'bordered-checkbox' + item?.id"
                       @click="grantedResourceToRole(item?.id, false)"
-                      :checked="true"
+                      :checked="
+                        !readRoleToResource?.data.find(
+                          (e) =>
+                            e.resourceID == item?.id &&
+                            refClickRoleID == e.roleID &&
+                            token?.sub == e.userID
+                        )?.granted
+                      "
                       class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                     />
                   </td>
