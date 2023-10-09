@@ -4,8 +4,6 @@ import path from "path";
 
 export default defineEventHandler(async (event) => {
 
-    
-
     const { files: { photo: [ { filepath, mimetype } ] } } = await readFiles(event, {
         //@ts-ignore
          includeFields: true
