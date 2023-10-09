@@ -284,10 +284,8 @@ const AddPermission = (clickPermissionID: string) => {
   refresh();
 };
 
-const toggleM = ref(false);
 
 const headers = useRequestHeaders(["cookie"]) as HeadersInit;
-
 const { data: token } = await useFetch("/api/token", { headers });
 
 const grantedResourceToRole = async (resourceID: string, granted: boolean) => {
@@ -316,15 +314,17 @@ const grantedResourceToRole = async (resourceID: string, granted: boolean) => {
   // }
 };
 
-const { data: readRoleToResource, refresh } = await useFetch(
+const { data: readRoleToResource , refresh } = await useFetch(
   "/api/role/getRoleToResource",
   {
     method: "POST",
     body: JSON.stringify({
-      userID: token.value.sub,
+      userID: token.value?.sub,
     }),
   }
 );
+
+
 </script>
 
 <template>
@@ -546,8 +546,9 @@ const { data: readRoleToResource, refresh } = await useFetch(
                       :name="'bordered-checkbox' + item?.id"
                       @click="grantedResourceToRole(item?.id, true)"
                       :checked="
-                        readRoleToResource?.data.find(
-                          (e) =>
+                       //@ts-ignore
+                        readRoleToResource?.data?.find(
+                          (e : any) =>
                             e.resourceID == item?.id &&
                             refClickRoleID == e.roleID &&
                             token?.sub == e.userID
@@ -564,8 +565,9 @@ const { data: readRoleToResource, refresh } = await useFetch(
                       :name="'bordered-checkbox' + item?.id"
                       @click="grantedResourceToRole(item?.id, false)"
                       :checked="
-                        !readRoleToResource?.data.find(
-                          (e) =>
+                      //@ts-ignore
+                        !readRoleToResource?.data?.find(
+                          (e : any) =>
                             e.resourceID == item?.id &&
                             refClickRoleID == e.roleID &&
                             token?.sub == e.userID
