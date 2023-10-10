@@ -1,22 +1,34 @@
-import { readFiles } from 'h3-formidable';
+import { getServerSession } from "#auth";
 import fs from "fs";
 import path from "path";
 
-export default defineEventHandler(async (event) => {
+export default eventHandler(async event => {
+  const session = await getServerSession(event)    
+    if(!session){
+      return { status: 'unauthenticated'}
+  }    
+    //event.context.formidable coming from server middleware formidable.ts
+    const { files } = event.context.formidable;
+    const FilePath = []
 
-    const { files: { photo: [ { filepath, mimetype } ] } } = await readFiles(event, {
-        //@ts-ignore
-         includeFields: true
-    });
+    for (const key in files) {
+      if (Object.prototype.hasOwnProperty.call(files, key)) {
+        const data = files[key][0];      
+        let newPath = `${path.join("public", "uploads", data.newFilename)}.${ data.mimetype.split('/')[1] }`;        
+        // console.log(data.filepath,newPath)
+        try {
+          fs.copyFileSync(data.filepath, newPath);     
+          FilePath.push(newPath)
+        }catch(e){
+          console.log(e)
+          setResponseStatus(event, 412)    
+          return {
+              error  : e,
+          }
+        }    
+      }
+    }
 
-    console.log(filepath)
+    return {  ...FilePath }    
 
-    let imageName = String(Date.now()) + String(Math.round(Math.random() * 10000000));
-    let newPath = `${path.join("public", "uploads", imageName)}.${ mimetype.split('/')[1] }`;
-
-    fs.copyFileSync(filepath, newPath);
-
-    return { success: true }
-
-    
 });

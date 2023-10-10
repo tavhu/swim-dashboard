@@ -36,10 +36,10 @@ const formExample = useFormExample();
           textAreaExample: 'Text Area',
         }"
       >
-        <div class="col-span-12">
+        <div class="col-span-12 md:col-span-6">
           <TwFile v-model="formExample.formData.fileModel" />
         </div>
-        <div class="col-span-12">
+        <div class="col-span-12 md:col-span-6">
           <TwInput
             label="Input"
             name="inputExample"
