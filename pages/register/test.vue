@@ -1,4 +1,7 @@
-<script setup>
+<script setup >
+
+
+//  import {TwFile} from "vue3-tailwind";
 const files = ref();
 
 async function handleImageUpload() {
@@ -17,14 +20,16 @@ async function handleImageUpload() {
   }
 }
 
-function handleFile(e, item) {
+function handleFile(e ) {
+  
   files.value = e.target.files;
 }
 </script>
 
 <template>
   <form @submit.prevent="handleImageUpload">
-    <input multiple type="file" @change="handleFile($event, item)" />
+    <input multiple type="file" @change="handleFile($event)" />
+    <!-- <TwFile multiple /> -->
     <br>
     <br>
     <input type="submit" class="btn "/>
