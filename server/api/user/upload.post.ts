@@ -1,4 +1,5 @@
 import { getServerSession } from "#auth";
+import { readFiles } from 'h3-formidable'
 import fs from "fs";
 import path from "path";
 
@@ -8,11 +9,14 @@ export default eventHandler(async event => {
       return { status: 'unauthenticated'}
   }    
     //event.context.formidable coming from server middleware formidable.ts
-    const { files } = event.context.formidable;
+    // const { files } = event.context.formidable;
     const FilePath = []
+    const { fields, files, form } = await readFiles(event, {})
+
+
 
     for (const key in files) {
-      if (Object.prototype.hasOwnProperty.call(files, key)) {
+      if (Object.hasOwn(files, key)) {
         const data = files[key][0];      
         let newPath = `${path.join("public", "uploads", data.newFilename)}.${ data.mimetype.split('/')[1] }`;        
         // console.log(data.filepath,newPath)
