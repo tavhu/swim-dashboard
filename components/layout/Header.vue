@@ -6,7 +6,7 @@ const sidebarStore = useSidebarStore();
 const animationOpenClose = useAnimationOpenClose();
 const { signOut, status, data  } = useAuth()
 
-// const router = useRouter();
+const config = useRuntimeConfig()
 
 // const logout = () => {
 //   router.push("/login");
@@ -21,7 +21,7 @@ const { signOut, status, data  } = useAuth()
       <div class="font-bold">
         <NuxtLink to="/" class="flex items-center align-middle ">
           <img src="/icon.png" alt="" class="w-10 h-10 rounded-full  ">
-          <span class="dark:text-white text-black"> SWIM</span> Dasboard
+          <span class="dark:text-white text-black"> SWIM</span> Dasboard 
         </NuxtLink>
       </div>
 
@@ -45,7 +45,7 @@ const { signOut, status, data  } = useAuth()
         <TwDropdownMenu align="right" width="48">
           <template #trigger>
             <button>
-              <img class="w-10 h-10 rounded-full border border-[#1d152a7a]" :src="data?.user?.image ? data?.user?.image : '/images/profile1.jpg'" alt="" />
+              <img class="w-10 h-10 rounded-full border border-[#1d152a7a]" :src="data?.user?.image ?  config.public.origin + '/' + data?.user?.image : '/images/profile1.jpg'" alt="" />
             </button>
           </template>
 

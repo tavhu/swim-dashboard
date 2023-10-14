@@ -22,7 +22,7 @@ export default eventHandler(async event => {
         // console.log(data.filepath,newPath)
         try {
           fs.copyFileSync(data.filepath, newPath);     
-          FilePath.push(newPath)
+          FilePath.push(newPath.replace('public/',''))
         }catch(e){
           console.log(e)
           setResponseStatus(event, 412)    

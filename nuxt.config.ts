@@ -2,12 +2,14 @@
 import { defineNuxtConfig } from "nuxt/config"
 
 export default defineNuxtConfig({
+
+
   app: {
     pageTransition: { name: "page", mode: "out-in" },
   },
+  
 
   css: ["~/assets/css/main.css"],
-
   postcss:{
     plugins: {
       tailwindcss: {},
@@ -24,6 +26,7 @@ export default defineNuxtConfig({
     apiSecret: "",
     public: {
       apiBase: "/api",
+      origin: process.env.NUXT_ORIGIN
     },
   },
 

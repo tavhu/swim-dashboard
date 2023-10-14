@@ -297,6 +297,7 @@ const grantedResourceToRole = async (resourceID: string, granted: boolean) => {
       roleID: refClickRoleID.value,
       resourceID: resourceID,
       granted: granted,
+      //@ts-ignore
       userID: token.value?.sub,
     }),
   });
@@ -319,6 +320,7 @@ const { data: readRoleToResource , refresh } = await useFetch(
   {
     method: "POST",
     body: JSON.stringify({
+      //@ts-ignored
       userID: token.value?.sub,
     }),
   }
@@ -551,6 +553,7 @@ const { data: readRoleToResource , refresh } = await useFetch(
                           (e : any) =>
                             e.resourceID == item?.id &&
                             refClickRoleID == e.roleID &&
+                            //@ts-ignored
                             token?.sub == e.userID
                         )?.granted
                       "
@@ -570,6 +573,7 @@ const { data: readRoleToResource , refresh } = await useFetch(
                           (e : any) =>
                             e.resourceID == item?.id &&
                             refClickRoleID == e.roleID &&
+                            //@ts-ignored
                             token?.sub == e.userID
                         )?.granted
                       "

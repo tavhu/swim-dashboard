@@ -10,7 +10,13 @@ export default eventHandler(async  event => {
     // console.log(body)    
     
     if(!session){
-        return { status: 'unauthenticated'}
+        return { 
+            status: 'unauthenticated',
+             data: [], 
+             total : 0,
+            error  : 'e',
+    
+    }
     }    
       
     try {
@@ -26,18 +32,22 @@ export default eventHandler(async  event => {
                 id: 'desc'
             },
             //@ts-ignore
-            take : (body?.limit ? parseInt(body?.limit) : 5) ,        
+            take : (body?.limit ? parseInt(body?.limit) : 1000) ,        
             //@ts-ignore
-            skip :  (body?.skip ? parseInt(body?.skip) : 5)
+            skip :  (body?.skip ? parseInt(body?.skip) : 0)
                        
         })
         // console.log(data)
         setResponseStatus(event, 201)    
-         return { data: data, total : totalCount }
+         return { data: data, total : totalCount , error :'',
+        status : 'authenticated' }
     }catch(e){  
         setResponseStatus(event, 412)    
         return {
+            data: [], 
+             total : 0,
             error  : 'e',
+            status : 'authenticated'
         }
     }
 })

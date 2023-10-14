@@ -89,7 +89,7 @@ const toggleFormError = () => {
     route.currentRoute.value.query?.error &&  route.currentRoute.value.query?.error != 'undefined'
   ){
     toast.error({
-      message: route.currentRoute.value.query?.error ,
+      message: decodeURI(route.currentRoute.value.query?.error.toString()) ,
     });
   }
 

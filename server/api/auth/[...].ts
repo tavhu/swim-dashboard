@@ -43,16 +43,16 @@ export default NuxtAuthHandler({
           if(!user) {
             throw createError({
               statusCode: 403,
-              statusMessage: "Credentials not working",
+              statusMessage:  encodeURI("គណនីឬលេខសំងាត់មិនត្រឹមត្រូវ"),
             })  
           }
   
           const isPasswordValid = await compare(credentials?.password, user.password)
   
-          if (!isPasswordValid) {
+          if (!isPasswordValid || !user.status) {
             throw createError({
               statusCode: 403,
-              statusMessage: "Credentials not working",
+              statusMessage: encodeURI(!user.status ? "គណនីត្រូវបានបិទ​! សូមទំនាក់ទំនងអ្នកគ្រប់គ្រង ":  "គណនីឬលេខសំងាត់មិនត្រឹមត្រូវ"),
             })  
           }  
           return user

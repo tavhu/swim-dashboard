@@ -29,14 +29,14 @@
     "nuxt": "3.7.1",
     "pinia": "^2.0.23",
     "postcss": "^8.4.19",
-    "prisma": "^5.4.1",
+    "prisma": "^5.4.2",
     "sass": "^1.56.1",
     "tailwindcss": "^3.2.4"
   },
   "dependencies": {
     "@next-auth/prisma-adapter": "^1.0.7",
     "@pinia/nuxt": "^0.4.6",
-    "@prisma/client": "^5.4.1",
+    "@prisma/client": "^5.4.2",
     "@vercel/analytics": "^1.0.0",
     "bcrypt": "^5.1.0",
     "feather-icons": "^4.29.0",
