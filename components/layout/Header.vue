@@ -6,6 +6,10 @@ const sidebarStore = useSidebarStore();
 const animationOpenClose = useAnimationOpenClose();
 const { signOut, status, data  } = useAuth()
 
+
+const headers = useRequestHeaders(["cookie"]) as HeadersInit;
+const { data: token } = await useFetch("/api/token", { headers }); 
+
 const config = useRuntimeConfig()
 
 // const logout = () => {
@@ -50,7 +54,10 @@ const config = useRuntimeConfig()
           </template>
 
           <template #content>
-            <NuxtLink to="/profile">
+            
+            <NuxtLink :to="
+            //@ts-ignore
+              `/register?id=` +  token?.sub">
               <button
                 class="block w-full px-4 py-2 text-sm leading-5 text-gray-700 dark:text-gray-200 text-left hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-800 transition">
                 <div class="flex gap-2 items-center">

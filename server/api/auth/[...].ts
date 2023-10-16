@@ -19,7 +19,7 @@ export default NuxtAuthHandler({
     callbacks : {        
       async jwt({ token, user }: { token: any, user: any }) {
         if (user) { 
-          // token.id = user.id
+          token.id = user.id
           token.username = user.username
           token.fullname = user.firstname + user.lastname
         }

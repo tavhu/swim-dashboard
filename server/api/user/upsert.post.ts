@@ -14,16 +14,18 @@ export default eventHandler(async  event => {
       const res =   await event.context.prisma.user.upsert({
           
         where : {
-                username : body?.username
-            },
-
-            update:{
+               id : body?.id
+            }
+        ,
+            update: {
                 firstname : body?.firstname,      
-                lastname : body?.lastname,       
+                lastname : body?.lastname,    
+                username: body?.username,
                 image : body?.image,          
                 status : body?.status,            
                 userRoleID : body?.userRoleID,
                 userOrgID : body?.userOrgID,
+                password: body?.updatePass ?  await hash(body?.password,12): body?.password 
             },
 
             create : {

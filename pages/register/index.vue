@@ -14,6 +14,13 @@ import {
 DropdownItem,
 } from "vue3-tailwind";
 
+
+const route = useRoute()
+const edit =   route.query?.id
+
+const config = useRuntimeConfig()
+
+
 const toast = useToast();
 const composableForm = useForm();
 const formName = "User";
@@ -21,6 +28,7 @@ const formName = "User";
 const formData: {
   [key: string]: any;
 } = reactive({
+  id : 'clnsjldxn0003s9lkwrybcubh',
   firstname: null,
   lastname: null,
   username: null,
@@ -37,12 +45,12 @@ const usernameDuplicated = ref(false)
 const formRules = {
   firstname: ["string"],
   lastname: ["string"],
-  username: ["required", "string" , (value : string)=>{
+  username:  ["required", "string" , (value : string)=>{
     if(usernameDuplicated.value){
       return `ឈ្មោះគណនីត្រូវបានប្រើប្រាស់រួចហើយ`; 
     }
   }],
-  password: [
+  password: (!edit && !formData.password) ? [
     "required",
     "string",
     "test",
@@ -52,7 +60,7 @@ const formRules = {
         return `តិចបំផុត​៨តួអក្សរ ${MIN_LENGTH}, ប្រវែងបច្ចុប្បន្នគឺ ${value?.length}`;
       }
     },
-  ],
+  ] : [],
   conPassword : ["test",
     (value : string) =>{
       if(value !== formData.password){
@@ -83,7 +91,6 @@ const submit = async () => {
 
   let image : any
   image = await handleImageUpload() 
-  
 
   if(image) formData.image = image[0]
 
@@ -91,14 +98,16 @@ const submit = async () => {
   const { error } = await useFetch("/api/user/upsert", {
     method: "POST",
     body: JSON.stringify({
+      id :  formData.id ,
       firstname : formData.firstname,
       lastname : formData.lastname,
       username : formData.username,
-      password : formData.password,
+      password : formData.password ? formData.password : userProfile.value?.data?.password,
       image : formData.image,
       status : formData.status,
       userRoleID : formData.userRoleID,
       userOrgID : formData.userOrgID,
+      updatePass : edit  && formData.password ? true : false
     }),
   });
 
@@ -110,12 +119,12 @@ const submit = async () => {
     toast.success({
       message: "ជោកជ័យ",
     });
-    clear();
   }
 };
 
 const clear = () => {
   (formData.firstname = null),
+  (formData.conPassword = null),
     (formData.lastname = null),
     (formData.username = null),
     (formData.password = null),
@@ -193,13 +202,36 @@ const checkData = async ()=>{
 
 
 
+/// edit part
+
+const userProfile = ref()
+
+if (edit) {
+
+   userProfile.value = await useFetch('/api/user/checkUsername', {method : 'post', 
+  body : JSON.stringify({
+    id : edit
+  })
+  })  
+
+  formData.id = userProfile.value?.data?.id
+  formData.firstname = userProfile.value?.data?.firstname
+  formData.lastname = userProfile.value?.data?.lastname
+  formData.username = userProfile.value?.data?.username
+  formData.password = null
+  formData.conPassword = null
+  formData.image = userProfile.value?.data?.image
+  formData.userRoleID = userProfile.value?.data?.userRoleID
+  formData.userOrgID = userProfile.value?.data?.userOrgID
+  formData.status = userProfile.value?.data?.status
+}
 
 
 </script>
 
 <template>
   <div>    
-    <h2 class="text-2xl font-bold font-[Moul]">បង្កើតគណនី</h2>
+    <h2 class="text-2xl font-bold font-[Moul]"> {{ edit ?  `កែប្រែគណនី` : `បង្កើតគណនី`}} </h2> 
     <hr class="my-2 border dark:border-gray-700" />
     <div class="font-[Battambang]">
       <TwForm
@@ -216,7 +248,14 @@ const checkData = async ()=>{
         }"
       >
         <div class="col-span-12">
-          <TwFile v-model="files"  label="រូបភាព Profile" />
+          
+          <div class="vt-relative vt-col-span-12 vt-flex vt-items-center vt-justify-center">
+            <div class="vt-relative vt-w-96">
+              <img :src="config.public.origin + '/' + formData.image"  :class="(files?.length > 0 ? ' hidden '  : ' ') + ' vt-object-cover vt-rounded vt-bg-white dark:vt-bg-gray-900 vt-shadow vt-border dark:vt-border-gray-700 ' " alt="">
+            </div>
+          </div>
+
+          <TwFile v-model="files" label="រូបភាព Profile" />
         </div>
         <div class="col-span-12 lg:col-span-6">
           <TwInput
@@ -250,7 +289,7 @@ const checkData = async ()=>{
         </div>
         <div class="col-span-12 lg:col-span-6">
           <TwInput
-            label="លេខសំងាត់"
+            :label=" edit? 'លេខសំងាត់(ទុកឲ្យទទេបើមិនប្តូ)' : 'លេខសំងាត់'"
             name="password"
             type="password"
             v-model="formData.password"
@@ -260,7 +299,7 @@ const checkData = async ()=>{
         </div>
         <div class="col-span-12 lg:col-span-6">
           <TwInput
-            label="លេខសំងាត់ម្តងទៀត"
+            :label="edit ? 'លេខសំងាត់ម្តងទៀត(ទុកឲ្យទទេបើមិនប្តូ)' : 'លេខសំងាត់ម្តងទៀត'"
             name="conPassword"
             type="password"
             v-model="formData.conPassword"
