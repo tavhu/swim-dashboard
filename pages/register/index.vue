@@ -1,7 +1,4 @@
 <script setup lang="ts">
-useHead({
-  title: "បង្កើតគណនី",
-});
 import {
   TwForm,
   TwButton,
@@ -11,24 +8,31 @@ import {
   TwToggle,
   useToast,
   useForm,
-DropdownItem,
+  DropdownItem,
 } from "vue3-tailwind";
 
+useHead({
+  title: "បង្កើតគណនី",
+});
 
 const route = useRoute()
-const edit =   route.query?.id
+const edit = route?.query?.id
+
+const compute = computed(()=>route?.query?.id)
+
+watch(compute,async ()=>{
+    window.location.reload() 
+   
+})
 
 const config = useRuntimeConfig()
-
-
-const toast = useToast();
-const composableForm = useForm();
-const formName = "User";
-
+const toast = useToast()
+const composableForm = useForm()
+const formName = "User"
 const formData: {
   [key: string]: any;
 } = reactive({
-  id : 'clnsjldxn0003s9lkwrybcubh',
+  id : edit ? edit : 'asdf' ,
   firstname: null,
   lastname: null,
   username: null,
@@ -38,8 +42,7 @@ const formData: {
   userRoleID: "null",
   userOrgID: "null",
   status: false,
-});
-
+})
 
 const usernameDuplicated = ref(false)
 const formRules = {
@@ -107,7 +110,7 @@ const submit = async () => {
       status : formData.status,
       userRoleID : formData.userRoleID,
       userOrgID : formData.userOrgID,
-      updatePass : edit  && formData.password ? true : false
+      updatePass : edit && formData.password ? true : false
     }),
   });
 
@@ -122,26 +125,25 @@ const submit = async () => {
   }
 };
 
-const clear = () => {
-  (formData.firstname = null),
-  (formData.conPassword = null),
-    (formData.lastname = null),
-    (formData.username = null),
-    (formData.password = null),
-    (formData.image = null),
-    formData.conPassword,
-    (formData.status = false),
-    (files.value = null);
+const clear = () => {  
+    formData.firstname = null
+    formData.conPassword = null
+    formData.lastname = null
+    formData.username = null
+    formData.password = null
+    formData.image = null
+    formData.conPassword = null
+    formData.status = false
+    files.value = null
+
   setTimeout(() => {
     validator.value.clearErrors();
   }, 100);
 };
 
 const files = ref();
-const handleImageUpload = async () => {
-  
+const handleImageUpload = async () => {  
   if (!files.value || files.value?.length == 0) return false;
-
   try {
     const fd = new FormData();
     Array.from(files.value).forEach((file, index) => {
@@ -179,7 +181,6 @@ let timemer  = 0
 
 const checkData = async ()=>{     
   clearTimeout(timemer)
-
    timemer = window.setTimeout(async ()=>{
       const {data : res } = await useFetch('/api/user/checkUsername',{method : 'POST',
       body: JSON.stringify({
@@ -200,19 +201,15 @@ const checkData = async ()=>{
   },500)
 }
 
-
-
 /// edit part
 
 const userProfile = ref()
 
 if (edit) {
-
-   userProfile.value = await useFetch('/api/user/checkUsername', {method : 'post', 
-  body : JSON.stringify({
-    id : edit
-  })
-  })  
+  userProfile.value = await useFetch('/api/user/checkUsername', { method : 'post', 
+    body : JSON.stringify({
+      id : edit
+  })})  
 
   formData.id = userProfile.value?.data?.id
   formData.firstname = userProfile.value?.data?.firstname
@@ -227,10 +224,11 @@ if (edit) {
 }
 
 
+
 </script>
 
 <template>
-  <div>    
+  <div>        
     <h2 class="text-2xl font-bold font-[Moul]"> {{ edit ?  `កែប្រែគណនី` : `បង្កើតគណនី`}} </h2> 
     <hr class="my-2 border dark:border-gray-700" />
     <div class="font-[Battambang]">
@@ -251,7 +249,7 @@ if (edit) {
           
           <div class="vt-relative vt-col-span-12 vt-flex vt-items-center vt-justify-center">
             <div class="vt-relative vt-w-96">
-              <img :src="config.public.origin + '/' + formData.image"  :class="(files?.length > 0 ? ' hidden '  : ' ') + ' vt-object-cover vt-rounded vt-bg-white dark:vt-bg-gray-900 vt-shadow vt-border dark:vt-border-gray-700 ' " alt="">
+              <img :src="config.public.origin + '/' + (formData.image ? formData.image : '') "  :class="(files?.length > 0 ? ' hidden '  : ' ') + ' vt-object-cover vt-rounded vt-bg-white dark:vt-bg-gray-900 vt-shadow vt-border dark:vt-border-gray-700 ' " alt="">
             </div>
           </div>
 

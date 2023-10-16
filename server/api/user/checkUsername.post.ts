@@ -12,11 +12,18 @@ export default eventHandler(async  event => {
     }    
       
     try {
-        const data = await event.context.prisma.user.findFirst({
+
+        const data = body?.username ?  await event.context.prisma.user.findFirst({
             where :{
                 username : body?.username
             }
+        }) : await event.context.prisma.user.findFirst({
+            where :{
+                id : body?.id
+            }
         })
+
+
         // console.log(data)
         setResponseStatus(event, 201)    
         return data
@@ -27,5 +34,3 @@ export default eventHandler(async  event => {
         }
     }    
 })
-
-

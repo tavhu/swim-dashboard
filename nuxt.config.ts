@@ -16,6 +16,9 @@ export default defineNuxtConfig({
       autoprefixer: {},
     },
   },
+  routeRules :{
+    '/register': { ssr: true },
+  },
 
   typescript: {
     shim: false,

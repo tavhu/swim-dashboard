@@ -11,8 +11,7 @@ export default eventHandler(async event => {
     //event.context.formidable coming from server middleware formidable.ts
     // const { files } = event.context.formidable;
     const FilePath = []
-    const { fields, files, form } = await readFiles(event, {})
-
+    const { files } = await readFiles(event, {})
 
 
     for (const key in files) {
@@ -22,7 +21,7 @@ export default eventHandler(async event => {
         // console.log(data.filepath,newPath)
         try {
           fs.copyFileSync(data.filepath, newPath);     
-          FilePath.push(newPath.replace('public/',''))
+          FilePath.push(newPath.replace('public/','').replace('public\\',''))
         }catch(e){
           console.log(e)
           setResponseStatus(event, 412)    

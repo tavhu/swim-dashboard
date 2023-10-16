@@ -13,11 +13,7 @@ export default eventHandler(async  event => {
       
     try {
 
-       const data = await event.context.prisma.roleToResource.findMany({  
-            where : {
-                userID : body?.userID
-            },         
-        })
+       const data = await event.context.prisma.roleToResource.findMany({})
         // console.log(data)
         setResponseStatus(event, 201)    
          return { data: data }

@@ -12,11 +12,10 @@ export default eventHandler(async  event => {
       
     try {
       const res =   await event.context.prisma.user.upsert({
-          
-        where : {
-               id : body?.id
+            where :{
+                id : body?.id
             }
-        ,
+            ,
             update: {
                 firstname : body?.firstname,      
                 lastname : body?.lastname,    

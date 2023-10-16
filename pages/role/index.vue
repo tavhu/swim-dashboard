@@ -296,9 +296,7 @@ const grantedResourceToRole = async (resourceID: string, granted: boolean) => {
     body: JSON.stringify({
       roleID: refClickRoleID.value,
       resourceID: resourceID,
-      granted: granted,
-      //@ts-ignore
-      userID: token.value?.sub,
+      granted: granted,      
     }),
   });
 
@@ -552,9 +550,7 @@ const { data: readRoleToResource , refresh } = await useFetch(
                         readRoleToResource?.data?.find(
                           (e : any) =>
                             e.resourceID == item?.id &&
-                            refClickRoleID == e.roleID &&
-                            //@ts-ignored
-                            token?.sub == e.userID
+                            refClickRoleID == e.roleID                             
                         )?.granted
                       "
                       class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
@@ -572,9 +568,7 @@ const { data: readRoleToResource , refresh } = await useFetch(
                         !readRoleToResource?.data?.find(
                           (e : any) =>
                             e.resourceID == item?.id &&
-                            refClickRoleID == e.roleID &&
-                            //@ts-ignored
-                            token?.sub == e.userID
+                            refClickRoleID == e.roleID                        
                         )?.granted
                       "
                       class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"

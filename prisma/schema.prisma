@@ -20,7 +20,6 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
-  // user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -30,11 +29,10 @@ model Session {
   sessionToken String   @unique
   userId       String
   expires      DateTime
-  // user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model User {
-  id         String  @id @default(cuid())
+  id         String  @id @unique @default(cuid())
   firstname  String?
   lastname   String?
   username   String  @unique
@@ -43,8 +41,6 @@ model User {
   status     Boolean @default(true)
   userRoleID String?
   userOrgID  String?
-  // accounts   Account[]
-  // sessions   Session[]
 }
 
 model Role {
@@ -59,12 +55,11 @@ model Resources {
 }
 
 model RoleToResource {
-  userID     String
   roleID     String
   resourceID String
   granted    Boolean
 
-  @@id([roleID, resourceID, userID])
+  @@id([roleID, resourceID])
 }
 
 model VerificationToken {

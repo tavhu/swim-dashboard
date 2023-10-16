@@ -13,18 +13,16 @@ export default eventHandler(async  event => {
 
         await event.context.prisma.roleToResource.upsert({
             where : {
-                  roleID_resourceID_userID :{
-                    roleID : body?.roleID,
+                 roleID_resourceID :{                   
                     resourceID : body?.resourceID,
-                    userID : body?.userID
+                    roleID : body?.roleID
                   }
             },
             update :{
                 granted : body?.granted
             },
-            create :{
+            create :{                
                 roleID : body?.roleID,
-                userID: body?.userID,
                 resourceID : body?.resourceID,
                 granted : body?.granted ,
             }

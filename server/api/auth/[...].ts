@@ -20,15 +20,22 @@ export default NuxtAuthHandler({
       async jwt({ token, user }: { token: any, user: any }) {
         if (user) { 
           token.id = user.id
+          token.image = user.image
           token.username = user.username
           token.fullname = user.firstname + user.lastname
         }
         return token
       },   
-      session : async ({session , token})=>{
+      session : async ({ token, user }: { token: any, user: any })=>{
         // const me: any = await getMe(session) 
         // ;(session as any) = user
-        return Promise.resolve(session)
+          if (user) { 
+            token.id = user.id
+            token.image = user.image
+            token.username = user.username
+            token.fullname = user.firstname + user.lastname
+          }
+        return token
       }
     },
     providers: [
