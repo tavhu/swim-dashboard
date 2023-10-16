@@ -35,7 +35,15 @@ export default NuxtAuthHandler({
             token.username = user.username
             token.fullname = user.firstname + user.lastname
           }
+
+          // if(!user.status){
+          //   return false
+          // }
+          // console.log(user?.status)
+
         return token
+
+
       }
     },
     providers: [
