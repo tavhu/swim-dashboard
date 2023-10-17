@@ -2,12 +2,10 @@
 import { defineNuxtConfig } from "nuxt/config"
 
 export default defineNuxtConfig({
-
-
+  
   app: {
     pageTransition: { name: "page", mode: "out-in" },
-  },
-  
+  },  
 
   css: ["~/assets/css/main.css"],
   postcss:{
@@ -15,10 +13,7 @@ export default defineNuxtConfig({
       tailwindcss: {},
       autoprefixer: {},
     },
-  },
-  routeRules :{
-    '/register': { ssr: true },
-  },
+  }, 
 
   typescript: {
     shim: false,
@@ -47,8 +42,7 @@ export default defineNuxtConfig({
            'cursive': true,
           Siemreap: [100, 300],
           Battambang : [100, 300],
-          'Josefin+Sans': true,
-          
+          'Josefin+Sans': true,          
     }, 
     download : true, 
     base64 : true,

@@ -18,32 +18,45 @@ export default NuxtAuthHandler({
     // adapter : PrismaAdapter(prisma),
     callbacks : {        
       async jwt({ token, user }: { token: any, user: any }) {
+
         if (user) { 
           token.id = user.id
           token.image = user.image
+          token.status = user.status
           token.username = user.username
-          token.fullname = user.firstname + user.lastname
+          token.fullname = user.firstname + user.lastname          
         }
+        
         return token
       },   
-      session : async ({ token, user }: { token: any, user: any })=>{
-        // const me: any = await getMe(session) 
-        // ;(session as any) = user
-          if (user) { 
-            token.id = user.id
-            token.image = user.image
-            token.username = user.username
-            token.fullname = user.firstname + user.lastname
-          }
+      session : async ({ token, user } : { token: any, user: any })=>{        
+        const me = await prisma.user.findUnique({
+          where: { id : token?.id },
+        })
+        
+        // ;(session as any) = user       
+        // console.log(me)
+        if(!me?.status){
+          // token.status = me.status
+          throw createError({
+            statusCode: 403,
+            statusMessage: encodeURI("គណនីត្រូវបានបិទ​! សូមទំនាក់ទំនងអ្នកគ្រប់គ្រង ")
+          })  
+        }
 
-          // if(!user.status){
-          //   return false
-          // }
-          // console.log(user?.status)
+        if (user) { 
+          token.id = user.id
+          token.image = user.image
+          token.status = user.status
+          token.username = user.username
+          token.fullname = user.firstname + user.lastname        
+        }
+        // if(!user.status){
+        //   return false
+        // }
+        // console.log(user?.status)
 
         return token
-
-
       }
     },
     providers: [
@@ -60,10 +73,10 @@ export default NuxtAuthHandler({
               statusCode: 403,
               statusMessage:  encodeURI("គណនីឬលេខសំងាត់មិនត្រឹមត្រូវ"),
             })  
-          }
-  
-          const isPasswordValid = await compare(credentials?.password, user.password)
-  
+          }  
+          
+          const isPasswordValid = await compare(credentials?.password, user.password)  
+
           if (!isPasswordValid || !user.status) {
             throw createError({
               statusCode: 403,

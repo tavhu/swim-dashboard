@@ -194,7 +194,7 @@ export default [
       {
         isTitle: false,
         name: "បញ្ចី",
-        url: "/login",
+        url: "/register/account",
         icon: "list",
         submenu: [],
       },

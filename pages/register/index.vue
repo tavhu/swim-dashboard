@@ -202,7 +202,6 @@ const checkData = async ()=>{
 }
 
 /// edit part
-
 const userProfile = ref()
 
 if (edit) {
@@ -222,8 +221,6 @@ if (edit) {
   formData.userOrgID = userProfile.value?.data?.userOrgID
   formData.status = userProfile.value?.data?.status
 }
-
-
 
 </script>
 

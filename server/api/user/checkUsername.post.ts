@@ -22,8 +22,6 @@ export default eventHandler(async  event => {
                 id : body?.id
             }
         })
-
-
         // console.log(data)
         setResponseStatus(event, 201)    
         return data
