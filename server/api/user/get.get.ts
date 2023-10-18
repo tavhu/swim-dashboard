@@ -17,7 +17,7 @@ export default eventHandler(async  event => {
       
     try {
        const totalCount =  await  event.context.prisma.role.count()
-       const data = await event.context.prisma.user.findMany({          
+       const data = await event.context.prisma.user.findMany({   
             select:{
                 username :true,
                 id : true,
@@ -27,14 +27,15 @@ export default eventHandler(async  event => {
                 status : true,
                 userOrgID: true,
                 userRoleID : true,
-            },   
+            }, 
             orderBy : {
                 id: 'desc'
             },
             //@ts-ignore
             take : (body?.limit ? parseInt(body?.limit) : 1000) ,        
             //@ts-ignore
-            skip :  (body?.skip ? parseInt(body?.skip) : 0)                       
+            skip :  (body?.skip ? parseInt(body?.skip) : 0),
+                             
         })
 
         // console.log(data)

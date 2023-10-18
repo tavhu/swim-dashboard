@@ -22,6 +22,12 @@ const data = ref({
       sortable: false,
     },
     {
+      label: "រូបថត",
+      field: "Profile",
+      width: "350px",
+      sortable: false,
+    },
+    {
       label: "ឈ្មោះពេញ",
       field: "category",
       width: "350px",
@@ -33,10 +39,22 @@ const data = ref({
       width: "200px",
       sortable: false,
     },
+     {
+      label: "សិទ្ធិប្រើប្រាស់",
+      field: "permission",
+      width: "150px",
+      sortable: false,
+    },
+     {
+      label: "ស្ថានភាពគណនី",
+      field: "status",
+      width: "150px",
+      sortable: false,
+    },
     {
       label: "សកម្មភាព",
       field: "action",
-      width: "1200px",
+      width: "650px",
       sortable: false,
     },
   ] as Array<DatatableColumn>,
@@ -114,7 +132,7 @@ const sortClick = (event: any) => {
 const deleteRecord = async (id: string) => {
   if (!(await confirmDialog())) return;
 
-  const { error } = await useFetch("/api/role/delete", {
+  const { error } = await useFetch("/api/user/delete", {
     method: "POST",
     body: JSON.stringify({
       id: id,
@@ -167,31 +185,36 @@ const AddPermission = (clickPermissionID: string) => {
         :setting="data.setting"
         @on-sort-change="sortClick"
       >
-        <template #row="{ column, data, index }">
+        <template #row="{index, column, data }">
           <template v-if="column.field === 'number'">
              {{ index }}
           </template>
-          <template v-if="column.field === 'category'">
-            {{ data.lastname }} {{ data.firstname }} 
+          <template v-if="column.field === 'Profile'">
+            <div class="flex justify-center">
+              <img :src="config.public.origin+ '/' + data.image" alt="" class="w-20 h-20 rounded-full border border-[#1d152a7a]">
+            </div>
           </template>
+          <template v-if="column.field === 'category'">
+            <div class="flex justify-center">
+              {{ data.lastname }} {{ data.firstname }} 
+            </div>
+          </template>
+            <template v-if="column.field === 'status'">
+              <div class="flex justify-center">
+                <span v-if="data.status" class="text-blue-700 dark:text-white">  ដំណើការ </span>
+                <span v-else class="text-red-700 "> បិទដំណើការ </span>
+              </div>
+            </template>
           <template v-if="column.field === 'description'">
             {{ data.username }}
           </template>
           <template v-if="column.field === 'action'">
             <div class="flex gap-2 justify-center">
-              <TwButton
-                :ripple="true"
-                variant="success"
-                @click="AddPermission(data.id)"
-                class="border"
-              >
-                ការអនុញ្ញាត
-              </TwButton>
               <NuxtLink   
                 :disabled="true"       
                 :to="config.public.origin + '/register?id='  + data.id"
               >               
-                <TwButton variant="primary" :disabled="true" class="border">
+                <TwButton variant="success"  class="border">
                       កែសម្រួល
                 </TwButton>
               </NuxtLink>
