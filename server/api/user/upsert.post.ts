@@ -11,11 +11,10 @@ export default eventHandler(async  event => {
     }    
       
     try {
-      const res =   await event.context.prisma.user.upsert({
+        await event.context.prisma.user.upsert({
             where :{
                 id : body?.id
-            }
-            ,
+            },
             update: {
                 firstname : body?.firstname,      
                 lastname : body?.lastname,    
@@ -26,7 +25,6 @@ export default eventHandler(async  event => {
                 userOrgID : body?.userOrgID,
                 password: body?.updatePass ?  await hash(body?.password,12): body?.password 
             },
-
             create : {
                 firstname : body?.firstname,      
                 lastname : body?.lastname,       
@@ -38,8 +36,7 @@ export default eventHandler(async  event => {
                 userOrgID : body?.userOrgID,
             }
         })
-        console.log(res)
-
+        // console.log(res)
         setResponseStatus(event, 201)    
         return { message: "User Update or Created" }
     }catch(e){  
@@ -48,8 +45,7 @@ export default eventHandler(async  event => {
         return {
             error  : 'e',
         }
-    }
-   
+    }   
 })
 
 

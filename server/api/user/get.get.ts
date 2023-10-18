@@ -13,29 +13,31 @@ export default eventHandler(async  event => {
              data: [], 
              total : 0,
             error  : 'e',    
-    }}    
-      
+    }}   
     try {
-       const totalCount =  await  event.context.prisma.role.count()
-       const data = await event.context.prisma.user.findMany({   
-            select:{
-                username :true,
-                id : true,
-                firstname : true,
-                lastname : true,
-                image : true,
-                status : true,
-                userOrgID: true,
-                userRoleID : true,
-            }, 
+       const totalCount =  await  event.context.prisma.user.count()
+       const data = await event.context.prisma.user.findMany({        
+        select:{
+            username :true,
+            id : true,
+            firstname : true,
+            lastname : true,
+            image : true,
+            status : true,            
+            userRoleID : true,    
+            Role :{
+                select : {
+                    name: true
+                }
+            }           
+        },            
             orderBy : {
                 id: 'desc'
             },
             //@ts-ignore
             take : (body?.limit ? parseInt(body?.limit) : 1000) ,        
             //@ts-ignore
-            skip :  (body?.skip ? parseInt(body?.skip) : 0),
-                             
+            skip :  (body?.skip ? parseInt(body?.skip) : 0),                             
         })
 
         // console.log(data)
@@ -47,7 +49,7 @@ export default eventHandler(async  event => {
         setResponseStatus(event, 412)    
         return {
             data: [], 
-             total : 0,
+            total : 0,
             error  : 'e',
             status : 'authenticated'
         }

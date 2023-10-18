@@ -46,6 +46,7 @@ const formData: {
 
 const usernameDuplicated = ref(false)
 const formRules = {
+  userRoleID: ["required"],
   firstname: ["string"],
   lastname: ["string"],
   username:  ["required", "string" , (value : string)=>{
@@ -92,10 +93,16 @@ const submit = async () => {
     return true;
   }
 
+  const oldImageURL = formData.image
+  
   let image : any
   image = await handleImageUpload() 
+  if(image){
+    formData.image = image[0]
 
-  if(image) formData.image = image[0]
+    //delete old profile from server storage
+    await useFetch('/api/deleteFile', { method : 'POST' , body : JSON.stringify({imgURL : oldImageURL})})
+  }
 
   console.log(formData.image)
   const { error } = await useFetch("/api/user/upsert", {
@@ -156,7 +163,7 @@ const handleImageUpload = async () => {
       body: fd,
     });
 
-    // console.log("data from backend is ", data.value);
+    // console.log("data from backend is ", data.value);   
     return data.value
   } catch (error) {
     console.log(error);
@@ -195,9 +202,7 @@ const checkData = async ()=>{
       setTimeout(()=>{
          formData.username = formData.username.slice(0, -1);
       },1)
-
-      //check username after stop type for 0.5sec
-    
+      //check username after stop type for 0.5sec    
   },500)
 }
 
@@ -208,8 +213,7 @@ if (edit) {
   userProfile.value = await useFetch('/api/user/checkUsername', { method : 'post', 
     body : JSON.stringify({
       id : edit
-  })})  
-
+  })}) 
   formData.id = userProfile.value?.data?.id
   formData.firstname = userProfile.value?.data?.firstname
   formData.lastname = userProfile.value?.data?.lastname
@@ -221,7 +225,6 @@ if (edit) {
   formData.userOrgID = userProfile.value?.data?.userOrgID
   formData.status = userProfile.value?.data?.status
 }
-
 </script>
 
 <template>
@@ -305,7 +308,7 @@ if (edit) {
         <div class="col-span-12 lg:col-span-6">
           <TwSelect
             label="សិទ្ធិអ្នកប្រើប្រាស់"
-            name="role"
+            name="userRoleID"            
             v-model="formData.userRoleID"
             :items="roleDataFormat"
             placeholder="Choose select"

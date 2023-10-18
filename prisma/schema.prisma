@@ -39,7 +39,9 @@ model User {
   password   String
   image      String?
   status     Boolean @default(true)
-  userRoleID String?
+
+  userRoleID String? 
+  Role       Role? @relation(fields: [userRoleID], references: [id])
   userOrgID  String?
 }
 
@@ -47,6 +49,7 @@ model Role {
   id          String  @id @default(cuid())
   name        String  @unique
   description String?
+  users       User[]
 }
 
 model Resources {

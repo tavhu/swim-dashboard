@@ -10,3 +10,12 @@
 @tailwind components;
 @tailwind utilities;
 
+/* body{
+    @apply  font-[battambang]
+} */
+.title {
+    @apply font-[battambang]
+}
+.description {
+    @apply font-[battambang]
+}

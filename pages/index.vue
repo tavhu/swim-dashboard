@@ -11,6 +11,12 @@ const { data: token } = await useFetch("/api/token", { headers });
 useHead({
   title: "Dashboard",
 });
+
+
+const rr = await useFetch('/api/deleteFile')
+
+
+
 </script>
 
 <template>
@@ -21,6 +27,7 @@ useHead({
     </pre>
     <pre>
       <!-- {{ status }} -->
+      {{ rr.data }}
     </pre>
 
     <hr class="my-2 border dark:border-gray-700" />

@@ -13,14 +13,13 @@ export default eventHandler(async event => {
     const FilePath = []
     const { files } = await readFiles(event, {})
 
-
     for (const key in files) {
       if (Object.hasOwn(files, key)) {
         const data = files[key][0];      
         let newPath = `${path.join("public", "uploads", data.newFilename)}.${ data.mimetype.split('/')[1] }`;        
         // console.log(data.filepath,newPath)
         try {
-          fs.copyFileSync(data.filepath, newPath);     
+          fs.copyFileSync(data.filepath, newPath);              
           FilePath.push(newPath.replace('public/','').replace('public\\',''))
         }catch(e){
           console.log(e)

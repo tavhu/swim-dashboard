@@ -8,7 +8,6 @@ import {
 } from "vue3-tailwind";
 
 const toast = useToast();
-
 useHead({
   title: "បញ្ចីគណនី",
 });
@@ -24,19 +23,19 @@ const data = ref({
     {
       label: "រូបថត",
       field: "Profile",
-      width: "350px",
+      width: "150px",
       sortable: false,
     },
     {
       label: "ឈ្មោះពេញ",
       field: "category",
-      width: "350px",
+      width: "450px",
       sortable: false,
     },
     {
       label: "ឈ្មោះគណនី",
       field: "username",
-      width: "200px",
+      width: "300px",
       sortable: false,
     },
      {
@@ -139,7 +138,7 @@ const deleteRecord = async (id: string) => {
     }),
   })
 
-  if (error.value?.statusCode) {
+  if (error.value?.statusCode){
     toast.error({
       message: "មិនឈោកជ័យ",
     });
@@ -151,13 +150,6 @@ const deleteRecord = async (id: string) => {
   //update change limit ref in order to refetch data
   data.value.limit === 10 ? (data.value.limit = 5) : (data.value.limit = 10);
 };
-
-const PopUPPermission = ref();
-const refClickRoleID = ref("");
-const AddPermission = (clickPermissionID: string) => {
-  PopUPPermission.value.openOffCanvas();
-  refClickRoleID.value = clickPermissionID;
-}
 </script>
 
 <template>
@@ -181,37 +173,43 @@ const AddPermission = (clickPermissionID: string) => {
         v-model:offset="data.offset"
         v-model:sort-by="data.sortBy"
         v-model:sort-type="data.sortType"
-        :column="data.column"
-        :setting="data.setting"
-        @on-sort-change="sortClick"
+        :column="data.column"     
       >
-        <template #row="{index, column, data }">
+        <template #row="{ index, column, data }">
           <template v-if="column.field === 'number'">
-             {{ index }}
+            <div class="flex justify-center">       
+                  {{ index }}           
+            </div> 
           </template>
           <template v-if="column.field === 'Profile'">
             <div class="flex justify-center">
-              <img :src="config.public.origin+ '/' + data.image" alt="" class="w-20 h-20 rounded-full border border-[#1d152a7a]">
+              <img :src="config.public.origin + '/' + data.image" alt="" class="w-12 h-12 rounded-full border border-[#1d152a7a]">
             </div>
           </template>
           <template v-if="column.field === 'category'">
             <div class="flex justify-center">
-              {{ data.lastname }} {{ data.firstname }} 
+              {{ data.lastname }} {{ data.firstname }}
             </div>
           </template>
-            <template v-if="column.field === 'status'">
-              <div class="flex justify-center">
-                <span v-if="data.status" class="text-blue-700 dark:text-white">  ដំណើការ </span>
-                <span v-else class="text-red-700 "> បិទដំណើការ </span>
-              </div>
-            </template>
-          <template v-if="column.field === 'description'">
-            {{ data.username }}
+          <template v-if="column.field === 'username'">
+            <div class="flex justify-center">
+              {{ data.username }}
+            </div>
+          </template>
+          <template v-if="column.field === 'status'">
+            <div class="flex justify-center">
+              <span v-if="data.status" class="text-blue-700 dark:text-white">  ដំណើការ </span>
+              <span v-else class="text-red-700"> បិទដំណើការ </span>
+            </div>
+          </template>
+          <template v-if="column.field === 'permission'">
+            <div class="flex justify-center">
+              {{ data.Role.name }}
+            </div>         
           </template>
           <template v-if="column.field === 'action'">
             <div class="flex gap-2 justify-center">
-              <NuxtLink   
-                :disabled="true"       
+              <NuxtLink                     
                 :to="config.public.origin + '/register?id='  + data.id"
               >               
                 <TwButton variant="success"  class="border">
