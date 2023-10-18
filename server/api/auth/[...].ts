@@ -46,10 +46,14 @@ export default NuxtAuthHandler({
 
         if (user) { 
           token.id = user.id
-          token.image = user.image
+          token.image = me ? me.image : user.image
           token.status = user.status
           token.username = user.username
           token.fullname = user.firstname + user.lastname        
+        }
+        
+        if(me.image){
+          token.image = me.image
         }
         // if(!user.status){
         //   return false

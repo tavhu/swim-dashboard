@@ -170,10 +170,11 @@ const deleteRecord = async (id: string) => {
         v-bind:fetch-data="fetchData"
         v-model:search="data.search"
         v-model:limit="data.limit"
-        v-model:offset="data.offset"
+        v-model:offset="data.offset"       
         v-model:sort-by="data.sortBy"
         v-model:sort-type="data.sortType"
         :column="data.column"     
+        @on-sort-change="sortClick"
       >
         <template #row="{ index, column, data }">
           <template v-if="column.field === 'number'">
