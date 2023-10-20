@@ -2,7 +2,7 @@ import { getServerSession } from "#auth";
 
 
 
-export default eventHandler(async  event => {
+export default eventHandler(async  (event) => {
     const session = await getServerSession(event)
     const body =  await readBody(event)
     // const body =  getQuery(event)
@@ -15,6 +15,7 @@ export default eventHandler(async  event => {
       
     try {
     //    const totalCount =  await  event.context.prisma.resources.count()
+        
        const data = await event.context.prisma.resources.findMany()
         // console.log(data)
         setResponseStatus(event, 201)    

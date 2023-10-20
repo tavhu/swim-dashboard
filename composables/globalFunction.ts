@@ -17,7 +17,7 @@ export const userPermission = async()=>{
 
   // console.log(data.value?.sub)
   const { data: readRoleToResource } = await useFetch(
-    "/api/role/getRoleToResource",
+    "/api/role/readRoleandResource",
     {
       method: "POST",
       body: JSON.stringify({

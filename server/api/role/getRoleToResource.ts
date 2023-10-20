@@ -1,6 +1,6 @@
 import { getServerSession } from "#auth";
 
-export default eventHandler(async  event => {
+export default eventHandler(async  event  => {
     const session = await getServerSession(event)
     const body =  await readBody(event)
     // const body =  getQuery(event)
@@ -12,12 +12,14 @@ export default eventHandler(async  event => {
     }    
       
     try {
-
+        
        const data = await event.context.prisma.roleToResource.findMany({})
         // console.log(data)
+        //@ts-ignored
         setResponseStatus(event, 201)    
          return { data: data }
     }catch(e){  
+        //@ts-ignored
         setResponseStatus(event, 412)    
         return {
             error  : 'e',

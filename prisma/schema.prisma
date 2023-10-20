@@ -32,44 +32,45 @@ model Session {
 }
 
 model User {
-  id         String  @id @unique @default(cuid())
-  firstname  String?
-  lastname   String?
-  username   String  @unique
-  password   String
-  image      String?
-  status     Boolean @default(true)
+  id        String  @id @unique @default(cuid())
+  firstname String?
+  lastname  String?
+  username  String  @unique
+  password  String
+  image     String?
+  status    Boolean @default(true)
 
-  userRoleID String? 
-  Role       Role? @relation(fields: [userRoleID], references: [id])
+  userRoleID String?
+  Role       Role?   @relation(fields: [userRoleID], references: [id])
   userOrgID  String?
 }
 
 model Role {
-  id          String  @id @default(cuid())
-  name        String  @unique
+  id          String           @id @default(cuid())
+  name        String           @unique
   description String?
   users       User[]
+  resource    RoleToResource[]
 }
 
 model Resources {
-  id   String @id @default(cuid())
-  name String @unique
+  id          String           @id @default(cuid())
+  name        String           @unique
   frontEndURL String?
-  backEndURL String?
-  Role      RoleToResource[]
+  backEndURL  String?
+  Role        RoleToResource[]
 }
 
 model RoleToResource {
   roleID     String
+  role       Role      @relation(fields: [roleID], references: [id])
   resourceID String
   Resource   Resources @relation(fields: [resourceID], references: [id])
-  granted    Boolean @default(false)
-  read       Boolean @default(false)
+  granted    Boolean   @default(false)
+  read       Boolean   @default(false)
 
   @@id([roleID, resourceID])
 }
-
 
 model VerificationToken {
   identifier String
