@@ -44,8 +44,10 @@ const config = useRuntimeConfig()
     </transition>
     <div class="h-14 flex items-center w-full justify-end px-4 md:px-10 gap-3">
       <div class="">
+        <ClientOnly>
         <!-- TODO: Add searchbar -->
         {{token?.fullname}}       
+        </ClientOnly>
       </div>
       <div class="">
         <TwDropdownMenu    align="right" width="48">
