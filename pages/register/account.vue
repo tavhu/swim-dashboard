@@ -14,12 +14,12 @@ useHead({
 
 const data = ref({
   column: [
-  {
-      label: "ល.រ",
-      field: "number",
-      width: "50px",
-      sortable: false,
-    },
+  // {
+  //     label: "ល.រ",
+  //     field: "number",
+  //     width: "50px",
+  //     sortable: false,
+  //   },
     {
       label: "រូបថត",
       field: "Profile",
@@ -177,11 +177,11 @@ const deleteRecord = async (id: string) => {
         @on-sort-change="sortClick"
       >
         <template #row="{ index, column, data }">
-          <template v-if="column.field === 'number'">
+          <!-- <template v-if="column.field === 'number'">
             <div class="flex justify-center">       
                   {{ index }}           
             </div> 
-          </template>
+          </template> -->
           <template v-if="column.field === 'Profile'">
             <div class="flex justify-center">
               <img :src="config.public.origin + '/' + data.image" alt="" class="w-12 h-12 rounded-full border border-[#1d152a7a]">

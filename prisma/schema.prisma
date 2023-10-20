@@ -55,15 +55,21 @@ model Role {
 model Resources {
   id   String @id @default(cuid())
   name String @unique
+  frontEndURL String?
+  backEndURL String?
+  Role      RoleToResource[]
 }
 
 model RoleToResource {
   roleID     String
   resourceID String
-  granted    Boolean
+  Resource   Resources @relation(fields: [resourceID], references: [id])
+  granted    Boolean @default(false)
+  read       Boolean @default(false)
 
   @@id([roleID, resourceID])
 }
+
 
 model VerificationToken {
   identifier String

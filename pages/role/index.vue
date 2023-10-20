@@ -288,7 +288,7 @@ const AddPermission = (clickPermissionID: string) => {
 const headers = useRequestHeaders(["cookie"]) as HeadersInit;
 const { data: token } = await useFetch("/api/token", { headers });
 
-const grantedResourceToRole = async (resourceID: string, granted: boolean) => {
+const grantedResourceToRole = async (resourceID: string, granted: boolean, read: boolean) => {
   // console.log refClickRoleID.value, resourceID);
 
   const { error } = await useFetch("/api/role/updateRoleToResource", {
@@ -297,6 +297,7 @@ const grantedResourceToRole = async (resourceID: string, granted: boolean) => {
       roleID: refClickRoleID.value,
       resourceID: resourceID,
       granted: granted,      
+      read : read
     }),
   });
 
@@ -323,7 +324,6 @@ const { data: readRoleToResource , refresh } = await useFetch(
     }),
   }
 );
-
 
 </script>
 
@@ -518,8 +518,15 @@ const { data: readRoleToResource , refresh } = await useFetch(
                     scope="col"
                     class="px-6 py-3 text-sm md:text-md lg:text-lg text-center"
                   >
+                    បានត្រឹមមើល
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-6 py-3 text-sm md:text-md lg:text-lg text-center"
+                  >
                     មិនអនុញ្ញាត
                   </th>
+
                 </tr>
               </thead>
               <tbody>
@@ -544,14 +551,19 @@ const { data: readRoleToResource , refresh } = await useFetch(
                       type="radio"
                       value=""
                       :name="'bordered-checkbox' + item?.id"
-                      @click="grantedResourceToRole(item?.id, true)"
+                      @click="grantedResourceToRole(item?.id, true, true)"
                       :checked="
                        //@ts-ignore
                         readRoleToResource?.data?.find(
                           (e : any) =>
                             e.resourceID == item?.id &&
+                            refClickRoleID == e.roleID     
+                            //@ts-ignore                        
+                        )?.granted && readRoleToResource?.data?.find(
+                          (e : any) =>
+                            e.resourceID == item?.id &&
                             refClickRoleID == e.roleID                             
-                        )?.granted
+                        )?.read
                       "
                       class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                     />
@@ -562,14 +574,42 @@ const { data: readRoleToResource , refresh } = await useFetch(
                       type="radio"
                       value=""
                       :name="'bordered-checkbox' + item?.id"
-                      @click="grantedResourceToRole(item?.id, false)"
+                      @click="grantedResourceToRole(item?.id, false,true)"
                       :checked="
                       //@ts-ignore
                         !readRoleToResource?.data?.find(
                           (e : any) =>
                             e.resourceID == item?.id &&
+                            refClickRoleID == e.roleID          
+                            //@ts-ignore              
+                        )?.granted &&  readRoleToResource?.data?.find(
+                          (e : any) =>
+                            e.resourceID == item?.id &&
                             refClickRoleID == e.roleID                        
-                        )?.granted
+                        )?.read
+                      "
+                      class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                    />
+                  </td>
+                  <td class="px-6 py-4 text-center">
+                    <input
+                      id="bordered-checkbox-1"
+                      type="radio"
+                      value=""
+                      :name="'bordered-checkbox' + item?.id"
+                      @click="grantedResourceToRole(item?.id, false,false)"
+                      :checked="
+                      //@ts-ignore
+                        ! readRoleToResource?.data?.find(
+                          (e : any) =>
+                            e.resourceID == item?.id &&
+                            refClickRoleID == e.roleID          
+                             //@ts-ignore               
+                        )?.granted &&  ! readRoleToResource?.data?.find(
+                          (e : any) =>
+                            e.resourceID == item?.id &&
+                            refClickRoleID == e.roleID                        
+                        )?.read
                       "
                       class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                     />

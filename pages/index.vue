@@ -16,7 +16,6 @@ useHead({
 const rr = await useFetch('/api/deleteFile')
 
 
-
 </script>
 
 <template>

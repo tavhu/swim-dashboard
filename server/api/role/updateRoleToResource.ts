@@ -18,13 +18,15 @@ export default eventHandler(async  event => {
                     roleID : body?.roleID
                   }
             },
-            update :{
-                granted : body?.granted
+            update : {
+                granted : body?.granted,
+                read : body?.read
             },
-            create :{                
+            create : {                
                 roleID : body?.roleID,
                 resourceID : body?.resourceID,
                 granted : body?.granted ,
+                read : body?.read
             }
         })
 
