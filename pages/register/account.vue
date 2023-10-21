@@ -2,10 +2,12 @@
 import {
   TwButton, 
   useToast,
-  DatatableColumn,
-  DatatableData,
+  type DatatableColumn,
+  type DatatableData,
   TwDatatableServer,  
 } from "vue3-tailwind";
+
+const readOnly = checkIfPageReadOnly()
 
 const toast = useToast();
 useHead({
@@ -129,6 +131,7 @@ const sortClick = (event: any) => {
 };
 
 const deleteRecord = async (id: string) => {
+  if(readOnly) return;
   if (!(await confirmDialog())) return;
 
   const { error } = await useFetch("/api/user/delete", {
@@ -158,8 +161,8 @@ const deleteRecord = async (id: string) => {
         <div class="flex justify-between">
             <h2 class="text-2xl font-[Moul]">បញ្ចីតួនាទី</h2>
             <h2 class="text-xl font-[Moul]">
-                <NuxtLink :to="config.public.origin + '/register'">
-                    <TwButton variant="success">
+                <NuxtLink :to="config.public.origin + '/register'" :disabled="readOnly" >
+                    <TwButton variant="success"  :disabled="readOnly">
                         បង្កើតតួនាទី
                     </TwButton>
                 </NuxtLink>        
@@ -211,13 +214,13 @@ const deleteRecord = async (id: string) => {
           <template v-if="column.field === 'action'">
             <div class="flex gap-2 justify-center">
               <NuxtLink                     
-                :to="config.public.origin + '/register?id='  + data.id"
+                :to="config.public.origin + '/register?id='  + data.id"  :disabled="readOnly"
               >               
-                <TwButton variant="success"  class="border">
+                <TwButton variant="success"  class="border"  :disabled="readOnly">
                       កែសម្រួល
                 </TwButton>
               </NuxtLink>
-              <TwButton variant="danger" @click="deleteRecord(data.id)">
+              <TwButton variant="danger" @click="deleteRecord(data.id)"  :disabled="readOnly">
                 លុបចេញ
               </TwButton>
             </div>

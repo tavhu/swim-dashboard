@@ -8,13 +8,14 @@ import {
   TwToggle,
   useToast,
   useForm,
-  DropdownItem,
+  type DropdownItem,
 } from "vue3-tailwind";
 
 useHead({
   title: "បង្កើតគណនី",
 });
 
+const readOnly = checkIfPageReadOnly()
 const route = useRoute()
 const edit = route?.query?.id
 
@@ -79,6 +80,7 @@ const form = computed(() => composableForm.getForm(formName));
 const validator = computed(() => form.value.validator);
 
 const submit = async () => {
+  if(readOnly) return;
   if (!(await confirmDialog())) return;
   validator.value.clearErrors();
   await validator.value.validate();
@@ -133,6 +135,7 @@ const submit = async () => {
 };
 
 const clear = () => {  
+    if(readOnly) return;
     formData.firstname = null
     formData.conPassword = null
     formData.lastname = null
@@ -150,6 +153,7 @@ const clear = () => {
 
 const files = ref();
 const handleImageUpload = async () => {  
+  if(readOnly) return;
   if (!files.value || files.value?.length == 0) return false;
   try {
     const fd = new FormData();
@@ -176,6 +180,7 @@ const roleDataFormat : DropdownItem [] = new Array({ label : '', value: ''})
 roleDataFormat.pop()
 //@ts-ignored
 roleData.value?.data?.forEach((ele : any) => {
+  if(readOnly) return;
   roleDataFormat.push(
     {
       label: ele?.name,
@@ -187,6 +192,7 @@ roleData.value?.data?.forEach((ele : any) => {
 let timemer  = 0
 
 const checkData = async ()=>{     
+  if(readOnly) return;
   clearTimeout(timemer)
    timemer = window.setTimeout(async ()=>{
       const {data : res } = await useFetch('/api/user/checkUsername',{method : 'POST',
@@ -307,6 +313,7 @@ if (edit) {
         </div>
         <div class="col-span-12 lg:col-span-6">
           <TwSelect
+            :disabled="readOnly"
             label="សិទ្ធិអ្នកប្រើប្រាស់"
             name="userRoleID"            
             v-model="formData.userRoleID"
@@ -331,13 +338,14 @@ if (edit) {
             label="Status"
             name="status"
             id="toggle"
+            :disabled="readOnly"
             v-model="formData.status"
           />
           <CustomErrorMessage name="status" />
         </div>
         <div class="col-span-12 flex justify-end gap-1">
           <TwButton
-            ripple
+           :disabled="readOnly"
             variant="secondary"
             type="button"
             class="px-4 dark:text-gray-200 dark:!border-gray-800 dark:border"
@@ -345,7 +353,7 @@ if (edit) {
           >
             Reset
           </TwButton>
-          <TwButton variant="primary" class="px-4"> Submit </TwButton>
+          <TwButton variant="primary" class="px-4" :disabled="readOnly"> Submit </TwButton>
         </div>
       </TwForm>
     </div>

@@ -2,20 +2,25 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     
     
     // const result = await useFetch('')
-    const data = await userPermission()
+    const data  = await userPermission()
+    
+    useState('userPermission',  ()=>  data.readRoleToResource.value?.data?.Role?.resource)
 
     // console.log(to.fullPath)
     let test = false
     //@ts-ignore
     data.readRoleToResource.value?.data?.Role?.resource?.forEach((element : any) => {
       //  console.log(element)
-     if(element?.Resource?.frontEndURL === to.fullPath && ! element?.granted  && ! element?.read){
+     if(element?.Resource?.frontEndURL === to.name && ! element?.granted  && ! element?.read){
       //  console.log(element)
         test = true
      }
     });
+
     if( test ){
-      return navigateTo('/')
+    
+      return abortNavigation()
+      // return navigateTo('/')
     }
     
     // if (to.query.id === '1') {         

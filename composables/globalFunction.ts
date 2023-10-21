@@ -16,7 +16,7 @@ export const userPermission = async()=>{
   const { data } = useAuth();
 
   // console.log(data.value?.sub)
-  const { data: readRoleToResource } = await useFetch(
+  const { data: readRoleToResource } = await <any>useFetch(
     "/api/role/readRoleandResource",
     {
       method: "POST",
@@ -25,7 +25,24 @@ export const userPermission = async()=>{
         userID: data.value?.sub
       }),
     }
-  )
-
+  )  
   return { readRoleToResource : readRoleToResource }
 }
+
+export const checkIfPageReadOnly  = () =>{
+  const route = useRoute()
+  // console.log('page readonly', route.name)
+  const permission = <any>useState('userPermission')
+  let test = false 
+  if(permission.value){
+    permission.value.find((element : any) => {
+      // console.log(element?.Resource?.frontEndURL)
+       if(element?.Resource?.frontEndURL === route.name && !element.granted && element?.read){
+        test = true      
+        console.log(route.name)       
+       }
+    });
+  }
+  return test  
+}
+

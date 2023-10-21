@@ -6,14 +6,14 @@ import {
   TwForm,
   TwTextarea,
   useToast,
-  DatatableColumn,
-  DatatableData,
+  type DatatableColumn,
+  type DatatableData,
   TwDatatableServer,
   TwOffcanvas,
 } from "vue3-tailwind";
 
 // import { useResource } from '~~/store/resource'
-
+const readOnly = checkIfPageReadOnly()
 // const resource = useResource()
 
 const { data: res } = await useFetch("/api/role/readResource", {
@@ -42,6 +42,7 @@ const form = computed(() => composableForm.getForm(formName));
 const validator = computed(() => form.value.validator);
 
 async function submit() {
+  if(readOnly) return;
   if (!(await confirmDialog())) return;
   validator.value.clearErrors();
   await validator.value.validate();
@@ -102,6 +103,7 @@ const formEdit = computed(() => composableForm.getForm(formNameEdit));
 const validatorEdit = computed(() => formEdit.value.validator);
 
 async function submitEdit() {
+  if(readOnly) return;
   if (!(await confirmDialog())) return;
   validatorEdit.value.clearErrors();
   await validatorEdit.value.validate();
@@ -243,6 +245,7 @@ const sortClick = (event: any) => {
 };
 
 const deleteRecord = async (id: string) => {
+  if(readOnly) return;
   if (!(await confirmDialog())) return;
 
   const { error } = await useFetch("/api/role/delete", {
@@ -268,6 +271,7 @@ const deleteRecord = async (id: string) => {
 const openisTrue = ref();
 const editID = ref("");
 const editRecord = async (id: string) => {
+  if(readOnly) return;
   openisTrue.value.openOffCanvas();
   editID.value = id;
   const datRes = globalData.value.data.find((element: any) => element.id == id);
@@ -279,6 +283,7 @@ const editRecord = async (id: string) => {
 const PopUPPermission = ref();
 const refClickRoleID = ref("");
 const AddPermission = (clickPermissionID: string) => {
+  if(readOnly) return;
   PopUPPermission.value.openOffCanvas();
   refClickRoleID.value = clickPermissionID;
   refresh();
@@ -332,7 +337,7 @@ const { data: readRoleToResource , refresh } = await useFetch(
     <h2 class="text-2xl font-[Moul]">តួនាទី</h2>
     <hr class="my-2 border dark:border-gray-700" />
     <div>
-      <TwForm
+      <TwForm      
         :name="formName"
         class="grid grid-cols-12 gap-2 bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded-lg p-2 shadow"
         :class="{
@@ -368,6 +373,7 @@ const { data: readRoleToResource , refresh } = await useFetch(
         <div class="col-span-12 flex justify-end gap-1">
           <TwButton
             :ripple="true"
+            :disabled ="readOnly"
             variant="secondary"
             type="button"
             class="px-4 dark:text-gray-200 dark:!border-gray-800 dark:border"
@@ -375,7 +381,7 @@ const { data: readRoleToResource , refresh } = await useFetch(
           >
             កំណត់ឡើងវិញ
           </TwButton>
-          <TwButton variant="primary" class="px-4"> រក្សាទុក </TwButton>
+          <TwButton  :disabled ="readOnly" variant="primary" class="px-4"   > រក្សាទុក </TwButton>
         </div>
       </TwForm>
     </div>
@@ -404,6 +410,7 @@ const { data: readRoleToResource , refresh } = await useFetch(
           <template v-if="column.field === 'action'">
             <div class="flex gap-2 justify-center">
               <TwButton
+                :disabled ="readOnly"
                 :ripple="true"
                 variant="success"
                 @click="AddPermission(data.id)"
@@ -412,13 +419,16 @@ const { data: readRoleToResource , refresh } = await useFetch(
                 ការអនុញ្ញាត
               </TwButton>
               <TwButton
+              :disabled ="readOnly"
                 variant="primary"
                 class="border border-gray-900"
                 @click="editRecord(data.id)"
               >
                 កែសម្រួល
               </TwButton>
-              <TwButton variant="danger" @click="deleteRecord(data.id)">
+              <TwButton
+              :disabled ="readOnly"
+               variant="danger" @click="deleteRecord(data.id)">
                 លុបចេញ
               </TwButton>
             </div>
