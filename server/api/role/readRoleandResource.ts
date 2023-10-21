@@ -6,11 +6,12 @@ export default eventHandler(async  (event) => {
     const body =  await readBody(event)
     // const body =  getQuery(event)
 
-    // console.log(body)    
+    // console.log('session ', session)    
     
     if(!session){
         return { status: 'unauthenticated'}
     }    
+    
     try {
     //    const totalCount =  await  event.context.prisma.resources.count()
        const userID = body?.userID
@@ -32,15 +33,7 @@ export default eventHandler(async  (event) => {
             }
         }
        })
-    //    const data = await event.context.prisma.resources.findMany({
-    //     where :{
-    //         id : role?.userRoleID ? role?.userRoleID : '' 
-    //     },
-    //     include:{
-    //         Role : true
-    //     }
-    //    })
-        console.log(data)
+        // console.log(data)
         //@ts-ignore
         setResponseStatus(event, 201)    
          return  { data } 

@@ -11,6 +11,8 @@ import {
   type DropdownItem,
 } from "vue3-tailwind";
 
+const { data : userDataAuth } = useAuth() 
+
 useHead({
   title: "បង្កើតគណនី",
 });
@@ -175,7 +177,10 @@ const handleImageUpload = async () => {
 };
 
 
-const {data : roleData  } = await useFetch("/api/role/get",{ method : 'get'})
+const {data : roleData  } = await useFetch("/api/role/get",{ method : 'get' , query : {
+  //@ts-ignore
+  userID : userDataAuth.value?.sub }
+})
 const roleDataFormat : DropdownItem [] = new Array({ label : '', value: ''})
 roleDataFormat.pop()
 //@ts-ignored
@@ -192,7 +197,6 @@ roleData.value?.data?.forEach((ele : any) => {
 let timemer  = 0
 
 const checkData = async ()=>{     
-  if(readOnly) return;
   clearTimeout(timemer)
    timemer = window.setTimeout(async ()=>{
       const {data : res } = await useFetch('/api/user/checkUsername',{method : 'POST',
