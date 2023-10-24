@@ -40,7 +40,7 @@ const permission = <any>useState('userPermission')
   <li class="my-2" v-else-if="item.submenu.length === 0">
     <div :data-tooltip-show="type === 'md'" data-tooltip-pos="right" :aria-label="item.name">
       <NuxtLink :to="item.url"  v-if=" 
-        permission?.find((element : any ) => { return element?.Resource?.frontEndURL == item.url?.replace('/','').replaceAll('/','-') && element?.granted || (element?.Resource?.frontEndURL == item.url?.replace('/','').replaceAll('/','-') && element?.read ) })
+        permission?.find((element : any ) => { return element?.Resource?.frontEndURL == item.url?.replace('/','').replaceAll('/','-') && element?.granted || (element?.Resource?.frontEndURL == item.url?.replace('/','').replaceAll('/','-') && element?.read )||  item.url === '/'  })
         "
         class="flex md:justify-center lg:justify-start duration-300 items-center gap-3 cursor-pointer px-5 py-3 md:hover:bg-gray-900 md:hover:bg-opacity-40 border-transparent"
         :class="{
@@ -81,7 +81,7 @@ const permission = <any>useState('userPermission')
   </li>
 </template>
 
-<style scoped>
+<style>
 .expand-enter-active,
 .expand-leave-active {
   transition: all .4s ease-in-out;

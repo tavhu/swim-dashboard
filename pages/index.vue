@@ -20,13 +20,14 @@ const rr = await useFetch('/api/deleteFile')
 
 <template>
   <div>
+    <NuxtLoadingIndicator />
     <h1 class="text-3xl font-bold">Dashboard</h1>
-    <pre>
+    <!-- <pre>
         {{ token }}
-    </pre>
+    </pre> -->
     <pre>
       <!-- {{ status }} -->
-      {{ rr.data }}
+      <!-- {{ rr.data }} -->
     </pre>
 
     <hr class="my-2 border dark:border-gray-700" />

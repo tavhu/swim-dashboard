@@ -185,7 +185,7 @@ roleData.value?.data?.forEach((ele : any) => {
             <h2 class="text-2xl font-[Moul]">បញ្ចីតួនាទី</h2>
             <h2 class="text-xl font-[Moul]">
                 <NuxtLink :to="config.public.origin + '/register'" :disabled="readOnly" >
-                    <TwButton variant="success"  :disabled="readOnly">
+                    <TwButton  variant="success"  :disabled="readOnly">
                         បង្កើតតួនាទី
                     </TwButton>
                 </NuxtLink>        

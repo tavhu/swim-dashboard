@@ -4,32 +4,27 @@ import { useSidebarStore } from "~~/store/sidebar";
 
 const sidebarStore = useSidebarStore();
 const animationOpenClose = useAnimationOpenClose();
-const { signOut, status, data,  } = useAuth()
-
+const { signOut } = useAuth()
 
 const headers = useRequestHeaders(["cookie"]) as HeadersInit;
 const { data: token } = await useFetch("/api/token", { headers }); 
-
 const config = useRuntimeConfig()
 
 // const logout = () => {
 //   router.push("/login");
 // };
 
-
 </script>
 <template>
   <header
     class="md:flex w-full text-[#00c16a] border-spacing-1 border-t-0 shadow-xl border-[#343434] dark:bg-gray-900 bg-white px-2 md:sticky md:top-0 z-20">
     <div class="h-14 flex justify-between md:justify-center items-center w-full md:w-52 px-4">
-
       <div class="font-bold">
         <NuxtLink to="/" class="flex items-center align-middle ">
           <img src="/icon.png" alt="" class="w-10 h-10 rounded-full  ">
           <span class="dark:text-white text-black"> SWIM</span> Dasboard 
         </NuxtLink>
       </div>
-
       <button class="block md:hidden float-right" @click="sidebarStore.mobileOpen = !sidebarStore.mobileOpen">
         <div class="-rotate-90">
           <TwFeather type="bar-chart-2"></TwFeather>
@@ -46,18 +41,22 @@ const config = useRuntimeConfig()
       <div class="">
         <ClientOnly>
         <!-- TODO: Add searchbar -->
-        {{token?.fullname}}       
+        {{ //@ts-ignore
+        token?.fullname}}       
         </ClientOnly>
       </div>
       <div class="">
         <TwDropdownMenu    align="right" width="48">
           <template #trigger>
             <button>
-              <img class="w-10 h-10 rounded-full border border-[#1d152a7a]" :src="token?.image ?  config.public.origin + '/' + token?.image : '/images/profile1.jpg'" alt="" />
+              <img class="w-10 h-10 rounded-full border border-[#1d152a7a]" :src=" //@ts-ignore
+                token?.image ?  config.public.origin + '/' + token?.image : '/images/profile1.jpg'" alt="" />
             </button>
           </template>
           <template #content>            
-            <NuxtLink  :to="`/register?id=` +  token?.sub" >
+            <NuxtLink  :to="`/register?id=` + 
+             //@ts-ignore
+             token?.sub" >
               <button
                 class="block w-full px-4 py-2 text-sm leading-5 text-gray-700 dark:text-gray-200 text-left hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-800 transition">
                 <div class="flex gap-2 items-center">
