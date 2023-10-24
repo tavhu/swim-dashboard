@@ -51,8 +51,12 @@ export default eventHandler(async  event => {
        let tem  = data     
        //get all roleandresource that was not granted permission and not allow to read
        //Resource.frontEndURL contain role id
+       console.log('1233333')
        tem = data.filter(item =>{                
-        let superAdmin =  roleResource.find(ele => ele.Resource.frontEndURL === item.id && !ele.granted && !ele.read)
+        let superAdmin =  roleResource.find((ele) => {
+            console.log(ele)
+            return (ele.Resource.frontEndURL === item.id && !ele.granted && !ele.read) || (ele.Resource.frontEndURL === item.id && !ele.granted && ele.read == true) 
+        })
         return (item.id === superAdmin?.Resource.frontEndURL && superAdmin)
        })
        
@@ -61,7 +65,7 @@ export default eventHandler(async  event => {
        temData = data.filter(ss =>{
         return ! tem.find(element =>{
           return ss.id ==  element.id
-        })        
+        })       
        })
 
         //@ts-ignore
