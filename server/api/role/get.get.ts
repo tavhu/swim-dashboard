@@ -1,13 +1,9 @@
 import { getServerSession } from "#auth";
 
-
-
 export default eventHandler(async  event => {
     const session = await getServerSession(event)
     // const body =  await readBody(event)
     const body =  getQuery(event)
-
-    console.log(body)    
     
     if(!session){
         return { 
@@ -31,47 +27,50 @@ export default eventHandler(async  event => {
                        
         })
 
-        // console.log('before Perm' , body?.userID)
         let userID : any = body?.userID
-        const Perm =  await event.context.prisma.user.findUnique({
+        const user =  await event.context.prisma.user.findUnique({
         where:{
             id : userID ? userID : ''
+        }      
+       })
+       
+       const roleResource = await event.context.prisma.roleToResource.findMany({
+        where :{
+            roleID : user?.userRoleID ? user?.userRoleID : '',      
+            granted : false,
+            read : false     
         },
-        select:{
-            Role : {
-                select :{
-                    name : true,
-                    id : true,
-                    resource : {
-                        select :{
-                            granted : true,
-                            read : true,
-                            Resource : true
-                        }
-                    }
-                }
-            }
+        select :{
+            granted : true,
+            read : true,
+            Resource : true,
+            role : true
         }
        })
 
-        console.log('permdata ' , Perm?.Role)
+       let tem  = data     
+       //get all roleandresource that was not granted permission and not allow to read
+       //Resource.frontEndURL contain role id
+       tem = data.filter(item =>{                
+        let superAdmin =  roleResource.find(ele => ele.Resource.frontEndURL === item.id && !ele.granted && !ele.read)
+        return (item.id === superAdmin?.Resource.frontEndURL && superAdmin)
+       })
        
-        Perm?.Role?.resource.forEach(element => {
-            data.filter(item =>{
-                console.log((item.id === element?.Resource.id &&  !element?.granted  && !element?.read), item.id, element?.Resource.id, element )
-            return  item.id === element?.Resource.id &&  !element?.granted  && !element?.read
-          })
-        //   console.log(data)
-        });
+       //filter out all role that was not allow
+       let temData = data
+       temData = data.filter(ss =>{
+        return ! tem.find(element =>{
+          return ss.id ==  element.id
+        })        
+       })
 
-        // console.log(data)
         //@ts-ignore
-        setResponseStatus(event, 201)    
-         return { data: data, total : totalCount , error :'',
+        setResponseStatus(event, 201)
+         return { data: body?.userID ? temData : data , total : totalCount , error :'',
         status : 'authenticated' }
-    }catch(e){  
+    }catch(e){
         //@ts-ignore
-        setResponseStatus(event, 412)    
+        setResponseStatus(event, 412)
         return {
             data: [], 
             total : 0,
@@ -80,5 +79,3 @@ export default eventHandler(async  event => {
         }
     }
 })
-
-

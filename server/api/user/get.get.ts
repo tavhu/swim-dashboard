@@ -27,6 +27,7 @@ export default eventHandler(async  event => {
             userRoleID : true,    
             Role :{
                 select : {
+                    id: true,
                     name: true
                 }
             }           

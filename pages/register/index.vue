@@ -5,6 +5,7 @@ import {
   TwFile,
   TwInput,
   TwSelect,
+  TwToast,
   TwToggle,
   useToast,
   useForm,
@@ -17,7 +18,7 @@ useHead({
   title: "បង្កើតគណនី",
 });
 
-const readOnly = checkIfPageReadOnly()
+let readOnly = checkIfPageReadOnly()
 const route = useRoute()
 const edit = route?.query?.id
 
@@ -196,6 +197,8 @@ roleData.value?.data?.forEach((ele : any) => {
 
 let timemer  = 0
 
+
+
 const checkData = async ()=>{     
   clearTimeout(timemer)
    timemer = window.setTimeout(async ()=>{
@@ -230,17 +233,32 @@ if (edit) {
   formData.username = userProfile.value?.data?.username
   formData.password = null
   formData.conPassword = null
-  formData.image = userProfile.value?.data?.image
-  formData.userRoleID = userProfile.value?.data?.userRoleID
+  formData.image = userProfile.value?.data?.image 
   formData.userOrgID = userProfile.value?.data?.userOrgID
   formData.status = userProfile.value?.data?.status
+  formData.userRoleID = userProfile.value?.data?.userRoleID
+
+
+  if(!roleDataFormat.find(item => item.value == userProfile.value?.data?.userRoleID) && edit ){
+    // console.log('should set to readonly')
+    readOnly = true
+  }
 }
+
 </script>
 
 <template>
   <div>        
-    <h2 class="text-2xl font-bold font-[Moul]"> {{ edit ?  `កែប្រែគណនី` : `បង្កើតគណនី`}} </h2> 
-    <hr class="my-2 border dark:border-gray-700" />
+    <h2 class="text-2xl font-bold font-[Moul]"> {{ edit ?  `កែប្រែគណនី` : `បង្កើតគណនី`}} </h2>   
+    <TwButton
+      variant="danger" 
+      class="font-[battambang]"      
+      v-if="readOnly"      
+      :disabled="true"
+      >
+       អ្ននគ្មានសិទ្ធកែប្រែ គណនីនេះទេ
+      </TwButton>
+    <hr class="my-2 border dark:border-gray-700" />    
     <div class="font-[Battambang]">
       <TwForm
         :name="formName"

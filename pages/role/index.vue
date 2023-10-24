@@ -278,7 +278,7 @@ const editRecord = async (id: string) => {
   formDataEdit.roleName = datRes.name;
   formDataEdit.roleDescription = datRes.description;
   return true;
-};
+}
 
 const PopUPPermission = ref();
 const refClickRoleID = ref("");
@@ -500,7 +500,7 @@ const { data: readRoleToResource , refresh } = await useFetch(
 
     <TwOffcanvas position="right" width="800px" ref="PopUPPermission">
       <template #headerTitle>
-        <span class="font-[Moul]"> ការអនុញ្ញាត </span></template
+        <span class="font-[Moul]"> ការអនុញ្ញាតរបស់ {{ globalData.data?.find((item : any)  => item.id == refClickRoleID)?.name }} </span></template
       >
       <div class="p-4 overflow-auto font-[battambang]">
         <div>

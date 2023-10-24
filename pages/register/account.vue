@@ -4,11 +4,12 @@ import {
   useToast,
   type DatatableColumn,
   type DatatableData,
+  type DropdownItem,
   TwDatatableServer,  
 } from "vue3-tailwind";
 
 const readOnly = checkIfPageReadOnly()
-
+const { data  : userDataAuth } = useAuth()
 const toast = useToast();
 useHead({
   title: "បញ្ចីគណនី",
@@ -153,6 +154,28 @@ const deleteRecord = async (id: string) => {
   //update change limit ref in order to refetch data
   data.value.limit === 10 ? (data.value.limit = 5) : (data.value.limit = 10);
 };
+
+const notGrated = ref(false)
+
+const {data : roleData  } = await useFetch("/api/role/get",{ method : 'get' , query : {
+  //@ts-ignore
+  userID : userDataAuth.value?.sub }
+})
+const roleDataFormat : DropdownItem [] = new Array({ label : '', value: ''})
+roleDataFormat.pop()
+//@ts-ignored
+roleData.value?.data?.forEach((ele : any) => {  
+  roleDataFormat.push(
+    {
+      label: ele?.name,
+      value: ele?.id
+    }
+  )
+});
+
+
+
+
 </script>
 
 <template>
@@ -208,7 +231,7 @@ const deleteRecord = async (id: string) => {
           </template>
           <template v-if="column.field === 'permission'">
             <div class="flex justify-center">
-              {{ data.Role.name }}
+              {{ data.Role.name }} 
             </div>         
           </template>
           <template v-if="column.field === 'action'">
@@ -220,7 +243,7 @@ const deleteRecord = async (id: string) => {
                       កែសម្រួល
                 </TwButton>
               </NuxtLink>
-              <TwButton variant="danger" @click="deleteRecord(data.id)"  :disabled="readOnly">
+              <TwButton variant="danger" @click="deleteRecord(data.id)"  :disabled="readOnly || !(roleDataFormat?.find(ii => ii.value == data.Role.id)?.value ? true : false ) ">
                 លុបចេញ
               </TwButton>
             </div>
