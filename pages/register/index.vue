@@ -5,7 +5,6 @@ import {
   TwFile,
   TwInput,
   TwSelect,
-  TwToast,
   TwToggle,
   useToast,
   useForm,
@@ -25,8 +24,7 @@ const edit = route?.query?.id
 const compute = computed(()=>route?.query?.id)
 
 watch(compute,async ()=>{
-    window.location.reload() 
-   
+    window.location.reload()    
 })
 
 const config = useRuntimeConfig()
@@ -197,8 +195,6 @@ roleData.value?.data?.forEach((ele : any) => {
 
 let timemer  = 0
 
-
-
 const checkData = async ()=>{     
   clearTimeout(timemer)
    timemer = window.setTimeout(async ()=>{
@@ -249,7 +245,7 @@ if (edit) {
 
 <template>
   <div>        
-    <h2 class="text-2xl font-bold font-[Moul]"> {{ edit ?  `កែប្រែគណនី` : `បង្កើតគណនី`}} </h2>   
+    <h2 class="text-2xl font-[Moul] text-primary"> {{ edit ?  `កែប្រែគណនី` : `បង្កើតគណនី`}} </h2>   
     <TwButton
       variant="danger" 
       class="font-[battambang]"      
@@ -366,16 +362,18 @@ if (edit) {
           <CustomErrorMessage name="status" />
         </div>
         <div class="col-span-12 flex justify-end gap-1">
-          <TwButton
+          <UButton
            :disabled="readOnly"
-            variant="secondary"
+            color="gray"
             type="button"
+            square
+            size="lg"
             class="px-4 dark:text-gray-200 dark:!border-gray-800 dark:border"
             @click="clear()"
           >
-            Reset
-          </TwButton>
-          <TwButton variant="primary" class="px-4" :disabled="readOnly"> Submit </TwButton>
+            កំណត់ឡើងវិញ
+          </UButton>
+          <UButton color="primary" type="submit"  size="lg" class="px-4" :disabled="readOnly"> រក្សាទុក </UButton>
         </div>
       </TwForm>
     </div>

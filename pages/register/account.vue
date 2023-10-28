@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import {
-  TwButton, 
+import {   
   useToast,
   type DatatableColumn,
   type DatatableData,
@@ -172,24 +171,17 @@ roleData.value?.data?.forEach((ele : any) => {
     }
   )
 });
-
-
-
-
 </script>
-
 <template>
   <div class="font-[Battambang]">   
     <div class="mt-5">
         <div class="flex justify-between">
-            <h2 class="text-2xl font-[Moul]">បញ្ចីតួនាទី</h2>
-            <h2 class="text-xl font-[Moul]">
+            <h2 class="text-2xl font-[Moul] text-primary">បញ្ចីតួនាទី</h2>         
                 <NuxtLink :to="config.public.origin + '/register'" :disabled="readOnly" >
-                    <TwButton  variant="success"  :disabled="readOnly">
-                        បង្កើតតួនាទី
-                    </TwButton>
-                </NuxtLink>        
-            </h2>
+                    <UButton  color="primary"  size="xl" :disabled="readOnly">
+                      <h2 class="text-xl font-[Moul]"> បង្កើតតួនាទី </h2>
+                    </UButton>
+                </NuxtLink>                   
         </div>
       <hr class="my-2 border dark:border-gray-700" />
       <TwDatatableServer
@@ -237,15 +229,14 @@ roleData.value?.data?.forEach((ele : any) => {
           <template v-if="column.field === 'action'">
             <div class="flex gap-2 justify-center">
               <NuxtLink                     
-                :to="config.public.origin + '/register?id='  + data.id"  :disabled="readOnly"
-              >               
-                <TwButton variant="success"  class="border"  :disabled="readOnly">
+                :to="config.public.origin + '/register?id='  + data.id"  :disabled="readOnly"               >               
+                <UButton color="primary"  icon="i-heroicons-pencil-square" class="border"  :disabled="readOnly">
                       កែសម្រួល
-                </TwButton>
+                </UButton>
               </NuxtLink>
-              <TwButton variant="danger" @click="deleteRecord(data.id)"  :disabled="readOnly || !(roleDataFormat?.find(ii => ii.value == data.Role.id)?.value ? true : false ) ">
+              <UButton color="red" icon="i-heroicons-trash" @click="deleteRecord(data.id)"  :disabled="readOnly || !(roleDataFormat?.find(ii => ii.value == data.Role.id)?.value ? true : false ) ">
                 លុបចេញ
-              </TwButton>
+              </UButton>
             </div>
           </template>
         </template>

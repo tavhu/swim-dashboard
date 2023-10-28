@@ -334,7 +334,7 @@ const { data: readRoleToResource , refresh } = await useFetch(
 
 <template>
   <div class="font-[Battambang]">
-    <h2 class="text-2xl font-[Moul]">តួនាទី</h2>
+    <h2 class="text-2xl font-[Moul] text-primary">តួនាទី</h2>
     <hr class="my-2 border dark:border-gray-700" />
     <div>
       <TwForm      
@@ -371,23 +371,25 @@ const { data: readRoleToResource , refresh } = await useFetch(
           <CustomErrorMessage name="roleDescription" />
         </div>
         <div class="col-span-12 flex justify-end gap-1">
-          <TwButton
+          <UButton
             :ripple="true"
-            :disabled ="readOnly"
-            variant="secondary"
+            :disabled ="readOnly"     
+            color="gray"       
             type="button"
+            size="lg"
             class="px-4 dark:text-gray-200 dark:!border-gray-800 dark:border"
             @click="clear()"
           >
             កំណត់ឡើងវិញ
-          </TwButton>
-          <TwButton  :disabled ="readOnly" variant="primary" class="px-4"   > រក្សាទុក </TwButton>
+          </UButton>
+
+          <UButton  :disabled ="readOnly" size="lg" type="submit" color="primary" class="px-4"   > រក្សាទុក </UButton>
         </div>
       </TwForm>
     </div>
 
     <div class="mt-5">
-      <h2 class="text-2xl font-[Moul]">បញ្ចីតួនាទី</h2>
+      <h2 class="text-2xl font-[Moul] text-primary">បញ្ចីតួនាទី</h2>
       <hr class="my-2 border dark:border-gray-700" />
       <TwDatatableServer
         v-bind:fetch-data="fetchData"
@@ -409,28 +411,42 @@ const { data: readRoleToResource , refresh } = await useFetch(
           </template>
           <template v-if="column.field === 'action'">
             <div class="flex gap-2 justify-center">
-              <TwButton
+              <UButton 
                 :disabled ="readOnly"
-                :ripple="true"
-                variant="success"
+                :ripple="true"             
                 @click="AddPermission(data.id)"
-                class="border"
+                icon="i-heroicons-lock-closed"
+                size="sm"
+                color="primary"
+                square
+                variant="solid"  
+
               >
                 ការអនុញ្ញាត
-              </TwButton>
-              <TwButton
+              </UButton >
+              <UButton 
               :disabled ="readOnly"
-                variant="primary"
-                class="border border-gray-900"
-                @click="editRecord(data.id)"
+              icon="i-heroicons-pencil-square"
+              size="sm"
+              color="gray"
+              square
+              variant="solid"                
+              @click="editRecord(data.id)"
               >
                 កែសម្រួល
-              </TwButton>
-              <TwButton
+              </UButton >
+             
+
+              <UButton 
               :disabled ="readOnly"
-               variant="danger" @click="deleteRecord(data.id)">
+              icon="i-heroicons-trash"
+              size="sm"
+              color="red"
+              square
+              variant="solid"  
+               @click="deleteRecord(data.id)">
                 លុបចេញ
-              </TwButton>
+              </UButton >
             </div>
           </template>
         </template>
@@ -444,7 +460,7 @@ const { data: readRoleToResource , refresh } = await useFetch(
 
     <TwOffcanvas position="right" width="800px" ref="openisTrue">
       <template #headerTitle>
-        <span class="font-[Moul]"> កែសម្រួលតួនាទី </span></template
+        <span class="font-[Moul] text-primary"> កែសម្រួលតួនាទី </span></template
       >
       <div class="p-4 overflow-auto font-[battambang]">
         <div>
@@ -482,16 +498,18 @@ const { data: readRoleToResource , refresh } = await useFetch(
               <CustomErrorMessage name="roleDescription" />
             </div>
             <div class="col-span-12 flex justify-end gap-1">
-              <TwButton
+              <UButton
                 :ripple="true"
-                variant="secondary"
+                color="gray"
+                square
                 type="button"
+                size="lg"
                 class="px-4 dark:text-gray-200 dark:!border-gray-800 dark:border"
                 @click="clearEdit()"
               >
                 កំណត់ឡើងវិញ
-              </TwButton>
-              <TwButton variant="primary" class="px-4"> រក្សាទុក </TwButton>
+              </UButton>
+              <UButton color="primary" size="lg" class="px-4" type="submit"> រក្សាទុក </UButton>
             </div>
           </TwForm>
         </div>
@@ -500,7 +518,7 @@ const { data: readRoleToResource , refresh } = await useFetch(
 
     <TwOffcanvas position="right" width="800px" ref="PopUPPermission">
       <template #headerTitle>
-        <span class="font-[Moul]"> ការអនុញ្ញាតរបស់ {{ globalData.data?.find((item : any)  => item.id == refClickRoleID)?.name }} </span></template
+        <span class="font-[Moul] text-primary"> ការអនុញ្ញាតរបស់ {{ globalData.data?.find((item : any)  => item.id == refClickRoleID)?.name }} </span></template
       >
       <div class="p-4 overflow-auto font-[battambang]">
         <div>
@@ -556,10 +574,7 @@ const { data: readRoleToResource , refresh } = await useFetch(
                     {{ item?.name }}
                   </th>
                   <td class="px-6 py-4 text-center">
-                    <input
-                      id="bordered-checkbox-1"
-                      type="radio"
-                      value=""
+                    <URadio                     
                       :name="'bordered-checkbox' + item?.id"
                       @click="grantedResourceToRole(item?.id, true, true)"
                       :checked="
@@ -574,15 +589,11 @@ const { data: readRoleToResource , refresh } = await useFetch(
                             e.resourceID == item?.id &&
                             refClickRoleID == e.roleID                             
                         )?.read
-                      "
-                      class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                      "                      
                     />
                   </td>
                   <td class="px-6 py-4 text-center">
-                    <input
-                      id="bordered-checkbox-1"
-                      type="radio"
-                      value=""
+                    <URadio                                  
                       :name="'bordered-checkbox' + item?.id"
                       @click="grantedResourceToRole(item?.id, false,true)"
                       :checked="
@@ -597,15 +608,11 @@ const { data: readRoleToResource , refresh } = await useFetch(
                             e.resourceID == item?.id &&
                             refClickRoleID == e.roleID                        
                         )?.read
-                      "
-                      class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                      "                     
                     />
                   </td>
-                  <td class="px-6 py-4 text-center">
-                    <input
-                      id="bordered-checkbox-1"
-                      type="radio"
-                      value=""
+                  <td class="text-center ">
+                    <URadio                                    
                       :name="'bordered-checkbox' + item?.id"
                       @click="grantedResourceToRole(item?.id, false,false)"
                       :checked="
@@ -620,8 +627,7 @@ const { data: readRoleToResource , refresh } = await useFetch(
                             e.resourceID == item?.id &&
                             refClickRoleID == e.roleID                        
                         )?.read
-                      "
-                      class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                      "                     
                     />
                   </td>
                 </tr>

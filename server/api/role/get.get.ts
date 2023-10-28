@@ -37,8 +37,7 @@ export default eventHandler(async  event => {
        const roleResource = await event.context.prisma.roleToResource.findMany({
         where :{
             roleID : user?.userRoleID ? user?.userRoleID : '',      
-            granted : false,
-            read : false     
+            granted : false,            
         },
         select :{
             granted : true,
@@ -51,11 +50,11 @@ export default eventHandler(async  event => {
        let tem  = data     
        //get all roleandresource that was not granted permission and not allow to read
        //Resource.frontEndURL contain role id
-       console.log('1233333')
+      
        tem = data.filter(item =>{                
         let superAdmin =  roleResource.find((ele) => {
-            console.log(ele)
-            return (ele.Resource.frontEndURL === item.id && !ele.granted && !ele.read) || (ele.Resource.frontEndURL === item.id && !ele.granted && ele.read == true) 
+            // console.log(ele)
+            return (ele.Resource.frontEndURL === item.id && !ele.granted && !ele.read) || (ele.Resource.frontEndURL === item.id && !ele.granted && ele.read) 
         })
         return (item.id === superAdmin?.Resource.frontEndURL && superAdmin)
        })

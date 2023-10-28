@@ -5,7 +5,12 @@ export default defineNuxtConfig({
   
   app: {
     pageTransition: { name: "page", mode: "out-in" },
-  },  
+  },
+  routeRules :{
+
+    '/register' : {prerender : true}
+  }  
+  ,
 
   css: ["~/assets/css/main.css"],
   postcss:{
@@ -35,25 +40,26 @@ export default defineNuxtConfig({
     "@vueuse/nuxt",
     '@nuxt/devtools',
     '@sidebase/nuxt-auth',
-  ["@nuxtjs/google-fonts",{
-   families: {
-          Moul: true,
-          Inter: [400, 700],
-           'cursive': true,
-          Siemreap: [100, 300],
-          Battambang : [100, 300],
-          'Josefin+Sans': true,          
-    }, 
-    download : true, 
-    base64 : true,
-    inject : true,
-    overwriting : false,
-    outputDir : "assets/fonts",
-    stylePath  : "assets/fonts/google-fonts.css",
-    fontsDir : "assets/fonts",
-    fontsPath : "fonts"
-       
-  }],
+    '@nuxt/ui',
+    ["@nuxtjs/google-fonts",{
+    families: {
+            Moul: true,
+            Inter: [400, 700],
+            'cursive': true,
+            Siemreap: [100, 300],
+            Battambang : [100, 300],
+            'Josefin+Sans': true,          
+      }, 
+      download : true, 
+      base64 : true,
+      inject : true,
+      overwriting : false,
+      outputDir : "assets/fonts",
+      stylePath  : "assets/fonts/google-fonts.css",
+      fontsDir : "assets/fonts",
+      fontsPath : "fonts"
+        
+    }],
   ],
   auth: {
     autoLogout: true,
