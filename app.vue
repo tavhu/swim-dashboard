@@ -3,7 +3,7 @@ import { TwButton, TwDialog, TwFeather } from "vue3-tailwind";
 </script>
 <template>
   <NuxtLayout>
-     <NuxtLoadingIndicator />
+     <!-- <NuxtLoadingIndicator /> -->
     <TwDialog>
       <template v-slot="{ isShown, dialog, confirm, reject }">
         <div class="fixed top-0 left-0 z-50">
