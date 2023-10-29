@@ -32,42 +32,42 @@ model Session {
 }
 
 model User {
-  id        String  @id @unique @default(cuid())
-  firstname String?
-  lastname  String?
-  username  String  @unique
-  password  String
-  image     String?
-  status    Boolean @default(true)
-
-  userRoleID String?
-  Role       Role?   @relation(fields: [userRoleID], references: [id])
-  userOrgID  String?
+  id              String         @id @unique @default(cuid())
+  firstname       String?
+  lastname        String?
+  username        String         @unique
+  password        String
+  image           String?
+  status          Boolean        @default(true)
+  userRoleID      String?
+  serviceCenterID String?
+  ServiceCenter   ServiceCenter? @relation(fields: [serviceCenterID], references: [id])
+  Role            Role?          @relation(fields: [userRoleID], references: [id])
 }
 
 model Role {
   id          String           @id @default(cuid())
   name        String           @unique
   description String?
-  users       User[]
   resource    RoleToResource[]
+  users       User[]
 }
 
 model Resources {
   id          String           @id @default(cuid())
   name        String           @unique
-  frontEndURL String?
   backEndURL  String?
+  frontEndURL String?
   Role        RoleToResource[]
 }
 
 model RoleToResource {
   roleID     String
-  role       Role      @relation(fields: [roleID], references: [id])
   resourceID String
-  Resource   Resources @relation(fields: [resourceID], references: [id])
   granted    Boolean   @default(false)
   read       Boolean   @default(false)
+  Resource   Resources @relation(fields: [resourceID], references: [id])
+  role       Role      @relation(fields: [roleID], references: [id])
 
   @@id([roleID, resourceID])
 }
@@ -78,4 +78,55 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model ServiceCenter {
+  id                     String   @id @default(cuid())
+  nameKH                 String
+  nameEN                 String
+  type                   String
+  directorName           String
+  phoneNumber            String
+  PoBox                  String
+  email                  String
+  website                String
+  locationMap            String
+  Address                String?
+  HeadQuarterPhoneNumber String
+  HeadQuarterWebsite     String
+  HeadQuarterEmail       String
+  HeadQuarterAddress     String
+  HeadQuarterCountry     String
+  overview               String?
+  background             String?
+  mission                String?
+  vision                 String?
+  goal                   String?
+  ProjectSummary         String?
+  client                 Client[]
+  staff                  Staff[]
+  systemUser             User[]
+}
+
+model Staff {
+  id              String        @id @default(cuid())
+  title           String
+  firstName       String
+  lastName        String
+  gender          String
+  position        String
+  telephone       String
+  email           String
+  serviceCenterID String
+  ServiceCenter   ServiceCenter @relation(fields: [serviceCenterID], references: [id])
+}
+
+model Client {
+  id              String        @id @unique @default(cuid())
+  firstname       String?
+  lastname        String?
+  image           String?
+  status          Boolean       @default(true)
+  serviceCenterID String
+  ServiceCenter   ServiceCenter @relation(fields: [serviceCenterID], references: [id])
 }

@@ -35,49 +35,49 @@ const permission = <any>useState('userPermission')
 </script>
 
 <template > 
-  <li class="my-1" v-if="item.isTitle" :item="item">
+  <li  v-if="item.isTitle" :item="item">
     <div class="font-bold my-2 text-lg text-[#ffffff] hidden lg:block ">
       <!-- {{ item.name }} -->
     </div>
   </li>
-  <li class="my-1" v-else-if="item.submenu.length === 0">
+  <li  v-else-if="item.submenu.length === 0">
     <div :data-tooltip-show="type === 'md'" data-tooltip-pos="right" :aria-label="item.name">
       <NuxtLink :to="item.url"  v-if=" 
         permission?.find((element : any ) => { return element?.Resource?.frontEndURL == item.url?.replace('/','').replaceAll('/','-') && element?.granted || (element?.Resource?.frontEndURL == item.url?.replace('/','').replaceAll('/','-') && element?.read )||  item.url === '/'  })
         "
-        class="flex md:justify-center lg:justify-start duration-300 items-center gap-3 cursor-pointer px-5 py-3  dark:hover:text-primary md:hover:text-gray-900 md:hover:bg-opacity-40 border-transparent"
+        class="border-l-2 ml-4 border-gray-300 flex md:justify-center lg:justify-start duration-300 items-center gap-3 cursor-pointer px-3 py-2  dark:hover:text-primary md:hover:text-gray-600 md:hover:bg-opacity-40 "
         :class="{
-          'rounded-lg': level === 1
+          'ml-[0.3rem] rounded-lg border-transparent ' : level === 1
         }"
-        :exact-active-class="level === 1 ? 'bg-primary bg-opacity-40 !md:hover:text-opacity-60 border-b-4 !border-gray-50 !border-opacity-50  font-bold' : 'border-l-2 !border-gray-50 !border-opacity-70 font-bold  text-primary'"
+        :exact-active-class="level === 1 ? ' bg-primary bg-opacity-40 !md:hover:text-opacity-60 border-b-4 !border-gray-50 !border-opacity-50  font-bold' : ' border-l-2 border-primary font-bold  text-primary'"
         @click="sidebarStore.mobileOpen = false">
         <TwFeather v-if="item.icon" :type="item.icon"></TwFeather>
-        <div class="md:hidden lg:block select-none whitespace-nowrap overflow-hidden text-ellipsis">
+        <div class=" md:hidden lg:block select-none whitespace-nowrap overflow-hidden text-ellipsis">
           {{ item.name }} 
         </div>
       </NuxtLink>
     </div>
   </li>
-  <li class="my-1" v-else>
+  <li  v-else>
     <div :data-tooltip-show="type === 'md'" data-tooltip-pos="right" :aria-label="item.name" @click="toggleOpen">
       <div
-        class="flex  md:justify-center lg:justify-start duration-300 items-center rounded-lg gap-3 cursor-pointer px-5 py-3 dark:hover:text-primary md:hover:text-gray-900 md:hover:bg-opacity-40 border-transparent">
-        <TwFeather v-if="item.icon" :type="item.icon" :class="{ 'text-primary': isOpen }"></TwFeather>
-        <div class="md:hidden lg:block select-none whitespace-nowrap overflow-hidden text-ellipsis" :class="{ 'text-primary': isOpen }" >
+        class="flex  md:justify-center lg:justify-start duration-300 items-center  gap-3 cursor-pointer px-5 py-3 dark:hover:text-primary md:hover:text-gray-600 md:hover:bg-opacity-40 border-transparent">
+        <TwFeather v-if="item.icon" :type="item.icon"></TwFeather>
+        <div class="md:hidden lg:block select-none whitespace-nowrap overflow-hidden text-ellipsis"  >
           {{ item.name }}
         </div>
         <div class="md:hidden lg:flex ml-auto items-center">
           <TwFeather type="chevron-down" class="duration-300" :class="{ 'rotate-180 text-primary': isOpen }"></TwFeather>
         </div>
-      </div>
+      </div>  
     </div>
     <transition name="expand" @enter="animationOpenClose.animateEnter"
       @after-enter="animationOpenClose.animateAfterEnter" @leave="animationOpenClose.animateLeave">
-      <ul class="rounded-lg overflow-hidden mt-2 duration-500 " :class="{
+      <ul class=" overflow-hidden duration-500 " :class="{
         'mt-0': !isOpen
       }" v-show="isOpen">
         <template v-for="sub in item.submenu" :key="item.key">
-          <SidebarItem class="ml-3 text-opacity-90 " :item="sub" :level="level + 1" />
+          <SidebarItem class="ml-5 text-opacity-90 " :item="sub" :level="level + 1" />
         </template>
       </ul>
     </transition>

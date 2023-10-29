@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Html } from '#ui-colors/components';
 import { useToast,TwToast } from 'vue3-tailwind';
 import {useThemeStore} from '~~/store/theme'
 

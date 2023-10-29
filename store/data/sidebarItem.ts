@@ -10,7 +10,7 @@ export default [
     isTitle: false,
     name: "Dashboard",
     url: "/",
-    icon: "home",
+    icon: "trello",
     submenu: [],
   },
   // {
@@ -195,23 +195,46 @@ export default [
         isTitle: false,
         name: "បញ្ចី",
         url: "/register/account",
-        icon: "list",
+        icon: "",
         submenu: [],
       },
       {
         isTitle: false,
         name: "ចុះឈ្មោះ",
         url: "/register",
-        icon: "user",
+        icon: "",
         submenu: [],
       },
       {
         isTitle: false,
         name: "តួនាទី និងការអនុញ្ញាត",
         url: "/role",
-        icon: "lock",
+        icon: "",
         submenu: [],
       },
+    ],
+  },
+
+  {
+    isTitle: false,
+    name: "មណ្ឌល",
+    url: "",
+    icon: "home",
+    submenu: [
+      {
+        isTitle: false,
+        name: "បញ្ចីមណ្ឌល",
+        url: "/center/list",
+        icon: "",
+        submenu: [],
+      },
+      {
+        isTitle: false,
+        name: "បង្កើត",
+        url: "/center",
+        icon: "",
+        submenu: [],
+      },      
     ],
   },
 ];

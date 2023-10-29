@@ -20,7 +20,7 @@ const config = useRuntimeConfig()
     class="md:flex w-full text-[#00c16a] border-spacing-1 border-t-0 shadow-xl border-[#343434] dark:bg-gray-900 bg-white px-2 md:sticky md:top-0 z-20">
     <div class="h-14  md:h-20 flex justify-between  items-center w-full px-4">
       <div class="font-bold">
-        <NuxtLink to="/" class="flex items-center align-middle font-[battambang] nowrap md:text-xl">
+        <NuxtLink to="/" class="flex items-center align-middle font-[battambang] nowrap md:text-xl ">
           <img src="/Logo.png" alt="" class="w-10 h-10 md:h-[4.3rem] md:w-[4.3rem] rounded-full  ">
           <span class="dark:text-white text-blue-900 "> ប្រព័ន្ទគ្រប់គ្រង</span> <span> សុខុមាលភាពសង្គម </span> 
         </NuxtLink>
@@ -37,12 +37,12 @@ const config = useRuntimeConfig()
         <LayoutMobileNav />
       </div>
     </transition>
-    <div class="h-14  md:h-20 flex items-center w-full justify-end px-4 md:px-10 gap-3">
+    <div class="h-14  md:h-20 flex items-center w-full justify-end px-4 md:px-10 gap-3 font-[battambang]">
       <div class="">
         <ClientOnly>
         <!-- TODO: Add searchbar -->
         {{ //@ts-ignore
-        token?.fullname}}       
+        token?.fullname}}
         </ClientOnly>
       </div>
       <div class="">

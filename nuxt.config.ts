@@ -9,9 +9,7 @@ export default defineNuxtConfig({
   routeRules :{
 
     '/register' : {prerender : true}
-  }  
-  ,
-
+  },
   css: ["~/assets/css/main.css"],
   postcss:{
     plugins: {
