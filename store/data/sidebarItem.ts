@@ -189,7 +189,7 @@ export default [
     isTitle: false,
     name: "គណនី",
     url: "",
-    icon: "users",
+    icon: "lock",
     submenu: [
       {
         isTitle: false,
