@@ -99,7 +99,7 @@ const toggleFormError = () => {
         }"
       
         @submit="login"
-        class="body bg-white dark:bg-gray-900 p-4 rounded-b-lg"
+        class="body bg-gray-100 dark:bg-gray-900 p-4 rounded-b-lg "
       >
         <div class="grid grid-cols-12 gap-2">
           <div class="col-span-12">
