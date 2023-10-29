@@ -1,11 +1,19 @@
 <script setup lang="ts">
+
+import {  useThemeStore } from '~~/store/theme'
+
 import { useToast, TwFeather, TwToast } from "vue3-tailwind";
 const { toasts } = useToast();
-const cookieDark = useCookie('dark-mode')
+
+// const cookieDark = useCookie('dark-mode')
+
+const theme = useThemeStore()
+const isDark = computed(()=>theme.isDark)
+// console.log(theme.appTheme)
 </script>
 
 <template>
-  <div id="dark-mode" :class="cookieDark ? 'dark vt-dark' : ''">
+  <div id="dark-mode"  :class="isDark ? 'dark vt-dark' : ''">
     <TwToast position="bottom-right" :toasts="toasts" />
     <div>
       <LayoutFloating />

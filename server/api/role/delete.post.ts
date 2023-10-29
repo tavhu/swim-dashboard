@@ -13,6 +13,12 @@ export default eventHandler(async  event => {
       
     try {
 
+        await event.context.prisma.roleToResource.deleteMany({
+            where : {
+                roleID : body?.id
+            }
+        })
+
         await event.context.prisma.role.delete({
             where : {
                 id: body?.id
@@ -22,17 +28,12 @@ export default eventHandler(async  event => {
         setResponseStatus(event, 201)    
          return { message: "delete success" }
     }catch(e){  
+        console.log(e)
         setResponseStatus(event, 502)    
         return {
             error  : 'e',
         }
-    }
-
-   
-   
-   
-    
-   
+    }   
 })
 
 

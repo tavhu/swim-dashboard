@@ -47,33 +47,9 @@ const login = async () => {
 
     toggleFormError();
     return;
-  }
-
-  // if (
-  //   !(formData.email === "user@mail.com" && formData.password === "password")
-  // ) {
-  //   toast.error({
-  //     message: "Email & Password combination missmatch",
-  //     lifetime: 3000,
-  //   });
-
-  //   toggleFormError();
-  //   return;
-  // }
-
+  }  
    result.value = await signIn('credentials', { username: formData.email, password : formData.password , callbackUrl :'/'});
 
-
-  // const router = useRouter();
-
-  // toast.success({
-  //   message: "Loggin success, youre being redirected",
-  //   lifetime: 1000,
-  // });
-
-  // setTimeout(() => {
-  //   router.push("/");
-  // }, 1000);
 };
 
 const toggleFormError = () => {
@@ -82,9 +58,7 @@ const toggleFormError = () => {
     formError.value = false;
   }, 1250);
 };
-
  onMounted( async  ()=>{
-
   if(
     route.currentRoute.value.query?.error &&  route.currentRoute.value.query?.error != 'undefined'
   ){
@@ -98,19 +72,23 @@ const toggleFormError = () => {
 </script>
 
 <template>
-  <div class="text-white flex justify-center pt-40">
+  <div class="text-white flex justify-center pt-40  font-[battambang]">
     <div
       class="text-gray-800 rounded-t-lg w-96 shadow-lg p-1 bg-gradient-to-b from-indigo-400 h-20"
       :class="{
         'tw-shake': formError,
       }"
-    >
-
-    
+    >    
       <div
-        class="header bg-white dark:bg-gray-900 border-b dark:border-gray-700 text-indigo-900 dark:text-gray-200 p-4 rounded-t"
+        class="header bg-white dark:bg-gray-900 border-b dark:border-blue-700  p-4 rounded-t"
       >
-        <h1 class="text-2xl font-bold text-center">Welcome {{ result }}</h1>
+     
+        <div class="font-bold flex justify-center">
+          <img src="/Logo.png" alt="" class="h-[4.3rem] w-[4.3rem] rounded-full block">
+          <div to="/" class="flex items-center align-middle nowrap text-xl">         
+            <span class="dark:text-white text-blue-900 "> ប្រព័ន្ទគ្រប់គ្រង</span> <span class="text-primary"> សុខុមាលភាពសង្គម </span> 
+          </div>
+      </div>
       </div>
       <TwForm
         ref="formLogin"
@@ -130,7 +108,7 @@ const toggleFormError = () => {
               v-model="formData.email"
               name="email"
               placeholder="Username"
-              label="Username"
+              label="ឈ្មោះប្រើប្រាស់"
             />
             <TwErrorMessage name="email"></TwErrorMessage>
           </div>
@@ -140,15 +118,15 @@ const toggleFormError = () => {
               v-model="formData.password"
               name="password"
               placeholder="Password"
-              label="Password"
+              label="លេខសំងាត់"
               type="password"
             />
             <TwErrorMessage name="password"></TwErrorMessage>
           </div>
-          <div class="col-span-12">
-            <TwButton class="w-full text-center">
-              Login
-            </TwButton>
+          <div class="col-span-12 text-center">
+            <TwButton class="w-full text-center bg-primary font-bold">
+              បញ្ជូន
+            </TwButton>      
           </div>
         </div>
       </TwForm>

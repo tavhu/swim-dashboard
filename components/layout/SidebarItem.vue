@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { TwFeather } from "vue3-tailwind";
+import { isOpen as currentOpen } from "~/store/isOpen";
 import { useSidebarStore } from "~~/store/sidebar";
+// import { isOpen as currentOpen } from '~~/store/isOpen'
+
 
 interface Item {
   isTitle: boolean
@@ -22,13 +25,13 @@ const { type } = useBreakpoints()
 const animationOpenClose = useAnimationOpenClose()
 const sidebarStore = useSidebarStore()
 
-const isOpen = ref(false)
-const toggleOpen = () => {
-  isOpen.value = !isOpen.value
+const is = currentOpen()
+const isOpen = ref(is.isOpen)
+const toggleOpen = () => { 
+  is.toggleOpens()
+  isOpen.value = is.isOpen  
 }
-
 const permission = <any>useState('userPermission')
-
 </script>
 
 <template > 

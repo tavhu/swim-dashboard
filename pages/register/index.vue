@@ -22,7 +22,6 @@ const route = useRoute()
 const edit = route?.query?.id
 
 const compute = computed(()=>route?.query?.id)
-
 watch(compute,async ()=>{
     window.location.reload()    
 })
@@ -52,7 +51,8 @@ const formRules = {
   firstname: ["string"],
   lastname: ["string"],
   username:  ["required", "string" , (value : string)=>{
-    if(usernameDuplicated.value){
+    //@ts-ignore
+    if(usernameDuplicated.value && value !== userDataAuth.value?.username){
       return `ឈ្មោះគណនីត្រូវបានប្រើប្រាស់រួចហើយ`; 
     }
   }],
@@ -217,6 +217,7 @@ const checkData = async ()=>{
 
 /// edit part
 const userProfile = ref()
+const currentUser = ref(false)
 
 if (edit) {
   userProfile.value = await useFetch('/api/user/checkUsername', { method : 'post', 
@@ -239,12 +240,22 @@ if (edit) {
     // console.log('should set to readonly')
     readOnly = true
   }
+  //@ts-ignore
+  if(route?.query?.id === userDataAuth.value?.id){
+    // console.log('current User')
+
+    currentUser.value = true
+
+  }
+
+
 }
 
 </script>
 
 <template>
   <div>        
+    
     <h2 class="text-2xl font-[Moul] text-primary"> {{ edit ?  `កែប្រែគណនី` : `បង្កើតគណនី`}} </h2>   
     <TwButton
       variant="danger" 
@@ -329,35 +340,37 @@ if (edit) {
           />
           <CustomErrorMessage name="conPassword" />
         </div>
-        <div class="col-span-12 lg:col-span-6">
+        <div class="col-span-12 lg:col-span-6"  :class="currentUser ? ' hidden ' : ''">
           <TwSelect
-            :disabled="readOnly"
+            :disabled="readOnly || currentUser"
             label="សិទ្ធិអ្នកប្រើប្រាស់"
             name="userRoleID"            
             v-model="formData.userRoleID"
             :items="roleDataFormat"
             placeholder="Choose select"
+           
           />
           <CustomErrorMessage name="role" />
         </div>
-         <div class="col-span-12 lg:col-span-6">
+         <div class="col-span-12 lg:col-span-6"  :class="currentUser ? ' hidden ' : ''">
             <TwSelect
               label="ជ្រើសរើសស្ថាប័ន្ត"
               name="userOrgID"
               v-model="formData.userOrgID"
               :items="[]"
-              placeholder="Choose select"
+              placeholder="Choose select"             
+              :disabled="readOnly || currentUser"
             />
             <CustomErrorMessage name="userOrgID" />
           </div>
 
-        <div class="col-span-12">
+        <div class="col-span-12" :class="currentUser ? ' hidden ' : ''">
           <TwToggle
             label="Status"
             name="status"
             id="toggle"
-            :disabled="readOnly"
-            v-model="formData.status"
+            :disabled="readOnly || currentUser"
+            v-model="formData.status"           
           />
           <CustomErrorMessage name="status" />
         </div>
