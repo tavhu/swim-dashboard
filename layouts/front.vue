@@ -7,9 +7,7 @@ useHead({
     lang: 'en',
   }
 })
-
 const { toasts } = useToast();
-
 const theme = useThemeStore()
 const isDark = computed(()=>theme.isDark)
 </script>
