@@ -15,11 +15,13 @@ const HTML :any = ref()
 
 onMounted(()=>{
     HTML.value = document.querySelector('body')
-     if (isDark.value) {
-        HTML.value?.classList.add('bg-gray-500')
-      } else {
-        HTML.value?.classList.remove('bg-gray-500')
-      }
+    if (isDark.value) {
+    HTML.value?.classList.add('bg-gray-500')
+    HTML.value?.classList.remove('bg-gray-50')
+  } else {
+    HTML.value?.classList.remove('bg-gray-500')
+    HTML.value?.classList.add('bg-gray-50')
+  }
 })
 
 
@@ -27,8 +29,10 @@ watch(isDark, () => {
   console.log(isDark)
   if (isDark.value) {
     HTML.value?.classList.add('bg-gray-500')
+    HTML.value?.classList.remove('bg-gray-50')
   } else {
     HTML.value?.classList.remove('bg-gray-500')
+    HTML.value?.classList.add('bg-gray-50')
   }
 })
 

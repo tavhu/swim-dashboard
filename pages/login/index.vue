@@ -7,7 +7,6 @@ import {
   TwInput,
 } from "vue3-tailwind";
 
-
 const route = useRouter()
 
 const { signIn } = useAuth()
@@ -17,13 +16,11 @@ definePageMeta({
      unauthenticatedOnly : true,
      navigateAuthenticatedTo: '/'
   }
-
 });
 
 useHead({
   title: "Login",
 });
-
 
 const toast = useToast();
 const formLogin = ref();
@@ -44,12 +41,10 @@ const login = async () => {
     toast.error({
       message: validator.getErrorMessage(),
     });
-
     toggleFormError();
     return;
   }  
    result.value = await signIn('credentials', { username: formData.email, password : formData.password , callbackUrl :'/'});
-
 };
 
 const toggleFormError = () => {
@@ -58,29 +53,28 @@ const toggleFormError = () => {
     formError.value = false;
   }, 1250);
 };
- onMounted( async  ()=>{
+onMounted( async  ()=>{
   if(
     route.currentRoute.value.query?.error &&  route.currentRoute.value.query?.error != 'undefined'
   ){
     toast.error({
-      message: decodeURI(route.currentRoute.value.query?.error.toString()) ,
+      message: decodeURI(route.currentRoute.value.query?.error.toString()),
     });
   }
-
- })
+})
 
 </script>
 
 <template>
   <div class="text-white flex justify-center pt-40  font-[battambang]">
     <div
-      class="text-gray-800 rounded-t-lg w-96 shadow-lg p-1 bg-gradient-to-b from-indigo-400 h-20"
+      class="text-gray-800 rounded-t-lg w-96  shadow-lg p-1 bg-gradient-to-b from-indigo-400 h-20"
       :class="{
         'tw-shake': formError,
       }"
     >    
       <div
-        class="header bg-white dark:bg-gray-900 border-b dark:border-blue-700  p-4 rounded-t"
+        class="header bg-white dark:bg-gray-900 border-1 dark:border-blue-700  p-4 rounded-t"
       >
      
         <div class="font-bold flex justify-center">
@@ -99,7 +93,7 @@ const toggleFormError = () => {
         }"
       
         @submit="login"
-        class="body bg-gray-100 dark:bg-gray-900 p-4 rounded-b-lg "
+        class="bg-white dark:bg-gray-900 p-4 rounded-b-lg "
       >
         <div class="grid grid-cols-12 gap-2">
           <div class="col-span-12">
