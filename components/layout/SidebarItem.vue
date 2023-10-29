@@ -35,12 +35,12 @@ const permission = <any>useState('userPermission')
 </script>
 
 <template > 
-  <li class="my-2" v-if="item.isTitle" :item="item">
+  <li class="my-1" v-if="item.isTitle" :item="item">
     <div class="font-bold my-2 text-lg text-[#ffffff] hidden lg:block ">
       <!-- {{ item.name }} -->
     </div>
   </li>
-  <li class="my-2" v-else-if="item.submenu.length === 0">
+  <li class="my-1" v-else-if="item.submenu.length === 0">
     <div :data-tooltip-show="type === 'md'" data-tooltip-pos="right" :aria-label="item.name">
       <NuxtLink :to="item.url"  v-if=" 
         permission?.find((element : any ) => { return element?.Resource?.frontEndURL == item.url?.replace('/','').replaceAll('/','-') && element?.granted || (element?.Resource?.frontEndURL == item.url?.replace('/','').replaceAll('/','-') && element?.read )||  item.url === '/'  })
@@ -58,7 +58,7 @@ const permission = <any>useState('userPermission')
       </NuxtLink>
     </div>
   </li>
-  <li class="my-2" v-else>
+  <li class="my-1" v-else>
     <div :data-tooltip-show="type === 'md'" data-tooltip-pos="right" :aria-label="item.name" @click="toggleOpen">
       <div
         class="flex  md:justify-center lg:justify-start duration-300 items-center rounded-lg gap-3 cursor-pointer px-5 py-3 dark:hover:text-primary md:hover:text-gray-900 md:hover:bg-opacity-40 border-transparent">

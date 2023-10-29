@@ -14,7 +14,8 @@ const isDark = computed(()=>theme.isDark)
 
 <template>
   <div id="dark-mode"  :class="isDark ? 'dark vt-dark' : ''">
-    <TwToast position="bottom-right" :toasts="toasts" />
+    <NuxtLoadingIndicator />
+    <TwToast position="top-right" :toasts="toasts" />
     <div>
       <LayoutFloating />
       <LayoutHeader />
