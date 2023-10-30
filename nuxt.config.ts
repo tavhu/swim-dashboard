@@ -4,12 +4,13 @@ import { defineNuxtConfig } from "nuxt/config"
 export default defineNuxtConfig({
   
   app: {
+    head: {
+      charset: 'utf-8',
+      viewport: 'width=device-width, initial-scale=1',
+    },
     pageTransition: { name: "page", mode: "out-in" },
   },
-  routeRules :{
-
-    '/register' : {prerender : true}
-  },
+ 
   css: ["~/assets/css/main.css"],
   postcss:{
     plugins: {
@@ -17,6 +18,14 @@ export default defineNuxtConfig({
       autoprefixer: {},
     },
   }, 
+
+  // routeRules:{
+  //   '/register' : { swr : true }
+  // },
+
+  experimental :{
+    typedPages : true
+  },
 
   typescript: {
     shim: false,
@@ -38,6 +47,7 @@ export default defineNuxtConfig({
     "@vueuse/nuxt",
     '@nuxt/devtools',
     '@sidebase/nuxt-auth',
+    '@nuxt/image',
     '@nuxt/ui',
     ["@nuxtjs/google-fonts",{
     families: {

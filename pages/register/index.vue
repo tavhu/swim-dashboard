@@ -74,7 +74,7 @@ const formRules = {
       }
     }
 ],
-};
+}
 
 const isError = ref(false);
 const form = computed(() => composableForm.getForm(formName));
@@ -107,7 +107,7 @@ const submit = async () => {
     await useFetch('/api/deleteFile', { method : 'POST' , body : JSON.stringify({imgURL : oldImageURL})})
   }
 
-  console.log(formData.image)
+  // console.log(formData.image)
   const { error } = await useFetch("/api/user/upsert", {
     method: "POST",
     body: JSON.stringify({

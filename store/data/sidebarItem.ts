@@ -223,14 +223,14 @@ export default [
     submenu: [
       {
         isTitle: false,
-        name: "បញ្ចីមណ្ឌល",
+        name: "បញ្ចី",
         url: "/center/list",
         icon: "",
         submenu: [],
       },
       {
         isTitle: false,
-        name: "បង្កើត",
+        name: "ចុះឈ្មោះ",
         url: "/center",
         icon: "",
         submenu: [],

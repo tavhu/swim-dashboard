@@ -3,18 +3,20 @@ import {
   TwForm,
   TwButton,
   TwFile,
-  TwInput,
-  TwSelect,
-  TwToggle,
+  TwInput,  
   useToast,
   useForm,
+  TwFeather,
+  TwSelect,
   type DropdownItem,
 } from "vue3-tailwind";
+import  orgType  from '~~/store/data/orgType'
+import  city  from '~~/store/data/address'
 
 const { data : userDataAuth } = useAuth() 
 
 useHead({
-  title: "បង្កើតមណ្ឌល",
+  title: "ចុះឈ្មោះមណ្ឌល",
 });
 
 let readOnly = checkIfPageReadOnly()
@@ -29,52 +31,34 @@ watch(compute,async ()=>{
 const config = useRuntimeConfig()
 const toast = useToast()
 const composableForm = useForm()
-const formName = "User"
+const formName = "center"
 const formData: {
   [key: string]: any;
 } = reactive({
   id : edit ? edit : 'asdf' ,
-  firstname: null,
-  lastname: null,
-  username: null,
-  password: null,
-  conPassword: null,
-  image: null,
-  userRoleID: "null",
-  userOrgID: "null",
-  status: false,
+  nameKH : '',
+  nameEN : '',
+  type : '',
+  logo : '',
+  directorName : '',
+  phoneNumber : '',
+  PoBox : '',
+  email : '',
+  website : '',
+  locationMap : '',
+  Address : '',
+  overview : '',
+  background : '',
+  mission : '',
+  vision : '',
+  goal : '',
+  ProjectSummary : '',
+  status : false,
 })
 
-const usernameDuplicated = ref(false)
-const formRules = {
-  userRoleID: ["required"],
-  firstname: ["string"],
-  lastname: ["string"],
-  username:  ["required", "string" , (value : string)=>{
-    //@ts-ignore
-    if(usernameDuplicated.value && value !== userDataAuth.value?.username){
-      return `ឈ្មោះគណនីត្រូវបានប្រើប្រាស់រួចហើយ`; 
-    }
-  }],
-  password: (!edit && !formData.password) ? [
-    "required",
-    "string",
-    "test",
-    (value: string) => {
-      const MIN_LENGTH = 8;
-      if (!value || value?.length < MIN_LENGTH) {
-        return `តិចបំផុត​៨តួអក្សរ ${MIN_LENGTH}, ប្រវែងបច្ចុប្បន្នគឺ ${value?.length}`;
-      }
-    },
-  ] : [],
-  conPassword : ["test",
-    (value : string) =>{
-      if(value !== formData.password){
-        return "លេខសំងាត់មិនដូចគ្នា"
-      }
-    }
-],
-};
+
+const formRules = { 
+}
 
 const isError = ref(false);
 const form = computed(() => composableForm.getForm(formName));
@@ -108,19 +92,28 @@ const submit = async () => {
   }
 
   console.log(formData.image)
-  const { error } = await useFetch("/api/user/upsert", {
+  const { error } = await useFetch("/api/center/upsert", {
     method: "POST",
     body: JSON.stringify({
       id :  formData.id ,
-      firstname : formData.firstname,
-      lastname : formData.lastname,
-      username : formData.username,
-      password : formData.password ? formData.password : userProfile.value?.data?.password,
-      image : formData.image,
-      status : formData.status,
-      userRoleID : formData.userRoleID,
-      userOrgID : formData.userOrgID,
-      updatePass : edit && formData.password ? true : false
+      nameKH : formData.nameKH , 
+      nameEN : formData.nameEN , 
+      type : formData.type , 
+      logo : formData.logo , 
+      directorName : formData.directorName , 
+      phoneNumber : formData.phoneNumber , 
+      PoBox : formData.PoBox , 
+      email : formData.email , 
+      website : formData.website , 
+      locationMap : formData.locationMap , 
+      Address : formData.Address , 
+      overview : formData.overview , 
+      background : formData.background , 
+      mission : formData.mission , 
+      vision : formData.vision , 
+      goal : formData.goal , 
+      ProjectSummary : formData.ProjectSummary , 
+      status : formData.status , 
     }),
   });
 
@@ -136,17 +129,28 @@ const submit = async () => {
 };
 
 const clear = () => {  
-    if(readOnly) return;
-    formData.firstname = null
-    formData.conPassword = null
-    formData.lastname = null
-    formData.username = null
-    formData.password = null
-    formData.image = null
-    formData.conPassword = null
+    if(readOnly) return;  
     formData.status = false
     files.value = null
-
+    formData.id = null  
+    formData.nameKH = null  
+    formData.nameEN = null  
+    formData.type = null  
+    formData.logo = null  
+    formData.directorName = null  
+    formData.phoneNumber = null  
+    formData.PoBox = null  
+    formData.email = null  
+    formData.website = null  
+    formData.locationMap = null  
+    formData.Address = null  
+    formData.overview = null  
+    formData.background = null  
+    formData.mission = null  
+    formData.vision = null  
+    formData.goal = null  
+    formData.ProjectSummary = null  
+  
   setTimeout(() => {
     validator.value.clearErrors();
   }, 100);
@@ -163,7 +167,7 @@ const handleImageUpload = async () => {
       fd.append(index, file);
     });
 
-    const { data } = await useFetch("/api/user/upload", {
+    const { data } = await useFetch("/api/user/upload",{
       method: "POST",
       body: fd,
     });
@@ -175,97 +179,67 @@ const handleImageUpload = async () => {
   }
 };
 
-
-const {data : roleData  } = await useFetch("/api/role/get",{ method : 'get' , query : {
-  //@ts-ignore
-  userID : userDataAuth.value?.sub }
-})
-const roleDataFormat : DropdownItem [] = new Array({ label : '', value: ''})
-roleDataFormat.pop()
-//@ts-ignored
-roleData.value?.data?.forEach((ele : any) => {
-  if(readOnly) return;
-  roleDataFormat.push(
-    {
-      label: ele?.name,
-      value: ele?.id
-    }
-  )
-});
-
-let timemer  = 0
-
-const checkData = async ()=>{     
-  clearTimeout(timemer)
-   timemer = window.setTimeout(async ()=>{
-      const {data : res } = await useFetch('/api/user/checkUsername',{method : 'POST',
-      body: JSON.stringify({
-          username: formData.username
-      })})
-      if(res.value){
-        usernameDuplicated.value = true
-      }else{
-        usernameDuplicated.value = false
-      }
-      formData.username = formData.username + " "
-      setTimeout(()=>{
-         formData.username = formData.username.slice(0, -1);
-      },1)
-      //check username after stop type for 0.5sec    
-  },500)
-}
-
-/// edit part
-const userProfile = ref()
+// edit part
+// const userProfile = ref()
 const currentUser = ref(false)
 
-if (edit) {
-  userProfile.value = await useFetch('/api/user/checkUsername', { method : 'post', 
-    body : JSON.stringify({
-      id : edit
-  })}) 
-  formData.id = userProfile.value?.data?.id
-  formData.firstname = userProfile.value?.data?.firstname
-  formData.lastname = userProfile.value?.data?.lastname
-  formData.username = userProfile.value?.data?.username
-  formData.password = null
-  formData.conPassword = null
-  formData.image = userProfile.value?.data?.image 
-  formData.userOrgID = userProfile.value?.data?.userOrgID
-  formData.status = userProfile.value?.data?.status
-  formData.userRoleID = userProfile.value?.data?.userRoleID
+// if (edit) {
+//   userProfile.value = await useFetch('/api/user/checkUsername', { method : 'post', 
+//     body : JSON.stringify({
+//       id : edit
+//   })}) 
+
+//   formData.id = userProfile.value?.data?.id
+//   formData.firstname = userProfile.value?.data?.firstname
+//   formData.lastname = userProfile.value?.data?.lastname
+//   formData.username = userProfile.value?.data?.username
+//   formData.password = null
+//   formData.conPassword = null
+//   formData.image = userProfile.value?.data?.image 
+//   formData.userOrgID = userProfile.value?.data?.userOrgID
+//   formData.status = userProfile.value?.data?.status
+//   formData.userRoleID = userProfile.value?.data?.userRoleID
+
+//   //@ts-ignore
+//   if(route?.query?.id === userDataAuth.value?.id){
+//     // console.log('current User')
+//     currentUser.value = true
+//   }
+// }
 
 
-  if(!roleDataFormat.find(item => item.value == userProfile.value?.data?.userRoleID) && edit ){
-    // console.log('should set to readonly')
-    readOnly = true
-  }
-  //@ts-ignore
-  if(route?.query?.id === userDataAuth.value?.id){
-    // console.log('current User')
 
-    currentUser.value = true
-
-  }
-
-
-}
 
 </script>
-
 <template>
-  <div>        
-    
-    <h2 class="text-2xl font-[Moul] text-primary"> {{ edit ?  `កែប្រែគណនី` : `បង្កើតគណនី`}} </h2>   
+  <div>            
+    <h2 class="text-2xl font-[Moul] text-primary"> {{ edit ?  `កែព័ត៌មានមណ្ឌល` : `ចុះឈ្មោះមណ្ឌល`}} </h2>   
     <TwButton
       variant="danger" 
       class="font-[battambang]"      
       v-if="readOnly"      
       :disabled="true"
       >
-       អ្ននគ្មានសិទ្ធកែប្រែ គណនីនេះទេ
+       អ្ននគ្មានសិទ្ធកែប្រែ គណនីនេះទេ    
       </TwButton>
-    <hr class="my-2 border dark:border-gray-700" />    
+    <hr class="my-2 border dark:border-gray-700" />       
+
+      
+      <ul v-for="addr in city">
+
+        <li>
+         <span class="text-primary"> {{ addr['name'] }} </span>
+            <ul v-for="s  in addr['ls']" >
+            <li class="ml-5"> <span class="font-bold"> {{ s['bn'] }} </span> 
+              <!-- <ul v-for="a in s['c']">
+                <li class="ml-5"> {{ a['cn'] }}  </li>
+              </ul> -->
+            </li>
+          </ul>
+        </li>
+
+      </ul>
+
     <div class="font-[Battambang]">
       <TwForm
         :name="formName"
@@ -279,102 +253,121 @@ if (edit) {
           roleName: 'ឈ្មោះតួនាទី',
           roleDescription: 'ពិពណ៌នាតួនាទី',
         }"
-      >
-        <div class="col-span-12">
+      >     
+        <div class="col-span-12 flex justify-start  gap-3 mb-5">
+          <TwFeather type="file-text" /> <h1 class="text-lg"> ព័ត៌មានលំអិត </h1>
+        </div>
+
           
+        <div class="col-span-12 lg:col-span-6">          
           <div class="vt-relative vt-col-span-12 vt-flex vt-items-center vt-justify-center">
             <div class="vt-relative vt-w-96">
               <img :src="config.public.origin + '/' + (formData.image ? formData.image : '') "  :class="(files?.length > 0 ? ' hidden '  : ' ') + ' vt-object-cover vt-rounded vt-bg-white dark:vt-bg-gray-900 vt-shadow vt-border dark:vt-border-gray-700 ' " alt="">
             </div>
           </div>
-
-          <TwFile v-model="files" label="រូបភាព Profile" />
+          <TwFile v-model="files" label="រូបភាព Logo" />
         </div>
+        <div class="cols-span-12"></div>
         <div class="col-span-12 lg:col-span-6">
           <TwInput
-            label="នាមខ្លួន"
-            name="firstname"
-            v-model="formData.firstname"
-            placeholder="Given Name"
+            label="ឈ្មោះជាភាសារខ្មែរ"
+            name="nameKH"
+            v-model="formData.nameKH"
+            placeholder="ឈ្មោះជាភាសារខ្មែរ"
             type="text"
           />
-          <CustomErrorMessage name="firstname" />
+          <CustomErrorMessage name="nameKH" />
         </div>
         <div class="col-span-12 lg:col-span-6">
           <TwInput
-            label="នាមត្រគោល"
-            name="lastname"
-            v-model="formData.lastname"
-            placeholder="Family Name"
+            label="ឈ្មោះជាភាសារអង់គ្លេស"
+            name="nameEN"
+            v-model="formData.nameEN"
+            placeholder="ឈ្មោះជាភាសារអង់គ្លេស"
             type="text"
           />
-          <CustomErrorMessage name="lastname" />
-        </div>
-        <div class="col-span-12 lg:col-span-6">
-          <TwInput
-            label="ឈ្មោះគណនី"
-            name="username"
-            v-model="formData.username"
-            @keydown="checkData"
-            placeholder="Username"
-          />
-          <CustomErrorMessage name="username" />
-        </div>
-        <div class="col-span-12 lg:col-span-6">
-          <TwInput
-            :label=" edit? 'លេខសំងាត់(ទុកឲ្យទទេបើមិនប្តូ)' : 'លេខសំងាត់'"
-            name="password"
-            type="password"
-            v-model="formData.password"
-            placeholder="Password"
-          />
-          <CustomErrorMessage name="password" />
-        </div>
-        <div class="col-span-12 lg:col-span-6">
-          <TwInput
-            :label="edit ? 'លេខសំងាត់ម្តងទៀត(ទុកឲ្យទទេបើមិនប្តូ)' : 'លេខសំងាត់ម្តងទៀត'"
-            name="conPassword"
-            type="password"
-            v-model="formData.conPassword"
-            placeholder="Confirm Password"
-          />
-          <CustomErrorMessage name="conPassword" />
-        </div>
-        <div class="col-span-12 lg:col-span-6"  :class="currentUser ? ' hidden ' : ''">
+          <CustomErrorMessage name="nameEN" />
+        </div>       
+        <div class="col-span-12 lg:col-span-6" >
           <TwSelect
-            :disabled="readOnly || currentUser"
-            label="សិទ្ធិអ្នកប្រើប្រាស់"
-            name="userRoleID"            
-            v-model="formData.userRoleID"
-            :items="roleDataFormat"
-            placeholder="Choose select"
-           
+            :disabled="readOnly"
+            label="ប្រភេទអង្គភាព"
+            name="type"            
+            v-model="formData.type"
+            :items="orgType"
+            placeholder="សូមជ្រើសរើស"           
           />
-          <CustomErrorMessage name="role" />
+          <CustomErrorMessage name="type" />
         </div>
-         <div class="col-span-12 lg:col-span-6"  :class="currentUser ? ' hidden ' : ''">
-            <TwSelect
-              label="ជ្រើសរើសស្ថាប័ន្ត"
-              name="userOrgID"
-              v-model="formData.userOrgID"
-              :items="[]"
-              placeholder="Choose select"             
-              :disabled="readOnly || currentUser"
-            />
-            <CustomErrorMessage name="userOrgID" />
-          </div>
+        <div class="col-span-12 flex justify-start gap-3 mt-5 mb-5">
+          <TwFeather type="user" /> <h1 class="text-lg"> ព័ត៌មានទំនាក់ទំនង </h1>
+        </div>
+        <div class="col-span-12 lg:col-span-6">
+          <TwInput
+            label="ឈ្មោះនាយក"
+            name="directorName"
+            v-model="formData.directorName"
+            placeholder="ឈ្មោះនាយក"
+            type="text"
+          />
+          <CustomErrorMessage name="directorName" />
+        </div>   
 
-        <div class="col-span-12" :class="currentUser ? ' hidden ' : ''">
-          <TwToggle
-            label="Status"
-            name="status"
-            id="toggle"
-            :disabled="readOnly || currentUser"
-            v-model="formData.status"           
+        <div class="col-span-12 lg:col-span-6">
+          <TwInput
+            label="លេខទូរស័ព្ទ"
+            name="phoneNumber"
+            v-model="formData.phoneNumber"
+            placeholder="លេខទូរស័ព្ទ"
+            type="text"
           />
-          <CustomErrorMessage name="status" />
+          <CustomErrorMessage name="phoneNumber" />
+        </div>           
+        <div class="col-span-12 lg:col-span-6">
+          <TwInput
+            label="Po Box"
+            name="PoBox"
+            v-model="formData.PoBox"
+            placeholder="Po Box"
+            type="text"
+          />
+          <CustomErrorMessage name="PoBox" />
+        </div>           
+        <div class="col-span-12 lg:col-span-6">
+          <TwInput
+            label="អុីមែល"
+            name="email"
+            v-model="formData.email"
+            placeholder="អុីមែល"
+            type="text"
+          />
+          <CustomErrorMessage name="email" />
+        </div>  
+        <div class="col-span-12 lg:col-span-6">
+          <TwInput
+            label="គេហទំព័រ"
+            name="website"
+            v-model="formData.website"
+            placeholder="គេហទំព័រ"
+            type="text"
+          />
+          <CustomErrorMessage name="website" />
+        </div>  
+        <div class="col-span-12 lg:col-span-6">
+          <TwInput
+            label="ទីតាំក្នុង Google Map"
+            name="locationMap"
+            v-model="formData.locationMap"
+            placeholder="ទីតាំក្នុង Google Map"
+            type="text"
+          />
+          <CustomErrorMessage name="locationMap" />
+        </div>  
+        <div class="col-span-12 flex justify-start gap-3 mt-5 mb-5">
+          <TwFeather type="map-pin" /> <h1 class="text-lg"> អាសយដ្ឋាន </h1>
         </div>
-        <div class="col-span-12 flex justify-end gap-1">
+        
+        <div class="col-span-12 flex justify-end gap-1 ">
           <UButton
            :disabled="readOnly"
             color="gray"

@@ -19,29 +19,27 @@ export default eventHandler(async  event => {
             update: {
                 nameKH : body?.nameKH,      
                 nameEN : body?.nameEN,     
-                type   : body?.type,      
+                type   : body?.type,     
+                logo : body?.logo,
                 directorName : body?.directorName,
                 phoneNumber : body?.phoneNumber,
                 PoBox : body?.PoBox,
                 email : body?.email,       
                 website : body?.website,    
                 locationMap : body?.locationMap,
-                Address : body?.Address,
-                HeadQuarterPhoneNumber : body?.HeadQuarterPhoneNumber,
-                HeadQuarterWebsite : body?.HeadQuarterWebsite,
-                HeadQuarterEmail : body?.HeadQuarterEmail,
-                HeadQuarterAddress : body?.HeadQuarterAddress,
-                HeadQuarterCountry : body?.HeadQuarterCountry,
+                Address : body?.Address,              
                 overview : body?.overview,
                 background : body?.background,
                 mission : body?.mission,
                 vision : body?.vision,   
                 goal   : body?.goal,
-                ProjectSummary : body?.ProjectSummary
+                ProjectSummary : body?.ProjectSummary,
+                status : body?.status
             },
             create : {                             
                 nameKH : body?.nameKH,      
                 nameEN : body?.nameEN,     
+                logo : body?.logo,
                 type   : body?.type,      
                 directorName : body?.directorName,
                 phoneNumber : body?.phoneNumber,
@@ -49,18 +47,14 @@ export default eventHandler(async  event => {
                 email : body?.email,       
                 website : body?.website,    
                 locationMap : body?.locationMap,
-                Address : body?.Address,
-                HeadQuarterPhoneNumber : body?.HeadQuarterPhoneNumber,
-                HeadQuarterWebsite : body?.HeadQuarterWebsite,
-                HeadQuarterEmail : body?.HeadQuarterEmail,
-                HeadQuarterAddress : body?.HeadQuarterAddress,
-                HeadQuarterCountry : body?.HeadQuarterCountry,
+                Address : body?.Address,           
                 overview : body?.overview,
                 background : body?.background,
                 mission : body?.mission,
                 vision : body?.vision,   
                 goal   : body?.goal,
-                ProjectSummary : body?.ProjectSummary
+                ProjectSummary : body?.ProjectSummary,
+                status : body?.status
             }
         })
         // console.log(res)

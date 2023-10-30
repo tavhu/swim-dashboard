@@ -84,6 +84,8 @@ model ServiceCenter {
   id                     String   @id @default(cuid())
   nameKH                 String
   nameEN                 String
+  createdAt              DateTime @default(now())
+  logo                   String
   type                   String
   directorName           String
   phoneNumber            String
@@ -92,17 +94,13 @@ model ServiceCenter {
   website                String
   locationMap            String
   Address                String?
-  HeadQuarterPhoneNumber String
-  HeadQuarterWebsite     String
-  HeadQuarterEmail       String
-  HeadQuarterAddress     String
-  HeadQuarterCountry     String
   overview               String?
   background             String?
   mission                String?
   vision                 String?
   goal                   String?
   ProjectSummary         String?
+  status                 Boolean
   client                 Client[]
   staff                  Staff[]
   systemUser             User[]
