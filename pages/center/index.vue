@@ -56,7 +56,6 @@ const formData: {
   status : false,
 })
 
-
 const formRules = { 
 }
 
@@ -207,9 +206,6 @@ const currentUser = ref(false)
 //   }
 // }
 
-
-
-
 </script>
 <template>
   <div>            
@@ -237,7 +233,6 @@ const currentUser = ref(false)
             </li>
           </ul>
         </li>
-
       </ul>
 
     <div class="font-[Battambang]">
