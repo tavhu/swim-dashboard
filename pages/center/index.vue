@@ -206,7 +206,17 @@ const currentUser = ref(false)
 //   }
 // }
 
-</script>
+let temCity : any = []
+
+city.forEach(ele =>{
+  temCity.push({
+    label : ele.name,
+    value : ele.name
+  })
+})
+const cityList = ref(temCity)
+
+</script> 
 <template>
   <div>            
     <h2 class="text-2xl font-[Moul] text-primary"> {{ edit ?  `កែព័ត៌មានមណ្ឌល` : `ចុះឈ្មោះមណ្ឌល`}} </h2>   
@@ -220,20 +230,18 @@ const currentUser = ref(false)
       </TwButton>
     <hr class="my-2 border dark:border-gray-700" />       
 
-      
-      <ul v-for="addr in city">
-
+      <!-- <ul v-for="addr in city">
         <li>
          <span class="text-primary"> {{ addr['name'] }} </span>
             <ul v-for="s  in addr['ls']" >
             <li class="ml-5"> <span class="font-bold"> {{ s['bn'] }} </span> 
-              <!-- <ul v-for="a in s['c']">
+              <ul v-for="a in s['c']">
                 <li class="ml-5"> {{ a['cn'] }}  </li>
-              </ul> -->
+              </ul>
             </li>
           </ul>
         </li>
-      </ul>
+      </ul> -->
 
     <div class="font-[Battambang]">
       <TwForm
@@ -252,8 +260,6 @@ const currentUser = ref(false)
         <div class="col-span-12 flex justify-start  gap-3 mb-5">
           <TwFeather type="file-text" /> <h1 class="text-lg"> ព័ត៌មានលំអិត </h1>
         </div>
-
-          
         <div class="col-span-12 lg:col-span-6">          
           <div class="vt-relative vt-col-span-12 vt-flex vt-items-center vt-justify-center">
             <div class="vt-relative vt-w-96">
@@ -361,6 +367,18 @@ const currentUser = ref(false)
         <div class="col-span-12 flex justify-start gap-3 mt-5 mb-5">
           <TwFeather type="map-pin" /> <h1 class="text-lg"> អាសយដ្ឋាន </h1>
         </div>
+
+        <div class="col-span-12 lg:col-span-6" >
+            <TwSelect
+              :disabled="readOnly"
+              label="រាជធានី/ខេត្ត"
+              name="city"            
+              v-model="formData.type"
+              :items="cityList"
+              placeholder="សូមជ្រើសរើស"           
+            />
+            <CustomErrorMessage name="type" />
+          </div>
         
         <div class="col-span-12 flex justify-end gap-1 ">
           <UButton
