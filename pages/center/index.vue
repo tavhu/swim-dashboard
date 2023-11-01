@@ -118,11 +118,11 @@ const submit = async () => {
 
   if (error.value?.statusCode) {
     toast.error({
-      message: "មិនឈោកជ័យ",
+      message: "មិនជោគជ័យ",
     });
   } else {
     toast.success({
-      message: "ជោកជ័យ",
+      message: "ជោគជ័យ",
     });
   }
 };
@@ -178,6 +178,34 @@ const handleImageUpload = async () => {
   }
 };
 
+const cityRef = ref()
+const commute = ref()
+const commuteRef= ref()
+const temCommuteList : any = ref([])
+watch(cityRef, ()=>{
+  temCommuteList.value = []
+  commute.value =  city.find((element: any) => {
+    // console.log(element.name)
+    return element.name === cityRef.value
+  })?.ls.forEach((ele)=>{
+
+    temCommuteList.value.push({
+      label : ele.bn,
+      value : ele.bn,
+      disabled : true,
+    })
+
+    ele.c.forEach((item =>{
+      temCommuteList.value.push({
+        label :  " ( "  + item.cc + " ) "  + item.cn ,
+        value : item.cn
+      })
+    }))
+
+  })
+})
+
+
 // edit part
 // const userProfile = ref()
 const currentUser = ref(false)
@@ -230,6 +258,9 @@ const cityList = ref(temCity)
       </TwButton>
     <hr class="my-2 border dark:border-gray-700" />       
 
+      <pre>
+       
+      </pre>
       <!-- <ul v-for="addr in city">
         <li>
          <span class="text-primary"> {{ addr['name'] }} </span>
@@ -368,16 +399,40 @@ const cityList = ref(temCity)
           <TwFeather type="map-pin" /> <h1 class="text-lg"> អាសយដ្ឋាន </h1>
         </div>
 
+         <div class="col-span-12 lg:col-span-6">
+            <TwInput
+              label="អាសយដ្ឋាន"
+              name="email"
+              v-model="formData.address"
+              placeholder="ផ្ទះលេខ ផ្លូវលេខ ភូមិ"
+              type="text"
+            />
+            <CustomErrorMessage name="email" />
+          </div> 
+
         <div class="col-span-12 lg:col-span-6" >
             <TwSelect
               :disabled="readOnly"
               label="រាជធានី/ខេត្ត"
               name="city"            
-              v-model="formData.type"
+              v-model="cityRef"
               :items="cityList"
               placeholder="សូមជ្រើសរើស"           
             />
             <CustomErrorMessage name="type" />
+          </div>
+
+          <div class="col-span-12 lg:col-span-6" >
+              <USelect
+                :disabled="readOnly"
+                label="រាជធានី/ខេត្ត"
+                name="city"            
+                v-model="commuteRef"
+                :options="temCommuteList"
+                placeholder="សូមជ្រើសរើស"     
+                size="lg"      
+              />
+              <CustomErrorMessage name="type" />
           </div>
         
         <div class="col-span-12 flex justify-end gap-1 ">

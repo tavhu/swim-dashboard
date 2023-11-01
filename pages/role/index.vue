@@ -67,11 +67,11 @@ async function submit() {
 
   if (error.value?.statusCode) {
     toast.error({
-      message: "មិនឈោកជ័យ",
+      message: "មិនជោគជ័យ",
     });
   } else {
     toast.success({
-      message: "ជោកជ័យ",
+      message: "ជោគជ័យ",
     });
     clear();
   }
