@@ -53,6 +53,7 @@ const toggleFormError = () => {
     formError.value = false;
   }, 1250);
 };
+
 onMounted( async  ()=>{
   if(
     route.currentRoute.value.query?.error &&  route.currentRoute.value.query?.error != 'undefined'
@@ -68,7 +69,7 @@ onMounted( async  ()=>{
 <template>
   <div class="text-white flex justify-center pt-40  font-[battambang]">
     <div
-      class="text-gray-800 rounded-t-lg w-96  shadow-lg p-1 bg-gradient-to-b from-indigo-400 h-20"
+      class="text-gray-800 rounded-t-lg w-100  shadow-lg p-1 bg-gradient-to-b from-indigo-400 h-20"
       :class="{
         'tw-shake': formError,
       }"
@@ -77,9 +78,9 @@ onMounted( async  ()=>{
         class="header bg-white dark:bg-gray-900 border-1 dark:border-blue-700  p-4 rounded-t"
       >
      
-        <div class="font-bold flex justify-center">
-          <img src="/Logo.png" alt="" class="h-[4.3rem] w-[4.3rem] rounded-full block">
-          <div to="/" class="flex items-center align-middle nowrap text-xl">         
+        <div class="flex  flex-col justify-center items-center ">
+          <img src="/Logo.png" alt="" class="h-40 w-40 rounded-full block">
+          <div to="/" class="flex items-center align-middle nowrap xl:text-3xl lg:text-2xl font-[moul] ">         
             <span class="dark:text-white text-blue-900 "> ប្រព័ន្ទគ្រប់គ្រង</span> <span class="text-primary"> សុខុមាលភាពសង្គម </span> 
           </div>
       </div>
@@ -101,24 +102,25 @@ onMounted( async  ()=>{
               class="dark:text-gray-200"
               v-model="formData.email"
               name="email"
-              placeholder="Username"
-              label="ឈ្មោះប្រើប្រាស់"
+              placeholder="ឈ្មោះប្រើប្រាស់"            
             />
+            <!-- <UInput  name="email"  v-model="formData.email"  placeholder="you@example.com" icon="i-heroicons-envelope" /> -->
+
             <TwErrorMessage name="email"></TwErrorMessage>
           </div>
           <div class="col-span-12">
             <TwInput
+
               class="dark:text-gray-200"
               v-model="formData.password"
               name="password"
-              placeholder="Password"
-              label="លេខសំងាត់"
+              placeholder="លេខសំងាត់"             
               type="password"
             />
             <TwErrorMessage name="password"></TwErrorMessage>
           </div>
           <div class="col-span-12 text-center">
-            <TwButton class="w-full text-center bg-primary font-bold">
+            <TwButton  icon="log-in" class="w-full text-center bg-primary font-bold">
               បញ្ជូន
             </TwButton>      
           </div>

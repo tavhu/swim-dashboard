@@ -19,10 +19,10 @@ const config = useRuntimeConfig()
   <header
     class="md:flex w-full text-[#00c16a] border-spacing-1 border-t-0 shadow-xl border-[#343434] dark:bg-gray-900 bg-white px-2 md:sticky md:top-0 z-20">
     <div class="h-14  md:h-20 flex justify-between  items-center w-full px-4">
-      <div class="font-bold">
-        <NuxtLink to="/" class="flex items-center align-middle font-[battambang] nowrap md:text-xl ">
+      <div>
+        <NuxtLink to="/" class="flex items-center align-middle font-[moul] gap-3 nowrap md:text-xl ">
           <img src="/Logo.png" alt="" class="w-10 h-10 md:h-[4.3rem] md:w-[4.3rem] rounded-full  ">
-          <span class="dark:text-white text-blue-900 "> ប្រព័ន្ទគ្រប់គ្រង</span> <span> សុខុមាលភាពសង្គម </span> 
+          <span class="dark:text-white text-blue-900 "> ប្រព័ន្ទគ្រប់គ្រង<span class="text-primary">សុខុមាលភាពសង្គម </span> </span> 
         </NuxtLink>
       </div>
       <button class="block md:hidden float-right" @click="sidebarStore.mobileOpen = !sidebarStore.mobileOpen">

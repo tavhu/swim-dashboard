@@ -20,3 +20,23 @@
     @apply font-[battambang]
 }
 
+.vt-border{
+    @apply  border-gray-400
+}
+
+:focus.vt-border{
+    @apply  outline-primary outline-2
+}
+
+.error {
+    @apply font-[battambang]
+}
+
+/* input, select {
+    @apply mt-1
+} */
+
+label {
+    @apply block mb-1
+}
+

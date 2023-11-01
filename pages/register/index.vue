@@ -345,6 +345,7 @@ if (edit) {
             :disabled="readOnly || currentUser"
             label="សិទ្ធិអ្នកប្រើប្រាស់"
             name="userRoleID"            
+            class="mt-5"
             v-model="formData.userRoleID"
             :items="roleDataFormat"
             placeholder="Choose select"
@@ -355,6 +356,7 @@ if (edit) {
          <div class="col-span-12 lg:col-span-6"  :class="currentUser ? ' hidden ' : ''">
             <TwSelect
               label="ជ្រើសរើសស្ថាប័ន្ត"
+              class="mt-5"
               name="userOrgID"
               v-model="formData.userOrgID"
               :items="[]"

@@ -11,7 +11,7 @@ defineProps<{
     <template v-slot="{ errors }">
       <!-- <div v-if="errors"> -->
         <div class="text-gray-600 dark:text-gray-400 normal-case text-sm" v-if="errors">Please resolve:</div>
-        <ul class="list-disc text-red-500 text-sm italic pl-6">
+        <ul class="list-disc text-red-500 text-sm font-[battambang] pl-6">
           <li v-for="(error, index) in errors" :key="`${name}-${index}`">
             {{ error }}
           </li>
