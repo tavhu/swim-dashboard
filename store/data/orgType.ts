@@ -1,19 +1,23 @@
 export default [
     {
-        value : 'Hospitals',
-        label : 'Hospitals'
+        value : 'វិប្លាស',
+        label : 'វិប្លាស'
     },   
     {
-        value : 'International NGOs',
-        label : 'International NGOs'
+        value : 'មជ្ឈមណ្ឌលជាតិបន្សាបគ្រឿងញៀន',
+        label : 'មជ្ឈមណ្ឌលជាតិបន្សាបគ្រឿងញៀន'
     },   
     {
-        value : 'Local NGOs',
-        label : 'Local NGOs'
+        value : 'មណ្ឌលសុំចត',
+        label : 'មណ្ឌលសុំចត'
     },   
       {
-        value : 'Government',
-        label : 'Government'
+        value : 'មណ្ឌលស្តាលទ្ធិភាពពលកម្មកម្ពុជា',
+        label : 'មណ្ឌលស្តាលទ្ធិភាពពលកម្មកម្ពុជា'
+    },   
+     {
+        value : 'មណ្ឌលគ្រឿងញៀន',
+        label : 'មណ្ឌលគ្រឿងញៀន'
     },   
 ]
 

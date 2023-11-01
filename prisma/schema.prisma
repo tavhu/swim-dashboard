@@ -81,30 +81,33 @@ model VerificationToken {
 }
 
 model ServiceCenter {
-  id                     String   @id @default(cuid())
-  nameKH                 String
-  nameEN                 String
-  createdAt              DateTime @default(now())
-  logo                   String
-  type                   String
-  directorName           String
-  phoneNumber            String
-  PoBox                  String
-  email                  String
-  website                String
-  locationMap            String
-  Address                String?
-  overview               String?
-  background             String?
-  mission                String?
-  vision                 String?
-  goal                   String?
-  ProjectSummary         String?
-  status                 Boolean
-  client                 Client[]
-  staff                  Staff[]
-  systemUser             User[]
+  id             String   @id @default(cuid())
+  nameKH         String
+  nameEN         String
+  createdAt      DateTime @default(now())
+  logo           String
+  type           String
+  directorName   String
+  phoneNumber    String
+  PoBox          String
+  email          String
+  website        String
+  locationMap    String
+  Address        String?
+  overview       String?
+  background     String?
+  mission        String?
+  vision         String?
+  goal           String?
+  ProjectSummary String?
+  status         Boolean
+  client         Client[]
+  staff          Staff[]
+  systemUser     User[]
+  //service              Service[]
 }
+
+// model Service {}
 
 model Staff {
   id              String        @id @default(cuid())
@@ -127,4 +130,10 @@ model Client {
   status          Boolean       @default(true)
   serviceCenterID String
   ServiceCenter   ServiceCenter @relation(fields: [serviceCenterID], references: [id])
+  //history        
+  //expired
+  //status
+  //
 }
+
+//model History
