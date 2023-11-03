@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import {
-  TwButton,
   useForm,
   TwInput,
   TwForm,
@@ -211,7 +210,10 @@ const globalData: any = ref();
 
 const fetchData = async () => {
   const baseUrl = "/api/role/get";
-  const response = await fetch(
+  const {data: response} = await useFetch <{
+    total: number;
+    data: DatatableData[];
+}> (
     baseUrl +
       "?" +
       new URLSearchParams({
@@ -220,20 +222,24 @@ const fetchData = async () => {
         q: data.value.search.toString(),
         sortType: data.value.sortType,
         sortBy: data.value.sortBy,
-      })
+      }),
+      {
+        method : 'get'
+      }
   );
 
-  const responseJson = await response.json();
+
   // console.log(responseJson)
   globalData.value = {
-    data: responseJson["data"],
-    totalData: responseJson["total"],
+    data: response.value?.data  ? response.value?.data : [],
+    totalData: response.value?.total ? response.value?.total : 0,
   };
   return {
-    data: responseJson["data"],
-    totalData: responseJson["total"],
+    data: response.value?.data  ? response.value?.data : [],
+    totalData: response.value?.total ? response.value?.total : 0,
   };
-};
+}
+fetchData()
 
 const sortClick = (event: any) => {
   const sortBy = data.value.sortBy;
@@ -317,7 +323,7 @@ const grantedResourceToRole = async (resourceID: string, granted: boolean, read:
   //     message: "ជោកជ័យ",
   //   });
   // }
-};
+}
 
 const { data: readRoleToResource , refresh } = await useFetch(
   "/api/role/getRoleToResource",
@@ -402,7 +408,7 @@ const { data: readRoleToResource , refresh } = await useFetch(
         :setting="data.setting"
         @on-sort-change="sortClick"
       >
-        <template #row="{ column, data }">
+        <template  #row="{ column, data }">
           <template v-if="column.field === 'category'">
             {{ data.name }}
           </template>
@@ -608,7 +614,7 @@ const { data: readRoleToResource , refresh } = await useFetch(
                             e.resourceID == item?.id &&
                             refClickRoleID == e.roleID                        
                         )?.read
-                      "                     
+                      "                   
                     />
                   </td>
                   <td class="text-center ">

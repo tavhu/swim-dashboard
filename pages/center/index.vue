@@ -402,12 +402,12 @@ const cityList = ref(temCity)
          <div class="col-span-12 lg:col-span-6">
             <TwInput
               label="អាសយដ្ឋាន"
-              name="email"
+              name="address"
               v-model="formData.address"
               placeholder="ផ្ទះលេខ ផ្លូវលេខ ភូមិ"
               type="text"
             />
-            <CustomErrorMessage name="email" />
+            <CustomErrorMessage name="address" />
           </div> 
 
         <div class="col-span-12 lg:col-span-6" >

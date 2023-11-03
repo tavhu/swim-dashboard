@@ -14,6 +14,8 @@ useHead({
   title: "បញ្ចីគណនី",
 });
 
+
+
 const data = ref({
   column: [
   // {
@@ -94,10 +96,13 @@ const data = ref({
 
 const globalData: any = ref();
 const config = useRuntimeConfig()
-
+// const datareturn :any = ref()
 const fetchData = async () => {
   const baseUrl = "/api/user/get";
-  const response = await fetch(
+  const   { data : response}  = await useFetch<{
+    total: number;
+    data: DatatableData[];
+}>(
     baseUrl +
       "?" +
       new URLSearchParams({
@@ -106,20 +111,24 @@ const fetchData = async () => {
         q: data.value.search.toString(),
         sortType: data.value.sortType,
         sortBy: data.value.sortBy,
-      })
+      }),
+      {
+        method : 'get'              
+      },      
   )
-
-  const responseJson = await response.json();
-  // console.log(responseJson)
+ 
   globalData.value = {
-    data: responseJson["data"],
-    totalData: responseJson["total"],
+    totalData: response.value?.total  , // response["total"],
+    data: response.value?.data  , // response["data"],   
   };
   return {
-    data: responseJson["data"],
-    totalData: responseJson["total"],
+    totalData: response?.value?.total ? response?.value?.total : 0 , // response["total"],
+    data: response?.value?.data  ?  response?.value?.data : [] , // response["data"],  
   }
 }
+
+fetchData()
+
 
 const sortClick = (event: any) => {
   const sortBy = data.value.sortBy;
@@ -183,7 +192,7 @@ roleData.value?.data?.forEach((ele : any) => {
                     </UButton>
                 </NuxtLink>                   
         </div>
-      <hr class="my-2 border dark:border-gray-700" />
+      <hr class="my-2 border dark:border-gray-700" />      
       <TwDatatableServer
         v-bind:fetch-data="fetchData"
         v-model:search="data.search"

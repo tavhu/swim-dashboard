@@ -10,8 +10,8 @@ export default eventHandler(async  event => {
     if(!session){
         return { 
             status: 'unauthenticated',
-             data: [], 
-             total : 0,
+            data: [], 
+            total : 0,
             error  : 'e',    
     }}   
     try {

@@ -173,8 +173,7 @@ const handleImageUpload = async () => {
   } catch (error) {
     console.log(error);
   }
-};
-
+}
 
 const {data : roleData  } = await useFetch("/api/role/get",{ method : 'get' , query : {
   //@ts-ignore
@@ -243,11 +242,8 @@ if (edit) {
   //@ts-ignore
   if(route?.query?.id === userDataAuth.value?.id){
     // console.log('current User')
-
     currentUser.value = true
-
   }
-
 
 }
 
