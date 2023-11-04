@@ -185,10 +185,10 @@ roleData.value?.data?.forEach((ele : any) => {
   <div class="font-[Battambang]">   
     <div class="mt-5">
         <div class="flex justify-between">
-            <h2 class="text-2xl font-[Moul] text-primary">បញ្ចីតួនាទី</h2>         
+            <h2 class="text-sm lg:text-xl font-[Moul] text-primary">បញ្ចីតួនាទី</h2>         
                 <NuxtLink :to="config.public.origin + '/register'" :disabled="readOnly" >
                     <UButton  color="primary"  size="xl" :disabled="readOnly">
-                      <h2 class="text-xl font-[Moul]"> បង្កើតតួនាទី </h2>
+                      <h2 class="text-sm  lg:text-xl  font-[Moul]"> បង្កើតតួនាទី </h2>
                     </UButton>
                 </NuxtLink>                   
         </div>

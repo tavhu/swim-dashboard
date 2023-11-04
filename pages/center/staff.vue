@@ -49,7 +49,7 @@ const data = ref({
   sortBy: "id",
   sortType: "desc",
   setting: {
-    checkbox: true,
+    checkbox: false,
     limitOption: [
       {
         label: "5",
@@ -166,31 +166,37 @@ const updateTable = ()=>{
   <div class="font-[Battambang]">    
     <div class="mt-5">      
       <div class="flex justify-between">
-            <h2 class="text-2xl font-[Moul] text-primary">បញ្ចីបុគ្គលិកមណ្ឌល</h2>         
+            <h2 class=" text-md  lg:text-2xl font-[Moul] text-primary">បញ្ចីបុគ្គលិកមណ្ឌល</h2>         
                
             <UButton @click="openRegisterForm" color="primary"  size="xl" :disabled="readOnly">
-              <h2 class="text-xl font-[Moul]">ចុះឈ្មោះបុគ្គលិកមណ្ឌល </h2>
+              <h2 class=" text-sm  lg:text-xl font-[Moul]">ចុះឈ្មោះបុគ្គលិកមណ្ឌល </h2>
             </UButton>
                                 
         </div>
       <hr class="my-2 border dark:border-gray-700" />
       <TwDatatableServer
+        
         v-bind:fetch-data="fetchData"
         v-model:search="data.search"
         v-model:limit="data.limit"
         v-model:offset="data.offset"
         v-model:sort-by="data.sortBy"
         v-model:sort-type="data.sortType"
-        :column="data.column"
+        :column="data.column"       
         :setting="data.setting"
         @on-sort-change="sortClick"
       >
         <template  #row="{ column, data }">
-          <template v-if="column.field === 'name'">
-            {{ data.title }}   {{  data.lastName }} {{  data.firstName }} ភេទ {{ data.gender}}
+          <template v-if="column.field === 'name'">      
+            <div class="flex justify-center">
+              {{ data.title }}   {{  data.lastName }} {{  data.firstName }} ភេទ {{ data.gender}}       
+            </div>    
           </template>
           <template v-if="column.field === 'description'" >
-            {{ data.ServiceCenter.nameKH }}
+            <div class="flex justify-center"> 
+
+              {{ data.ServiceCenter.nameKH }}
+            </div>
           </template>
           <template v-if="column.field === 'action'">
             <div class="flex gap-2 justify-center">

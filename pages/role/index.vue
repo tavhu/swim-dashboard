@@ -180,7 +180,7 @@ const data = ref({
   sortBy: "id",
   sortType: "desc",
   setting: {
-    checkbox: true,
+    checkbox: false,
     limitOption: [
       {
         label: "5",
