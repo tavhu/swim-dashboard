@@ -1,180 +1,162 @@
 <script setup lang="ts">
-import {
-  TwForm,
-  TwButton,
-  TwFile,
-  TwInput,
-  TwSelect,
-  TwToggle,
+import {   
   useToast,
-  useForm,
+  type DatatableColumn,
+  type DatatableData,
   type DropdownItem,
+  TwDatatableServer,  
 } from "vue3-tailwind";
 
-const { data : userDataAuth } = useAuth() 
-
+const readOnly = checkIfPageReadOnly()
+const { data  : userDataAuth } = useAuth()
+const toast = useToast();
 useHead({
-  title: "បង្កើតមណ្ឌល",
+  title: "បញ្ចីមណ្ឌល",
 });
 
-let readOnly = checkIfPageReadOnly()
-const route = useRoute()
-const edit = route?.query?.id
 
-const compute = computed(()=>route?.query?.id)
-watch(compute,async ()=>{
-    window.location.reload()    
-})
-
-const config = useRuntimeConfig()
-const toast = useToast()
-const composableForm = useForm()
-const formName = "User"
-const formData: {
-  [key: string]: any;
-} = reactive({
-  id : edit ? edit : 'asdf' ,
-  firstname: null,
-  lastname: null,
-  username: null,
-  password: null,
-  conPassword: null,
-  image: null,
-  userRoleID: "null",
-  userOrgID: "null",
-  status: false,
-})
-
-const usernameDuplicated = ref(false)
-const formRules = {
-  userRoleID: ["required"],
-  firstname: ["string"],
-  lastname: ["string"],
-  username:  ["required", "string" , (value : string)=>{
-    //@ts-ignore
-    if(usernameDuplicated.value && value !== userDataAuth.value?.username){
-      return `ឈ្មោះគណនីត្រូវបានប្រើប្រាស់រួចហើយ`; 
-    }
-  }],
-  password: (!edit && !formData.password) ? [
-    "required",
-    "string",
-    "test",
-    (value: string) => {
-      const MIN_LENGTH = 8;
-      if (!value || value?.length < MIN_LENGTH) {
-        return `តិចបំផុត​៨តួអក្សរ ${MIN_LENGTH}, ប្រវែងបច្ចុប្បន្នគឺ ${value?.length}`;
-      }
+const data = ref({
+  column: [
+  // {
+  //     label: "ល.រ",
+  //     field: "number",
+  //     width: "50px",
+  //     sortable: false,
+  //   },
+    {
+      label: "រូបថត",
+      field: "logo",
+      width: "150px",
+      sortable: false,
     },
-  ] : [],
-  conPassword : ["test",
-    (value : string) =>{
-      if(value !== formData.password){
-        return "លេខសំងាត់មិនដូចគ្នា"
-      }
-    }
-],
+    {
+      label: "ឈ្មោះជាភាសារខ្មែរ",
+      field: "nameKH",
+      width: "450px",
+      sortable: false,
+    },
+    {
+      label: "ឈ្មោះជាភាសារអង់គ្លេស",
+      field: "nameEN",
+      width: "300px",
+      sortable: false,
+    },    
+    {
+      label: "ស្ថានភាពមណ្ឌល",
+      field: "status",
+      width: "150px",
+      sortable: false,
+    },
+    {
+      label: "សកម្មភាព",
+      field: "action",
+      width: "650px",
+      sortable: false,
+    },
+  ] as Array<DatatableColumn>,
+  data: [] as Array<DatatableData>,
+  limit: 5,
+  offset: 0,
+  search: "",
+  sortBy: "id",
+  sortType: "desc",
+  setting: {
+    checkbox: true,
+    limitOption: [
+      {
+        label: "5",
+        value: 5,
+      },
+      {
+        label: "10",
+        value: 10,
+      },
+      {
+        label: "50",
+        value: 50,
+      },
+      {
+        label: "100",
+        value: 100,
+      },
+      {
+        label: "200",
+        value: 200,
+      },
+    ],
+  },
+});
+
+const globalData: any = ref();
+const config = useRuntimeConfig()
+// const datareturn :any = ref()
+const fetchData = async () => {
+ 
+  const   { data : response}  = await useFetch<{
+    total: number;
+    data: DatatableData[];
+}>(
+    '/api/center/get'     
+     ,
+      { body: JSON.stringify({
+        limit: data.value.limit.toString(),
+        skip: data.value.offset.toString(),
+        q: data.value.search.toString(),
+        sortType: data.value.sortType,
+        sortBy: data.value.sortBy,
+      }) 
+        ,
+        method : 'post'              
+      },      
+  )
+ 
+  globalData.value = {
+    totalData: response.value?.total  , // response["total"],
+    data: response.value?.data  , // response["data"],   
+  };
+  return {
+    totalData: response?.value?.total ? response?.value?.total : 0 , // response["total"],
+    data: response?.value?.data  ?  response?.value?.data : [] , // response["data"],  
+  }
+}
+
+fetchData()
+
+
+const sortClick = (event: any) => {
+  const sortBy = data.value.sortBy;
+  const sortType = data.value.sortType;
+  const sortByNew = event;
+  const sortTypeNew =
+    event === sortBy ? (sortType === "asc" ? "desc" : "asc") : "asc";
+  data.value = { ...data.value, sortBy: sortByNew, sortType: sortTypeNew };
 };
 
-const isError = ref(false);
-const form = computed(() => composableForm.getForm(formName));
-const validator = computed(() => form.value.validator);
-
-const submit = async () => {
+const deleteRecord = async (id: string) => {
   if(readOnly) return;
   if (!(await confirmDialog())) return;
-  validator.value.clearErrors();
-  await validator.value.validate();
-  if (validator.value.fail()) {
-    toast.error({
-      message: validator.value.getErrorMessage(),
-    });
-    isError.value = true;
-    setTimeout(() => {
-      isError.value = false;
-    }, 1000);
-    return true;
-  }
 
-  const oldImageURL = formData.image
-  
-  let image : any
-  image = await handleImageUpload() 
-  if(image){
-    formData.image = image[0]
-
-    //delete old profile from server storage
-    await useFetch('/api/deleteFile', { method : 'POST' , body : JSON.stringify({imgURL : oldImageURL})})
-  }
-
-  console.log(formData.image)
-  const { error } = await useFetch("/api/user/upsert", {
+  const { error } = await useFetch("/api/center/delete", {
     method: "POST",
     body: JSON.stringify({
-      id :  formData.id ,
-      firstname : formData.firstname,
-      lastname : formData.lastname,
-      username : formData.username,
-      password : formData.password ? formData.password : userProfile.value?.data?.password,
-      image : formData.image,
-      status : formData.status,
-      userRoleID : formData.userRoleID,
-      userOrgID : formData.userOrgID,
-      updatePass : edit && formData.password ? true : false
+      id: id,
     }),
-  });
+  })
 
-  if (error.value?.statusCode) {
+  if (error.value?.statusCode){
     toast.error({
-      message: "មិនឈោកជ័យ",
+      message: "មិនជោគជ័យ",
     });
   } else {
     toast.success({
-      message: "ជោកជ័យ",
+      message: "ជោគជ័យ",
     });
   }
+  //update change limit ref in order to refetch data
+  data.value.limit === 10 ? (data.value.limit = 5) : (data.value.limit = 10);
 };
 
-const clear = () => {  
-    if(readOnly) return;
-    formData.firstname = null
-    formData.conPassword = null
-    formData.lastname = null
-    formData.username = null
-    formData.password = null
-    formData.image = null
-    formData.conPassword = null
-    formData.status = false
-    files.value = null
-
-  setTimeout(() => {
-    validator.value.clearErrors();
-  }, 100);
-};
-
-const files = ref();
-const handleImageUpload = async () => {  
-  if(readOnly) return;
-  if (!files.value || files.value?.length == 0) return false;
-  try {
-    const fd = new FormData();
-    Array.from(files.value).forEach((file, index) => {
-      //@ts-ignore
-      fd.append(index, file);
-    });
-
-    const { data } = await useFetch("/api/user/upload", {
-      method: "POST",
-      body: fd,
-    });
-
-    // console.log("data from backend is ", data.value);   
-    return data.value
-  } catch (error) {
-    console.log(error);
-  }
-};
-
+const notGrated = ref(false)
 
 const {data : roleData  } = await useFetch("/api/role/get",{ method : 'get' , query : {
   //@ts-ignore
@@ -183,8 +165,7 @@ const {data : roleData  } = await useFetch("/api/role/get",{ method : 'get' , qu
 const roleDataFormat : DropdownItem [] = new Array({ label : '', value: ''})
 roleDataFormat.pop()
 //@ts-ignored
-roleData.value?.data?.forEach((ele : any) => {
-  if(readOnly) return;
+roleData.value?.data?.forEach((ele : any) => {  
   roleDataFormat.push(
     {
       label: ele?.name,
@@ -193,202 +174,92 @@ roleData.value?.data?.forEach((ele : any) => {
   )
 });
 
-let timemer  = 0
+const openisTrue = ref(false)
+const openisKey = ref(0)
+const editID = ref(null)
+const serviceCenterID  = ref('')
 
-const checkData = async ()=>{     
-  clearTimeout(timemer)
-   timemer = window.setTimeout(async ()=>{
-      const {data : res } = await useFetch('/api/user/checkUsername',{method : 'POST',
-      body: JSON.stringify({
-          username: formData.username
-      })})
-      if(res.value){
-        usernameDuplicated.value = true
-      }else{
-        usernameDuplicated.value = false
-      }
-      formData.username = formData.username + " "
-      setTimeout(()=>{
-         formData.username = formData.username.slice(0, -1);
-      },1)
-      //check username after stop type for 0.5sec    
-  },500)
-}
-
-/// edit part
-const userProfile = ref()
-const currentUser = ref(false)
-
-if (edit) {
-  userProfile.value = await useFetch('/api/user/checkUsername', { method : 'post', 
-    body : JSON.stringify({
-      id : edit
-  })}) 
-  formData.id = userProfile.value?.data?.id
-  formData.firstname = userProfile.value?.data?.firstname
-  formData.lastname = userProfile.value?.data?.lastname
-  formData.username = userProfile.value?.data?.username
-  formData.password = null
-  formData.conPassword = null
-  formData.image = userProfile.value?.data?.image 
-  formData.userOrgID = userProfile.value?.data?.userOrgID
-  formData.status = userProfile.value?.data?.status
-  formData.userRoleID = userProfile.value?.data?.userRoleID
-
-
-  if(!roleDataFormat.find(item => item.value == userProfile.value?.data?.userRoleID) && edit ){
-    // console.log('should set to readonly')
-    readOnly = true
-  }
-  //@ts-ignore
-  if(route?.query?.id === userDataAuth.value?.id){
-    // console.log('current User')
-
-    currentUser.value = true
-
-  }
-
+const addStaff = (CenterID : string)=>{
+  serviceCenterID.value = CenterID
+  openisTrue.value = true
+  openisKey.value ++ 
 
 }
-
 </script>
-
 <template>
-  <div>        
-    
-    <h2 class="text-2xl font-[Moul] text-primary"> {{ edit ?  `កែប្រែគណនី` : `បង្កើតគណនី`}} </h2>   
-    <TwButton
-      variant="danger" 
-      class="font-[battambang]"      
-      v-if="readOnly"      
-      :disabled="true"
+  <div class="font-[Battambang]">   
+    <div class="mt-5">
+        <div class="flex justify-between">
+            <h2 class="text-2xl font-[Moul] text-primary">បញ្ចីមណ្ឌល</h2>         
+                <NuxtLink :to="config.public.origin + '/center'" :disabled="readOnly" >
+                    <UButton  color="primary"  size="xl" :disabled="readOnly">
+                      <h2 class="text-xl font-[Moul]"> បង្កើតមណ្ឌល </h2>
+                    </UButton>
+                </NuxtLink>                   
+        </div>      
+      <hr class="my-2 border dark:border-gray-700" />      
+      <TwDatatableServer
+        v-bind:fetch-data="fetchData"
+        v-model:search="data.search"
+        v-model:limit="data.limit"
+        v-model:offset="data.offset"       
+        v-model:sort-by="data.sortBy"
+        v-model:sort-type="data.sortType"
+        :column="data.column"     
+        @on-sort-change="sortClick"
       >
-       អ្ននគ្មានសិទ្ធកែប្រែ គណនីនេះទេ
-      </TwButton>
-    <hr class="my-2 border dark:border-gray-700" />    
-    <div class="font-[Battambang]">
-      <TwForm
-        :name="formName"
-        class="grid grid-cols-12 gap-2 bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded-lg p-2 shadow"
-        :class="{
-          'tw-shake': isError,
-        }"
-        :rules="formRules"
-        @submit="submit"
-        :custom-field-name="{
-          roleName: 'ឈ្មោះតួនាទី',
-          roleDescription: 'ពិពណ៌នាតួនាទី',
-        }"
-      >
-        <div class="col-span-12">
-          
-          <div class="vt-relative vt-col-span-12 vt-flex vt-items-center vt-justify-center">
-            <div class="vt-relative vt-w-96">
-              <img :src="config.public.origin + '/' + (formData.image ? formData.image : '') "  :class="(files?.length > 0 ? ' hidden '  : ' ') + ' vt-object-cover vt-rounded vt-bg-white dark:vt-bg-gray-900 vt-shadow vt-border dark:vt-border-gray-700 ' " alt="">
+        <template #row="{ index, column, data }">
+          <!-- <template v-if="column.field === 'number'">
+            <div class="flex justify-center">       
+                  {{ index }}           
+            </div> 
+          </template> -->
+          <template v-if="column.field === 'logo'">
+            <div class="flex justify-center">
+              <img :src="config.public.origin + '/' + data.logo" alt="" class="w-12 h-12 rounded-full border border-[#1d152a7a]">
             </div>
+          </template>
+          <template v-if="column.field === 'nameKH'">
+            <div class="flex justify-center">
+              {{ data.nameKH }} 
+            </div>
+          </template>
+          <template v-if="column.field === 'nameEN'">
+            <div class="flex justify-center">
+              {{ data.nameEN }}
+            </div>
+          </template>
+          <template v-if="column.field === 'status'">
+            <div class="flex justify-center">
+              <span v-if="data.status" class="text-blue-700 dark:text-white">  ដំណើការ </span>
+              <span v-else class="text-red-700"> បិទដំណើការ </span>
+            </div>
+          </template>         
+          <template v-if="column.field === 'action'">
+            <div class="flex gap-2 justify-center">
+              <UButton color="blue" icon="i-heroicons-users" @click="addStaff(data.id)"  :disabled="readOnly">
+                ចុះឈ្មោះបុគ្គលិកមណ្ឌល
+              </UButton>
+              <NuxtLink                     
+                :to="config.public.origin + '/center?id='  + data.id"  :disabled="readOnly"               >               
+                <UButton color="primary"  icon="i-heroicons-pencil-square" class="border"  :disabled="readOnly">
+                      កែសម្រួល
+                </UButton>
+              </NuxtLink>
+              <UButton color="red" icon="i-heroicons-trash" @click="deleteRecord(data.id)"  :disabled="readOnly">
+                លុបចេញ
+              </UButton>
+            </div>
+          </template>
+        </template>
+        <template #empty>
+          <div class="bg-white dark:bg-gray-800 text-center w-full">
+            គ្មាន​ទិន្នន័យ
           </div>
-
-          <TwFile v-model="files" label="រូបភាព Profile" />
-        </div>
-        <div class="col-span-12 lg:col-span-6">
-          <TwInput
-            label="នាមខ្លួន"
-            name="firstname"
-            v-model="formData.firstname"
-            placeholder="Given Name"
-            type="text"
-          />
-          <CustomErrorMessage name="firstname" />
-        </div>
-        <div class="col-span-12 lg:col-span-6">
-          <TwInput
-            label="នាមត្រគោល"
-            name="lastname"
-            v-model="formData.lastname"
-            placeholder="Family Name"
-            type="text"
-          />
-          <CustomErrorMessage name="lastname" />
-        </div>
-        <div class="col-span-12 lg:col-span-6">
-          <TwInput
-            label="ឈ្មោះគណនី"
-            name="username"
-            v-model="formData.username"
-            @keydown="checkData"
-            placeholder="Username"
-          />
-          <CustomErrorMessage name="username" />
-        </div>
-        <div class="col-span-12 lg:col-span-6">
-          <TwInput
-            :label=" edit? 'លេខសំងាត់(ទុកឲ្យទទេបើមិនប្តូ)' : 'លេខសំងាត់'"
-            name="password"
-            type="password"
-            v-model="formData.password"
-            placeholder="Password"
-          />
-          <CustomErrorMessage name="password" />
-        </div>
-        <div class="col-span-12 lg:col-span-6">
-          <TwInput
-            :label="edit ? 'លេខសំងាត់ម្តងទៀត(ទុកឲ្យទទេបើមិនប្តូ)' : 'លេខសំងាត់ម្តងទៀត'"
-            name="conPassword"
-            type="password"
-            v-model="formData.conPassword"
-            placeholder="Confirm Password"
-          />
-          <CustomErrorMessage name="conPassword" />
-        </div>
-        <div class="col-span-12 lg:col-span-6"  :class="currentUser ? ' hidden ' : ''">
-          <TwSelect
-            :disabled="readOnly || currentUser"
-            label="សិទ្ធិអ្នកប្រើប្រាស់"
-            name="userRoleID"            
-            v-model="formData.userRoleID"
-            :items="roleDataFormat"
-            placeholder="Choose select"
-           
-          />
-          <CustomErrorMessage name="role" />
-        </div>
-         <div class="col-span-12 lg:col-span-6"  :class="currentUser ? ' hidden ' : ''">
-            <TwSelect
-              label="ជ្រើសរើសស្ថាប័ន្ត"
-              name="userOrgID"
-              v-model="formData.userOrgID"
-              :items="[]"
-              placeholder="Choose select"             
-              :disabled="readOnly || currentUser"
-            />
-            <CustomErrorMessage name="userOrgID" />
-          </div>
-
-        <div class="col-span-12" :class="currentUser ? ' hidden ' : ''">
-          <TwToggle
-            label="Status"
-            name="status"
-            id="toggle"
-            :disabled="readOnly || currentUser"
-            v-model="formData.status"           
-          />
-          <CustomErrorMessage name="status" />
-        </div>
-        <div class="col-span-12 flex justify-end gap-1">
-          <UButton
-           :disabled="readOnly"
-            color="gray"
-            type="button"
-            square
-            size="lg"
-            class="px-4 dark:text-gray-200 dark:!border-gray-800 dark:border"
-            @click="clear()"
-          >
-            កំណត់ឡើងវិញ
-          </UButton>
-          <UButton color="primary" type="submit"  size="lg" class="px-4" :disabled="readOnly"> រក្សាទុក </UButton>
-        </div>
-      </TwForm>
+        </template>
+      </TwDatatableServer>
     </div>
+    <CenterStaffCanvasForm  :readOnly="readOnly" :id="null" :openisTrue="openisTrue"  :serviceCenterID="serviceCenterID" :key="openisKey"/>
   </div>
+  
 </template>

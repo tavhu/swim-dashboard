@@ -235,6 +235,13 @@ export default [
         icon: "",
         submenu: [],
       },      
+      {
+        isTitle: false,
+        name: "បុគ្កលិកមណ្ឌល",
+        url: "/center/staff",
+        icon: "",
+        submenu: [],
+      },
     ],
   },
 ];

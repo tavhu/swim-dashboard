@@ -101,13 +101,12 @@ model ServiceCenter {
   goal           String?
   ProjectSummary String?
   status         Boolean
+  City           String?
+  District       String?
   client         Client[]
   staff          Staff[]
   systemUser     User[]
-  //service              Service[]
 }
-
-// model Service {}
 
 model Staff {
   id              String        @id @default(cuid())
@@ -130,10 +129,4 @@ model Client {
   status          Boolean       @default(true)
   serviceCenterID String
   ServiceCenter   ServiceCenter @relation(fields: [serviceCenterID], references: [id])
-  //history        
-  //expired
-  //status
-  //
 }
-
-//model History
