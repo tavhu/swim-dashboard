@@ -5,7 +5,7 @@ export default eventHandler(async  event => {
     const session = await getServerSession(event)
     const body =  await readBody(event)
 
-    // console.log(body)    
+    // console.log(body)        
     if(!session){
         return { status: 'unauthenticated'}
     }    
@@ -21,7 +21,7 @@ export default eventHandler(async  event => {
                 username: body?.username,
                 image : body?.image,          
                 status : body?.status,            
-                userRoleID : body?.userRoleID,                
+                serviceCenterID : body?.serviceCenterID,                
                 password: body?.updatePass ?  await hash(body?.password,12): body?.password 
             },
             create : {
@@ -31,7 +31,7 @@ export default eventHandler(async  event => {
                 password : await hash(body?.password,12),
                 image : body?.image,          
                 status : body?.status,   
-                userRoleID : body?.userRoleID,               
+                serviceCenterID : body?.serviceCenterID,               
             }
         })
         // console.log(res)

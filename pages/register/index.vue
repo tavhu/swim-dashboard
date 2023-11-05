@@ -11,6 +11,8 @@ import {
   type DropdownItem,
 } from "vue3-tailwind";
 
+import { type ServiceCenter } from "@prisma/client";
+
 const { data : userDataAuth } = useAuth() 
 
 useHead({
@@ -25,6 +27,8 @@ const compute = computed(()=>route?.query?.id)
 watch(compute,async ()=>{
     window.location.reload()    
 })
+//@ts-ignore
+const userDataAuthRef = computed(()=>userDataAuth.value?.sub)
 
 const config = useRuntimeConfig()
 const toast = useToast()
@@ -41,7 +45,7 @@ const formData: {
   conPassword: null,
   image: null,
   userRoleID: "null",
-  userOrgID: "null",
+  serviceCenterID: "null",
   status: false,
 })
 
@@ -119,7 +123,7 @@ const submit = async () => {
       image : formData.image,
       status : formData.status,
       userRoleID : formData.userRoleID,
-      userOrgID : formData.userOrgID,
+      serviceCenterID : formData.serviceCenterID,
       updatePass : edit && formData.password ? true : false
     }),
   });
@@ -179,6 +183,7 @@ const {data : roleData  } = await useFetch("/api/role/get",{ method : 'get' , qu
   //@ts-ignore
   userID : userDataAuth.value?.sub }
 })
+
 const roleDataFormat : DropdownItem [] = new Array({ label : '', value: ''})
 roleDataFormat.pop()
 //@ts-ignored
@@ -190,7 +195,21 @@ roleData.value?.data?.forEach((ele : any) => {
       value: ele?.id
     }
   )
-});
+})
+
+
+const { data : centerData } = await useFetch<{data : ServiceCenter[]}>('/api/center/get', {method: 'POST' })
+const centerList : DropdownItem [] = new Array({ label : '', value: ''})
+centerList.pop()
+
+centerData.value?.data.forEach((serviceCenter : ServiceCenter)=>{
+  centerList.push({
+      label: serviceCenter?.nameKH,
+      value: serviceCenter?.id   
+  })
+})
+
+
 
 let timemer  = 0
 
@@ -212,6 +231,7 @@ const checkData = async ()=>{
       },1)
       //check username after stop type for 0.5sec    
   },500)
+  
 }
 
 /// edit part
@@ -230,10 +250,9 @@ if (edit) {
   formData.password = null
   formData.conPassword = null
   formData.image = userProfile.value?.data?.image 
-  formData.userOrgID = userProfile.value?.data?.userOrgID
+  formData.serviceCenterID = userProfile.value?.data?.serviceCenterID
   formData.status = userProfile.value?.data?.status
   formData.userRoleID = userProfile.value?.data?.userRoleID
-
 
   if(!roleDataFormat.find(item => item.value == userProfile.value?.data?.userRoleID) && edit ){
     // console.log('should set to readonly')
@@ -244,14 +263,12 @@ if (edit) {
     // console.log('current User')
     currentUser.value = true
   }
-
 }
 
 </script>
 
 <template>
-  <div>        
-    
+  <div>              
     <h2 class="text-2xl font-[Moul] text-primary"> {{ edit ?  `កែប្រែគណនី` : `បង្កើតគណនី`}} </h2>   
     <TwButton
       variant="danger" 
@@ -353,13 +370,13 @@ if (edit) {
             <TwSelect
               label="ជ្រើសរើសស្ថាប័ន្ត"
               class="mt-5"
-              name="userOrgID"
-              v-model="formData.userOrgID"
-              :items="[]"
+              name="serviceCenterID"
+              v-model="formData.serviceCenterID"  
+              :items="centerList"
               placeholder="Choose select"             
               :disabled="readOnly || currentUser"
             />
-            <CustomErrorMessage name="userOrgID" />
+            <CustomErrorMessage name="serviceCenterID" />
           </div>
 
         <div class="col-span-12" :class="currentUser ? ' hidden ' : ''">

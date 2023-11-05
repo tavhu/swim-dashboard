@@ -156,8 +156,6 @@ const deleteRecord = async (id: string) => {
   data.value.limit === 10 ? (data.value.limit = 5) : (data.value.limit = 10);
 };
 
-const notGrated = ref(false)
-
 const {data : roleData  } = await useFetch("/api/role/get",{ method : 'get' , query : {
   //@ts-ignore
   userID : userDataAuth.value?.sub }

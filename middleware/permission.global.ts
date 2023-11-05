@@ -25,8 +25,8 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
         //allow to edit profile if user try to edit their own profile
         return true;
       }
-    
-      return abortNavigation()
+      // navigateTo('/login')
+      return abortNavigation('/')
       // return navigateTo('/')
     }
     

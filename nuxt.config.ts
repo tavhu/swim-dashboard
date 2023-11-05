@@ -65,10 +65,9 @@ export default defineNuxtConfig({
       outputDir : "assets/fonts",
       stylePath  : "assets/fonts/google-fonts.css",
       fontsDir : "assets/fonts",
-      fontsPath : "fonts"
-        
+      fontsPath : "fonts"        
     }],
-  ],
+  ], 
   auth: {
     autoLogout: true,
     // The module is enabled. Change this to disable the module
@@ -103,9 +102,7 @@ export default defineNuxtConfig({
   devtools: {
     enabled: true,
   },
-
   colorMode: {
     preference: 'light'
   }
-
 });

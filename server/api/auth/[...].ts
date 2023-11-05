@@ -77,10 +77,8 @@ export default NuxtAuthHandler({
               statusCode: 403,
               statusMessage:  encodeURI("គណនីឬលេខសំងាត់មិនត្រឹមត្រូវ"),
             })  
-          }  
-          
+          }            
           const isPasswordValid = await compare(credentials?.password, user.password)  
-
           if (!isPasswordValid || !user.status) {
             throw createError({
               statusCode: 403,

@@ -5,15 +5,14 @@ definePageMeta({ auth: true });
 
 // const  ss = await useFetch('/api/me',{method :'post'})
 
-const headers = useRequestHeaders(["cookie"]) as HeadersInit;
-const { data: token } = await useFetch("/api/token", { headers });
+// const headers = useRequestHeaders(["cookie"]) as HeadersInit;
+// const { data: token } = await useFetch("/api/token", { headers });
 
-useHead({
-  title: "Dashboard",
-});
+// useHead({
+//   title: "Dashboard",
+// });
 
-
-const rr = await useFetch('/api/deleteFile')
+// const rr = await useFetch('/api/deleteFile')
 
 
 </script>

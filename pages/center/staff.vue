@@ -157,10 +157,13 @@ const openRegisterForm = ()=>{
   editID.value = '';  
 }
 
+
 const updateTable = ()=>{
       data.value.limit === 10 ? (data.value.limit = 5) : (data.value.limit = 10);
     }
 </script>
+
+
 
 <template>
   <div class="font-[Battambang]">    
@@ -233,7 +236,6 @@ const updateTable = ()=>{
         </template>
       </TwDatatableServer>
     </div>
-    <CenterStaffCanvasForm @canvasIsOpen="updateTable"  :readOnly="readOnly" :id="editID" :openisTrue="openisTrue"  :serviceCenterID="null" :key="openisKey"/>
-   
+    <CenterStaffCanvasForm @canvasIsOpen="updateTable"  :readOnly="readOnly" :id="editID" :openisTrue="openisTrue"  :serviceCenterID="null" :key="openisKey"/>   
   </div>
 </template>
