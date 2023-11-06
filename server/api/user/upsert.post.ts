@@ -21,7 +21,7 @@ export default eventHandler(async  event => {
                 username: body?.username,
                 image : body?.image,          
                 status : body?.status,            
-                serviceCenterID : body?.serviceCenterID,                
+                // serviceCenterID : body?.serviceCenterID  ? body?.serviceCenterID : null ,                
                 password: body?.updatePass ?  await hash(body?.password,12): body?.password 
             },
             create : {
@@ -31,10 +31,10 @@ export default eventHandler(async  event => {
                 password : await hash(body?.password,12),
                 image : body?.image,          
                 status : body?.status,   
-                serviceCenterID : body?.serviceCenterID,               
+                // serviceCenterID : body?.serviceCenterID  ? body?.serviceCenterID : null ,
             }
         })
-        // console.log(res)
+        console.log(res)
         setResponseStatus(event, 201)    
         return { message: "User Update or Created" }
     }catch(e){  
