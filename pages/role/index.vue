@@ -340,7 +340,7 @@ const { data: readRoleToResource , refresh } = await useFetch(
 
 <template>
   <div class="font-[Battambang]">
-    <h2 class="text-2xl font-[Moul] text-primary">តួនាទី</h2>
+    <h2 class="text-2xl font-[Moul] text-primary">បង្កើតតួនាទី</h2>
     <hr class="my-2 border dark:border-gray-700" />
     <div>
       <TwForm      

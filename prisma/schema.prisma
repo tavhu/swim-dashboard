@@ -117,8 +117,8 @@ model Staff {
   position        String
   telephone       String
   email           String
-  serviceCenterID String
-  ServiceCenter   ServiceCenter @relation(fields: [serviceCenterID], references: [id])
+  serviceCenterID String?
+  ServiceCenter   ServiceCenter? @relation(fields: [serviceCenterID], references: [id])
 }
 
 model Client {

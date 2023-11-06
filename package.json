@@ -44,6 +44,8 @@
     "feather-icons": "^4.29.0",
     "h3-formidable": "^1.0.0",
     "next-auth": "^4.21.1",
-    "vue3-tailwind": "^0.3.4"
+    "nodemailer": "^6.9.7",
+    "vue3-tailwind": "^0.3.4",
+    "zod": "^3.22.4"
   }
 }

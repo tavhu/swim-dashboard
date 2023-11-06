@@ -20,7 +20,8 @@ export default eventHandler(async  event => {
                 lastname : body?.lastname,    
                 username: body?.username,
                 image : body?.image,          
-                status : body?.status,            
+                status : body?.status,      
+                userRoleID : body?.userRoleID,      
                 serviceCenterID : body?.serviceCenterID,                
                 password: body?.updatePass ?  await hash(body?.password,12): body?.password 
             },
@@ -31,6 +32,7 @@ export default eventHandler(async  event => {
                 password : await hash(body?.password,12),
                 image : body?.image,          
                 status : body?.status,   
+                userRoleID : body?.userRoleID,
                 serviceCenterID : body?.serviceCenterID,               
             }
         })

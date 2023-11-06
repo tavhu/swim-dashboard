@@ -44,8 +44,8 @@ const formData: {
   password: null,
   conPassword: null,
   image: null,
-  userRoleID: "null",
-  serviceCenterID: "null",
+  userRoleID: null,
+  serviceCenterID: null,
   status: false,
 })
 
@@ -307,6 +307,7 @@ if (edit) {
           <TwInput
             label="នាមខ្លួន"
             name="firstname"
+            :disabled="currentUser"
             v-model="formData.firstname"
             placeholder="Given Name"
             type="text"
@@ -317,6 +318,7 @@ if (edit) {
           <TwInput
             label="នាមត្រគោល"
             name="lastname"
+            :disabled="currentUser"
             v-model="formData.lastname"
             placeholder="Family Name"
             type="text"
@@ -327,6 +329,7 @@ if (edit) {
           <TwInput
             label="ឈ្មោះគណនី"
             name="username"
+            :disabled="currentUser"
             v-model="formData.username"
             @keydown="checkData"
             placeholder="Username"
