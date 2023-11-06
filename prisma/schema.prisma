@@ -129,5 +129,4 @@ model Client {
   status          Boolean       @default(true)
   serviceCenterID String
   ServiceCenter   ServiceCenter @relation(fields: [serviceCenterID], references: [id])
-  
 }
