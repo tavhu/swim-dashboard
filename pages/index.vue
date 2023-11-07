@@ -8,9 +8,9 @@ definePageMeta({ auth: true });
 // const headers = useRequestHeaders(["cookie"]) as HeadersInit;
 // const { data: token } = await useFetch("/api/token", { headers });
 
-// useHead({
-//   title: "Dashboard",
-// });
+useHead({
+  title: "Dashboard",
+});
 
 // const rr = await useFetch('/api/deleteFile')
 

@@ -3,7 +3,6 @@ import { z } from 'zod'
 import type { FormSubmitEvent } from '#ui/types'
 
 type Schema = z.output<typeof schema>
-
 definePageMeta({
   layout: "front",
   auth: {
@@ -12,7 +11,6 @@ definePageMeta({
 });
 
 const option = ['ផ្សេងៗ', 'បញ្ហានៅពេលចូលក្នុងប្រព័ន្ទ','ស្នើសុំបង្កើតមជ្ឈមណ្ឌល']
-
 useHead({
   title: "ទាក់ទង​មក​ពួក​យើង",
 });
@@ -37,12 +35,19 @@ const schema = z.object({
   // serviceCenterName : state.reason == option[2] ? z.string({ required_error : 'សូមបំពេញទិន្នន័យ'}) : z.optional(z.string()) ,    
 })
 
-
-
-
 async function onSubmit (event: FormSubmitEvent<any>) {
 
-  
+  const {data }  = await useFetch('/api/contact', { method: 'post' , 
+    body : JSON.stringify({
+      email : state.email,
+      name : state.name,
+      phone : state.phone,
+      details : state.details,
+      reason : state.reason,
+      serviceCenterName : state.serviceCenterName,
+      username : state.username,
+    })
+})
   // const res = 
   // Do something with data
   console.log(event.data)
@@ -68,11 +73,9 @@ async function onSubmit (event: FormSubmitEvent<any>) {
             <UFormGroup label="លេខទូរស័ព្ទ" name="phone">
               <UInput type="text" v-model="state.phone" size="xl"/>
             </UFormGroup>
-             
             <UFormGroup label="ការពិពណ៌នា" name="reason">
               <USelect v-model="state.reason" :options="option" size="xl"/>
             </UFormGroup>    
-
             <UFormGroup label="ឈ្មោះចូលប្រើប្រាស់ក្នុងប្រើប្រាស់" v-if="state.reason === option[1] " name="username">
               <UInput  required oninvalid="this.setCustomValidity('សូមបំពេញទិន្នន័យ')"
                v-model="state.username" size="xl"/>

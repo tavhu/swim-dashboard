@@ -1,0 +1,70 @@
+import { getServerSession } from "#auth";
+import nodemailer from "nodemailer"
+//@ts-ignored
+const transporter = nodemailer.createTransport({
+    // @ts-ignored
+  host: process.env.EMAIL_HOST,
+  port: 587,
+  secure: false,
+  auth: {
+        user: process.env.EMAIL_USER, //'noreply.cbid@dac.gov.kh', // your domain email address
+        pass: process.env.EMAIL_PASSWORD //'0ygojytQT1' // your password
+    },
+    tls: {
+        rejectUnauthorized: false,
+        rateLimit: true, // enable to make sure we are limiting
+        maxConnections: 1, // set limit to 1 connection only
+        maxMessages: 3, // send 3 emails per second
+    }
+});
+
+export default eventHandler(async  event => {
+    const session = await getServerSession(event)
+    const body =  await readBody(event)
+    if(!session){
+        return { status: 'unauthenticated', data: [], total : 0, error  : 'e',}
+    }    
+
+    // body?.email
+    // body?.name
+    // body?.phone
+    // body?.details
+    // body?.reason
+    // body?.serviceCenterName
+    // body?.username
+
+    try {
+         const info = await transporter.sendMail({
+            from: '"Website Contact" <noreply.cbid@dac.gov.kh>', // sender address
+            to: "thona@dac.gov.kh", // list of receivers
+            subject: `${body?.reason}`, // Subject line
+            text: "", // plain text body
+            html: `<b>Contact form </b> 
+            <br><b>ឈ្មោះ</b> 
+            <br>${body?.name}
+            <br><br> 
+            <b>អុីមែល</b>
+            ${body?.email}
+            <br><br>
+            <b>លេខទូរស័ព្ទ</b>
+            <br> ${body?.phone}
+            <br><br>
+            <b>មូលហេតុ</b>
+            <br> ${body?.serviceCenterName} ${body?.username ? body?.username : ''}
+            <br><br>
+            <b>ព័ត៌មានលម្អិត</b>
+            <br> ${body?.details}
+            `, // html body
+        })
+
+        console.log("Message sent: %s", info.messageId);
+
+        //@ts-ignore
+        setResponseStatus(event, 201)
+         return { status : true }
+    }catch(e){
+        //@ts-ignore
+        setResponseStatus(event, 412)
+        return { status : e }
+    }
+})
