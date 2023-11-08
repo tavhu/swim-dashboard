@@ -56,9 +56,7 @@ export default eventHandler(async  event => {
             <br> ${body?.details}
             `, // html body
         })
-
         console.log("Message sent: %s", info.messageId);
-
         //@ts-ignore
         setResponseStatus(event, 201)
          return { status : true }
