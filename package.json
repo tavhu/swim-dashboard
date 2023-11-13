@@ -28,6 +28,7 @@
     "autoprefixer": "^10.4.13",
     "husky": "^8.0.2",
     "nuxt": "^3.8.0",
+    "nuxt-icon": "^0.6.5",
     "pinia": "^2.0.23",
     "postcss": "^8.4.19",
     "prisma": "^5.4.2",
@@ -47,7 +48,6 @@
     "h3-formidable": "^1.0.0",
     "next-auth": "^4.21.1",
     "nodemailer": "^6.9.7",
-    "vue-recaptcha-v3": "^2.0.1",
     "vue3-tailwind": "^0.3.4",
     "zod": "^3.22.4"
   }

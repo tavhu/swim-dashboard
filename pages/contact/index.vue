@@ -1,21 +1,8 @@
 <script setup lang="ts">
 import { z } from 'zod'
 import type { FormSubmitEvent } from '#ui/types'
-import { useReCaptcha } from 'vue-recaptcha-v3';
-const recaptchaInstance = useReCaptcha();
 
-
-const recaptcha = async () => {
-
-  // optional you can await for the reCaptcha load
-  await recaptchaInstance?.recaptchaLoaded();
-  // get the token, a custom action could be added as argument to the method
-  const token = await recaptchaInstance?.executeRecaptcha('/contact');
-
-  return token;
-};
-
-
+const reCaptcharKey = useRuntimeConfig().public.reCaptcha_Client_Key
 const toast = useToast()
 type Schema = z.output<typeof schema>
 definePageMeta({
@@ -24,10 +11,12 @@ definePageMeta({
      unauthenticatedOnly : false,     
   }
 });
+const tokenKey = ref('')
 
 const option = ['ផ្សេងៗ', 'បញ្ហានៅពេលចូលក្នុងប្រព័ន្ទ','ស្នើសុំបង្កើតមជ្ឈមណ្ឌល']
 useHead({
   title: "ទាក់ទង​មក​ពួក​យើង",
+  script : [ { 'src' : `https://www.google.com/recaptcha/api.js?render=${reCaptcharKey}`}]
 });
 const state = reactive({
   email: undefined,
@@ -65,41 +54,52 @@ const ClearMesage = ()=>{
 }
 
 
-
 const  onSubmit = async (event: FormSubmitEvent<any>) => {  
-
+ 
   if(messageSent.value){
     ClearMesage()
     return true
   }
   if (!(await confirmDialog())){ return true }  
-  
-  const key =  await recaptcha()
-  console.log('key client side ', key)
-  loading.value = true
-  messageSent.value = false
-  const { data }  = await useFetch('/api/contact', { method: 'post' ,    
-    body : JSON.stringify({
-      email : state.email,
-      token: key,
-      name : state.name,
-      phone : state.phone,
-      details : state.details,
-      reason : state.reason,
-      serviceCenterName : state.serviceCenterName,
-      username : state.username,
-    })
-})
-  // const res = 
-  // Do something with data
-  console.log(data)
-  if(data.value){
-    toast.add({ title : 'ជោគជ័យ',
-    icon : 'i-heroicons-envelope',    
-  })
-    messageSent.value = true
-  }
-  loading.value = false
+  //@ts-ignored
+  window.grecaptcha.ready(async () => {
+    //@ts-ignore
+           window.grecaptcha.execute(reCaptcharKey, {action: 'submit'}).then(async (token : string) => {
+                // Add your logic to submit to your backend server here.
+                // console.log((token))
+                tokenKey.value = token
+                loading.value = true
+                messageSent.value = false
+                const { data }  = await useFetch('/api/contact', { method: 'post' ,    
+                  body : JSON.stringify({
+                    email : state.email,
+                    token : tokenKey.value,
+                    name : state.name,
+                    phone : state.phone,
+                    details : state.details,
+                    reason : state.reason,
+                    serviceCenterName : state.serviceCenterName,
+                    username : state.username,
+                  })
+              })
+                // const res = 
+                // Do something with data
+                // console.log(data)
+                if(data.value){
+                  toast.add({ title : 'ជោគជ័យ',
+                  icon : 'i-heroicons-envelope',    
+                })
+                 
+                }else{
+                  toast.add({ title : 'បរាជ័យ! សូម​ព្យាយាម​ម្តង​ទៀត​នៅ​ពេល​ក្រោយ',
+                  icon : 'i-heroicons-envelope',    
+                  color : 'red'                  
+                })
+                }
+                messageSent.value = true
+                loading.value = false
+            });
+          }); 
 }
 
 </script>
@@ -114,30 +114,35 @@ const  onSubmit = async (event: FormSubmitEvent<any>) => {
             </div>
           </template>      
             <UForm  :schema="schema" :state="state" @submit="onSubmit" class="flex flex-col  gap-5">
-              <UFormGroup label="ឈ្មោះពេញ" name="name">
+              <UFormGroup label="ឈ្មោះពេញ" name="name"   v-if="!messageSent">
                 <UInput v-model="state.name" size="xl"/>
               </UFormGroup>
-              <UFormGroup label="អុីមែល" name="email">
-                <UInput v-model="state.email" size="xl"/>
+              <UFormGroup label="អុីមែល" name="email" v-if="!messageSent">
+                <UInput v-model="state.email" size="xl"  />
               </UFormGroup>
-              <UFormGroup label="លេខទូរស័ព្ទ" name="phone">
+              <UFormGroup label="លេខទូរស័ព្ទ" name="phone"  v-if="!messageSent">
                 <UInput type="text" v-model="state.phone" size="xl"/>
               </UFormGroup>
-              <UFormGroup label="ការពិពណ៌នា" name="reason">
+              <UFormGroup label="ការពិពណ៌នា" name="reason"  v-if="!messageSent">
                 <USelect v-model="state.reason" :options="option" size="xl"/>
               </UFormGroup>    
-              <UFormGroup label="ឈ្មោះចូលប្រើប្រាស់ក្នុងប្រើប្រាស់" v-if="state.reason === option[1] " name="username">
+              <UFormGroup label="ឈ្មោះចូលប្រើប្រាស់ក្នុងប្រើប្រាស់"   v-if="state.reason === option[1] &&  !messageSent" name="username">
                 <UInput  required oninvalid="this.setCustomValidity('សូមបំពេញទិន្នន័យ')"
                 v-model="state.username" size="xl"/>
               </UFormGroup> 
-              <UFormGroup label="ឈ្មោះមណ្ឌល" v-if="state.reason === option[2] " name="serviceCenterName">
+              <UFormGroup label="ឈ្មោះមណ្ឌល"   v-if="state.reason === option[2] &&  !messageSent" name="serviceCenterName">
                 <UInput  required oninvalid="this.setCustomValidity('សូមបំពេញទិន្នន័យ')" v-model="state.serviceCenterName" size="xl"/>
               </UFormGroup> 
-              <UFormGroup label="ការពិពណ៌នា" name="details">
+              <UFormGroup label="ការពិពណ៌នា" v-if="!messageSent" name="details">
                 <UTextarea v-model="state.details" size="xl"/>
               </UFormGroup>    
+              
               <UFormGroup>
-                <UButton type="submit" size="lg" :loading="loading" :icon=" messageSent ?  'i-heroicons-pencil-square' : 'i-heroicons-envelope' " >               
+                <div class="flex justify-center" v-if="messageSent">
+                  <!-- <UIcon name="i-heroicons-envelope" class="text-red-600 text-6xl" /> -->
+                  <Icon name="bi:send-check-fill" color="green" size="80" />
+                </div>
+              <UButton type="submit" size="lg" :loading="loading" :icon=" messageSent ?  'i-heroicons-pencil-square' : 'i-heroicons-envelope' " >               
                   
                   {{  messageSent ? 'ផ្ញើសារថ្មី' : 'បញ្ចូន'
                     }}

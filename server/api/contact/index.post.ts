@@ -18,7 +18,9 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-const SECRET_KEY = '6LdNhQ0pAAAAAAXcoJRxSP48zlTKJach05kWBlib'
+const SECRET_KEY = process.env.RECAPTCHA_SERVER_SECRET_KEY 
+
+// front end 
 
 export default eventHandler(async  event => {
     const session = await getServerSession(event)
@@ -27,19 +29,21 @@ export default eventHandler(async  event => {
     //     return { status: 'unauthenticated', data: [], total : 0, error  : 'e',}
     // }    
 
+   
     if(! body?.token){
-        console.log('no token')
+        // console.log('no token')
         setResponseStatus(event, 412)
         return {
             status: false
         }
     }
 
-    const response = await $fetch<{ success: boolean, 'error-codes': string[] }>(
+    const response = await $fetch<{ success: boolean, 'error-codes': string[], score : number , action : string, hostname: string }>(
         `https://www.google.com/recaptcha/api/siteverify?secret=${SECRET_KEY}&response=${body?.token}`
         )   
-    console.log(response, SECRET_KEY ,body?.token)
-        if(!response.success ){
+    // console.log(response, SECRET_KEY ,body?.token)
+        if(!response.success || response?.score < 0.3){
+
             setResponseStatus(event, 412)
             return {
                 status : false

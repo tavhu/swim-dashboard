@@ -36,12 +36,14 @@ export default defineNuxtConfig({
     apiSecret: "",
     public: {
       apiBase: "/api",
-      origin: process.env.NUXT_ORIGIN
+      origin: process.env.NUXT_ORIGIN,
+      reCaptcha_Client_Key : process.env.RECAPTCHA_CLIENT_SECRET_KEY
     },
   },
 
   modules: [
     "@pinia/nuxt",   
+    "nuxt-icon",
     "@pinia-plugin-persistedstate/nuxt",
     "@kevinmarrec/nuxt-pwa",
     "@vueuse/nuxt",
