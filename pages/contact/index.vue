@@ -37,7 +37,7 @@ const schema = z.object({
 
 async function onSubmit (event: FormSubmitEvent<any>) {
 
-  const {data }  = await useFetch('/api/contact', { method: 'post' , 
+  const { data }  = await useFetch('/api/contact', { method: 'post' , 
     body : JSON.stringify({
       email : state.email,
       name : state.name,
@@ -50,14 +50,14 @@ async function onSubmit (event: FormSubmitEvent<any>) {
 })
   // const res = 
   // Do something with data
-  console.log(event.data)
+  console.log(data)
 }
 
 </script>
 
 <template>
   <UContainer class="flex justify-center  items-center h-screen font-[battambang]"> 
-      <UCard class="w-96 lg:w-96">
+      <UCard class="w-full  md:w-9/12 lg:w-9/12">
         <template #header>          
           <div class=" text-gray-700 dark:text-white font-[moul]">
             ទំនាក់ទំនងមកពួកយើង

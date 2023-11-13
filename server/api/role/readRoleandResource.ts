@@ -1,13 +1,9 @@
 import { getServerSession } from "#auth";
-
-
 export default eventHandler(async  (event) => {
     const session = await getServerSession(event)
     const body =  await readBody(event)
     // const body =  getQuery(event)
-
-    // console.log('session ', session)    
-    
+    // console.log('session ', session)        
     if(!session){
         return { status: 'unauthenticated'}
     }    

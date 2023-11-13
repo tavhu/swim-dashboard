@@ -187,6 +187,21 @@ export default [
   },
   {
     isTitle: false,
+    name: "ប្រអប់សារ",
+    url: "",
+    icon: "mail",
+    submenu: [
+      {
+        isTitle: false,
+        name: "បញ្ចី",
+        url: "/contact/list",
+        icon: "",
+        submenu: [],
+      }, 
+    ],
+  },
+  {
+    isTitle: false,
     name: "គណនី",
     url: "",
     icon: "lock",
@@ -214,7 +229,6 @@ export default [
       },
     ],
   },
-
   {
     isTitle: false,
     name: "មណ្ឌល",

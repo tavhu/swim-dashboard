@@ -21,19 +21,10 @@ const transporter = nodemailer.createTransport({
 export default eventHandler(async  event => {
     const session = await getServerSession(event)
     const body =  await readBody(event)
-    if(!session){
-        return { status: 'unauthenticated', data: [], total : 0, error  : 'e',}
-    }    
-
-    // body?.email
-    // body?.name
-    // body?.phone
-    // body?.details
-    // body?.reason
-    // body?.serviceCenterName
-    // body?.username
-
-    try {
+    // if(!session){
+    //     return { status: 'unauthenticated', data: [], total : 0, error  : 'e',}
+    // }    
+       try {
          const info = await transporter.sendMail({
             from: '"Website Contact" <noreply.cbid@dac.gov.kh>', // sender address
             to: "thona@dac.gov.kh", // list of receivers
@@ -56,12 +47,26 @@ export default eventHandler(async  event => {
             <br> ${body?.details}
             `, // html body
         })
-        console.log("Message sent: %s", info.messageId);
-        //@ts-ignore
+        // console.log("Message sent: %s", info.messageId);
+        
+        if(info.messageId){
+            await event.context.prisma.contactMessage.create({
+                data: {
+                    email : body?.email ,
+                    name :    body?.name ,
+                    phone :    body?.phone ,
+                    details :    body?.details ,
+                    reason :    body?.reason ,
+                    serviceCenterName :    body?.serviceCenterName ,
+                    username :    body?.username ,               
+                }
+            })
+        }
         setResponseStatus(event, 201)
          return { status : true }
     }catch(e){
-        //@ts-ignore
+
+        console.log(e)
         setResponseStatus(event, 412)
         return { status : e }
     }

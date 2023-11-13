@@ -77,16 +77,14 @@ onMounted( async  ()=>{
       <div
         class="header bg-white dark:bg-gray-900 border-1 dark:border-blue-700  p-4 rounded-t"
       >
-     
         <div class="flex  flex-col justify-center items-center xl:p-8 p-0 xl:pt-0">
           <img src="/Logo.png" alt="" class="h-40 w-40 rounded-full block">
           <div to="/" class="flex items-center align-middle nowrap xl:text-4xl lg:text-3xl font-[moul] ">         
             <span class="dark:text-white text-blue-900 "> ប្រព័ន្ទគ្រប់គ្រង</span> <span class="text-primary"> សុខុមាលភាពសង្គម </span> 
           </div>
+        </div>
       </div>
-      </div>
-      <TwForm
-     
+      <TwForm     
         ref="formLogin"
         name="login"
         :rules="{
@@ -106,12 +104,10 @@ onMounted( async  ()=>{
               placeholder="ឈ្មោះប្រើប្រាស់"            
             />
             <!-- <UInput  name="email"  v-model="formData.email"  placeholder="you@example.com" icon="i-heroicons-envelope" /> -->
-
             <TwErrorMessage name="email"></TwErrorMessage>
           </div>
           <div class="col-span-12">
             <TwInput
-
               class="dark:text-gray-200"
               v-model="formData.password"
               name="password"

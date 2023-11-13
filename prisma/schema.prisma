@@ -43,6 +43,21 @@ model User {
   serviceCenterID String?
   ServiceCenter   ServiceCenter? @relation(fields: [serviceCenterID], references: [id])
   Role            Role?          @relation(fields: [userRoleID], references: [id])
+  contactMessage contactMessage[]
+}
+
+model contactMessage {
+  id  String @id @unique @default(cuid())
+  email String?
+  name String?
+  phone String?
+  details String?
+  reason String?
+  serviceCenterName String?
+  username String?
+  createdAt DateTime @default(now())
+  deleted Boolean @default(false)
+  user  User[]
 }
 
 model Role {
@@ -76,7 +91,6 @@ model VerificationToken {
   identifier String
   token      String   @unique
   expires    DateTime
-
   @@unique([identifier, token])
 }
 
