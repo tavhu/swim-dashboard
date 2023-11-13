@@ -30,11 +30,20 @@ export default eventHandler(async  event => {
             to: "thona@dac.gov.kh", // list of receivers
             subject: `${body?.reason}`, // Subject line
             text: "", // plain text body
-            html: `<b>Contact form </b> 
+            html: ` 
+            <!DOCTYPE html>
+            <html>
+            <head>          
+            <link rel="preconnect" href="https://fonts.googleapis.com">
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+            <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@100&display=swap" rel="stylesheet">
+            </head>
+            <body>
+            <div style="font-size:12px;font-family:Battambang"> <b>Contact form </b> 
             <br><b>ឈ្មោះ</b> 
             <br>${body?.name}
             <br><br> 
-            <b>អុីមែល</b>
+            <b>អ៊ីមែល</b>
             ${body?.email}
             <br><br>
             <b>លេខទូរស័ព្ទ</b>
@@ -45,7 +54,10 @@ export default eventHandler(async  event => {
             <br><br>
             <b>ព័ត៌មានលម្អិត</b>
             <br> ${body?.details}
-            `, // html body
+           <div>             
+            </body>
+            </html>
+           `, // html body
         })
         // console.log("Message sent: %s", info.messageId);
         

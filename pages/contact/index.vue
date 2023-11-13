@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { z } from 'zod'
 import type { FormSubmitEvent } from '#ui/types'
-
+const toast = useToast()
 type Schema = z.output<typeof schema>
 definePageMeta({
   layout: "front",
@@ -35,8 +35,31 @@ const schema = z.object({
   // serviceCenterName : state.reason == option[2] ? z.string({ required_error : 'សូមបំពេញទិន្នន័យ'}) : z.optional(z.string()) ,    
 })
 
-async function onSubmit (event: FormSubmitEvent<any>) {
+const loading = ref(false)
+const messageSent = ref(false)
 
+const ClearMesage = ()=>{
+  state.email = undefined
+  state.name = undefined
+  state.phone = undefined
+  state.details = undefined
+  state.reason = undefined
+  state.serviceCenterName = undefined
+  state.username = undefined
+  messageSent.value = false 
+}
+
+
+
+async function onSubmit (event: FormSubmitEvent<any>) {  
+  if(messageSent.value){
+    ClearMesage()
+    return true
+  }
+  if (!(await confirmDialog())) return; 
+
+  loading.value = true
+  messageSent.value = false
   const { data }  = await useFetch('/api/contact', { method: 'post' , 
     body : JSON.stringify({
       email : state.email,
@@ -51,6 +74,13 @@ async function onSubmit (event: FormSubmitEvent<any>) {
   // const res = 
   // Do something with data
   console.log(data)
+  if(data.value){
+    toast.add({ title : 'ជោគជ័យ',
+    icon : 'i-heroicons-envelope',    
+  })
+    messageSent.value = true
+  } 
+  loading.value = false
 }
 
 </script>
@@ -87,8 +117,10 @@ async function onSubmit (event: FormSubmitEvent<any>) {
               <UTextarea v-model="state.details" size="xl"/>
             </UFormGroup>    
             <UFormGroup>
-              <UButton type="submit" size="lg">
-                បញ្ចូន
+              <UButton type="submit" size="lg" :loading="loading" :icon=" messageSent ?  'i-heroicons-pencil-square' : 'i-heroicons-envelope' " >                
+                
+                {{  messageSent ? 'ផ្ញើសារថ្មី' : 'បញ្ចូន'
+                   }}
               </UButton>
             </UFormGroup>
         </UForm>      
@@ -97,5 +129,7 @@ async function onSubmit (event: FormSubmitEvent<any>) {
           <Placeholder class="h-8" />
         </template> -->
       </UCard>  
+
   </UContainer>
+  <UNotifications class="font-[battambang]"/>
 </template>
