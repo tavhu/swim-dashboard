@@ -18,12 +18,34 @@ const transporter = nodemailer.createTransport({
     }
 });
 
+const SECRET_KEY = '6LdNhQ0pAAAAAAXcoJRxSP48zlTKJach05kWBlib'
+
 export default eventHandler(async  event => {
     const session = await getServerSession(event)
     const body =  await readBody(event)
     // if(!session){
     //     return { status: 'unauthenticated', data: [], total : 0, error  : 'e',}
     // }    
+
+    if(! body?.token){
+        console.log('no token')
+        setResponseStatus(event, 412)
+        return {
+            status: false
+        }
+    }
+
+    const response = await $fetch<{ success: boolean, 'error-codes': string[] }>(
+        `https://www.google.com/recaptcha/api/siteverify?secret=${SECRET_KEY}&response=${body?.token}`
+        )   
+    console.log(response, SECRET_KEY ,body?.token)
+        if(!response.success ){
+            setResponseStatus(event, 412)
+            return {
+                status : false
+            }
+        }
+
        try {
          const info = await transporter.sendMail({
             from: '"Website Contact" <noreply.cbid@dac.gov.kh>', // sender address
@@ -43,7 +65,7 @@ export default eventHandler(async  event => {
             <br><b>ឈ្មោះ</b> 
             <br>${body?.name}
             <br><br> 
-            <b>អ៊ីមែល</b>
+            <b>អុីមែល</b>
             ${body?.email}
             <br><br>
             <b>លេខទូរស័ព្ទ</b>

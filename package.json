@@ -14,7 +14,7 @@
     "@commitlint/cli": "^17.3.0",
     "@commitlint/config-conventional": "^17.3.0",
     "@kevinmarrec/nuxt-pwa": "^0.17.0",
-    "@nuxt/devtools": "^0.8.3",
+    "@nuxt/devtools": "^1.0.2",
     "@nuxtjs/google-fonts": "^3.0.2",
     "@pinia-plugin-persistedstate/nuxt": "^1.0.0",
     "@sidebase/nuxt-auth": "^0.6.0-beta.5",
@@ -38,6 +38,7 @@
     "@next-auth/prisma-adapter": "^1.0.7",
     "@nuxt/image": "^1.0.0",
     "@nuxt/ui": "^2.9.0",
+    "@nuxtjs/recaptcha": "^1.1.2",
     "@pinia/nuxt": "^0.4.6",
     "@prisma/client": "^5.4.2",
     "@vercel/analytics": "^1.0.0",
@@ -46,6 +47,7 @@
     "h3-formidable": "^1.0.0",
     "next-auth": "^4.21.1",
     "nodemailer": "^6.9.7",
+    "vue-recaptcha-v3": "^2.0.1",
     "vue3-tailwind": "^0.3.4",
     "zod": "^3.22.4"
   }

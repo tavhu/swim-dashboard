@@ -129,7 +129,6 @@ const fetchData = async () => {
 
 fetchData()
 
-
 const sortClick = (event: any) => {
   const sortBy = data.value.sortBy;
   const sortType = data.value.sortType;
@@ -185,12 +184,7 @@ roleData.value?.data?.forEach((ele : any) => {
   <div class="font-[Battambang]">   
     <div class="mt-5">
         <div class="flex justify-between">
-            <h2 class="text-sm lg:text-xl font-[Moul] text-primary">បញ្ចីប្រអប់សារ</h2>         
-                <NuxtLink :to="config.public.origin + '/register'" :disabled="readOnly" >
-                    <UButton  color="primary"  size="xl" :disabled="readOnly">
-                      <h2 class="text-sm  lg:text-xl  font-[Moul]"> បង្កើតប្រអប់សារ </h2>
-                    </UButton>
-                </NuxtLink>                   
+            <h2 class="text-sm lg:text-xl font-[Moul] text-primary">បញ្ចីប្រអប់សារ</h2>        
         </div>
       <hr class="my-2 border dark:border-gray-700" />      
       <TwDatatableServer

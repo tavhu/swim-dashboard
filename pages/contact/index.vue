@@ -1,6 +1,21 @@
 <script setup lang="ts">
 import { z } from 'zod'
 import type { FormSubmitEvent } from '#ui/types'
+import { useReCaptcha } from 'vue-recaptcha-v3';
+const recaptchaInstance = useReCaptcha();
+
+
+const recaptcha = async () => {
+
+  // optional you can await for the reCaptcha load
+  await recaptchaInstance?.recaptchaLoaded();
+  // get the token, a custom action could be added as argument to the method
+  const token = await recaptchaInstance?.executeRecaptcha('/contact');
+
+  return token;
+};
+
+
 const toast = useToast()
 type Schema = z.output<typeof schema>
 definePageMeta({
@@ -51,18 +66,22 @@ const ClearMesage = ()=>{
 
 
 
-async function onSubmit (event: FormSubmitEvent<any>) {  
+const  onSubmit = async (event: FormSubmitEvent<any>) => {  
+
   if(messageSent.value){
     ClearMesage()
     return true
   }
-  if (!(await confirmDialog())) return; 
-
+  if (!(await confirmDialog())){ return true }  
+  
+  const key =  await recaptcha()
+  console.log('key client side ', key)
   loading.value = true
   messageSent.value = false
-  const { data }  = await useFetch('/api/contact', { method: 'post' , 
+  const { data }  = await useFetch('/api/contact', { method: 'post' ,    
     body : JSON.stringify({
       email : state.email,
+      token: key,
       name : state.name,
       phone : state.phone,
       details : state.details,
@@ -79,57 +98,54 @@ async function onSubmit (event: FormSubmitEvent<any>) {
     icon : 'i-heroicons-envelope',    
   })
     messageSent.value = true
-  } 
+  }
   loading.value = false
 }
 
 </script>
 
 <template>
-  <UContainer class="flex justify-center  items-center h-screen font-[battambang]"> 
-      <UCard class="w-full  md:w-9/12 lg:w-9/12">
-        <template #header>          
-          <div class=" text-gray-700 dark:text-white font-[moul]">
-            ទំនាក់ទំនងមកពួកយើង
-          </div>
-        </template>      
-          <UForm  :schema="schema" :state="state" @submit="onSubmit" class="flex flex-col  gap-5">
-            <UFormGroup label="ឈ្មោះពេញ" name="name">
-              <UInput v-model="state.name" size="xl"/>
-            </UFormGroup>
-            <UFormGroup label="អុីមែល" name="email">
-              <UInput v-model="state.email" size="xl"/>
-            </UFormGroup>
-            <UFormGroup label="លេខទូរស័ព្ទ" name="phone">
-              <UInput type="text" v-model="state.phone" size="xl"/>
-            </UFormGroup>
-            <UFormGroup label="ការពិពណ៌នា" name="reason">
-              <USelect v-model="state.reason" :options="option" size="xl"/>
-            </UFormGroup>    
-            <UFormGroup label="ឈ្មោះចូលប្រើប្រាស់ក្នុងប្រើប្រាស់" v-if="state.reason === option[1] " name="username">
-              <UInput  required oninvalid="this.setCustomValidity('សូមបំពេញទិន្នន័យ')"
-               v-model="state.username" size="xl"/>
-            </UFormGroup> 
-            <UFormGroup label="ឈ្មោះមណ្ឌល" v-if="state.reason === option[2] " name="serviceCenterName">
-              <UInput  required oninvalid="this.setCustomValidity('សូមបំពេញទិន្នន័យ')" v-model="state.serviceCenterName" size="xl"/>
-            </UFormGroup> 
-            <UFormGroup label="ការពិពណ៌នា" name="details">
-              <UTextarea v-model="state.details" size="xl"/>
-            </UFormGroup>    
-            <UFormGroup>
-              <UButton type="submit" size="lg" :loading="loading" :icon=" messageSent ?  'i-heroicons-pencil-square' : 'i-heroicons-envelope' " >                
-                
-                {{  messageSent ? 'ផ្ញើសារថ្មី' : 'បញ្ចូន'
-                   }}
-              </UButton>
-            </UFormGroup>
-        </UForm>      
-
-        <!-- <template #footer>
-          <Placeholder class="h-8" />
-        </template> -->
-      </UCard>  
-
-  </UContainer>
-  <UNotifications class="font-[battambang]"/>
+  <div>
+      <UContainer class="flex justify-center  items-center h-screen font-[battambang]"> 
+        <UCard class="w-full  md:w-9/12 lg:w-9/12">
+          <template #header>          
+            <div class=" text-gray-700 dark:text-white font-[moul]">
+              ទំនាក់ទំនងមកពួកយើង
+            </div>
+          </template>      
+            <UForm  :schema="schema" :state="state" @submit="onSubmit" class="flex flex-col  gap-5">
+              <UFormGroup label="ឈ្មោះពេញ" name="name">
+                <UInput v-model="state.name" size="xl"/>
+              </UFormGroup>
+              <UFormGroup label="អុីមែល" name="email">
+                <UInput v-model="state.email" size="xl"/>
+              </UFormGroup>
+              <UFormGroup label="លេខទូរស័ព្ទ" name="phone">
+                <UInput type="text" v-model="state.phone" size="xl"/>
+              </UFormGroup>
+              <UFormGroup label="ការពិពណ៌នា" name="reason">
+                <USelect v-model="state.reason" :options="option" size="xl"/>
+              </UFormGroup>    
+              <UFormGroup label="ឈ្មោះចូលប្រើប្រាស់ក្នុងប្រើប្រាស់" v-if="state.reason === option[1] " name="username">
+                <UInput  required oninvalid="this.setCustomValidity('សូមបំពេញទិន្នន័យ')"
+                v-model="state.username" size="xl"/>
+              </UFormGroup> 
+              <UFormGroup label="ឈ្មោះមណ្ឌល" v-if="state.reason === option[2] " name="serviceCenterName">
+                <UInput  required oninvalid="this.setCustomValidity('សូមបំពេញទិន្នន័យ')" v-model="state.serviceCenterName" size="xl"/>
+              </UFormGroup> 
+              <UFormGroup label="ការពិពណ៌នា" name="details">
+                <UTextarea v-model="state.details" size="xl"/>
+              </UFormGroup>    
+              <UFormGroup>
+                <UButton type="submit" size="lg" :loading="loading" :icon=" messageSent ?  'i-heroicons-pencil-square' : 'i-heroicons-envelope' " >               
+                  
+                  {{  messageSent ? 'ផ្ញើសារថ្មី' : 'បញ្ចូន'
+                    }}
+                </UButton>
+              </UFormGroup>
+          </UForm>          
+        </UCard>  
+    </UContainer>
+    <UNotifications class="font-[battambang]"/>
+  </div>
 </template>

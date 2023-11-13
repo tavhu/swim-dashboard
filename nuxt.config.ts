@@ -41,7 +41,7 @@ export default defineNuxtConfig({
   },
 
   modules: [
-    "@pinia/nuxt",
+    "@pinia/nuxt",   
     "@pinia-plugin-persistedstate/nuxt",
     "@kevinmarrec/nuxt-pwa",
     "@vueuse/nuxt",
@@ -104,5 +104,5 @@ export default defineNuxtConfig({
   },
   colorMode: {
     preference: 'light'
-  }
+  },
 });
