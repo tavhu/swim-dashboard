@@ -67,9 +67,9 @@ onMounted( async  ()=>{
 </script>
 
 <template>
-  <div class="text-white flex justify-center pt-40  font-[battambang]">
+  <div class="text-white flex h-screen justify-center items-center font-[battambang]">
     <div
-      class="text-gray-800 rounded-t-lg w-100  shadow-lg p-1 bg-gradient-to-b from-indigo-400 h-20"
+      class="text-gray-800 rounded-t-lg w-96 sm:12/12  md:w-8/12 lg:w-7/12  shadow-lg p-1 bg-gradient-to-b from-indigo-400 "
       :class="{
         'tw-shake': formError,
       }"
@@ -79,7 +79,7 @@ onMounted( async  ()=>{
       >
         <div class="flex  flex-col justify-center items-center xl:p-8 p-0 xl:pt-0">
           <img src="/Logo.png" alt="" class="h-40 w-40 rounded-full block">
-          <div to="/" class="flex items-center align-middle nowrap xl:text-4xl lg:text-3xl font-[moul] ">         
+          <div to="/" class="flex items-center align-middle nowrap xl:text-4xl lg:text-3xl md:text-2xl font-[moul] ">         
             <span class="dark:text-white text-blue-900 "> ប្រព័ន្ទគ្រប់គ្រង</span> <span class="text-primary"> សុខុមាលភាពសង្គម </span> 
           </div>
         </div>
@@ -123,6 +123,9 @@ onMounted( async  ()=>{
           </div>
         </div>
       </TwForm>
+    </div>
+    <div class="text-primary absolute bottom-0">
+      <NuxtLink to="/contact"> <Icon name="material-symbols:mail-outline-rounded" /> ទាក់ទង​មក​ពួក​យើង</NuxtLink>
     </div>
   </div>
 </template>

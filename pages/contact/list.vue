@@ -7,14 +7,15 @@ import {
   TwDatatableServer,  
 } from "vue3-tailwind";
 
+import { useTimeAgo } from '@vueuse/core'
+
+
 const readOnly = checkIfPageReadOnly()
 const { data  : userDataAuth } = useAuth()
 const toast = useToast();
 useHead({
   title: "បញ្ចីប្រអប់សារ",
 });
-
-
 
 const data = ref({
   column: [
@@ -25,9 +26,9 @@ const data = ref({
   //     sortable: false,
   //   },
     {
-      label: "រូបថត",
-      field: "Profile",
-      width: "150px",
+      label: "កាលបរិច្ឆេទ",
+      field: "dateTime",
+      width: "100px",
       sortable: false,
     },
     {
@@ -37,21 +38,15 @@ const data = ref({
       sortable: false,
     },
     {
-      label: "ឈ្មោះប្រអប់សារ",
-      field: "username",
+      label: "អុីមែល",
+      field: "email",
       width: "300px",
       sortable: false,
     },
      {
-      label: "សិទ្ធិប្រើប្រាស់",
-      field: "permission",
-      width: "150px",
-      sortable: false,
-    },
-     {
-      label: "ស្ថានភាពប្រអប់សារ",
-      field: "status",
-      width: "150px",
+      label: "គោលបំណង",
+      field: "reason",
+      width: "350px",
       sortable: false,
     },
     {
@@ -98,24 +93,17 @@ const globalData: any = ref();
 const config = useRuntimeConfig()
 // const datareturn :any = ref()
 const fetchData = async () => {
-  const baseUrl = "/api/user/get";
+
   const   { data : response}  = await useFetch<{
     total: number;
     data: DatatableData[];
-}>(
-    baseUrl +
-      "?" +
-      new URLSearchParams({
-        limit: data.value.limit.toString(),
-        skip: data.value.offset.toString(),
-        q: data.value.search.toString(),
-        sortType: data.value.sortType,
-        sortBy: data.value.sortBy,
-      }),
-      {
-        method : 'get'              
-      },      
-  )
+}>('/api/contact/get', {method : 'post' ,body : JSON.stringify({
+      limit: data.value.limit.toString(),
+      skip: data.value.offset.toString(),
+      q: data.value.search.toString(),
+      sortType: data.value.sortType,
+      sortBy: data.value.sortBy,
+    })})
  
   globalData.value = {
     totalData: response.value?.total  , // response["total"],
@@ -203,31 +191,23 @@ roleData.value?.data?.forEach((ele : any) => {
                   {{ index }}           
             </div> 
           </template> -->
-          <template v-if="column.field === 'Profile'">
+          <template v-if="column.field === 'dateTime'">
             <div class="flex justify-center">
-              <img :src="config.public.origin + '/' + data.image" alt="" class="w-12 h-12 rounded-full border border-[#1d152a7a]">
+              {{ timeagoInKhmer(useTimeAgo(data.createdAt).value) }}
             </div>
           </template>
           <template v-if="column.field === 'category'">
             <div class="flex justify-center">
-              {{ data.lastname }} {{ data.firstname }}
+              {{ data?.name }} 
             </div>
           </template>
-          <template v-if="column.field === 'username'">
+          <template v-if="column.field === 'email'">
             <div class="flex justify-center">
-              {{ data.username }}
+              {{ data.email }}
             </div>
           </template>
-          <template v-if="column.field === 'status'">
-            <div class="flex justify-center">
-              <span v-if="data.status" class="text-blue-700 dark:text-white">  ដំណើការ </span>
-              <span v-else class="text-red-700"> បិទដំណើការ </span>
-            </div>
-          </template>
-          <template v-if="column.field === 'permission'">
-            <div class="flex justify-center">
-              {{ data.Role.name }} 
-            </div>         
+          <template v-if="column.field === 'reason'">
+           {{ data.reason }}
           </template>
           <template v-if="column.field === 'action'">
             <div class="flex gap-2 justify-center">
@@ -237,7 +217,7 @@ roleData.value?.data?.forEach((ele : any) => {
                       កែសម្រួល
                 </UButton>
               </NuxtLink>
-              <UButton color="red" icon="i-heroicons-trash" @click="deleteRecord(data.id)"  :disabled="readOnly || !(roleDataFormat?.find(ii => ii.value == data.Role.id)?.value ? true : false ) ">
+              <UButton color="red" icon="i-heroicons-trash" @click="deleteRecord(data.id)"  :disabled="readOnly ">
                 លុបចេញ
               </UButton>
             </div>

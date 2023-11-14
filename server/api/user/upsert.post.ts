@@ -9,7 +9,6 @@ export default eventHandler(async  event => {
     if(!session){
         return { status: 'unauthenticated'}
     }    
-      
     try {
         await event.context.prisma.user.upsert({
             where :{
@@ -36,11 +35,11 @@ export default eventHandler(async  event => {
                 serviceCenterID : body?.serviceCenterID,               
             }
         })
-        // console.log(res)
+        //@ts-ignored console.log(res)
         setResponseStatus(event, 201)    
         return { message: "User Update or Created" }
     }catch(e){  
-        console.log(e)
+        //@ts-ignored console.log(e)
         setResponseStatus(event, 412)    
         return {
             error  : 'e',

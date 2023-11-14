@@ -106,7 +106,12 @@ const  onSubmit = async (event: FormSubmitEvent<any>) => {
 
 <template>
   <div>
-      <UContainer class="flex justify-center  items-center h-screen font-[battambang]"> 
+      <UContainer class="flex flex-col justify-center items-center h-screen font-[battambang] gap-2"> 
+        <div class="flex w-full  md:w-9/12 lg:w-9/12 justify-start items-start">
+          <NuxtLink to="/login">
+            <Icon name="material-symbols:keyboard-backspace-rounded" size="35" class/>
+          </NuxtLink>
+        </div>
         <UCard class="w-full  md:w-9/12 lg:w-9/12">
           <template #header>          
             <div class=" text-gray-700 dark:text-white font-[moul]">
@@ -140,7 +145,7 @@ const  onSubmit = async (event: FormSubmitEvent<any>) => {
               <UFormGroup>
                 <div class="flex justify-center" v-if="messageSent">
                   <!-- <UIcon name="i-heroicons-envelope" class="text-red-600 text-6xl" /> -->
-                  <Icon name="bi:send-check-fill" color="green" size="80" />
+                  <Icon name="material-symbols:mark-email-read-rounded" color="green" size="80" />
                 </div>
               <UButton type="submit" size="lg" :loading="loading" :icon=" messageSent ?  'i-heroicons-pencil-square' : 'i-heroicons-envelope' " >               
                   
