@@ -1,17 +1,16 @@
 <script setup lang="ts">
-import {   
+import {
   useToast,
   type DatatableColumn,
   type DatatableData,
   type DropdownItem,
-  TwDatatableServer,  
+  TwDatatableServer,
 } from "vue3-tailwind";
-
 import { useTimeAgo } from '@vueuse/core'
 
 
 const readOnly = checkIfPageReadOnly()
-const { data  : userDataAuth } = useAuth()
+const { data: userDataAuth } = useAuth()
 const toast = useToast();
 useHead({
   title: "បញ្ចីប្រអប់សារ",
@@ -19,12 +18,12 @@ useHead({
 
 const data = ref({
   column: [
-  // {
-  //     label: "ល.រ",
-  //     field: "number",
-  //     width: "50px",
-  //     sortable: false,
-  //   },
+    // {
+    //     label: "ល.រ",
+    //     field: "number",
+    //     width: "50px",
+    //     sortable: false,
+    //   },
     {
       label: "កាលបរិច្ឆេទ",
       field: "dateTime",
@@ -43,7 +42,7 @@ const data = ref({
       width: "300px",
       sortable: false,
     },
-     {
+    {
       label: "គោលបំណង",
       field: "reason",
       width: "350px",
@@ -94,24 +93,26 @@ const config = useRuntimeConfig()
 // const datareturn :any = ref()
 const fetchData = async () => {
 
-  const   { data : response}  = await useFetch<{
+  const { data: response } = await useFetch<{
     total: number;
     data: DatatableData[];
-}>('/api/contact/get', {method : 'post' ,body : JSON.stringify({
+  }>('/api/contact/get', {
+    method: 'post', body: JSON.stringify({
       limit: data.value.limit.toString(),
       skip: data.value.offset.toString(),
       q: data.value.search.toString(),
       sortType: data.value.sortType,
       sortBy: data.value.sortBy,
-    })})
- 
+    })
+  })
+
   globalData.value = {
-    totalData: response.value?.total  , // response["total"],
-    data: response.value?.data  , // response["data"],   
+    totalData: response.value?.total, // response["total"],
+    data: response.value?.data, // response["data"],   
   };
   return {
-    totalData: response?.value?.total ? response?.value?.total : 0 , // response["total"],
-    data: response?.value?.data  ?  response?.value?.data : [] , // response["data"],  
+    totalData: response?.value?.total ? response?.value?.total : 0, // response["total"],
+    data: response?.value?.data ? response?.value?.data : [], // response["data"],  
   }
 }
 
@@ -127,17 +128,17 @@ const sortClick = (event: any) => {
 };
 
 const deleteRecord = async (id: string) => {
-  if(readOnly) return;
+  if (readOnly) return;
   if (!(await confirmDialog())) return;
 
-  const { error } = await useFetch("/api/user/delete", {
+  const { error } = await useFetch('/api/contact/delete', {
     method: "POST",
     body: JSON.stringify({
       id: id,
     }),
   })
 
-  if (error.value?.statusCode){
+  if (error.value?.statusCode) {
     toast.error({
       message: "មិនជោគជ័យ",
     });
@@ -150,16 +151,17 @@ const deleteRecord = async (id: string) => {
   data.value.limit === 10 ? (data.value.limit = 5) : (data.value.limit = 10);
 };
 
-const notGrated = ref(false)
 
-const {data : roleData  } = await useFetch("/api/role/get",{ method : 'get' , query : {
-  //@ts-ignore
-  userID : userDataAuth.value?.sub }
+const { data: roleData } = await useFetch("/api/role/get", {
+  method: 'get', query: {
+    //@ts-ignore
+    userID: userDataAuth.value?.sub
+  }
 })
-const roleDataFormat : DropdownItem [] = new Array({ label : '', value: ''})
+const roleDataFormat: DropdownItem[] = new Array({ label: '', value: '' })
 roleDataFormat.pop()
 //@ts-ignored
-roleData.value?.data?.forEach((ele : any) => {  
+roleData.value?.data?.forEach((ele: any) => {
   roleDataFormat.push(
     {
       label: ele?.name,
@@ -167,24 +169,26 @@ roleData.value?.data?.forEach((ele : any) => {
     }
   )
 });
+
+const selectedID = ref("")
+const keyIncrement = ref(0)
+const openCanvasBoolean = ref(false)
+const OpenCanvas = (id: string) => {
+  selectedID.value = id
+  openCanvasBoolean.value = true
+  keyIncrement.value++
+}
 </script>
 <template>
-  <div class="font-[Battambang]">   
+  <div class="font-[Battambang]">
     <div class="mt-5">
-        <div class="flex justify-between">
-            <h2 class="text-sm lg:text-xl font-[Moul] text-primary">បញ្ចីប្រអប់សារ</h2>        
-        </div>
-      <hr class="my-2 border dark:border-gray-700" />      
-      <TwDatatableServer
-        v-bind:fetch-data="fetchData"
-        v-model:search="data.search"
-        v-model:limit="data.limit"
-        v-model:offset="data.offset"       
-        v-model:sort-by="data.sortBy"
-        v-model:sort-type="data.sortType"
-        :column="data.column"     
-        @on-sort-change="sortClick"
-      >
+      <div class="flex justify-between">
+        <h2 class="text-sm lg:text-xl font-[Moul] text-primary">បញ្ចីប្រអប់សារ</h2>
+      </div>
+      <hr class="my-2 border dark:border-gray-700" />
+      <TwDatatableServer v-bind:fetch-data="fetchData" v-model:search="data.search" v-model:limit="data.limit"
+        v-model:offset="data.offset" v-model:sort-by="data.sortBy" v-model:sort-type="data.sortType" :column="data.column"
+        @on-sort-change="sortClick">
         <template #row="{ index, column, data }">
           <!-- <template v-if="column.field === 'number'">
             <div class="flex justify-center">       
@@ -198,7 +202,7 @@ roleData.value?.data?.forEach((ele : any) => {
           </template>
           <template v-if="column.field === 'category'">
             <div class="flex justify-center">
-              {{ data?.name }} 
+              {{ data?.name }}
             </div>
           </template>
           <template v-if="column.field === 'email'">
@@ -207,17 +211,16 @@ roleData.value?.data?.forEach((ele : any) => {
             </div>
           </template>
           <template v-if="column.field === 'reason'">
-           {{ data.reason }}
+            {{ data.reason }}
           </template>
           <template v-if="column.field === 'action'">
             <div class="flex gap-2 justify-center">
-              <NuxtLink                     
-                :to="config.public.origin + '/register?id='  + data.id"  :disabled="readOnly"               >               
-                <UButton color="primary"  icon="i-heroicons-pencil-square" class="border"  :disabled="readOnly">
-                      កែសម្រួល
-                </UButton>
-              </NuxtLink>
-              <UButton color="red" icon="i-heroicons-trash" @click="deleteRecord(data.id)"  :disabled="readOnly ">
+
+              <UButton color="primary" icon="i-heroicons-eye" class="border" @click="OpenCanvas(data.id)"
+                :disabled="readOnly">
+                មើលព័ត៌មានលំអិត
+              </UButton>
+              <UButton color="red" icon="i-heroicons-trash" @click="deleteRecord(data.id)" :disabled="readOnly">
                 លុបចេញ
               </UButton>
             </div>
@@ -230,5 +233,6 @@ roleData.value?.data?.forEach((ele : any) => {
         </template>
       </TwDatatableServer>
     </div>
+    <ContactMessageContactDetailsCanvas :openisTrue="openCanvasBoolean" :id="selectedID" :key="keyIncrement" />
   </div>
 </template>

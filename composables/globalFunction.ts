@@ -50,9 +50,9 @@ export const checkIfPageReadOnly  = () =>{
 export const timeagoInKhmer = (timeAgoEn : string)=>{
   return timeAgoEn.replace('hours', 'ម៉ោង').replace('hour', 'ម៉ោង').replace('ago','មុន')
   .replace('just now','ឥឡូវនេះ').replace('minutes','នាទី').replace('minute','នាទី').replace('yesterday','ម្សិលមិញ')
-  .replace('day','ថ្ងៃ').replace('days','ថ្ងៃ').replace('last week','សប្ដាហ៍​មុន').replace('weeks','សប្ដាហ៍​').replace('last month','ខែមុន')
+  .replace('days','ថ្ងៃ').replace('day','ថ្ងៃ').replace('last week','សប្ដាហ៍​មុន').replace('weeks','សប្ដាហ៍​').replace('last month','ខែមុន')
   .replace('months','ខែ').replace('last year','ឆ្នាំមុន').replace('years','ឆ្នាំ').replace('1','១').replace('2','២')
   .replace('3','៣').replace('4','៤').replace('5','៥').replace('6','៦').replace('7','៧').replace('8','៨')
-  .replace('9','៩').replace('0','០')
+  .replace('9','៩').replace('0','០').replaceAll(' ', '')
 }
 
