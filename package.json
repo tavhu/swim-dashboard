@@ -45,6 +45,8 @@
     "@vercel/analytics": "^1.0.0",
     "bcrypt": "^5.1.0",
     "feather-icons": "^4.29.0",
+    "firebase": "^10.6.0",
+    "firebase-admin": "^11.11.0",
     "h3-formidable": "^1.0.0",
     "next-auth": "^4.21.1",
     "nodemailer": "^6.9.7",
