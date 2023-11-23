@@ -21,7 +21,8 @@ const { data } = await useFetch<contactMessage>("/api/contact/get", {
   }),
 });
 
-if (!data?.value?.read) {
+if (data?.value?.read === false) {
+  console.log(data.value?.read)
   await useFetch('/api/contact/update', {method : 'post', body : 
   JSON.stringify({
     id: prop.id
