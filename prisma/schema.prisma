@@ -32,32 +32,33 @@ model Session {
 }
 
 model User {
-  id              String         @id @unique @default(cuid())
+  id              String           @id @unique @default(cuid())
   firstname       String?
   lastname        String?
-  username        String         @unique
+  username        String           @unique
   password        String
   image           String?
-  status          Boolean        @default(true)
+  status          Boolean          @default(true)
   userRoleID      String?
   serviceCenterID String?
-  ServiceCenter   ServiceCenter? @relation(fields: [serviceCenterID], references: [id])
-  Role            Role?          @relation(fields: [userRoleID], references: [id])
-  contactMessage contactMessage[]
+  ServiceCenter   ServiceCenter?   @relation(fields: [serviceCenterID], references: [id])
+  Role            Role?            @relation(fields: [userRoleID], references: [id])
+  contactMessage  contactMessage[]
 }
 
 model contactMessage {
-  id  String @id @unique @default(cuid())
-  email String?
-  name String?
-  phone String?
-  details String?
-  reason String?
+  id                String   @id @unique @default(cuid())
+  email             String?
+  name              String?
+  phone             String?
+  details           String?
+  reason            String?
   serviceCenterName String?
-  username String?
-  createdAt DateTime @default(now())
-  deleted Boolean @default(false)
-  user  User[]
+  username          String?
+  createdAt         DateTime @default(now())
+  deleted           Boolean  @default(false)
+  read              Boolean
+  user              User[]
 }
 
 model Role {
@@ -91,6 +92,7 @@ model VerificationToken {
   identifier String
   token      String   @unique
   expires    DateTime
+
   @@unique([identifier, token])
 }
 
@@ -123,7 +125,7 @@ model ServiceCenter {
 }
 
 model Staff {
-  id              String        @id @default(cuid())
+  id              String         @id @default(cuid())
   title           String
   firstName       String
   lastName        String

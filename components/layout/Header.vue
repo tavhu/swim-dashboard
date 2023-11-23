@@ -2,6 +2,7 @@
 import { TwButton, TwDropdownMenu, TwFeather } from "vue3-tailwind";
 import { useSidebarStore } from "~~/store/sidebar";
 
+
 const sidebarStore = useSidebarStore();
 const animationOpenClose = useAnimationOpenClose();
 const { signOut } = useAuth()
@@ -13,6 +14,10 @@ const config = useRuntimeConfig()
 // const logout = () => {
 //   router.push("/login");
 // };
+
+
+
+
 
 </script>
 <template>

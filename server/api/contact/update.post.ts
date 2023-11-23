@@ -10,9 +10,12 @@ export default eventHandler(async (event) => {
   }
 
   try {
-    await event.context.prisma.contactMessage.delete({
+    await event.context.prisma.contactMessage.update({
       where: {
         id: body?.id,
+      },
+      data: {
+        read: true,
       },
     });
     let docs = firestore
@@ -22,7 +25,9 @@ export default eventHandler(async (event) => {
     docs.get().then((querySnapshot) => {
       querySnapshot.docs.forEach(async (doc) => {
         console.log("doc inside ID", doc.id);
-        await firestore.doc(`/message/${doc.id}`).delete();
+        await firestore.doc(`/message/${doc.id}`).update({
+          read: true,
+        });
       });
     });
 

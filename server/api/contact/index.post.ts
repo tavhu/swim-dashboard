@@ -94,25 +94,29 @@ export default eventHandler(async (event) => {
            `, // html body
     });
     // console.log("Message sent: %s", info.messageId);
-    const dd = {
-      email: body?.email ?? "",
-      name: body?.name ?? "",
-      phone: body?.phone ?? "",
-      details: body?.details ?? "",
-      reason: body?.reason ?? "",
-      serviceCenterName: body?.serviceCenterName ?? "",
-      username: body?.username ?? "",
-    };
     if (info.messageId) {
-      await event.context.prisma.contactMessage.create({
+      const dd = {
+        email: body?.email ?? "",
+        name: body?.name ?? "",
+        phone: body?.phone ?? "",
+        details: body?.details ?? "",
+        reason: body?.reason ?? "",
+        serviceCenterName: body?.serviceCenterName ?? "",
+        username: body?.username ?? "",
+        read: false,
+      };
+      const messageID = await event.context.prisma.contactMessage.create({
         data: dd,
       });
+
       let collectionRef = firestore.collection("message");
 
       // Add a document with an auto-generated ID.
-      collectionRef.add(dd).then((documentRef) => {
-        console.log(`Added document at ${documentRef.path})`);
-      });
+      collectionRef
+        .add({ ...dd, messageID: messageID.id })
+        .then((documentRef) => {
+          console.log(`Added document at ${documentRef.path})`);
+        });
     }
     setResponseStatus(event, 201);
     return { status: true };

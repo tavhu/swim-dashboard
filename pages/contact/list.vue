@@ -8,6 +8,8 @@ import {
 } from "vue3-tailwind";
 import { useTimeAgo } from '@vueuse/core'
 
+const messNOtificationNumber = useState<number>('readMessages', () => 0)
+
 
 const readOnly = checkIfPageReadOnly()
 const { data: userDataAuth } = useAuth()
@@ -103,8 +105,10 @@ const fetchData = async () => {
       q: data.value.search.toString(),
       sortType: data.value.sortType,
       sortBy: data.value.sortBy,
-    })
-  })
+    }),
+  },
+  
+  )
 
   globalData.value = {
     totalData: response.value?.total, // response["total"],
@@ -178,9 +182,20 @@ const OpenCanvas = (id: string) => {
   openCanvasBoolean.value = true
   keyIncrement.value++
 }
+const Boo = ref(false)
+
+onMounted(()=>{
+  watch(messNOtificationNumber, () => {
+    if (messNOtificationNumber.value != 0) {
+      console.log('canvasClosed')
+      data.value.limit === 10 ? (data.value.limit = 5) : (data.value.limit = 10);
+    }
+  })
+})
+
 </script>
 <template>
-  <div class="font-[Battambang]">
+  <div class="font-[Battambang]"> 
     <div class="mt-5">
       <div class="flex justify-between">
         <h2 class="text-sm lg:text-xl font-[Moul] text-primary">បញ្ចីប្រអប់សារ</h2>
@@ -189,7 +204,7 @@ const OpenCanvas = (id: string) => {
       <TwDatatableServer v-bind:fetch-data="fetchData" v-model:search="data.search" v-model:limit="data.limit"
         v-model:offset="data.offset" v-model:sort-by="data.sortBy" v-model:sort-type="data.sortType" :column="data.column"
         @on-sort-change="sortClick">
-        <template #row="{ index, column, data }">
+        <template #row="{ index, column, data }" :class="'bg-red-400'"  >
           <!-- <template v-if="column.field === 'number'">
             <div class="flex justify-center">       
                   {{ index }}           
@@ -216,7 +231,7 @@ const OpenCanvas = (id: string) => {
           <template v-if="column.field === 'action'">
             <div class="flex gap-2 justify-center">
 
-              <UButton color="primary" icon="i-heroicons-eye" class="border" @click="OpenCanvas(data.id)"
+              <UButton  icon="i-heroicons-eye" class="border" :class="!data.read ? ' bg-primary ' : 'bg-gray-500 '" @click="OpenCanvas(data.id)"
                 :disabled="readOnly">
                 មើលព័ត៌មានលំអិត
               </UButton>
@@ -233,6 +248,6 @@ const OpenCanvas = (id: string) => {
         </template>
       </TwDatatableServer>
     </div>
-    <ContactMessageContactDetailsCanvas :openisTrue="openCanvasBoolean" :id="selectedID" :key="keyIncrement" />
+    <ContactMessageContactDetailsCanvas :openisTrue="openCanvasBoolean"  :id="selectedID" :key="keyIncrement" />
   </div>
 </template>

@@ -8,9 +8,11 @@ const prop = defineProps<{
   id: string | undefined | null;
 }>();
 
-const emit = defineEmits<{
-  (event: "canvasIsOpen", isOpen: boolean): any;
-}>();
+const messNOtificationNumber = useState<number>('readMessages')
+
+// const emit = defineEmits<{
+//   (event: "canvasIsOpen", isOpen: boolean): any;
+// }>();
 
 const { data } = await useFetch<contactMessage>("/api/contact/get", {
   method: "POST",
@@ -19,6 +21,16 @@ const { data } = await useFetch<contactMessage>("/api/contact/get", {
   }),
 });
 
+if (!data?.value?.read) {
+  await useFetch('/api/contact/update', {method : 'post', body : 
+  JSON.stringify({
+    id: prop.id
+  })
+  })
+  messNOtificationNumber.value = messNOtificationNumber.value + 1
+} 
+  
+
 const openisTrues: any = ref();
 onMounted(() => {
   if (prop.openisTrue) {
@@ -26,6 +38,10 @@ onMounted(() => {
     openisTrues?.value?.openOffCanvas();
   }
 });
+
+// onBeforeDestroy(()=>{
+//   emit('canvasIsOpen',false)
+// })
 </script>
 <template>
   <TwOffcanvas position="right" width="800px" ref="openisTrues">

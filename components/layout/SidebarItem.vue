@@ -2,8 +2,11 @@
 import { TwFeather } from "vue3-tailwind";
 import { isOpen as currentOpen } from "~/store/isOpen";
 import { useSidebarStore } from "~~/store/sidebar";
+import { collection, query, where, onSnapshot, Unsubscribe } from "firebase/firestore";
+import { firebaseDB } from "~/composables/firebase";
 // import { isOpen as currentOpen } from '~~/store/isOpen'
 
+const messNOtificationNumber = useState<number>('readMessages')
 
 interface Item {
   isTitle: boolean
@@ -32,6 +35,21 @@ const toggleOpen = () => {
   isOpen.value = is.isOpen  
 }
 const permission = <any>useState('userPermission')
+
+let unSub: Unsubscribe
+let unreadItem :number 
+const items :any = ref([]);
+onMounted(() => {
+  const q = query(collection(firebaseDB, "message"), where("read", "==", false));
+  unSub = onSnapshot(q, (querySnapshot) => {
+    items.value = []
+    querySnapshot.forEach((doc) => {
+      items.value.push(doc.data().name);
+    });
+    // console.log("Current cities in CA: ", cities.join(", "));
+    messNOtificationNumber.value ++ //trigger global changes vallue
+  });
+})
 </script>
 
 <template > 
@@ -64,7 +82,7 @@ const permission = <any>useState('userPermission')
         class="flex  md:justify-center lg:justify-start duration-300 items-center  gap-3 cursor-pointer px-5 py-3 dark:hover:text-primary md:hover:text-gray-600 md:hover:bg-opacity-40 border-transparent">
         <TwFeather v-if="item.icon" :type="item.icon"></TwFeather>
         <div class="md:hidden lg:block select-none whitespace-nowrap overflow-hidden text-ellipsis"  >
-          {{ item.name }}
+          {{ item.name }} <span v-if="item.name == 'ប្រអប់សារ' && items.length != 0 " class="rounded-full text-xs bg-red-600 text-white text-center align-middle pl-1 pr-1"> {{ item.name == 'ប្រអប់សារ' ? items.length : '' }}</span>
         </div>
         <div class="md:hidden lg:flex ml-auto items-center">
           <TwFeather type="chevron-down" class="duration-300" :class="{ 'rotate-180 text-primary': isOpen }"></TwFeather>
