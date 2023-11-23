@@ -2,7 +2,7 @@
 import { TwFeather } from "vue3-tailwind";
 import { isOpen as currentOpen } from "~/store/isOpen";
 import { useSidebarStore } from "~~/store/sidebar";
-import { collection, query, where, onSnapshot, Unsubscribe } from "firebase/firestore";
+import { collection, query, where, onSnapshot, type Unsubscribe } from "firebase/firestore";
 import { firebaseDB } from "~/composables/firebase";
 // import { isOpen as currentOpen } from '~~/store/isOpen'
 
