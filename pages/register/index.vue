@@ -25,7 +25,7 @@ const edit = route?.query?.id
 
 const compute = computed(()=>route?.query?.id)
 watch(compute,async ()=>{
-    window.location.reload()    
+    window.location.reload()        
 })
 //@ts-ignore
 const userDataAuthRef = computed(()=>userDataAuth.value?.sub)
