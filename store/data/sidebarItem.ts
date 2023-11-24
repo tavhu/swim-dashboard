@@ -197,7 +197,7 @@ export default [
         url: "/contact/list",
         icon: "",
         submenu: [],
-      }, 
+      },
     ],
   },
   {
@@ -248,7 +248,7 @@ export default [
         url: "/center",
         icon: "",
         submenu: [],
-      },      
+      },
       {
         isTitle: false,
         name: "បុគ្កលិកមណ្ឌល",
