@@ -189,6 +189,7 @@ onMounted(()=>{
     if (messNOtificationNumber.value != 0) {
       console.log('canvasClosed')
       data.value.limit === 10 ? (data.value.limit = 5) : (data.value.limit = 10);
+      
     }
   })
 })
