@@ -138,11 +138,27 @@ model Staff {
 }
 
 model Client {
-  id              String        @id @unique @default(cuid())
+  id              String          @id @unique @default(cuid())
+  title           String
   firstname       String?
   lastname        String?
+  sID             String?
+  phoneNumber     String?
   image           String?
-  status          Boolean       @default(true)
+  address         String?
+  city            String?
+  district        String?
+  status          Boolean         @default(true)
   serviceCenterID String
-  ServiceCenter   ServiceCenter @relation(fields: [serviceCenterID], references: [id])
+  ServiceCenter   ServiceCenter   @relation(fields: [serviceCenterID], references: [id])
+  History         ClientHistroy[]
+}
+
+model ClientHistroy {
+  id          String   @id @unique @default(cuid())
+  noteDetails String
+  createdAt   DateTime @default(now())
+  editedAt    DateTime
+  clientID    String
+  Client      Client   @relation(fields: [clientID], references: [id])
 }

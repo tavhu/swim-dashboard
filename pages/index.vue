@@ -23,7 +23,7 @@ useHead({
     <h1 class="text-2xl font-bold">Dashboard</h1>
     <hr class="my-2 border dark:border-gray-700" />
     <div class="grid grid-cols-12 gap-2">
-      <div class="col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-3">
+      <!-- <div class="col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-3">
         <div
           class="p-2 rounded-lg bg-white dark:bg-gray-800 shadow flex justify-between gap-2 h-full"
         >
@@ -102,9 +102,9 @@ useHead({
             <TwFeather type="shopping-cart"></TwFeather>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
-    <div class="grid grid-cols-12 gap-2 mt-2">
+    <!-- <div class="grid grid-cols-12 gap-2 mt-2">
       <div class="col-span-12 md:col-span-7">
         <div class="flex gap-2 rounded-lg p-4 shadow bg-white dark:bg-gray-800">
           <div class="flex flex-col justify-between">
@@ -161,6 +161,6 @@ useHead({
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>

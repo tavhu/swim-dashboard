@@ -238,12 +238,20 @@ const addStaff = (CenterID : string)=>{
               <UButton color="blue" icon="i-heroicons-users" @click="addStaff(data.id)"  :disabled="readOnly">
                 ចុះឈ្មោះបុគ្គលិកមណ្ឌល
               </UButton>
+              <NuxtLink
+              :to="config.public.origin + '/center/id/' + data.id "
+              >
+                <UButton color="primary"  icon="i-heroicons-pencil-square" class="border"  :disabled="readOnly">
+                        កែសម្រួល
+                </UButton>
+              </NuxtLink>
               <NuxtLink                     
                 :to="config.public.origin + '/center?id='  + data.id"  :disabled="readOnly"               >               
                 <UButton color="primary"  icon="i-heroicons-pencil-square" class="border"  :disabled="readOnly">
                       កែសម្រួល
                 </UButton>
               </NuxtLink>
+
               <UButton color="red" icon="i-heroicons-trash" @click="deleteRecord(data.id)"  :disabled="readOnly">
                 លុបចេញ
               </UButton>
