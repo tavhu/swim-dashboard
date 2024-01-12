@@ -4,7 +4,6 @@ const { data, status } = useAuth();
 definePageMeta({ auth: true });
 
 // const  ss = await useFetch('/api/me',{method :'post'})
-
 // const headers = useRequestHeaders(["cookie"]) as HeadersInit;
 // const { data: token } = await useFetch("/api/token", { headers });
 
@@ -13,8 +12,6 @@ useHead({
 });
 
 // const rr = await useFetch('/api/deleteFile')
-
-
 </script>
 
 <template>

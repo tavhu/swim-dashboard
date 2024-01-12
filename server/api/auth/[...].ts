@@ -24,7 +24,8 @@ export default NuxtAuthHandler({
           token.image = user.image
           token.status = user.status
           token.username = user.username
-          token.fullname = user.firstname + user.lastname          
+          token.fullname = user.firstname + user.lastname     
+          token.serviceCenterID = user.serviceCenterID     
         }
         
         return token

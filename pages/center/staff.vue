@@ -15,6 +15,8 @@ import {
 const readOnly = checkIfPageReadOnly()
 // const resource = useResource()
 
+const { data : datauseAuth, status } = useAuth();
+
 useHead({
   title: "បុគ្គលិកមណ្ឌល",
 });
@@ -90,21 +92,23 @@ const fetchData = async () => {
         skip: data.value.offset.toString(),
         q: data.value.search.toString(),
         sortType: data.value.sortType,
-        sortBy: data.value.sortBy,
+        sortBy: data.value.sortBy,         
+        serviceCenterID : true
       })) ,
         method : 'post'
       }
   );
   // console.log(response.value?.data)
-  globalData.value = {
-    data: response.value?.data  ? response.value?.data : [],
+  globalData.value = {//@ts-ignore
+    data: response.value?.data  ? response.value?.data: [],
     totalData: response.value?.total ? response.value?.total : 0,
   };
-  return {
-    data: response.value?.data  ? response.value?.data : [],
+  return {//@ts-ignore
+    data: response.value?.data  ? response.value?.data: [],
     totalData: response.value?.total ? response.value?.total : 0,
   };
 }
+
 fetchData()
 
 const sortClick = (event: any) => {
@@ -156,27 +160,23 @@ const openRegisterForm = ()=>{
   openisKey.value ++ 
   editID.value = '';  
 }
-
-
 const updateTable = ()=>{
       data.value.limit === 10 ? (data.value.limit = 5) : (data.value.limit = 10);
     }
 </script>
 
 
-
 <template>
   <div class="font-[Battambang]">    
     <div class="mt-5">      
       <div class="flex justify-between">
-            <h2 class=" text-md  lg:text-2xl font-[Moul] text-primary">បញ្ចីបុគ្គលិកមណ្ឌល</h2>         
-               
+            <h2 class=" text-md  lg:text-2xl font-[Moul] text-primary">បញ្ចីបុគ្គលិកមណ្ឌល</h2>                        
             <UButton @click="openRegisterForm" color="primary"  size="xl" :disabled="readOnly">
               <h2 class=" text-sm  lg:text-xl font-[Moul]">ចុះឈ្មោះបុគ្គលិកមណ្ឌល </h2>
-            </UButton>
-                                
+            </UButton>                                
         </div>
-      <hr class="my-2 border dark:border-gray-700" />
+      <hr class="my-2 border dark:border-gray-700" />         
+    
       <TwDatatableServer
         
         v-bind:fetch-data="fetchData"
@@ -197,13 +197,11 @@ const updateTable = ()=>{
           </template>
           <template v-if="column.field === 'description'" >
             <div class="flex justify-center"> 
-
-              {{ data.ServiceCenter.nameKH }}
+              {{ data.ServiceCenter.nameKH }}            
             </div>
           </template>
           <template v-if="column.field === 'action'">
-            <div class="flex gap-2 justify-center">
-             
+            <div class="flex gap-2 justify-center">             
               <UButton 
               :disabled ="readOnly"
               icon="i-heroicons-pencil-square"
@@ -214,8 +212,7 @@ const updateTable = ()=>{
               @click="editRecord(data.id)"
               >
                 កែសម្រួល
-              </UButton >            
-
+              </UButton >  
               <UButton 
               :disabled ="readOnly"
               icon="i-heroicons-trash"

@@ -18,6 +18,9 @@ export default eventHandler(async  (event) => {
                 id : body?.id
             }
         }) : await event.context.prisma.serviceCenter.findMany({
+            where :{//@ts-ignored
+                id : session.serviceCenterID  ?  session.serviceCenterID :  { not : 'null' }
+            },
             orderBy : {
                 id: 'desc'
             },

@@ -242,7 +242,7 @@ const addStaff = (CenterID : string)=>{
               :to="config.public.origin + '/center/id/' + data.id "
               >
                 <UButton color="primary"  icon="i-heroicons-pencil-square" class="border"  :disabled="readOnly">
-                        កែសម្រួល
+                        មើលព័ត៌មានលំអិត
                 </UButton>
               </NuxtLink>
               <NuxtLink                     

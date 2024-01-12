@@ -10,14 +10,17 @@ export default eventHandler(async  (event) => {
     if(!session){
         return { status: 'unauthenticated'}
     }    
-      
+
+    console.log(session)
+  
     try {
         const totalCount =  await  event.context.prisma.staff.count()
         const data = body?.id ?  await event.context.prisma.staff.findFirst({
-            where :{
-                id : body?.id
-            },
+          
         }) : await event.context.prisma.staff.findMany({
+            where :{//@ts-ignored
+                serviceCenterID : session.serviceCenterID?  session.serviceCenterID : { not : null }
+            },
             select :{
                 id : true ,
                 title : true ,
@@ -34,8 +37,8 @@ export default eventHandler(async  (event) => {
                         nameKH : true
                     }
                 }
-            }
-            ,
+            },
+          
             orderBy : {
                 id: 'desc'
             },

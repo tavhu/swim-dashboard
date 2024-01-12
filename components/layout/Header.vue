@@ -16,9 +16,6 @@ const config = useRuntimeConfig()
 // };
 
 
-
-
-
 </script>
 <template>
   <header
