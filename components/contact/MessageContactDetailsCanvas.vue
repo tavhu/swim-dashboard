@@ -57,7 +57,7 @@ onMounted(() => {
         <hr />
         <div class="mt-2 flex justify-evenly ">
           <div>
-            <span class="text-primary"> ឈ្មោះពេញ </span><br>
+            <span class="text-primary"> ឈ្មោះមនត្រ្ </span><br>
             <span> {{ data?.name}} </span>
           </div>
           <div>
@@ -70,10 +70,6 @@ onMounted(() => {
           </div>
         </div>
         <hr class="mt-2" />
-        <div class="mt-2">
-          <span class="text-primary"> មូលហេតុ </span><br>
-          <span> {{ data?.reason}} </span>
-        </div>
         <div  class="mt-2" v-if="data?.serviceCenterName">
           <span class="text-primary"> ឈ្មោះមណ្ឌល </span><br>
           <span> {{ data?.serviceCenterName}} </span>
@@ -82,11 +78,15 @@ onMounted(() => {
           <span class="text-primary"> ឈ្មោះចូលប្រើប្រាស់ក្នុងប្រើប្រាស់ </span><br>
           <span> {{ data?.username}} </span>
         </div>
+        <div class="mt-2">
+          <span class="text-primary"> មូលហេតុ </span><br>
+          <span> {{ data?.reason}} </span>
+        </div>
         <div  class="mt-2" v-if="data?.details">
           <span class="text-primary"> ការពិពណ៌នា </span><br>
           <span> {{ data?.details}} </span>
         </div>
-    
+        
       </div>
     </div>
   </TwOffcanvas>

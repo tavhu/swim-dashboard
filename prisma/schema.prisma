@@ -125,23 +125,45 @@ model ServiceCenter {
 }
 
 model Staff {
-  id              String         @id @default(cuid())
-  title           String
-  firstName       String
-  lastName        String
-  gender          String
-  position        String
-  telephone       String
-  email           String
-  serviceCenterID String?
-  ServiceCenter   ServiceCenter? @relation(fields: [serviceCenterID], references: [id])
+  id                     String         @id @default(cuid())
+  photo                  String
+  type                   String // មន្រ្តីកិច្ចសន្យា ឬ មន្រ្តីក្របខណ្ឌ
+  workingPeroid          String? //មន្ត្រីកិច្ចសន្យា
+  attachedContract       String? //មន្ត្រីកិច្ចសន្យា
+  attachedBackground     String? // ប្រវត្តិរូបមានរូបថត៤x៦ //មន្ត្រីកិច្ចសន្យា
+  attachedFileInfomation String //ព្រឹត្តិប័ត្រព័ត៌មានសម្រាប់ស្នើសុំមន្ត្រីកិច្ចសន្យា
+  title                  String
+  firstName              String
+  lastName               String
+  nationality            String
+  dateofbirth            String
+  birthAddress           String
+  brithCity              String?
+  birthDistrict          String?
+  currentAddress         String?
+  currentCity            String?
+  currentDistrict        String?
+  SID                    String?
+  passport               String?
+  workingEXP             Boolean
+  workingEXPYes          String?
+  gender                 String
+  position               String
+  telephone              String
+  email                  String
+  familyAddress          String
+  familyPhoneNumber      String
+  familyEmail            String
+  serviceCenterID        String?
+  ServiceCenter          ServiceCenter? @relation(fields: [serviceCenterID], references: [id])
 }
 
 model Client {
   id              String          @id @unique @default(cuid())
   title           String
   firstname       String?
-  lastname        String?
+  lastname        String
+  nameEN          String?
   sID             String?
   phoneNumber     String?
   image           String?

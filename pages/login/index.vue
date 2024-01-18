@@ -80,7 +80,7 @@ onMounted( async  ()=>{
         <div class="flex  flex-col justify-center items-center xl:p-8 p-0 xl:pt-0">
           <img src="/Logo.png" alt="" class="h-40 w-40 rounded-full block">
           <div to="/" class="flex items-center align-middle nowrap xl:text-4xl lg:text-3xl md:text-2xl font-[moul] ">         
-            <span class="dark:text-white text-blue-900 "> ប្រព័ន្ទគ្រប់គ្រង</span> <span class="text-primary"> សុខុមាលភាពសង្គម </span> 
+            <span class="dark:text-white text-blue-900 "> ប្រព័ន្ទគ្រប់គ្រងសុខុមាលភាពសង្គម </span>   
           </div>
         </div>
       </div>
@@ -116,8 +116,8 @@ onMounted( async  ()=>{
             />
             <TwErrorMessage name="password"></TwErrorMessage>
           </div>
-          <div class="col-span-12 text-center">
-            <TwButton  icon="log-in" class="w-full text-center bg-primary font-bold">
+          <div class="col-span-12 text-center mt-2">
+            <TwButton    icon="log-in"  class=" text-center  bg-blue-500 text-xl font-bold">
               បញ្ជូន
             </TwButton>      
           </div>

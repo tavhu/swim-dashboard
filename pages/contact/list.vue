@@ -33,7 +33,7 @@ const data = ref({
       sortable: false,
     },
     {
-      label: "ឈ្មោះពេញ",
+      label: "ឈ្មោះមន្ត្រីស្នើសុំ",
       field: "category",
       width: "450px",
       sortable: false,
