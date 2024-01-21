@@ -160,56 +160,61 @@ model Staff {
 }
 
 model governStaff {
-  id                         String                       @id @default(cuid())
-  photo                      String
-  firstNameKH                String
-  lastNameKH                 String
-  firstNameEN                String
-  lastNameEN                 String
-  gender                     String
-  DateofBirth                DateTime
-  ethnicity                  String
-  nationality                String
-  birthAddress               String
-  currentAddress             String
-  telephone                  String
-  email                      String
-  officialID                 String
-  CambodianSocialID          String
-  sIDValidStart              DateTime
-  sIDValidEnd                DateTime
-  physical                   String
-  familyInfo                 String
-  spouseNameKH               String
-  spuseNameEN                String
-  spouseDateOfBirth          DateTime
-  spouseSID                  String
-  spouseBirthAddress         String
-  spouseCurrentOccupation    String
-  spouseOrganisationName     String
-  spuseCurrentAddress        String
-  fatherFullNameKH           String
-  FatherOccupation           String
-  fatherBrithAddress         String
-  MotherOcupation            String
-  motherFullNameKH           String
-  motherBrirthAddress        String
-  ECFirstNameKH              String
-  ECLastNameKH               String
-  ECGender                   String
-  ECRelationshipAs           String
-  ECOccupation               String
-  ECAddress                  String
-  ECTelehpone                String
-  DateStartOfficialWork      DateTime
-  DateWentFullTime           DateTime
-  CurrentRank                String
-  OfficialLevelKH            String
-  governStaffChildren        governStaffChildren[]
-  governStaffQualifitcation  governStaffQualifitcation[]
-  governStaffLanuage         governStaffLanuage[]
-  governStaffWorkingHistory  governStaffWorkingHistory[]
-  governStaffPositionHistory governStaffPositionHistory[]
+  id                                          String                                        @id @default(cuid())
+  photo                                       String
+  firstNameKH                                 String
+  lastNameKH                                  String
+  firstNameEN                                 String
+  lastNameEN                                  String
+  gender                                      String
+  DateofBirth                                 DateTime
+  ethnicity                                   String
+  nationality                                 String
+  birthAddress                                String
+  currentAddress                              String
+  telephone                                   String
+  email                                       String
+  officialID                                  String
+  CambodianSocialID                           String
+  sIDValidStart                               DateTime
+  sIDValidEnd                                 DateTime
+  physical                                    String
+  familyInfo                                  String
+  spouseNameKH                                String
+  spuseNameEN                                 String
+  spouseDateOfBirth                           DateTime
+  spouseSID                                   String
+  spouseBirthAddress                          String
+  spouseCurrentOccupation                     String
+  spouseOrganisationName                      String
+  spuseCurrentAddress                         String
+  fatherFullNameKH                            String
+  FatherOccupation                            String
+  fatherBrithAddress                          String
+  MotherOcupation                             String
+  motherFullNameKH                            String
+  motherBrirthAddress                         String
+  ECFirstNameKH                               String
+  ECLastNameKH                                String
+  ECGender                                    String
+  ECRelationshipAs                            String
+  ECOccupation                                String
+  ECAddress                                   String
+  ECTelehpone                                 String
+  DateStartOfficialWork                       DateTime
+  DateWentFullTime                            DateTime
+  CurrentRank                                 String
+  OfficialLevelKH                             String
+  governStaffChildren                         governStaffChildren[]
+  governStaffQualifitcation                   governStaffQualifitcation[]
+  governStaffLanuage                          governStaffLanuage[]
+  governStaffWorkingHistory                   governStaffWorkingHistory[]
+  governStaffPositionHistory                  governStaffPositionHistory[]
+  governStaffCertificateLevelup               governStaffCertificateLevelup[]
+  governStaffSituationOutsideOriginalOfficial governStaffSituationOutsideOriginalOfficial[]
+  GovernStaffFreeNoSalary                     GovernStaffFreeNoSalary[]
+  GovernStaffLetterAppreciation               GovernStaffLetterAppreciation[]
+  governStaffFineHistory                      governStaffFineHistory[]
 }
 
 model governStaffChildren {
@@ -269,6 +274,60 @@ model governStaffPositionHistory {
   oldOfficialLevel String
   newOffcialLevel  String
   changeTo         String
+}
+
+model governStaffCertificateLevelup {
+  id                  String      @id @default(cuid())
+  governStaffID       String
+  governStaff         governStaff @relation(fields: [governStaffID], references: [id])
+  validatDate         DateTime
+  SchoolName          String
+  PlaceStudy          String
+  ReceivedCertificate String
+  OldPosition         String
+  NewPosition         String
+}
+
+model governStaffSituationOutsideOriginalOfficial {
+  id              String      @id @default(cuid())
+  governStaffID   String
+  governStaff     governStaff @relation(fields: [governStaffID], references: [id])
+  startDate       DateTime
+  endDate         DateTime
+  OginasationName String
+  Position        String
+}
+
+model GovernStaffFreeNoSalary {
+  id                   String      @id @default(cuid())
+  governStaffID        String
+  governStaff          governStaff @relation(fields: [governStaffID], references: [id])
+  startDate            DateTime
+  endDate              DateTime
+  Oginisationname      String
+  NumberofMonthandYear String
+}
+
+model GovernStaffLetterAppreciation {
+  id                   String      @id @default(cuid())
+  governStaffID        String
+  governStaff          governStaff @relation(fields: [governStaffID], references: [id])
+  letterNumber         String
+  OfficialDate         DateTime
+  RequestedOrginsation String
+  LetterDetails        String
+  TypeReceived         String
+}
+
+model governStaffFineHistory {
+  id                   String      @id @default(cuid())
+  governStaffID        String
+  governStaff          governStaff @relation(fields: [governStaffID], references: [id])
+  letterNumber         String
+  OffialDate           DateTime
+  RequestedOrginsation String
+  LetterDetails        String
+  TypeRecieved         String
 }
 
 model Client {
