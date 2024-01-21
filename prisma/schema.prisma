@@ -141,11 +141,12 @@ model Staff {
   brithCity              String?
   birthDistrict          String?
   currentAddress         String?
+  currentQualification   String?
   currentCity            String?
   currentDistrict        String?
-  SID                    String?
+  sID                    String?
   passport               String?
-  workingEXP             Boolean
+  workingEXP             Boolean //កិច្ចសន្យា
   workingEXPYes          String?
   gender                 String
   position               String
@@ -156,6 +157,118 @@ model Staff {
   familyEmail            String
   serviceCenterID        String?
   ServiceCenter          ServiceCenter? @relation(fields: [serviceCenterID], references: [id])
+}
+
+model governStaff {
+  id                         String                       @id @default(cuid())
+  photo                      String
+  firstNameKH                String
+  lastNameKH                 String
+  firstNameEN                String
+  lastNameEN                 String
+  gender                     String
+  DateofBirth                DateTime
+  ethnicity                  String
+  nationality                String
+  birthAddress               String
+  currentAddress             String
+  telephone                  String
+  email                      String
+  officialID                 String
+  CambodianSocialID          String
+  sIDValidStart              DateTime
+  sIDValidEnd                DateTime
+  physical                   String
+  familyInfo                 String
+  spouseNameKH               String
+  spuseNameEN                String
+  spouseDateOfBirth          DateTime
+  spouseSID                  String
+  spouseBirthAddress         String
+  spouseCurrentOccupation    String
+  spouseOrganisationName     String
+  spuseCurrentAddress        String
+  fatherFullNameKH           String
+  FatherOccupation           String
+  fatherBrithAddress         String
+  MotherOcupation            String
+  motherFullNameKH           String
+  motherBrirthAddress        String
+  ECFirstNameKH              String
+  ECLastNameKH               String
+  ECGender                   String
+  ECRelationshipAs           String
+  ECOccupation               String
+  ECAddress                  String
+  ECTelehpone                String
+  DateStartOfficialWork      DateTime
+  DateWentFullTime           DateTime
+  CurrentRank                String
+  OfficialLevelKH            String
+  governStaffChildren        governStaffChildren[]
+  governStaffQualifitcation  governStaffQualifitcation[]
+  governStaffLanuage         governStaffLanuage[]
+  governStaffWorkingHistory  governStaffWorkingHistory[]
+  governStaffPositionHistory governStaffPositionHistory[]
+}
+
+model governStaffChildren {
+  id            String      @id @default(cuid())
+  fullnameKH    String
+  gender        String
+  dateofBirth   DateTime
+  occupation    String
+  governStaffID String
+  governStaff   governStaff @relation(fields: [governStaffID], references: [id])
+}
+
+model governStaffQualifitcation {
+  id               String      @id @default(cuid())
+  governStaffID    String
+  governStaff      governStaff @relation(fields: [governStaffID], references: [id])
+  couseLevel       String
+  SchoolName       String
+  SchoolLocation   String
+  CertificateLevel String
+  majoring         String
+  StartDate        DateTime
+  finishDate       DateTime
+}
+
+model governStaffLanuage {
+  id            String      @id @default(cuid())
+  langName      String
+  read          String
+  conversation  String
+  writing       String
+  governStaffID String
+  governStaff   governStaff @relation(fields: [governStaffID], references: [id])
+}
+
+model governStaffWorkingHistory {
+  id               String      @id @default(cuid())
+  governStaffID    String
+  governStaff      governStaff @relation(fields: [governStaffID], references: [id])
+  PublicSector     Boolean
+  DateStartWorking DateTime
+  DateStopWorking  DateTime
+  OgnisationName   String
+  Department       String
+  position         String
+  SkillInPosition  String
+}
+
+model governStaffPositionHistory {
+  id               String      @id @default(cuid())
+  governStaffID    String
+  governStaff      governStaff @relation(fields: [governStaffID], references: [id])
+  ValidDate        DateTime
+  MinistryName     String
+  Department       String
+  OfficialSection  String
+  oldOfficialLevel String
+  newOffcialLevel  String
+  changeTo         String
 }
 
 model Client {
