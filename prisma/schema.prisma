@@ -121,6 +121,7 @@ model ServiceCenter {
   District       String?
   client         Client[]
   staff          Staff[]
+  governStaff    governStaff[]
   systemUser     User[]
 }
 
@@ -172,6 +173,7 @@ model governStaff {
   nationality                                 String
   birthAddress                                String
   currentAddress                              String
+  permanentAddress                            String
   telephone                                   String
   email                                       String
   officialID                                  String
@@ -215,6 +217,8 @@ model governStaff {
   GovernStaffFreeNoSalary                     GovernStaffFreeNoSalary[]
   GovernStaffLetterAppreciation               GovernStaffLetterAppreciation[]
   governStaffFineHistory                      governStaffFineHistory[]
+  serviceCenterID        String?
+  ServiceCenter          ServiceCenter? @relation(fields: [serviceCenterID], references: [id])
 }
 
 model governStaffChildren {

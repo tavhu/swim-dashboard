@@ -165,7 +165,6 @@ const updateTable = ()=>{
     }
 </script>
 
-
 <template>
   <div class="font-[Battambang]">    
     <div class="mt-5">      
@@ -175,10 +174,8 @@ const updateTable = ()=>{
               <h2 class=" text-sm  lg:text-xl font-[Moul]">ចុះឈ្មោះបុគ្គលិកមណ្ឌល </h2>
             </UButton>                                
         </div>
-      <hr class="my-2 border dark:border-gray-700" />         
-    
-      <TwDatatableServer
-        
+      <hr class="my-2 border dark:border-gray-700" />             
+      <TwDatatableServer        
         v-bind:fetch-data="fetchData"
         v-model:search="data.search"
         v-model:limit="data.limit"

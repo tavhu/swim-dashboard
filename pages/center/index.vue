@@ -60,10 +60,8 @@ const formData: {
   ProjectSummary : '',
   status : true,
 })
-
 const formRules = { 
 }
-
 const isError = ref(false);
 const form = computed(() => composableForm.getForm(formName));
 const validator = computed(() => form.value.validator);
@@ -83,14 +81,11 @@ const submit = async () =>{
     }, 1000);
     return true;
   }
-
-  const oldImageURL = formData.logo
-  
+  const oldImageURL = formData.logo  
   let image : any
   image = await handleImageUpload() 
   if(image){
     formData.logo = image[0]
-
     //delete old profile from server storage
     await useFetch('/api/deleteFile', { method : 'POST' , body : JSON.stringify({imgURL : oldImageURL})})
   }
@@ -190,7 +185,6 @@ const handleImageUpload = async () => {
 
 const commute = ref()
 const temCommuteList : any = ref([])
-
 const SelectedCityValue = computed(()=>formData.City)
 
 watch(SelectedCityValue,()=>{
@@ -213,8 +207,6 @@ watch(SelectedCityValue,()=>{
     }))
   })  
 })
-
-
 
 // edit part
 const userProfile = ref()
@@ -280,20 +272,7 @@ const cityList = ref(temCity)
        អ្ននគ្មានសិទ្ធកែប្រែ គណនីនេះទេ    
       </TwButton>
     <hr class="my-2 border dark:border-gray-700" />      
-    
-      <!-- <ul v-for="addr in city">
-        <li>
-         <span class="text-primary"> {{ addr['name'] }} </span>
-            <ul v-for="s  in addr['ls']" >
-            <li class="ml-5"> <span class="font-bold"> {{ s['bn'] }} </span> 
-              <ul v-for="a in s['c']">
-                <li class="ml-5"> {{ a['cn'] }}  </li>
-              </ul>
-            </li>
-          </ul>
-        </li>
-      </ul> -->
-
+   
     <div class="font-[Battambang]">
       <TwForm
         :name="formName"
