@@ -118,7 +118,7 @@ export default eventHandler(async (event) => {
     setResponseStatus(event, 201);
     return { message: "User Update or Created" };
   } catch (e) {
-    //console.log(e);
+    console.log(e);
     //@ts-ignored
     setResponseStatus(event, 412);
     return {

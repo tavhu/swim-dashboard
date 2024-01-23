@@ -1,60 +1,64 @@
 import { getServerSession } from "#auth";
 
+export default eventHandler(async (event) => {
+  const session = await getServerSession(event);
+  const body = await readBody(event);
 
-export default eventHandler(async  (event) => {
-    const session = await getServerSession(event)
-    const body =  await readBody(event)
+  // console.log(body)
 
-    // console.log(body)    
-    
-    if(!session){
-        return { status: 'unauthenticated'}
-    }    
+  if (!session) {
+    return { status: "unauthenticated" };
+  }
 
-    console.log(session)
-  
-    try {
-        const totalCount =  await  event.context.prisma.staff.count()
-        const data = body?.id ?  await event.context.prisma.staff.findFirst({
-          
-        }) : await event.context.prisma.staff.findMany({
-            where :{//@ts-ignored
-                serviceCenterID : session.serviceCenterID?  session.serviceCenterID : { not : null }
+  // console.log(session)
+
+  try {
+    const totalCount = await event.context.prisma.staff.count();
+    const data = body?.id
+      ? await event.context.prisma.staff.findFirst({})
+      : await event.context.prisma.staff.findMany({
+          where: {
+            //@ts-ignored
+            serviceCenterID: session.serviceCenterID //@ts-ignore
+              ? session.serviceCenterID
+              : { not: null },
+          },
+          select: {
+            id: true,
+            title: true,
+            firstName: true,
+            lastName: true,
+            gender: true,
+            position: true,
+            telephone: true,
+            email: true,
+            serviceCenterID: true,
+            ServiceCenter: {
+              select: {
+                id: true,
+                nameKH: true,
+              },
             },
-            select :{
-                id : true ,
-                title : true ,
-                firstName : true ,
-                lastName : true ,
-                gender : true ,
-                position : true ,
-                telephone : true ,
-                email : true ,
-                serviceCenterID : true ,
-                ServiceCenter : {
-                    select : {
-                        id : true,
-                        nameKH : true
-                    }
-                }
-            },
-          
-            orderBy : {
-                id: 'desc'
-            },
-            //@ts-ignore
-            take : (body?.limit ? parseInt(body?.limit) : 1000) ,        
-            //@ts-ignore
-            skip :  (body?.skip ? parseInt(body?.skip) : 0),            
-        })
-        // console.log(data)      
-        setResponseStatus(event, 201)    
-        return  body?.id ? data : { data: data, total : totalCount , error :'',
-        status : 'authenticated' }
-    }catch(e){        
-        setResponseStatus(event, 412)    
-        return {
-            error  : e,
-        }
-    }    
-})
+          },
+
+          orderBy: {
+            id: "desc",
+          },
+          //@ts-ignore
+          take: body?.limit ? parseInt(body?.limit) : 1000,
+          //@ts-ignore
+          skip: body?.skip ? parseInt(body?.skip) : 0,
+        });
+    //@ts-ignore
+    setResponseStatus(event, 201);
+    return body?.id
+      ? data
+      : { data: data, total: totalCount, error: "", status: "authenticated" };
+  } catch (e) {
+    //@ts-ignored
+    setResponseStatus(event, 412);
+    return {
+      error: e,
+    };
+  }
+});

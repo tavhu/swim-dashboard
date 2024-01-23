@@ -12,6 +12,8 @@ import {
 } from 'vue3-tailwind'
 import { type ServiceCenter, type Staff }  from '@prisma/client'
 import title from '~/store/data/title'
+import Datepicker from "@vuepic/vue-datepicker"
+import "@vuepic/vue-datepicker/dist/main.css"
   
   const config = useRuntimeConfig()
   const prop = defineProps<{
@@ -328,11 +330,11 @@ import title from '~/store/data/title'
         return true;
       }
 
-      const oldImageURL = formDataEditOfficial.logo  
+      const oldImageURL = formDataEditOfficial.photo  
       let image : any
       image = await handleImageUpload() 
       if(image){
-        formDataEditOfficial.logo = image[0]
+        formDataEditOfficial.photo = image[0]
         //delete old profile from server storage
         await useFetch('/api/deleteFile', { method : 'POST' , body : JSON.stringify({imgURL : oldImageURL})})
       }
@@ -474,6 +476,9 @@ import title from '~/store/data/title'
               roleDescription: 'ពិពណ៌នាតួនាទី',
             }"
           >
+          <div class="col-span-3">
+
+          </div>
           <div class="col-span-12   lg:col-span-5">          
               <div class="vt-relative vt-col-span-12 lg:col-span-6  vt-flex vt-items-center vt-justify-center">
                 <div class="vt-relative vt-w-96">
@@ -482,9 +487,20 @@ import title from '~/store/data/title'
               </div>
               <TwFile v-model="files" label="រូបភាព ៤x៦" />
             </div>
-            <div class="col-span-12  lg:col-span-6">
+            <div class="col-span-4">
 
             </div>
+             <div class="col-span-12" >
+                <TwSelect                           
+                  label="បុគ្គលិករបស់មណ្ឌល"
+                  name="serviceCenterID"            
+                  v-model="formDataEditOfficial.serviceCenterID"            
+                  required                    
+                  :items="serviceCenterList"
+                  placeholder="សូមជ្រើសរើស"           
+                />
+                <CustomErrorMessage name="serviceCenterID" />            
+              </div>  
             <div class="col-span-12 lg:col-span-4">
               <TwInput
                 label="គោត្តនាម"
@@ -537,13 +553,22 @@ import title from '~/store/data/title'
               <CustomErrorMessage name="firstNameEN" />
             </div>
             <div class="col-span-12 lg:col-span-6">
-              <TwInput
-                label="ថ្ងៃខែឆ្នាំកំណើត"
-                name="DateofBirth"
+              <label for=""> ថ្ងៃខែឆ្នាំកំណើត </label>
+              <Datepicker
                 v-model="formDataEditOfficial.DateofBirth"
-                placeholder="នាមខ្លួនជាភាសារអង់គ្លេស"
-                type="text"
-              />
+                :dayNames="[
+                  'Mo',
+                  'Tu',
+                  'We',
+                  'Th',
+                  'Fr',
+                  'Sa',
+                  'Su',
+                ]"
+                position="left"
+                :maxDate="new Date()"
+                :enableTimePicker="false"></Datepicker>
+
               <CustomErrorMessage name="DateofBirth" />
             </div>
             <div class="col-span-12 lg:col-span-3">
@@ -641,23 +666,53 @@ import title from '~/store/data/title'
               <CustomErrorMessage name="CambodianSocialID" />
             </div>
             <div class="col-span-12 lg:col-span-6 ">
-              <TwInput             
+              <!-- <TwInput             
                 name="sIDValidStart"
                 label="សុពលភាព"
                 v-model="formDataEditOfficial.sIDValidStart"
                 placeholder="សុពលភាព"
                 type="text"
-              />
+              /> -->
+              <label for="">សុពលភាព</label>
+               <Datepicker
+                  v-model="formDataEditOfficial.sIDValidStart"
+                  :dayNames="[
+                    'Mo',
+                    'Tu',
+                    'We',
+                    'Th',
+                    'Fr',
+                    'Sa',
+                    'Su',
+                  ]"
+                  position="left"
+                  :maxDate="new Date()"
+                  :enableTimePicker="false"></Datepicker>
               <CustomErrorMessage name="sIDValidStart" />
             </div>
             <div class="col-span-12 lg:col-span-6 ">
-              <TwInput             
+              <!-- <TwInput             
                 name="sIDValidEnd"
                 label="ដល់ថ្ងៃ"
                 v-model="formDataEditOfficial.sIDValidEnd"
                 placeholder="ដល់ថ្ងៃ"
                 type="text"
-              />
+              /> -->
+              <label for="">ដល់ថ្ងៃ</label>
+              <Datepicker
+                    v-model="formDataEditOfficial.sIDValidEnd"
+                    :dayNames="[
+                      'Mo',
+                      'Tu',
+                      'We',
+                      'Th',
+                      'Fr',
+                      'Sa',
+                      'Su',
+                    ]"
+                    position="left"
+                    :maxDate="new Date()"
+                    :enableTimePicker="false"></Datepicker>
               <CustomErrorMessage name="sIDValidEnd" />
             </div>
             <div class="col-span-12 lg:col-span-6 " >
@@ -700,13 +755,28 @@ import title from '~/store/data/title'
               <CustomErrorMessage name="spuseNameEN" />
             </div>
             <div class="col-span-12 lg:col-span-6 ">
-              <TwInput             
+              <!-- <TwInput             
                 name="spouseDateOfBirth"
                 label="ថ្ងៃខែឆ្នាំកំណើត"
                 v-model="formDataEditOfficial.spouseDateOfBirth"
                 placeholder="ថ្ងៃខែឆ្នាំកំណើត"
                 type="text"
-              />
+              /> -->
+              <label for="">ថ្ងៃខែឆ្នាំកំណើត</label>
+               <Datepicker
+                  v-model="formDataEditOfficial.spouseDateOfBirth"
+                  :dayNames="[
+                    'Mo',
+                    'Tu',
+                    'We',
+                    'Th',
+                    'Fr',
+                    'Sa',
+                    'Su',
+                  ]"
+                  position="left"
+                  :maxDate="new Date()"
+                  :enableTimePicker="false"></Datepicker>
               <CustomErrorMessage name="spouseDateOfBirth" />
             </div>
             <div class="col-span-12 lg:col-span-6 ">
@@ -900,23 +970,46 @@ import title from '~/store/data/title'
               <label class="font-bold"> ច-ប្រវត្តិការងារ</label>
             </div>
             <div class="col-span-12 lg:col-span-6 ">
-              <TwInput             
+              <!-- <TwInput             
                 name="DateStartOfficialWork"
                 label="ថ្ងៃខែឆ្នាំចូលបម្រើក្របខ័ណ្ឌរដ្ឋ"
                 v-model="formDataEditOfficial.DateStartOfficialWork"
                 placeholder="ថ្ងៃខែឆ្នាំចូលបម្រើក្របខ័ណ្ឌរដ្ឋ"
                 type="text"
-              />
+              /> -->
+              <label for="">ថ្ងៃខែឆ្នាំចូលបម្រើក្របខ័ណ្ឌរដ្ឋ</label>
+               <Datepicker
+                    v-model="formDataEditOfficial.DateStartOfficialWork"
+                    :dayNames="[
+                      'Mo',
+                      'Tu',
+                      'We',
+                      'Th',
+                      'Fr',
+                      'Sa',
+                      'Su',
+                    ]"
+                    position="left"
+                    :maxDate="new Date()"
+                    :enableTimePicker="false"></Datepicker>
               <CustomErrorMessage name="DateStartOfficialWork" />
             </div>
             <div class="col-span-12 lg:col-span-6 ">
-              <TwInput             
-                name="DateWentFullTime"
-                label="ថ្ងៃខែឆ្នាំតាំងស៊ុបក្នុងក្របខ័ណ្ឌរដ្ឋ"
-                v-model="formDataEditOfficial.DateWentFullTime"
-                placeholder="ថ្ងៃខែឆ្នាំតាំងស៊ុបក្នុងក្របខ័ណ្ឌរដ្ឋ"
-                type="text"
-              />
+              <label for="">ថ្ងៃខែឆ្នាំតាំងស៊ុបក្នុងក្របខ័ណ្ឌរដ្ឋ</label>
+               <Datepicker
+                    v-model="formDataEditOfficial.DateWentFullTime"
+                    :dayNames="[
+                      'Mo',
+                      'Tu',
+                      'We',
+                      'Th',
+                      'Fr',
+                      'Sa',
+                      'Su',
+                    ]"
+                    position="left"
+                    :maxDate="new Date()"
+                    :enableTimePicker="false"></Datepicker>
               <CustomErrorMessage name="DateWentFullTime" />
             </div>
             <div class="col-span-12 lg:col-span-6 ">
