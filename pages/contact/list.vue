@@ -193,7 +193,6 @@ onMounted(()=>{
     }
   })
 })
-
 </script>
 <template>
   <div class="font-[Battambang]"> 

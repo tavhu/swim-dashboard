@@ -97,10 +97,10 @@ model VerificationToken {
 }
 
 model ServiceCenter {
-  id             String   @id @default(cuid())
+  id             String        @id @default(cuid())
   nameKH         String
   nameEN         String
-  createdAt      DateTime @default(now())
+  createdAt      DateTime      @default(now())
   logo           String
   type           String
   directorName   String
@@ -217,8 +217,8 @@ model governStaff {
   GovernStaffFreeNoSalary                     GovernStaffFreeNoSalary[]
   GovernStaffLetterAppreciation               GovernStaffLetterAppreciation[]
   governStaffFineHistory                      governStaffFineHistory[]
-  serviceCenterID        String?
-  ServiceCenter          ServiceCenter? @relation(fields: [serviceCenterID], references: [id])
+  serviceCenterID                             String?
+  ServiceCenter                               ServiceCenter?                                @relation(fields: [serviceCenterID], references: [id])
 }
 
 model governStaffChildren {

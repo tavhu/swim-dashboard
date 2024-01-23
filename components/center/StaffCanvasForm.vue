@@ -10,7 +10,7 @@ import {
   TwToast,
   TwFile,
 } from 'vue3-tailwind'
-import { type ServiceCenter, type Staff}  from '@prisma/client'
+import { type ServiceCenter, type Staff }  from '@prisma/client'
 import title from '~/store/data/title'
   
   const config = useRuntimeConfig()
@@ -34,7 +34,6 @@ import title from '~/store/data/title'
     })
     
     const openisTrues = ref()
-
     const formRulesEdit = {   
     title : ['string' , 'required'],
     firstName : ['string' , 'required'],
@@ -180,16 +179,29 @@ import title from '~/store/data/title'
         label : 'មិនដូចអាសយដ្ឋានបច្ចុប្បន្ន' ,
       },
     ]
+      const FamilyInformation = [{
+        value  : 'single',
+        label : 'នៅលីវ' ,
+      },
+      {
+        value  : 'married',
+        label : 'រៀបការហើយ' ,
+      },
+      {
+        value  : 'widow',
+        label : 'មេម៉ាយ/ពោះម៉ាយ' ,
+      },
+    ]
   
     const selectedAddressOption = ref(' ') 
     const selected = ref('official')    
 
   const formRulesEditOfficial = {     
-    firstNameKH : ['string','required'],
-    lastNameKH : ['string','required'],
-    firstNameEN : ['string','required'],
-    lastNameEN : ['string','required'],   
-    serviceCenterID : ['string','required'],
+    // firstNameKH : ['string','required'],
+    // lastNameKH : ['string','required'],
+    // firstNameEN : ['string','required'],
+    // lastNameEN : ['string','required'],   
+    // serviceCenterID : ['string','required'],
     }
     const formNameEditOfficial = "centerStaffFormOfficial";
     const formDataEditOfficial: {
@@ -295,7 +307,7 @@ import title from '~/store/data/title'
       formDataEditOfficial.DateWentFullTime = null
       formDataEditOfficial.CurrentRank = null
       formDataEditOfficial.OfficialLevelKH = null
-      formDataEditOfficial.serviceCenterID  =  null 
+
     setTimeout(() => {
       validatorEditOfficial.value.clearErrors();
     }, 100) }
@@ -425,11 +437,12 @@ import title from '~/store/data/title'
       }
     })
 
-
-
 </script>
 
-<template>     
+<template>  
+<div>
+
+ 
       <TwOffcanvas position="right" width="800px" ref="openisTrues">
       <template #headerTitle>
         <span class="font-[Moul] text-primary"> បញ្ចូលបុគ្គលិកមណ្ឌល </span></template
@@ -461,15 +474,15 @@ import title from '~/store/data/title'
               roleDescription: 'ពិពណ៌នាតួនាទី',
             }"
           >
-          <div class="col-span-12 lg:col-span-5">          
-              <div class="vt-relative vt-col-span-12 vt-flex vt-items-center vt-justify-center">
+          <div class="col-span-12   lg:col-span-5">          
+              <div class="vt-relative vt-col-span-12 lg:col-span-6  vt-flex vt-items-center vt-justify-center">
                 <div class="vt-relative vt-w-96">
                   <img :src="config.public.origin + '/' + (formDataEditOfficial.logo ? formDataEditOfficial.logo : '') "  :class="(files?.length > 0 ? ' hidden '  : ' ')  " alt="">
                 </div>
               </div>
               <TwFile v-model="files" label="រូបភាព ៤x៦" />
             </div>
-            <div class="col-span-12 lg:col-span-6">
+            <div class="col-span-12  lg:col-span-6">
 
             </div>
             <div class="col-span-12 lg:col-span-4">
@@ -506,12 +519,12 @@ import title from '~/store/data/title'
           <div class="col-span-12 lg:col-span-6">
               <TwInput
                 label="គោត្តនាម"
-                name="lastNameKH"
-                v-model="formDataEditOfficial.lastNameKH"
+                name="lastNameEN"
+                v-model="formDataEditOfficial.lastNameEN"
                 placeholder="គោត្តនាមជាភាសារអង់គ្លេស"
                 type="text"
               />
-              <CustomErrorMessage name="lastNameKH" />
+              <CustomErrorMessage name="lastNameEN" />
             </div>
             <div class="col-span-12 lg:col-span-6">
               <TwInput
@@ -553,7 +566,7 @@ import title from '~/store/data/title'
               />
               <CustomErrorMessage name="nationality" />
             </div>
-            <div class="col-span-12">
+            <div class="col-span-12 lg:col-span-6 ">
               <TwInput
                 label="ទីកន្លែងកំណើត"
                 name="birthAddress"
@@ -563,7 +576,7 @@ import title from '~/store/data/title'
               />
               <CustomErrorMessage name="currentAddress" />
             </div>
-            <div class="col-span-12">
+            <div class="col-span-12 lg:col-span-6 ">
               <TwInput
                 label="អាសយដ្ឋានបច្ចុប្បន្ន"
                 name="currentAddress"
@@ -573,19 +586,373 @@ import title from '~/store/data/title'
               />
               <CustomErrorMessage name="currentAddress" />
             </div>
-            <div class="col-span-12 " >
+            <div class="col-span-12" >
               <label class="font-bold">អាសយដ្ឋានអចិន្ត្រៃយ៍</label>
               <URadio class="font-[battambang] inline-flex ml-5 font-medium" v-for="methods of AddressOption" :key="methods.value" v-model="selectedAddressOption" v-bind="methods" />      
             </div>  
-            <div class="col-span-12">
+            <div class="col-span-12 lg:col-span-6 ">
               <TwInput             
                 name="permanentAddress"
+                label="អាសយដ្ឋានអចិន្ត្រៃយ៍"
                 v-model="formDataEditOfficial.permanentAddress"
                 placeholder="# ផ្លូវ ភូមិ ឃុំ/សង្កាត់ ស្រុក/ខណ្ឌ រាជធានី/ខេត្ត"
                 type="text"
               />
               <CustomErrorMessage name="permanentAddress" />
             </div>
+            <div class="col-span-12 lg:col-span-6 ">
+              <TwInput             
+                name="email"
+                label="អ៉ីម៉ែល"
+                v-model="formDataEditOfficial.email"
+                placeholder="អ៉ីម៉ែល"
+                type="text"
+              />
+              <CustomErrorMessage name="email" />
+            </div>
+            <div class="col-span-12 lg:col-span-6 ">
+              <TwInput             
+                name="telephone"
+                label="លេខទូរស័ព្ទ"
+                v-model="formDataEditOfficial.telephone"
+                placeholder="លេខទូរស័ព្ទ"
+                type="text"
+              />
+              <CustomErrorMessage name="telephone" />
+            </div>
+            <div class="col-span-12 lg:col-span-6 ">
+              <TwInput             
+                name="officialID"
+                label="អត្ថលេខមន្ត្រីរាជការ"
+                v-model="formDataEditOfficial.officialID"
+                placeholder="អត្ថលេខមន្ត្រីរាជការ"
+                type="text"
+              />
+              <CustomErrorMessage name="officialID" />
+            </div>
+            <div class="col-span-12 lg:col-span-6 ">
+              <TwInput             
+                name="CambodianSocialID"
+                label="លេខអត្តសញ្ញាណប័ណ្ណសញ្ញាតិខ្មែរ"
+                v-model="formDataEditOfficial.CambodianSocialID"
+                placeholder="លេខអត្តសញ្ញាណប័ណ្ណសញ្ញាតិខ្មែរ"
+                type="text"
+              />
+              <CustomErrorMessage name="CambodianSocialID" />
+            </div>
+            <div class="col-span-12 lg:col-span-6 ">
+              <TwInput             
+                name="sIDValidStart"
+                label="សុពលភាព"
+                v-model="formDataEditOfficial.sIDValidStart"
+                placeholder="សុពលភាព"
+                type="text"
+              />
+              <CustomErrorMessage name="sIDValidStart" />
+            </div>
+            <div class="col-span-12 lg:col-span-6 ">
+              <TwInput             
+                name="sIDValidEnd"
+                label="ដល់ថ្ងៃ"
+                v-model="formDataEditOfficial.sIDValidEnd"
+                placeholder="ដល់ថ្ងៃ"
+                type="text"
+              />
+              <CustomErrorMessage name="sIDValidEnd" />
+            </div>
+            <div class="col-span-12 lg:col-span-6 " >
+                <TwSelect                           
+                  label="កាយសម្បទា"
+                  name="physical"            
+                  v-model="formDataEditOfficial.physical"            
+                  required                    
+                  :items="[{ value: 'Enough', label: 'គ្រប់គ្រាន់' }, { value: 'Disability', label: 'ពិការភាព' }, { value: 'Other', label: 'ប្រភេទពិការ...' }]"
+                  placeholder="សូមជ្រើសរើស"           
+                />
+                <CustomErrorMessage name="physical" />            
+            </div>  
+            <hr>
+            <div class="col-span-12" >
+                <label class="font-bold">ខ - ព័ត៌មានគ្រួសារ</label>
+                <URadio class="font-[battambang] inline-flex ml-5 font-medium" v-for="methods of FamilyInformation" :key="methods.value" v-model="formDataEditOfficial.familyInfo" v-bind="methods" />      
+              </div> 
+            <div class="col-span-12">
+              <label for="" class="font-bold"> ខ.១-ព័ត៌មានប្រពន្ធឬប្តី</label>
+            </div>
+            <div class="col-span-12 lg:col-span-6 ">
+              <TwInput             
+                name="spouseNameKH"
+                label="ឈ្មោះប្រពន្ធឬប្តី"
+                v-model="formDataEditOfficial.spouseNameKH"
+                placeholder="ឈ្មោះប្រពន្ធឬប្តី"
+                type="text"
+              />
+              <CustomErrorMessage name="spouseNameKH" />
+            </div>
+            <div class="col-span-12 lg:col-span-6 ">
+              <TwInput             
+                name="spuseNameEN"
+                label="ឈ្មោះជាអក្សរពុម្ពឡាតាំង"
+                v-model="formDataEditOfficial.spuseNameEN"
+                placeholder="ឈ្មោះជាអក្សរពុម្ពឡាតាំង"
+                type="text"
+              />
+              <CustomErrorMessage name="spuseNameEN" />
+            </div>
+            <div class="col-span-12 lg:col-span-6 ">
+              <TwInput             
+                name="spouseDateOfBirth"
+                label="ថ្ងៃខែឆ្នាំកំណើត"
+                v-model="formDataEditOfficial.spouseDateOfBirth"
+                placeholder="ថ្ងៃខែឆ្នាំកំណើត"
+                type="text"
+              />
+              <CustomErrorMessage name="spouseDateOfBirth" />
+            </div>
+            <div class="col-span-12 lg:col-span-6 ">
+              <TwInput             
+                name="spouseSID"
+                label="លេខអត្តសញ្ញាណប័ណ្ណសញ្ជាតិខ្មែរ"
+                v-model="formDataEditOfficial.spouseSID"
+                placeholder="លេខអត្តសញ្ញាណប័ណ្ណសញ្ជាតិខ្មែរ"
+                type="text"
+              />
+              <CustomErrorMessage name="spouseSID" />
+            </div>
+            <div class="col-span-12 lg:col-span-6 ">
+              <TwInput             
+                name="spouseBirthAddress"
+                label="ទីកន្លែងកំណើត"
+                v-model="formDataEditOfficial.spouseBirthAddress"
+                placeholder="ទីកន្លែងកំណើត"
+                type="text"
+              />
+              <CustomErrorMessage name="spouseBirthAddress" />
+            </div>
+            <div class="col-span-12 lg:col-span-6 ">
+              <TwInput             
+                name="spouseCurrentOccupation"
+                label="មុខរបរបច្ចុប្បន្ន"
+                v-model="formDataEditOfficial.spouseCurrentOccupation"
+                placeholder="មុខរបរបច្ចុប្បន្ន"
+                type="text"
+              />
+              <CustomErrorMessage name="spouseCurrentOccupation" />
+            </div>
+            <div class="col-span-12 lg:col-span-6 ">
+                <TwInput             
+                  name="spuseCurrentAddress"
+                  label="កាយសម្បទា"
+                  v-model="formDataEditOfficial.spuseCurrentAddress"
+                  placeholder="ដល់ថ្ងៃ"
+                  type="text"
+                />
+                <CustomErrorMessage name="spuseCurrentAddress" />
+              </div>
+            <div class="col-span-12 lg:col-span-6 ">
+              <TwInput             
+                name="spouseOrganisationName"
+                label="ឈ្មោះអង្គភាព"
+                v-model="formDataEditOfficial.spouseOrganisationName"
+                placeholder="ឈ្មោះអង្គភាព"
+                type="text"
+              />
+              <CustomErrorMessage name="spouseOrganisationName" />
+            </div>
+            <div class="col-span-12">
+              <label class="font-bold"> ខ.៣- ព័ត៌មានឪពុក និងម្តាយបង្កើត</label>
+            </div>
+            <div class="col-span-12 lg:col-span-6 ">
+              <TwInput             
+                name="fatherFullNameKH"
+                label="ឪពុកឈ្មោះ"
+                v-model="formDataEditOfficial.fatherFullNameKH"
+                placeholder="ឪពុកឈ្មោះ"
+                type="text"
+              />
+              <CustomErrorMessage name="fatherFullNameKH" />
+            </div>
+             <div class="col-span-12 lg:col-span-6 ">
+                <TwInput             
+                  name="fatherBrithAddress"
+                  label="ទីកន្លែងកំណើត"
+                  v-model="formDataEditOfficial.fatherBrithAddress"
+                  placeholder="ទីកន្លែងកំណើត"
+                  type="text"
+                />
+                <CustomErrorMessage name="fatherBrithAddress" />
+              </div>
+            <div class="col-span-12 lg:col-span-6 ">
+              <TwInput             
+                name="FatherOccupation"
+                label="មុខរបរបច្ចុប្បន្ន"
+                v-model="formDataEditOfficial.FatherOccupation"
+                placeholder="មុខរបរបច្ចុប្បន្ន"
+                type="text"
+              />
+              <CustomErrorMessage name="FatherOccupation" />
+            </div>
+             <div class="col-span-12 lg:col-span-6 ">
+                <TwInput             
+                  name="motherFullNameKH"
+                  label="ម្តាយឈ្មោះ"
+                  v-model="formDataEditOfficial.motherFullNameKH"
+                  placeholder="ម្តាយឈ្មោះ"
+                  type="text"
+                />
+                <CustomErrorMessage name="motherFullNameKH" />
+              </div>
+              <div class="col-span-12 lg:col-span-6 ">
+                <TwInput             
+                  name="motherBrirthAddress"
+                  label="ទីកន្លែងកំណើត"
+                  v-model="formDataEditOfficial.motherBrirthAddress"
+                  placeholder="ទីកន្លែងកំណើត"
+                  type="text"
+                />
+                <CustomErrorMessage name="motherBrirthAddress" />
+              </div>
+            <div class="col-span-12 lg:col-span-6 ">
+              <TwInput             
+                name="MotherOcupation"
+                label="មុខរបរបច្ចុប្បន្ន"
+                v-model="formDataEditOfficial.MotherOcupation"
+                placeholder="មុខរបរបច្ចុប្បន្ន"
+                type="text"
+              />
+              <CustomErrorMessage name="MotherOcupation" />
+            </div>
+            <div class="col-span-12">
+              <label class="font-bold"> គ-ព័ត៌មានទំនាក់ទំនងក្នុងករណីមានអាសន្ន </label>
+            </div>
+            <div class="col-span-12 lg:col-span-6 ">
+              <TwInput             
+                name="ECFirstNameKH"
+                label="នាមខ្លួន"
+                v-model="formDataEditOfficial.ECFirstNameKH"
+                placeholder="នាមខ្លួន"
+                type="text"
+              />
+              <CustomErrorMessage name="ECFirstNameKH" />
+            </div>
+            <div class="col-span-12 lg:col-span-6 ">
+              <TwInput             
+                name="ECLastNameKH"
+                label="គោត្តនាម"
+                v-model="formDataEditOfficial.ECLastNameKH"
+                placeholder="គោត្តនាម"
+                type="text"
+              />
+              <CustomErrorMessage name="ECLastNameKH" />
+            </div>
+            <div class="col-span-12 lg:col-span-6 ">
+                <TwInput             
+                  name="ECRelationshipAs"
+                  label="ទំនាក់ទំនងត្រូវជា"
+                  v-model="formDataEditOfficial.ECRelationshipAs"
+                  placeholder="ទំនាក់ទំនងត្រូវជា"
+                  type="text"
+                />
+                <CustomErrorMessage name="ECRelationshipAs" />
+              </div>
+            <div class="col-span-12 lg:col-span-6 ">
+               <TwSelect                           
+                label="ភេទ"
+                name="ECGender"            
+                v-model="formDataEditOfficial.ECGender"            
+                required                    
+                :items="[{ value: 'ប្រុស', label: 'ប្រុស' }, { value: 'ស្រី', label: 'ស្រី' }, { value: 'ផ្សេងៗ', label: 'ផ្សេងៗ' }]"
+                placeholder="សូមជ្រើសរើស"           
+              />
+              <CustomErrorMessage name="ECGender" />   
+            </div>
+            <div class="col-span-12 lg:col-span-6 ">
+              <TwInput             
+                name="ECOccupation"
+                label="មុខរបរបច្ចុប្បន្ន"
+                v-model="formDataEditOfficial.ECOccupation"
+                placeholder="មុខរបរបច្ចុប្បន្ន"
+                type="text"
+              />
+              <CustomErrorMessage name="ECOccupation" />
+            </div>
+            <div class="col-span-12 lg:col-span-6 ">
+              <TwInput             
+                name="ECAddress"
+                label="អាសយដ្ឋានបច្ចុប្បន្ន"
+                v-model="formDataEditOfficial.ECAddress"
+                placeholder="អាសយដ្ឋានបច្ចុប្បន្ន"
+                type="text"
+              />
+              <CustomErrorMessage name="ECAddress" />
+            </div>
+            <div class="col-span-12 lg:col-span-6 ">
+              <TwInput             
+                name="ECTelehpone"
+                label="លេខទូរស័ព្ទ"
+                v-model="formDataEditOfficial.ECTelehpone"
+                placeholder="លេខទូរស័ព្ទ"
+                type="text"
+              />
+              <CustomErrorMessage name="ECTelehpone" />
+            </div>
+            <div class="col-span-12">
+              <label class="font-bold"> ច-ប្រវត្តិការងារ</label>
+            </div>
+            <div class="col-span-12 lg:col-span-6 ">
+              <TwInput             
+                name="DateStartOfficialWork"
+                label="ថ្ងៃខែឆ្នាំចូលបម្រើក្របខ័ណ្ឌរដ្ឋ"
+                v-model="formDataEditOfficial.DateStartOfficialWork"
+                placeholder="ថ្ងៃខែឆ្នាំចូលបម្រើក្របខ័ណ្ឌរដ្ឋ"
+                type="text"
+              />
+              <CustomErrorMessage name="DateStartOfficialWork" />
+            </div>
+            <div class="col-span-12 lg:col-span-6 ">
+              <TwInput             
+                name="DateWentFullTime"
+                label="ថ្ងៃខែឆ្នាំតាំងស៊ុបក្នុងក្របខ័ណ្ឌរដ្ឋ"
+                v-model="formDataEditOfficial.DateWentFullTime"
+                placeholder="ថ្ងៃខែឆ្នាំតាំងស៊ុបក្នុងក្របខ័ណ្ឌរដ្ឋ"
+                type="text"
+              />
+              <CustomErrorMessage name="DateWentFullTime" />
+            </div>
+            <div class="col-span-12 lg:col-span-6 ">
+              <TwInput             
+                name="CurrentRank"
+                label="ឈ្មោះក្របខណ្ឌ"
+                v-model="formDataEditOfficial.CurrentRank"
+                placeholder="ឈ្មោះក្របខណ្ឌ"
+                type="text"
+              />
+              <CustomErrorMessage name="CurrentRank" />
+            </div>
+            <div class="col-span-12 lg:col-span-6 ">
+              <TwInput             
+                name="OfficialLevelKH"
+                label="ក្របខណ្ឌ ឋានន្តរស័ក្ក​ និងថ្នាក់បច្ចុប្បន្ន"
+                v-model="formDataEditOfficial.OfficialLevelKH"
+                placeholder="ក.៣.២"
+                type="text"
+              />
+              <CustomErrorMessage name="OfficialLevelKH" />
+            </div>
+             <div class="col-span-12 lg:col-span-6  flex justify-end gap-1">
+                <UButton
+                  :ripple="true"
+                  color="gray"
+                  square
+                  type="button"
+                  size="lg"
+                  class="px-4 dark:text-gray-200 dark:!border-gray-800 dark:border"
+                  @click="clearEditOfficial()"
+                >
+                  កំណត់ឡើងវិញ
+                </UButton>
+                <UButton color="primary" size="lg" class="px-4" type="submit"> រក្សាទុក </UButton>
+              </div>
           </TwForm>            
 
           </div>
@@ -640,7 +1007,7 @@ import title from '~/store/data/title'
             />
             <CustomErrorMessage name="serviceCenterID" />            
           </div>  
-          <div class="col-span-12">
+          <div class="col-span-12 lg:col-span-6 ">
               <TwInput
                 label="ឈ្មោះ"
                 name="firstName"
@@ -650,7 +1017,7 @@ import title from '~/store/data/title'
               />
               <CustomErrorMessage name="firstName" />
             </div>
-            <div class="col-span-12">
+            <div class="col-span-12 lg:col-span-6 ">
               <TwInput
                 label="នាមត្រកូល"
                 name="lastName"
@@ -660,7 +1027,7 @@ import title from '~/store/data/title'
               />
               <CustomErrorMessage name="lastName" />
             </div>  
-            <div class="col-span-12">
+            <div class="col-span-12 lg:col-span-6 ">
               <TwInput
                 label="តួនាទី"
                 name="position"
@@ -670,7 +1037,7 @@ import title from '~/store/data/title'
               />
               <CustomErrorMessage name="position" />
             </div>    
-            <div class="col-span-12">
+            <div class="col-span-12 lg:col-span-6 ">
               <TwInput
                 label="លេខទូរស័ព្ទ"
                 name="telephone"
@@ -680,7 +1047,7 @@ import title from '~/store/data/title'
               />
               <CustomErrorMessage name="telephone" />
             </div>                
-            <div class="col-span-12">
+            <div class="col-span-12 lg:col-span-6 ">
               <TwInput
                 label="អុីមែល"
                 name="email"
@@ -691,7 +1058,7 @@ import title from '~/store/data/title'
               <CustomErrorMessage name="email" />
             </div>     
 
-            <div class="col-span-12 flex justify-end gap-1">
+            <div class="col-span-12 lg:col-span-6  flex justify-end gap-1">
               <UButton
                 :ripple="true"
                 color="gray"
@@ -714,4 +1081,5 @@ import title from '~/store/data/title'
       :class="'font-[battambang]'"
       :position="'bottom-left'"   
       />  
+      </div>  
 </template>

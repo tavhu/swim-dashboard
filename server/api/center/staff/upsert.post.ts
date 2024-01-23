@@ -1,52 +1,94 @@
 import { getServerSession } from "#auth";
 
+export default eventHandler(async (event) => {
+  const session = await getServerSession(event);
+  const body = await readBody(event);
 
-export default eventHandler(async  event => {
-    const session = await getServerSession(event)
-    const body =  await readBody(event)
+  // console.log(body)
 
-    // console.log(body)    
+  if (!session) {
+    return { status: "unauthenticated" };
+  }
 
-    if(!session){
-        return { status: 'unauthenticated'}
-    }
-      
-    try {
-        await event.context.prisma.staff.upsert({
-            where :{
-                id : body?.id
-            },
-            update: {
-                title : body?.title,
-                firstName : body?.firstName,
-                lastName : body?.lastName,
-                gender : body?.gender,
-                position : body?.position,
-                telephone : body?.telephone,
-                email : body?.email,
-                serviceCenterID : body?.serviceCenterID,
-            },
-            create : {                             
-                title : body?.title,
-                firstName : body?.firstName,
-                lastName : body?.lastName,
-                gender : body?.gender,
-                position : body?.position,
-                telephone : body?.telephone,
-                email : body?.email,
-                serviceCenterID : body?.serviceCenterID,
-            }
-        })
-        // console.log(res)
-        setResponseStatus(event, 201)    
-        return { message: "User Update or Created" }
-    }catch(e){  
-        console.log(e)
-        setResponseStatus(event, 412)    
-        return {
-            error  : 'e',
-        }
-    }   
-})
-
-
+  try {
+    await event.context.prisma.staff.upsert({
+      where: {
+        id: body?.id,
+      },
+      update: {
+        photo: body?.photo,
+        type: body?.type,
+        workingPeroid: body?.workingPeroid,
+        attachedContract: body?.attachedContract,
+        attachedBackground: body?.attachedBackground,
+        attachedFileInfomation: body?.attachedFileInfomation,
+        title: body?.title,
+        firstName: body?.firstName,
+        lastName: body?.lastName,
+        nationality: body?.nationality,
+        dateofbirth: body?.dateofbirth,
+        birthAddress: body?.birthAddress,
+        brithCity: body?.brithCity,
+        birthDistrict: body?.birthDistrict,
+        currentAddress: body?.currentAddress,
+        currentQualification: body?.currentQualification,
+        currentCity: body?.currentCity,
+        currentDistrict: body?.currentDistrict,
+        sID: body?.sID,
+        passport: body?.passport,
+        workingEXP: body?.workingEXP,
+        workingEXPYes: body?.workingEXPYes,
+        gender: body?.gender,
+        position: body?.position,
+        telephone: body?.telephone,
+        email: body?.email,
+        familyAddress: body?.familyAddress,
+        familyPhoneNumber: body?.familyPhoneNumber,
+        familyEmail: body?.familyEmail,
+        serviceCenterID: body?.serviceCenterID,
+      },
+      create: {
+        photo: body?.photo,
+        type: body?.type,
+        workingPeroid: body?.workingPeroid,
+        attachedContract: body?.attachedContract,
+        attachedBackground: body?.attachedBackground,
+        attachedFileInfomation: body?.attachedFileInfomation,
+        title: body?.title,
+        firstName: body?.firstName,
+        lastName: body?.lastName,
+        nationality: body?.nationality,
+        dateofbirth: body?.dateofbirth,
+        birthAddress: body?.birthAddress,
+        brithCity: body?.brithCity,
+        birthDistrict: body?.birthDistrict,
+        currentAddress: body?.currentAddress,
+        currentQualification: body?.currentQualification,
+        currentCity: body?.currentCity,
+        currentDistrict: body?.currentDistrict,
+        sID: body?.sID,
+        passport: body?.passport,
+        workingEXP: body?.workingEXP,
+        workingEXPYes: body?.workingEXPYes,
+        gender: body?.gender,
+        position: body?.position,
+        telephone: body?.telephone,
+        email: body?.email,
+        familyAddress: body?.familyAddress,
+        familyPhoneNumber: body?.familyPhoneNumber,
+        familyEmail: body?.familyEmail,
+        serviceCenterID: body?.serviceCenterID,
+      },
+    });
+    //@ts-ignored
+    setResponseStatus(event, 201);
+    return { message: "User Update or Created" };
+  } catch (e) {
+    // console.log(e)
+    //@ts-ignore
+    setResponseStatus(event, 412);
+    return {
+      error: "e",
+    };
+  }
+});
