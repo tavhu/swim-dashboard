@@ -1,33 +1,29 @@
 import { getServerSession } from "#auth";
 
+export default eventHandler(async (event) => {
+  const session = await getServerSession(event);
+  const body = await readBody(event);
 
-export default eventHandler(async  event => {
-    const session = await getServerSession(event)
-    const body =  await readBody(event)
+  // console.log(body)
 
-    // console.log(body)    
-    
-    if(!session){
-        return { status: 'unauthenticated'}
-    }    
-      
-    try {
+  if (!session) {
+    return { status: "unauthenticated" };
+  }
 
-        await event.context.prisma.staff.delete({
-            where : {
-                id: body?.id
-            }
-        })
-
-        setResponseStatus(event, 201)    
-         return { message: "delete success" }
-    }catch(e){  
-        setResponseStatus(event, 502)    
-        return {
-            error  : 'e',
-        }
-    }  
-   
-})
-
-
+  try {
+    await event.context.prisma.staff.delete({
+      where: {
+        id: body?.id,
+      },
+    });
+    //@ts-ignore
+    setResponseStatus(event, 201);
+    return { message: "delete success" };
+  } catch (e) {
+    //@ts-ignore
+    setResponseStatus(event, 502);
+    return {
+      error: "e",
+    };
+  }
+});

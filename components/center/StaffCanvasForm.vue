@@ -14,6 +14,7 @@ import { type ServiceCenter, type Staff }  from '@prisma/client'
 import title from '~/store/data/title'
 import Datepicker from "@vuepic/vue-datepicker"
 import "@vuepic/vue-datepicker/dist/main.css"
+import { string } from 'zod'
   
   const config = useRuntimeConfig()
   const prop = defineProps<{
@@ -199,62 +200,62 @@ import "@vuepic/vue-datepicker/dist/main.css"
     const selected = ref('official')    
 
   const formRulesEditOfficial = {     
-    // firstNameKH : ['string','required'],
-    // lastNameKH : ['string','required'],
-    // firstNameEN : ['string','required'],
-    // lastNameEN : ['string','required'],   
-    // serviceCenterID : ['string','required'],
+    firstNameKH : ['string','required'],
+    lastNameKH : ['string','required'],
+    firstNameEN : ['string','required'],
+    lastNameEN : ['string','required'],   
+    serviceCenterID : ['string','required'],
     }
     const formNameEditOfficial = "centerStaffFormOfficial";
     const formDataEditOfficial: {
     [key: string]: any;
     } = reactive({       
     id : prop.id ? prop.id : 'asdf' ,
-    photo : null ,
-    firstNameKH : null ,
-    lastNameKH : null ,
-    firstNameEN : null ,
-    lastNameEN : null ,
-    gender : null ,
-    DateofBirth : null ,
-    ethnicity : null ,
-    nationality : null ,
-    birthAddress : null ,
-    permanentAddress : null,
-    currentAddress : null ,
-    telephone : null ,
-    email : null ,
-    officialID : null ,
-    CambodianSocialID : null ,
-    sIDValidStart : null ,
-    sIDValidEnd : null ,
-    physical : null ,
-    familyInfo : null ,
-    spouseNameKH : null ,
-    spuseNameEN : null ,
-    spouseDateOfBirth : null ,
-    spouseSID : null ,
-    spouseBirthAddress : null ,
-    spouseCurrentOccupation : null ,
-    spouseOrganisationName : null ,
-    spuseCurrentAddress : null ,
-    fatherFullNameKH : null ,
-    FatherOccupation : null ,
-    fatherBrithAddress : null ,
-    MotherOcupation : null ,
-    motherFullNameKH : null ,
-    motherBrirthAddress : null ,
-    ECFirstNameKH : null ,
-    ECLastNameKH : null ,
-    ECGender : null ,
-    ECRelationshipAs : null ,
-    ECOccupation : null ,
-    ECAddress : null ,
-    ECTelehpone : null ,
-    DateStartOfficialWork : null ,
-    DateWentFullTime : null ,
-    CurrentRank : null ,
-    OfficialLevelKH : null ,
+    photo : '' ,
+    firstNameKH : '' ,
+    lastNameKH : '' ,
+    firstNameEN : '' ,
+    lastNameEN : '' ,
+    gender : '' ,
+    DateofBirth : '' ,
+    ethnicity : '' ,
+    nationality : '' ,
+    birthAddress : '' ,
+    permanentAddress : '',
+    currentAddress : '' ,
+    telephone : '' ,
+    email : '' ,
+    officialID : '' ,
+    CambodianSocialID : '' ,
+    sIDValidStart : '' ,
+    sIDValidEnd : '' ,
+    physical : '' ,
+    familyInfo : '' ,
+    spouseNameKH : '' ,
+    spuseNameEN : '' ,
+    spouseDateOfBirth : '' ,
+    spouseSID : '' ,
+    spouseBirthAddress : '' ,
+    spouseCurrentOccupation : '' ,
+    spouseOrganisationName : '' ,
+    spuseCurrentAddress : '' ,
+    fatherFullNameKH : '' ,
+    FatherOccupation : '' ,
+    fatherBrithAddress : '' ,
+    MotherOcupation : '' ,
+    motherFullNameKH : '' ,
+    motherBrirthAddress : '' ,
+    ECFirstNameKH : '' ,
+    ECLastNameKH : '' ,
+    ECGender : '' ,
+    ECRelationshipAs : '' ,
+    ECOccupation : '' ,
+    ECAddress : '' ,
+    ECTelehpone : '' ,
+    DateStartOfficialWork : '' ,
+    DateWentFullTime : '' ,
+    CurrentRank : '' ,
+    OfficialLevelKH : '' ,
     serviceCenterID  : prop.serviceCenterID ? prop.serviceCenterID : '' ,
     });
 
@@ -439,6 +440,88 @@ import "@vuepic/vue-datepicker/dist/main.css"
       }
     })
 
+
+    const childrenDetails = ref( Array({
+      fullnameKH : '',
+      gender : '',
+      dateofBirth : '',
+      occupation : ''
+    }))
+
+    const EducationDetails = ref(Array({
+      couseLevel: '',
+      SchoolName: '',
+      SchoolLocation : '', 
+      CertificateLevel : '', 
+      majoring : '', 
+      StartDate : '', 
+      finishDate : '', 
+    }))
+    const governStaffLanuage = ref(Array({
+      langName : '',
+      read : '',
+      conversation : '',
+      writing : '',
+    }))
+    const governStaffWorkingHistoryPublic = ref(Array({
+      DateStartWorking : '',
+      DateStopWorking : '',
+      OgnisationName : '',
+      Department : '',
+      position : '',
+      SkillInPosition : '',
+    }))
+
+    const governStaffWorkingHistoryPrivate = ref(Array({
+      DateStartWorking : '',
+      DateStopWorking : '',
+      OgnisationName : '',
+      position : '',
+      SkillInPosition : '',
+    }))
+    const governStaffPositionHistory = ref(Array({
+      ValidDate : '',
+      MinistryName : '',
+      Department : '',
+      OfficialSection : '',
+      oldOfficialLevel : '',
+      newOffcialLevel : '',
+      changeTo : '',
+    })) 
+    const governStaffCertificateLevelup = ref(Array({
+      validatDate : '',
+      SchoolName : '',
+      PlaceStudy : '',
+      ReceivedCertificate : '',
+      OldPosition : '',
+      NewPosition : '',
+    })) 
+    const governStaffSituationOutsideOriginalOfficial = ref(Array({
+      startDate : '',
+      endDate : '',
+      OginasationName : '',
+      Position : '',
+    })) 
+    const GovernStaffFreeNoSalary = ref(Array({
+     startDate : '',
+     endDate : '',
+     Oginisationname : '',
+     NumberofMonthandYear : '',
+    })) 
+    const GovernStaffLetterAppreciation = ref(Array({
+     letterNumber : '', 
+     OfficialDate : '', 
+     RequestedOrginsation : '', 
+     LetterDetails : '', 
+     TypeReceived : '', 
+    })) 
+    const governStaffFineHistory = ref(Array({
+     letterNumber : '', 
+     OffialDate : '', 
+     RequestedOrginsation : '', 
+     LetterDetails : '', 
+     TypeRecieved : '', 
+    })) 
 </script>
 
 <template>  
@@ -566,6 +649,7 @@ import "@vuepic/vue-datepicker/dist/main.css"
                   'Su',
                 ]"
                 position="left"
+                required
                 :maxDate="new Date()"
                 :enableTimePicker="false"></Datepicker>
 
@@ -686,6 +770,7 @@ import "@vuepic/vue-datepicker/dist/main.css"
                     'Su',
                   ]"
                   position="left"
+                  required
                   :maxDate="new Date()"
                   :enableTimePicker="false"></Datepicker>
               <CustomErrorMessage name="sIDValidStart" />
@@ -711,6 +796,7 @@ import "@vuepic/vue-datepicker/dist/main.css"
                       'Su',
                     ]"
                     position="left"
+                    required
                     :maxDate="new Date()"
                     :enableTimePicker="false"></Datepicker>
               <CustomErrorMessage name="sIDValidEnd" />
@@ -776,6 +862,7 @@ import "@vuepic/vue-datepicker/dist/main.css"
                   ]"
                   position="left"
                   :maxDate="new Date()"
+                  required
                   :enableTimePicker="false"></Datepicker>
               <CustomErrorMessage name="spouseDateOfBirth" />
             </div>
@@ -829,6 +916,64 @@ import "@vuepic/vue-datepicker/dist/main.css"
               />
               <CustomErrorMessage name="spouseOrganisationName" />
             </div>
+            <div class="col-span-12 ">
+              <label for="" class="font-bold"> ខ.២-ព័ត៌មានកូន </label>
+            </div>
+            <div class="col-span-12 grid  grid-cols-1 lg:grid-cols-4 gap-1" v-for="(child,index) in childrenDetails" :key="child.fullnameKH">
+              <div>
+                <TwInput             
+                  :label=" index+1 + '. គោត្តនាម និងនាមខ្លួន '"
+                  v-model="child.fullnameKH"
+                  required
+                  placeholder="គោត្តនាម និងនាមខ្លួន"
+                  type="text"
+                />
+              </div>
+               <div >
+                <TwSelect                           
+                  label="ភេទ"
+                  v-model="child.gender"            
+                  required                    
+                  :items="[{ value: 'ប្រុស', label: 'ប្រុស' }, { value: 'ស្រី', label: 'ស្រី' }, { value: 'ផ្សេងៗ', label: 'ផ្សេងៗ' }]"
+                  placeholder="សូមជ្រើសរើស"           
+                />
+                </div> 
+                <div>
+                  <label for=""> ថ្ងៃខែឆ្នាំកំណើត </label>
+                   <Datepicker
+                    v-model="child.dateofBirth"
+                    :dayNames="[
+                      'Mo',
+                      'Tu',
+                      'We',
+                      'Th',
+                      'Fr',
+                      'Sa',
+                      'Su',
+                    ]"
+                    position="left"
+                    required
+                    :maxDate="new Date()"
+                    :enableTimePicker="false"></Datepicker>
+                </div>
+                <div>
+                  <TwInput             
+                    label="មុខរបរ"
+                    required
+                    v-model="child.occupation"
+                    placeholder="មុខរបរ"
+                    type="text"
+                  />
+                </div>
+            </div>
+            <div class="col-span-12">
+              <UButton color="primary" icon="i-heroicons-users"  size="lg" class="px-4" @click="childrenDetails.push({fullnameKH : '',
+                gender : '',
+                dateofBirth : '',
+                occupation : ''})" > បន្ថែមព័ត៌មានកូន  </UButton>
+                <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4" @click="childrenDetails.pop()" > លុបព័ត៌មានកូន </UButton>
+            </div>
+          
             <div class="col-span-12">
               <label class="font-bold"> ខ.៣- ព័ត៌មានឪពុក និងម្តាយបង្កើត</label>
             </div>
@@ -967,16 +1112,165 @@ import "@vuepic/vue-datepicker/dist/main.css"
               <CustomErrorMessage name="ECTelehpone" />
             </div>
             <div class="col-span-12">
+              <label for="" class="font-semibold"> ឃ-កំរិតវប្បធម៌ទូទៅ​ ការបណ្តុះបណ្តាលមុខវិជ្ជាជីវៈ​ និងការបណ្តុះបណ្តាលបន្ត</label>
+            </div>
+            <div class="col-span-12 grid  grid-cols-1 lg:grid-cols-4 gap-2 " v-for="item in EducationDetails" :key="item.SchoolName">
+              <div>
+                <TwInput             
+                  label="វគ្គឬកម្រិតសិក្សា"
+                  required
+                  v-model="item.couseLevel"
+                  placeholder="វគ្គឬកម្រិតសិក្សា"
+                  type="text"
+                />
+                <CustomErrorMessage name="CurrentRank" />
+              </div>
+              <div>
+                <TwInput             
+                  label="គ្រឹះស្ថានសិក្សាបណ្តុះបណ្តាល"
+                  required
+                  v-model="item.couseLevel"
+                  placeholder="គ្រឹះស្ថានសិក្សាបណ្តុះបណ្តាល"
+                  type="text"
+                />
+                <CustomErrorMessage name="CurrentRank" />
+              </div>
+              <div>
+                <TwInput             
+                  label="រាជធានីខេត្តឬប្រទេស"
+                  required
+                  v-model="item.SchoolLocation"
+                  placeholder="រាជធានីខេត្តឬប្រទេស"
+                  type="text"
+                />
+                <CustomErrorMessage name="CurrentRank" />
+              </div>
+              <div>
+                <TwInput             
+                  label="សញ្ញាបត្រ"
+                  required
+                  v-model="item.CertificateLevel"
+                  placeholder="សញ្ញាបត្រ"
+                  type="text"
+                />
+                <CustomErrorMessage name="CurrentRank" />
+              </div>
+              <div>
+                <TwInput             
+                  label="ជំនាញ"
+                  required
+                  v-model="item.majoring"
+                  placeholder="ជំនាញ"
+                  type="text"
+                />
+                <CustomErrorMessage name="CurrentRank" />
+              </div>
+              <div>
+                <label for="">ថ្ងៃខែឆ្នាំចូលសិក្សា</label>
+                 <Datepicker
+                      v-model="item.StartDate"
+                      :dayNames="[
+                        'Mo',
+                        'Tu',
+                        'We',
+                        'Th',
+                        'Fr',
+                        'Sa',
+                        'Su',
+                      ]"
+                      position="left"
+                      required
+                      :maxDate="new Date()"
+                      :enableTimePicker="false"></Datepicker>
+                <CustomErrorMessage name="DateStartOfficialWork" />
+              </div>
+              <div>
+                <label for="">ថ្ងៃខែឆ្នាំបញ្ចប់សិក្សា</label>
+                 <Datepicker
+                      v-model="item.finishDate"
+                      :dayNames="[
+                        'Mo',
+                        'Tu',
+                        'We',
+                        'Th',
+                        'Fr',
+                        'Sa',
+                        'Su',
+                      ]"
+                      position="left"
+                      required
+                      :maxDate="new Date()"
+                      :enableTimePicker="false"></Datepicker>
+                <CustomErrorMessage name="DateStartOfficialWork" />
+              </div>
+            </div>
+            <div class="col-span-12">
+                <UButton color="primary" icon="i-heroicons-users"  size="lg" class="px-4" @click="EducationDetails.push({
+                  couseLevel : '',
+                  SchoolName : '',
+                  SchoolLocation : '',
+                  CertificateLevel : '',
+                  majoring : '',
+                  StartDate : '',
+                  finishDate : '',
+                })" > បន្ថែមព័ត៌មាន  </UButton>
+                  <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4" @click="EducationDetails.pop()" > លុបព័ត៌មានកូន </UButton>
+            </div>
+            <div class="col-span-12">
+              <label for=""> ង-ភាសារបរទេស(សូមបំពេញនូវកម្រិតចំណេះដឹងភាសាបរទេស​)</label>
+            </div>
+            <div class="col-span-12 grid grid-cols-1 lg:grid-cols-4 gap-2" v-for="item in governStaffLanuage" :key="item.langName" >
+                <div>
+                  <TwInput             
+                    label="ភាសាបរទេស"
+                    required
+                    v-model="item.langName"
+                    placeholder="ភាសាបរទេស"
+                    type="text"
+                  />
+                  <CustomErrorMessage name="CurrentRank" />
+                </div>
+                <div >
+                 <TwSelect                           
+                  label="ការអាន"       
+                  v-model="item.read"            
+                  required                    
+                  :items="[{ value: 'good', label: 'ល្អ' },{ value: 'medium', label: 'មធ្យម' }, { value: 'bad', label: 'ខ្សោយ' }]"
+                  placeholder="សូមជ្រើសរើស"           
+                />
+              </div>
+              <div >
+                   <TwSelect                           
+                    label="ការសន្ទនា"       
+                    v-model="item.conversation"            
+                    required                    
+                    :items="[{ value: 'good', label: 'ល្អ' }, { value: 'medium', label: 'មធ្យម' }, { value: 'bad', label: 'ខ្សោយ' }]"
+                    placeholder="សូមជ្រើសរើស"           
+                  />
+                </div>
+                <div >
+                   <TwSelect                           
+                    label="ការសរសេរ"       
+                    v-model="item.writing"            
+                    required                    
+                    :items="[{ value: 'good', label: 'ល្អ' }, { value: 'medium', label: 'មធ្យម' }, { value: 'bad', label: 'ខ្សោយ' }]"
+                    placeholder="សូមជ្រើសរើស"           
+                  />
+                </div>
+            </div>
+            <div class="col-span-12">
+                <UButton color="primary" icon="i-heroicons-users"  size="lg" class="px-4" @click="governStaffLanuage.push({
+                  langName : '',
+                  read : '',
+                  conversation : '',
+                  writing : '',
+                })" > បន្ថែមព័ត៌មាន  </UButton>
+                  <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4" @click="governStaffLanuage.pop()" > លុបព័ត៌មានកូន </UButton>
+            </div>
+            <div class="col-span-12">
               <label class="font-bold"> ច-ប្រវត្តិការងារ</label>
             </div>
             <div class="col-span-12 lg:col-span-6 ">
-              <!-- <TwInput             
-                name="DateStartOfficialWork"
-                label="ថ្ងៃខែឆ្នាំចូលបម្រើក្របខ័ណ្ឌរដ្ឋ"
-                v-model="formDataEditOfficial.DateStartOfficialWork"
-                placeholder="ថ្ងៃខែឆ្នាំចូលបម្រើក្របខ័ណ្ឌរដ្ឋ"
-                type="text"
-              /> -->
               <label for="">ថ្ងៃខែឆ្នាំចូលបម្រើក្របខ័ណ្ឌរដ្ឋ</label>
                <Datepicker
                     v-model="formDataEditOfficial.DateStartOfficialWork"
@@ -990,6 +1284,7 @@ import "@vuepic/vue-datepicker/dist/main.css"
                       'Su',
                     ]"
                     position="left"
+                    required
                     :maxDate="new Date()"
                     :enableTimePicker="false"></Datepicker>
               <CustomErrorMessage name="DateStartOfficialWork" />
@@ -1009,6 +1304,7 @@ import "@vuepic/vue-datepicker/dist/main.css"
                     ]"
                     position="left"
                     :maxDate="new Date()"
+                    required
                     :enableTimePicker="false"></Datepicker>
               <CustomErrorMessage name="DateWentFullTime" />
             </div>
@@ -1032,20 +1328,587 @@ import "@vuepic/vue-datepicker/dist/main.css"
               />
               <CustomErrorMessage name="OfficialLevelKH" />
             </div>
-             <div class="col-span-12 lg:col-span-6  flex justify-end gap-1">
-                <UButton
-                  :ripple="true"
-                  color="gray"
-                  square
-                  type="button"
-                  size="lg"
-                  class="px-4 dark:text-gray-200 dark:!border-gray-800 dark:border"
-                  @click="clearEditOfficial()"
-                >
-                  កំណត់ឡើងវិញ
-                </UButton>
-                <UButton color="primary" size="lg" class="px-4" type="submit"> រក្សាទុក </UButton>
+            <div class="col-span-12">
+              <label for=""> ច.១-មុខតំណែង(សូមបំពេញ​ ពីថ្មីទៅចាស់) </label>
+            </div>
+            <div class="col-span-12">
+                <label for=""> ច.១.១-ក្នុងវិស័យសាធារណៈ </label>
+            </div>
+            <div class="col-span-12 grid grid-cols-1 lg:grid-cols-5 gap-2" v-for="(item, index) in governStaffWorkingHistoryPublic" :key="index" >
+              <div>
+                <label for="">ថ្ងៃខែឆ្នាំចូលបម្រើការងារ</label>
+                 <Datepicker
+                      v-model="item.DateStartWorking"
+                      :dayNames="[
+                        'Mo',
+                        'Tu',
+                        'We',
+                        'Th',
+                        'Fr',
+                        'Sa',
+                        'Su',
+                      ]"
+                      position="left"
+                      :maxDate="new Date()"
+                      required
+                      :enableTimePicker="false"></Datepicker>
+                <CustomErrorMessage name="DateWentFullTime" />
               </div>
+               <div>
+                  <label for="">ថ្ងៃខែបញ្ចប់ការងារ</label>
+                   <Datepicker
+                        v-model="item.DateStopWorking"
+                        :dayNames="[
+                          'Mo',
+                          'Tu',
+                          'We',
+                          'Th',
+                          'Fr',
+                          'Sa',
+                          'Su',
+                        ]"
+                        position="left"
+                        :maxDate="new Date()"
+                        required
+                        :enableTimePicker="false"></Datepicker>
+                </div>
+                <div>
+                  <TwInput             
+                    label="ក្រសួង-ស្ថាប័ន"
+                    v-model="item.OgnisationName"
+                    placeholder=""
+                    type="text"
+                  />
+                </div>
+                <div>
+                  <TwInput             
+                    label="នាយកដ្ឋាន-អង្គភាព"
+                    v-model="item.Department"
+                    placeholder=""
+                    type="text"
+                  />
+                </div>
+                <div>
+                  <TwInput             
+                    label="មុខតំណែង"
+                    v-model="item.position"
+                    placeholder=""
+                    type="text"
+                  />
+                </div>
+                <div>
+                  <TwInput             
+                    label="ជំនាញ/បច្ចេកទេសក្នុងមុខតំណែង"
+                    v-model="item.SkillInPosition"
+                    placeholder=""
+                    type="text"
+                  />
+                </div>
+            </div>
+            <div class="col-span-12">
+                  <UButton color="primary" icon="i-heroicons-users"  size="lg" class="px-4" @click="governStaffWorkingHistoryPublic.push({
+                    DateStartWorking : '',
+                    DateStopWorking : '',
+                    OgnisationName : '',
+                    Department : '',
+                    position : '',
+                    SkillInPosition : '',
+                  })" > បន្ថែមព័ត៌មាន  </UButton>
+                    <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4" @click="governStaffWorkingHistoryPublic.pop()" > លុបព័ត៌មានកូន </UButton>
+              </div>
+            <div class="col-span-12">
+                <label for=""> ច.១.២-ក្នុងវិស័យឯកជន </label>
+            </div>
+            <div class="col-span-12 grid grid-cols-1 lg:grid-cols-4 gap-2" v-for="(item, index) in governStaffWorkingHistoryPrivate" :key="index" >
+              <div>
+                <label for="">ថ្ងៃខែឆ្នាំចូលបម្រើការងារ</label>
+                 <Datepicker
+                      v-model="item.DateStartWorking"
+                      :dayNames="[
+                        'Mo',
+                        'Tu',
+                        'We',
+                        'Th',
+                        'Fr',
+                        'Sa',
+                        'Su',
+                      ]"
+                      position="left"
+                      :maxDate="new Date()"
+                      required
+                      :enableTimePicker="false"></Datepicker>
+                <CustomErrorMessage name="DateWentFullTime" />
+              </div>
+               <div>
+                  <label for="">ថ្ងៃខែបញ្ចប់ការងារ</label>
+                   <Datepicker
+                        v-model="item.DateStopWorking"
+                        :dayNames="[
+                          'Mo',
+                          'Tu',
+                          'We',
+                          'Th',
+                          'Fr',
+                          'Sa',
+                          'Su',
+                        ]"
+                        position="left"
+                        :maxDate="new Date()"
+                        required
+                        :enableTimePicker="false"></Datepicker>
+                </div>
+                <div>
+                  <TwInput             
+                    label="គ្រឹះស្ថាន-អង្គភាព"
+                    v-model="item.OgnisationName"
+                    placeholder=""
+                    type="text"
+                  />
+                </div>
+                <div>
+                  <TwInput             
+                    label="តួនាទី"
+                    v-model="item.position"
+                    placeholder=""
+                    type="text"
+                  />
+                </div>
+                <div>
+                  <TwInput             
+                    label="ជំនាញ/បច្ចេកទេស"
+                    v-model="item.SkillInPosition"
+                    placeholder=""
+                    type="text"
+                  />
+                </div>
+            </div>
+            <div class="col-span-12">
+                  <UButton color="primary" icon="i-heroicons-users"  size="lg" class="px-4" @click="governStaffWorkingHistoryPrivate.push({
+                    DateStartWorking : '',
+                    DateStopWorking : '',
+                    OgnisationName : '',
+                    position : '',
+                    SkillInPosition : '',
+                  })" > បន្ថែមព័ត៌មាន  </UButton>
+                    <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4" @click="governStaffWorkingHistoryPrivate.pop()" > លុបព័ត៌មានកូន </UButton>
+              </div>
+               <div class="col-span-12">
+                  <label class="font-bold"> ច.២-ការដំឡើងឋានន្តរស័ក្តិ និងថ្នាក់តាមវេនជ្រើសរើស អតីតភាព ប្តូរប្រភេទក្របខណ្ឌ និងនិយ័តកម្មថ្នាក់ (សូមបំពេញតាមលំដាប់ ពីថ្មីទៅចាស់) </label>
+              </div>
+              <div class="col-span-12 grid grid-cols-1 lg:grid-cols-3 gap-2" v-for="(item, index) in governStaffPositionHistory" :key="index" >
+                <div>
+                    <label for="">ថ្ងៃខែបញ្ចប់ការងារ</label>
+                     <Datepicker
+                          v-model="item.ValidDate"
+                          :dayNames="[
+                            'Mo',
+                            'Tu',
+                            'We',
+                            'Th',
+                            'Fr',
+                            'Sa',
+                            'Su',
+                          ]"
+                          position="left"
+                          :maxDate="new Date()"
+                          required
+                          :enableTimePicker="false"></Datepicker>
+                  </div>
+                  <div>
+                    <TwInput             
+                      label="ក្រសួង-ស្ថាប័ន"
+                      v-model="item.MinistryName"
+                      placeholder=""
+                      type="text"
+                    />
+                  </div>
+                  <div>
+                    <TwInput             
+                      label="នាយកដ្ឋាន-អង្គភាព"
+                      v-model="item.Department"
+                      placeholder=""
+                      type="text"
+                    />
+                  </div>
+                  <div>
+                    <TwInput             
+                      label="ការិយាល័យ-ផ្នែក"
+                      v-model="item.OfficialSection"
+                      placeholder=""
+                      type="text"
+                    />
+                  </div>
+                  <div>
+                    <TwInput             
+                      label="ក្របខណ្ឌឋានន្តរស័ក្តិនិងថ្នាក់ចាស់"
+                      v-model="item.oldOfficialLevel"
+                      placeholder=""
+                      type="text"
+                    />
+                  </div>
+                  <div>
+                    <TwInput             
+                      label="ក្របខណ្ឌឋានន្តរស័ក្តិនិងថ្នាក់ថ្មី"
+                      v-model="item.newOffcialLevel"
+                      placeholder=""
+                      type="text"
+                    />
+                  </div>
+                  <div>
+                    <TwInput             
+                      label="ប្រភេទដំឡើង/ប្តូរ"
+                      v-model="item.changeTo"
+                      placeholder=""
+                      type="text"
+                    />
+                  </div>
+              </div>
+               <div class="col-span-12">
+                    <UButton color="primary" icon="i-heroicons-users"  size="lg" class="px-4" @click="governStaffPositionHistory.push({
+                      ValidDate : '',
+                      MinistryName : '',
+                      Department : '',
+                      OfficialSection : '',
+                      oldOfficialLevel : '',
+                      newOffcialLevel : '',
+                      changeTo : '',
+                    })" > បន្ថែមព័ត៌មាន  </UButton>
+                      <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4" @click="governStaffPositionHistory.pop()" > លុបព័ត៌មានកូន </UButton>
+                </div>
+                 <div class="col-span-12">
+                    <label class="font-bold"> ច.៣-ការដំឡើងឋានន្តរស័ក្តិ និងថ្នាក់តាមសញ្ញាបត្រ(សូមបំពេញតាមលំដាប់ ពីថ្មីទៅចាស់)</label>
+                </div>
+                <div class="col-span-12 grid grid-cols-1 lg:grid-cols-3 gap-2" v-for="(item, index) in governStaffCertificateLevelup" :key="index" >
+                  <div>
+                      <label for="">ថ្ងៃខែបញ្ចប់ការងារ</label>
+                       <Datepicker
+                            v-model="item.validatDate"
+                            :dayNames="[
+                              'Mo',
+                              'Tu',
+                              'We',
+                              'Th',
+                              'Fr',
+                              'Sa',
+                              'Su',
+                            ]"
+                            position="left"
+                            :maxDate="new Date()"
+                            required
+                            :enableTimePicker="false"></Datepicker>
+                    </div>
+                    <div>
+                      <TwInput             
+                        label="គ្រឹះស្ថានបណ្តុះបណ្តាល"
+                        v-model="item.SchoolName"
+                        placeholder=""
+                        type="text"
+                      />
+                    </div>
+                    <div>
+                      <TwInput             
+                        label="ទីកន្លែងសិក្សា"
+                        v-model="item.PlaceStudy"
+                        placeholder=""
+                        type="text"
+                      />
+                    </div>
+                    <div>
+                      <TwInput             
+                        label="សញ្ញាបត្រទទួលបាន"
+                        v-model="item.ReceivedCertificate"
+                        placeholder=""
+                        type="text"
+                      />
+                    </div>
+                    <div>
+                      <TwInput             
+                        label="ក្របខណ្ឌ ឋានន្តរស័ក្តិ និងថ្នាក់ចាស់"
+                        v-model="item.OldPosition"
+                        placeholder=""
+                        type="text"
+                      />
+                    </div>
+                    <div>
+                      <TwInput             
+                        label="ក្របខណ្ឌ ឋានន្តរស័ក្តិ និងថ្នាក់ថ្មី"
+                        v-model="item.NewPosition"
+                        placeholder=""
+                        type="text"
+                      />
+                    </div>
+                </div>
+                 <div class="col-span-12">
+                      <UButton color="primary" icon="i-heroicons-users"  size="lg" class="px-4" @click="governStaffCertificateLevelup.push({
+                        validatDate : '',
+                        SchoolName : '',
+                        PlaceStudy : '',
+                        ReceivedCertificate : '',
+                        OldPosition : '',
+                        NewPosition : '',
+                      })" > បន្ថែមព័ត៌មាន  </UButton>
+                        <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4" @click="governStaffCertificateLevelup.pop()" > លុបព័ត៌មានកូន </UButton>
+                  </div>
+                  <div class="col-span-12">
+                      <label class="font-bold"> ច.៤-ស្ថានភាពស្ថិតនៅក្រៅក្របខ័ណ្ឌដើម (សូមបំពេញតាមលំដាប់ ពីថ្មីទៅចាស់)</label>
+                  </div>
+                  <div class="col-span-12 grid grid-cols-1 lg:grid-cols-3 gap-2" v-for="(item, index) in governStaffSituationOutsideOriginalOfficial" :key="index" >
+                     <div>
+                        <label for="">ថ្ងៃខែឆ្នាំចាប់ផ្តើម</label>
+                         <Datepicker
+                              v-model="item.startDate"
+                              :dayNames="[
+                                'Mo',
+                                'Tu',
+                                'We',
+                                'Th',
+                                'Fr',
+                                'Sa',
+                                'Su',
+                              ]"
+                              position="left"
+                              :maxDate="new Date()"
+                              required
+                              :enableTimePicker="false"></Datepicker>
+                      </div>
+                     <div>
+                        <label for="">ថ្ងៃខែឆ្នាំបញ្ចប់</label>
+                         <Datepicker
+                              v-model="item.endDate"
+                              :dayNames="[
+                                'Mo',
+                                'Tu',
+                                'We',
+                                'Th',
+                                'Fr',
+                                'Sa',
+                                'Su',
+                              ]"
+                              position="left"
+                              :maxDate="new Date()"
+                              required
+                              :enableTimePicker="false"></Datepicker>
+                      </div>
+                      <div>
+                        <TwInput             
+                          label="ក្រសួង/ស្ថាប័ន"
+                          v-model="item.OginasationName"
+                          placeholder=""
+                          type="text"
+                        />
+                      </div>
+                      <div>
+                        <TwInput             
+                          label="មុខដំណែង"
+                          v-model="item.Position"
+                          placeholder=""
+                          type="text"
+                        />
+                      </div>
+                  </div>
+                  <div class="col-span-12">
+                        <UButton color="primary" icon="i-heroicons-users"  size="lg" class="px-4" @click="governStaffSituationOutsideOriginalOfficial.push({
+                         startDate : '',
+                         endDate : '',
+                         OginasationName : '',
+                         Position : '',
+                        })" > បន្ថែមព័ត៌មាន  </UButton>
+                          <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4" @click="governStaffSituationOutsideOriginalOfficial.pop()" > លុបព័ត៌មានកូន </UButton>
+                    </div>
+                  <div class="col-span-12">
+                      <label class="font-bold">ច.៥-ស្ថានភាពស្ថិតនៅក្នុងភាពទំនេរគ្មានបៀវត្ស (សូមបំពេញតាមលំដាប់ ពីថ្មីទៅចាស់)</label>
+                  </div>
+                  <div class="col-span-12 grid grid-cols-1 lg:grid-cols-4 gap-2" v-for="(item, index) in GovernStaffFreeNoSalary" :key="index" >
+                     <div>
+                        <label for="">ថ្ងៃខែឆ្នាំចាប់ផ្តើម</label>
+                         <Datepicker
+                              v-model="item.startDate"
+                              :dayNames="[
+                                'Mo',
+                                'Tu',
+                                'We',
+                                'Th',
+                                'Fr',
+                                'Sa',
+                                'Su',
+                              ]"
+                              position="left"
+                              :maxDate="new Date()"
+                              required
+                              :enableTimePicker="false"></Datepicker>
+                      </div>
+                     <div>
+                        <label for="">ថ្ងៃខែឆ្នាំបញ្ចប់</label>
+                         <Datepicker
+                              v-model="item.endDate"
+                              :dayNames="[
+                                'Mo',
+                                'Tu',
+                                'We',
+                                'Th',
+                                'Fr',
+                                'Sa',
+                                'Su',
+                              ]"
+                              position="left"
+                              :maxDate="new Date()"
+                              required
+                              :enableTimePicker="false"></Datepicker>
+                      </div>
+                      <div>
+                        <TwInput             
+                          label="ក្រសួង/ស្ថាប័ន"
+                          v-model="item.Oginisationname"
+                          placeholder=""
+                          type="text"
+                        />
+                      </div>
+                      <div>
+                        <TwInput             
+                          label="ចំនួន(ខែ/ឆ្នាំ)"
+                          v-model="item.NumberofMonthandYear"
+                          placeholder=""
+                          type="text"
+                        />
+                      </div>
+                  </div>
+                  <div class="col-span-12">
+                        <UButton color="primary" icon="i-heroicons-users"  size="lg" class="px-4" @click="GovernStaffFreeNoSalary.push({
+                         startDate : '',
+                         endDate : '',
+                         Oginisationname : '',
+                         NumberofMonthandYear : '',
+                        })" > បន្ថែមព័ត៌មាន  </UButton>
+                          <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4" @click="GovernStaffFreeNoSalary.pop()" > លុបព័ត៌មានកូន </UButton>
+                    </div>
+                    <div class="col-span-12">
+                        <label class="font-bold">ឆ-ការលើសរសើរ ឬដាក់វិន័យ</label>
+                    </div>
+                    <div class="col-span-12">
+                        <label class="font-bold">ឆ.១-ការលើសរសើរ (គ្រឿងឥស្សរិយយស មេដាយ ប័ណ្ឌសរសើរ)</label>
+                    </div>
+                    <div class="col-span-12 grid  grid-cols-1 lg:grid-cols-3 gap-1" v-for="(item,index) in GovernStaffLetterAppreciation" :key="item.letterNumber">
+                     <div>
+                          <TwInput             
+                            label="លេខលិខិត"
+                            v-model="item.letterNumber"
+                            placeholder=""
+                            type="text"
+                          />
+                        </div>
+                     <div>
+                          <TwInput             
+                            label="កាលបរិច្ចេទ"
+                            v-model="item.OfficialDate"
+                            placeholder=""
+                            type="text"
+                          />
+                        </div>
+                     <div>
+                          <TwInput             
+                            label="ក្រសួង/ស្ថាប័ន/រាជធានី-ខេត្ត(ស្នើសុំ)"
+                            v-model="item.RequestedOrginsation"
+                            placeholder=""
+                            type="text"
+                          />
+                        </div>
+                     <div>
+                          <TwInput             
+                            label="បរិយាយ"
+                            v-model="item.LetterDetails"
+                            placeholder=""
+                            type="text"
+                          />
+                        </div>
+                     <div>
+                          <TwInput             
+                            label="ប្រភេទ"
+                            v-model="item.TypeReceived"
+                            placeholder=""
+                            type="text"
+                          />
+                        </div>
+                    </div>
+                     <div class="col-span-12">
+                          <UButton color="primary" icon="i-heroicons-users"  size="lg" class="px-4" @click="GovernStaffLetterAppreciation.push({
+                            letterNumber : '',
+                            OfficialDate : '',
+                            RequestedOrginsation : '',
+                            LetterDetails : '',
+                            TypeReceived : '',
+                          })" > បន្ថែមព័ត៌មាន  </UButton>
+                            <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4" @click="GovernStaffLetterAppreciation.pop()" > លុបព័ត៌មានកូន </UButton>
+                      </div>
+                    <div class="col-span-12">
+                        <label class="font-bold"> ឆ.២-ការដាក់វិន័យ</label>
+                    </div>
+                    <div class="col-span-12 grid  grid-cols-1 lg:grid-cols-3 gap-1" v-for="(item,index) in governStaffFineHistory" :key="item.letterNumber">
+                      <div>
+                            <TwInput             
+                              label="លេខលិខិត"
+                              v-model="item.letterNumber"
+                              placeholder=""
+                              type="text"
+                            />
+                          </div>
+                       <div>
+                            <TwInput             
+                              label="កាលបរិច្ចេទ"
+                              v-model="item.OffialDate"
+                              placeholder=""
+                              type="text"
+                            />
+                          </div>
+                       <div>
+                        <TwInput             
+                              label="ក្រសួង/ស្ថាប័ន/រាជធានី-ខេត្ត(ស្នើសុំ)"
+                              v-model="item.RequestedOrginsation"
+                              placeholder=""
+                              type="text"
+                            />
+                          </div>
+                       <div>
+                            <TwInput             
+                              label="បរិយាយ"
+                              v-model="item.LetterDetails"
+                              placeholder=""
+                              type="text"
+                            />
+                          </div>
+                       <div>
+                        <TwInput             
+                              label="ប្រភេទ"
+                              v-model="item.TypeRecieved"
+                              placeholder=""
+                              type="text"
+                            />
+                        </div>
+                    </div>
+                     <div class="col-span-12">
+                            <UButton color="primary" icon="i-heroicons-users"  size="lg" class="px-4" @click="governStaffFineHistory.push({
+                              letterNumber: '',
+                              OffialDate: '',
+                              RequestedOrginsation: '',
+                              LetterDetails: '',
+                              TypeRecieved: '',
+                            })" > បន្ថែមព័ត៌មាន  </UButton>
+                              <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4" @click="governStaffFineHistory.pop()" > លុបព័ត៌មានកូន </UButton>
+                        </div>
+
+                 <div class="col-span-12 lg:col-span-12  flex justify-end gap-1">
+                  <UButton
+                    :ripple="true"
+                    color="gray"
+                    square
+                    type="button"
+                    size="lg"
+                    class="px-4 dark:text-gray-200 dark:!border-gray-800 dark:border"
+                    @click="clearEditOfficial()"
+                  >
+                    កំណត់ឡើងវិញ
+                  </UButton>
+                  <UButton color="primary" size="lg" class="px-4" type="submit"> រក្សាទុក </UButton>
+                </div>
           </TwForm>            
 
           </div>
@@ -1151,14 +2014,14 @@ import "@vuepic/vue-datepicker/dist/main.css"
               <CustomErrorMessage name="email" />
             </div>     
 
-            <div class="col-span-12 lg:col-span-6  flex justify-end gap-1">
+            <div class="col-span-12  flex justify-end gap-1">
               <UButton
                 :ripple="true"
                 color="gray"
                 square
                 type="button"
                 size="lg"
-                class="px-4 dark:text-gray-200 dark:!border-gray-800 dark:border"
+                class=" dark:text-gray-200 dark:!border-gray-800 dark:border"
                 @click="clearEdit()"
               >
                 កំណត់ឡើងវិញ

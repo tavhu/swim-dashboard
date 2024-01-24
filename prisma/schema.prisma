@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 model Account {
@@ -162,7 +163,7 @@ model Staff {
 
 model governStaff {
   id                                          String                                        @id @default(cuid())
-  photo                                       String
+  photo                                       String?
   firstNameKH                                 String
   lastNameKH                                  String
   firstNameEN                                 String
@@ -210,15 +211,16 @@ model governStaff {
   governStaffChildren                         governStaffChildren[]
   governStaffQualifitcation                   governStaffQualifitcation[]
   governStaffLanuage                          governStaffLanuage[]
-  governStaffWorkingHistory                   governStaffWorkingHistory[]
+  governStaffWorkingHistoryPublic             governStaffWorkingHistoryPublic[]
   governStaffPositionHistory                  governStaffPositionHistory[]
   governStaffCertificateLevelup               governStaffCertificateLevelup[]
   governStaffSituationOutsideOriginalOfficial governStaffSituationOutsideOriginalOfficial[]
-  GovernStaffFreeNoSalary                     GovernStaffFreeNoSalary[]
+  GovernStaffFreeNoSalary                     governStaffFreeNoSalary[]
   GovernStaffLetterAppreciation               GovernStaffLetterAppreciation[]
   governStaffFineHistory                      governStaffFineHistory[]
   serviceCenterID                             String?
   ServiceCenter                               ServiceCenter?                                @relation(fields: [serviceCenterID], references: [id])
+  governStaffWorkingHistoryPrivate            governStaffWorkingHistoryPrivate[]
 }
 
 model governStaffChildren {
@@ -233,8 +235,8 @@ model governStaffChildren {
 
 model governStaffQualifitcation {
   id               String      @id @default(cuid())
-  governStaffID    String
   governStaff      governStaff @relation(fields: [governStaffID], references: [id])
+  governStaffID    String
   couseLevel       String
   SchoolName       String
   SchoolLocation   String
@@ -254,11 +256,10 @@ model governStaffLanuage {
   governStaff   governStaff @relation(fields: [governStaffID], references: [id])
 }
 
-model governStaffWorkingHistory {
+model governStaffWorkingHistoryPublic {
   id               String      @id @default(cuid())
-  governStaffID    String
   governStaff      governStaff @relation(fields: [governStaffID], references: [id])
-  PublicSector     Boolean
+  governStaffID    String
   DateStartWorking DateTime
   DateStopWorking  DateTime
   OgnisationName   String
@@ -267,11 +268,22 @@ model governStaffWorkingHistory {
   SkillInPosition  String
 }
 
+model governStaffWorkingHistoryPrivate {
+  id               String      @id @default(cuid())
+  governStaff      governStaff @relation(fields: [governStaffID], references: [id])
+  governStaffID    String
+  DateStartWorking DateTime
+  DateStopWorking  DateTime
+  OgnisationName   String
+  position         String
+  SkillInPosition  String
+}
+
 model governStaffPositionHistory {
   id               String      @id @default(cuid())
-  governStaffID    String
   governStaff      governStaff @relation(fields: [governStaffID], references: [id])
   ValidDate        DateTime
+  governStaffID    String
   MinistryName     String
   Department       String
   OfficialSection  String
@@ -282,8 +294,8 @@ model governStaffPositionHistory {
 
 model governStaffCertificateLevelup {
   id                  String      @id @default(cuid())
-  governStaffID       String
   governStaff         governStaff @relation(fields: [governStaffID], references: [id])
+  governStaffID       String
   validatDate         DateTime
   SchoolName          String
   PlaceStudy          String
@@ -294,18 +306,18 @@ model governStaffCertificateLevelup {
 
 model governStaffSituationOutsideOriginalOfficial {
   id              String      @id @default(cuid())
-  governStaffID   String
   governStaff     governStaff @relation(fields: [governStaffID], references: [id])
+  governStaffID   String
   startDate       DateTime
   endDate         DateTime
   OginasationName String
   Position        String
 }
 
-model GovernStaffFreeNoSalary {
+model governStaffFreeNoSalary {
   id                   String      @id @default(cuid())
-  governStaffID        String
   governStaff          governStaff @relation(fields: [governStaffID], references: [id])
+  governStaffID        String
   startDate            DateTime
   endDate              DateTime
   Oginisationname      String
@@ -314,8 +326,8 @@ model GovernStaffFreeNoSalary {
 
 model GovernStaffLetterAppreciation {
   id                   String      @id @default(cuid())
-  governStaffID        String
   governStaff          governStaff @relation(fields: [governStaffID], references: [id])
+  governStaffID        String
   letterNumber         String
   OfficialDate         DateTime
   RequestedOrginsation String
@@ -325,8 +337,8 @@ model GovernStaffLetterAppreciation {
 
 model governStaffFineHistory {
   id                   String      @id @default(cuid())
-  governStaffID        String
   governStaff          governStaff @relation(fields: [governStaffID], references: [id])
+  governStaffID        String
   letterNumber         String
   OffialDate           DateTime
   RequestedOrginsation String
