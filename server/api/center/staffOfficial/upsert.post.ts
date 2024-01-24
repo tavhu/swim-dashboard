@@ -116,6 +116,56 @@ export default eventHandler(async (event) => {
             data: body?.governStaffChildren,
           },
         },
+        governStaffQualifitcation: {
+          createMany: {
+            data: body?.governStaffQualifitcation,
+          },
+        },
+        governStaffLanuage: {
+          createMany: {
+            data: body?.governStaffLanuage,
+          },
+        },
+        governStaffWorkingHistoryPublic: {
+          createMany: {
+            data: body?.governStaffWorkingHistoryPublic,
+          },
+        },
+        governStaffWorkingHistoryPrivate: {
+          createMany: {
+            data: body?.governStaffWorkingHistoryPrivate,
+          },
+        },
+        governStaffPositionHistory: {
+          createMany: {
+            data: body?.governStaffPositionHistory,
+          },
+        },
+        governStaffCertificateLevelup: {
+          createMany: {
+            data: body?.governStaffCertificateLevelup,
+          },
+        },
+        governStaffSituationOutsideOriginalOfficial: {
+          createMany: {
+            data: body?.governStaffSituationOutsideOriginalOfficial,
+          },
+        },
+        governStaffFreeNoSalary: {
+          createMany: {
+            data: body?.governStaffFreeNoSalary,
+          },
+        },
+        governStaffLetterAppreciation: {
+          createMany: {
+            data: body?.governStaffLetterAppreciation,
+          },
+        },
+        governStaffFineHistory: {
+          createMany: {
+            data: body?.governStaffFineHistory,
+          },
+        },
       },
     });
 

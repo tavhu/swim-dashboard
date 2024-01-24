@@ -473,6 +473,17 @@ import { string } from 'zod'
           OfficialLevelKH : formDataEditOfficial.OfficialLevelKH , 
           serviceCenterID : formDataEditOfficial.serviceCenterID,
           governStaffChildren : childrenDetails.value,
+          governStaffQualifitcation : EducationDetails.value,
+          governStaffLanuage : governStaffLanuage.value,
+          governStaffWorkingHistoryPublic: governStaffWorkingHistoryPublic.value,
+          governStaffWorkingHistoryPrivate : governStaffWorkingHistoryPrivate.value,
+          governStaffPositionHistory : governStaffPositionHistory.value,
+          governStaffCertificateLevelup : governStaffCertificateLevelup.value,
+          governStaffSituationOutsideOriginalOfficial : governStaffSituationOutsideOriginalOfficial.value,
+          governStaffFreeNoSalary : GovernStaffFreeNoSalary.value,
+          governStaffLetterAppreciation : GovernStaffLetterAppreciation.value,
+          governStaffFineHistory : governStaffFineHistory.value,
+
         }),
       });
 
@@ -922,7 +933,7 @@ import { string } from 'zod'
             <div class="col-span-12 ">
               <label for="" class="font-bold"> ខ.២-ព័ត៌មានកូន </label>
             </div>
-            <div class="col-span-12 grid  grid-cols-1 lg:grid-cols-4 gap-1" v-for="(child,index) in childrenDetails" :key="child.fullnameKH">
+            <div class="col-span-12 grid  grid-cols-1 lg:grid-cols-4 gap-1" v-for="(child,index) in childrenDetails" :key="index">
               <div>
                 <TwInput             
                   :label=" index+1 + '. គោត្តនាម និងនាមខ្លួន '"
@@ -1117,7 +1128,7 @@ import { string } from 'zod'
             <div class="col-span-12">
               <label for="" class="font-semibold"> ឃ-កំរិតវប្បធម៌ទូទៅ​ ការបណ្តុះបណ្តាលមុខវិជ្ជាជីវៈ​ និងការបណ្តុះបណ្តាលបន្ត</label>
             </div>
-            <div class="col-span-12 grid  grid-cols-1 lg:grid-cols-4 gap-2 " v-for="item in EducationDetails" :key="item.SchoolName">
+            <div class="col-span-12 grid  grid-cols-1 lg:grid-cols-4 gap-2 " v-for="(item,index) in EducationDetails" :key="index">
               <div>
                 <TwInput             
                   label="វគ្គឬកម្រិតសិក្សា"
@@ -1132,7 +1143,7 @@ import { string } from 'zod'
                 <TwInput             
                   label="គ្រឹះស្ថានសិក្សាបណ្តុះបណ្តាល"
                   required
-                  v-model="item.couseLevel"
+                  v-model="item.SchoolName"
                   placeholder="គ្រឹះស្ថានសិក្សាបណ្តុះបណ្តាល"
                   type="text"
                 />
@@ -1222,7 +1233,7 @@ import { string } from 'zod'
             <div class="col-span-12">
               <label for=""> ង-ភាសារបរទេស(សូមបំពេញនូវកម្រិតចំណេះដឹងភាសាបរទេស​)</label>
             </div>
-            <div class="col-span-12 grid grid-cols-1 lg:grid-cols-4 gap-2" v-for="item in governStaffLanuage" :key="item.langName" >
+            <div class="col-span-12 grid grid-cols-1 lg:grid-cols-4 gap-2" v-for="(item, index) in governStaffLanuage" :key="index" >
                 <div>
                   <TwInput             
                     label="ភាសាបរទេស"
@@ -1417,7 +1428,7 @@ import { string } from 'zod'
                     position : '',
                     SkillInPosition : '',
                   })" > បន្ថែមព័ត៌មាន  </UButton>
-                    <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4" @click="governStaffWorkingHistoryPublic.pop()" > លុបព័ត៌មានកូន </UButton>
+                    <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4" @click="governStaffWorkingHistoryPublic.pop()" > លុបព័ត៌មាន </UButton>
               </div>
             <div class="col-span-12">
                 <label for=""> ច.១.២-ក្នុងវិស័យឯកជន </label>
@@ -1799,13 +1810,23 @@ import { string } from 'zod'
                             type="text"
                           />
                         </div>
-                     <div>
-                          <TwInput             
-                            label="កាលបរិច្ចេទ"
-                            v-model="item.OfficialDate"
-                            placeholder=""
-                            type="text"
-                          />
+                      <div>
+                          <label for="">កាលបរិច្ចេទ</label>
+                           <Datepicker
+                                v-model="item.OfficialDate"
+                                :dayNames="[
+                                  'Mo',
+                                  'Tu',
+                                  'We',
+                                  'Th',
+                                  'Fr',
+                                  'Sa',
+                                  'Su',
+                                ]"
+                                position="left"
+                                :maxDate="new Date()"
+                                required
+                                :enableTimePicker="false"></Datepicker>
                         </div>
                      <div>
                           <TwInput             
@@ -1854,13 +1875,23 @@ import { string } from 'zod'
                               type="text"
                             />
                           </div>
-                       <div>
-                            <TwInput             
-                              label="កាលបរិច្ចេទ"
-                              v-model="item.OffialDate"
-                              placeholder=""
-                              type="text"
-                            />
+                         <div>
+                            <label for="">កាលបរិច្ចេទ</label>
+                             <Datepicker
+                                  v-model="item.OffialDate"
+                                  :dayNames="[
+                                    'Mo',
+                                    'Tu',
+                                    'We',
+                                    'Th',
+                                    'Fr',
+                                    'Sa',
+                                    'Su',
+                                  ]"
+                                  position="left"
+                                  :maxDate="new Date()"
+                                  required
+                                  :enableTimePicker="false"></Datepicker>
                           </div>
                        <div>
                         <TwInput             

@@ -26,10 +26,10 @@ export default defineNuxtConfig({
     typedPages: true,
   },
 
-  // typescript: {
-  //   shim: false,
-  //   strict: true,
-  // },
+  typescript: {
+    shim: false,
+    strict: true,
+  },
 
   runtimeConfig: {
     apiSecret: "",

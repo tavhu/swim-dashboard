@@ -215,8 +215,8 @@ model governStaff {
   governStaffPositionHistory                  governStaffPositionHistory[]
   governStaffCertificateLevelup               governStaffCertificateLevelup[]
   governStaffSituationOutsideOriginalOfficial governStaffSituationOutsideOriginalOfficial[]
-  GovernStaffFreeNoSalary                     governStaffFreeNoSalary[]
-  GovernStaffLetterAppreciation               governStaffLetterAppreciation[]
+  governStaffFreeNoSalary                     governStaffFreeNoSalary[]
+  governStaffLetterAppreciation               governStaffLetterAppreciation[]
   governStaffFineHistory                      governStaffFineHistory[]
   serviceCenterID                             String?
   ServiceCenter                               ServiceCenter?                                @relation(fields: [serviceCenterID], references: [id])
