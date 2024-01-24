@@ -315,6 +315,88 @@ import { string } from 'zod'
       validatorEditOfficial.value.clearErrors();
     }, 100) }
 
+    const childrenDetails = ref(Array({
+      fullnameKH: '',
+      gender: '',
+      dateofBirth: '',
+      occupation: ''
+    }))
+
+    const EducationDetails = ref(Array({
+      couseLevel: '',
+      SchoolName: '',
+      SchoolLocation: '',
+      CertificateLevel: '',
+      majoring: '',
+      StartDate: '',
+      finishDate: '',
+    }))
+    const governStaffLanuage = ref(Array({
+      langName: '',
+      read: '',
+      conversation: '',
+      writing: '',
+    }))
+    const governStaffWorkingHistoryPublic = ref(Array({
+      DateStartWorking: '',
+      DateStopWorking: '',
+      OgnisationName: '',
+      Department: '',
+      position: '',
+      SkillInPosition: '',
+    }))
+
+    const governStaffWorkingHistoryPrivate = ref(Array({
+      DateStartWorking: '',
+      DateStopWorking: '',
+      OgnisationName: '',
+      position: '',
+      SkillInPosition: '',
+    }))
+    const governStaffPositionHistory = ref(Array({
+      ValidDate: '',
+      MinistryName: '',
+      Department: '',
+      OfficialSection: '',
+      oldOfficialLevel: '',
+      newOffcialLevel: '',
+      changeTo: '',
+    }))
+    const governStaffCertificateLevelup = ref(Array({
+      validatDate: '',
+      SchoolName: '',
+      PlaceStudy: '',
+      ReceivedCertificate: '',
+      OldPosition: '',
+      NewPosition: '',
+    }))
+    const governStaffSituationOutsideOriginalOfficial = ref(Array({
+      startDate: '',
+      endDate: '',
+      OginasationName: '',
+      Position: '',
+    }))
+    const GovernStaffFreeNoSalary = ref(Array({
+      startDate: '',
+      endDate: '',
+      Oginisationname: '',
+      NumberofMonthandYear: '',
+    }))
+    const GovernStaffLetterAppreciation = ref(Array({
+      letterNumber: '',
+      OfficialDate: '',
+      RequestedOrginsation: '',
+      LetterDetails: '',
+      TypeReceived: '',
+    }))
+    const governStaffFineHistory = ref(Array({
+      letterNumber: '',
+      OffialDate: '',
+      RequestedOrginsation: '',
+      LetterDetails: '',
+      TypeRecieved: '',
+    }))
+
     async function submitEditOfficial() {
       if(prop.readOnly) return;
       if (!(await confirmDialog())) return;
@@ -340,8 +422,7 @@ import { string } from 'zod'
         await useFetch('/api/deleteFile', { method : 'POST' , body : JSON.stringify({imgURL : oldImageURL})})
       }
 
-
-      const { error } = await useFetch('/api/center/staffOfficial/upsert', {
+      const { error, data } = await useFetch('/api/center/staffOfficial/upsert', {
         method: "POST",
         body: JSON.stringify({
           id : formDataEditOfficial.id,
@@ -391,6 +472,7 @@ import { string } from 'zod'
           CurrentRank : formDataEditOfficial.CurrentRank , 
           OfficialLevelKH : formDataEditOfficial.OfficialLevelKH , 
           serviceCenterID : formDataEditOfficial.serviceCenterID,
+          governStaffChildren : childrenDetails.value,
         }),
       });
 
@@ -399,6 +481,9 @@ import { string } from 'zod'
           message: "មិនឈោកជ័យ",
         });
       } else {
+
+        console.log(data.value)
+
         toast.success({
           message: "ជោកជ័យ",
         });
@@ -440,88 +525,6 @@ import { string } from 'zod'
       }
     })
 
-
-    const childrenDetails = ref( Array({
-      fullnameKH : '',
-      gender : '',
-      dateofBirth : '',
-      occupation : ''
-    }))
-
-    const EducationDetails = ref(Array({
-      couseLevel: '',
-      SchoolName: '',
-      SchoolLocation : '', 
-      CertificateLevel : '', 
-      majoring : '', 
-      StartDate : '', 
-      finishDate : '', 
-    }))
-    const governStaffLanuage = ref(Array({
-      langName : '',
-      read : '',
-      conversation : '',
-      writing : '',
-    }))
-    const governStaffWorkingHistoryPublic = ref(Array({
-      DateStartWorking : '',
-      DateStopWorking : '',
-      OgnisationName : '',
-      Department : '',
-      position : '',
-      SkillInPosition : '',
-    }))
-
-    const governStaffWorkingHistoryPrivate = ref(Array({
-      DateStartWorking : '',
-      DateStopWorking : '',
-      OgnisationName : '',
-      position : '',
-      SkillInPosition : '',
-    }))
-    const governStaffPositionHistory = ref(Array({
-      ValidDate : '',
-      MinistryName : '',
-      Department : '',
-      OfficialSection : '',
-      oldOfficialLevel : '',
-      newOffcialLevel : '',
-      changeTo : '',
-    })) 
-    const governStaffCertificateLevelup = ref(Array({
-      validatDate : '',
-      SchoolName : '',
-      PlaceStudy : '',
-      ReceivedCertificate : '',
-      OldPosition : '',
-      NewPosition : '',
-    })) 
-    const governStaffSituationOutsideOriginalOfficial = ref(Array({
-      startDate : '',
-      endDate : '',
-      OginasationName : '',
-      Position : '',
-    })) 
-    const GovernStaffFreeNoSalary = ref(Array({
-     startDate : '',
-     endDate : '',
-     Oginisationname : '',
-     NumberofMonthandYear : '',
-    })) 
-    const GovernStaffLetterAppreciation = ref(Array({
-     letterNumber : '', 
-     OfficialDate : '', 
-     RequestedOrginsation : '', 
-     LetterDetails : '', 
-     TypeReceived : '', 
-    })) 
-    const governStaffFineHistory = ref(Array({
-     letterNumber : '', 
-     OffialDate : '', 
-     RequestedOrginsation : '', 
-     LetterDetails : '', 
-     TypeRecieved : '', 
-    })) 
 </script>
 
 <template>  

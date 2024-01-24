@@ -216,7 +216,7 @@ model governStaff {
   governStaffCertificateLevelup               governStaffCertificateLevelup[]
   governStaffSituationOutsideOriginalOfficial governStaffSituationOutsideOriginalOfficial[]
   GovernStaffFreeNoSalary                     governStaffFreeNoSalary[]
-  GovernStaffLetterAppreciation               GovernStaffLetterAppreciation[]
+  GovernStaffLetterAppreciation               governStaffLetterAppreciation[]
   governStaffFineHistory                      governStaffFineHistory[]
   serviceCenterID                             String?
   ServiceCenter                               ServiceCenter?                                @relation(fields: [serviceCenterID], references: [id])
@@ -324,7 +324,7 @@ model governStaffFreeNoSalary {
   NumberofMonthandYear String
 }
 
-model GovernStaffLetterAppreciation {
+model governStaffLetterAppreciation {
   id                   String      @id @default(cuid())
   governStaff          governStaff @relation(fields: [governStaffID], references: [id])
   governStaffID        String

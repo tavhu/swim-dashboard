@@ -12,7 +12,7 @@ export default eventHandler(async (event) => {
 
   try {
     console.log(body);
-    await event.context.prisma.governStaff.upsert({
+    const result = await event.context.prisma.governStaff.upsert({
       where: {
         id: body?.id,
       },
@@ -111,12 +111,18 @@ export default eventHandler(async (event) => {
         CurrentRank: body?.CurrentRank,
         OfficialLevelKH: body?.OfficialLevelKH,
         serviceCenterID: body?.serviceCenterID,
+        governStaffChildren: {
+          createMany: {
+            data: body?.governStaffChildren,
+          },
+        },
       },
     });
-    // console.log(res)
+
     //@ts-ignored
     setResponseStatus(event, 201);
-    return { message: "User Update or Created" };
+
+    return { message: "User Update or Created", id: result.id };
   } catch (e) {
     console.log(e);
     //@ts-ignored
