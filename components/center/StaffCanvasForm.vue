@@ -10,7 +10,7 @@ import {
   TwToast,
   TwFile,
 } from 'vue3-tailwind'
-import { type ServiceCenter, type Staff }  from '@prisma/client'
+import { type ServiceCenter, type Staff , governStaff}  from '@prisma/client'
 import title from '~/store/data/title'
 import Datepicker from "@vuepic/vue-datepicker"
 import "@vuepic/vue-datepicker/dist/main.css"
@@ -22,6 +22,7 @@ import { string } from 'zod'
       readOnly : boolean ,
       id : string | undefined | null,
       serviceCenterID : string | null
+      typeEmployee : string
   }>()
 
   const emit = defineEmits<{     
@@ -152,24 +153,26 @@ import { string } from 'zod'
       })
     })
 
-    if(prop.id){
-      const { data } = await useFetch<Staff>('/api/center/staff/get', { method : 'POST' , body : JSON.stringify({ id : prop.id})})
-      formDataEdit.id = data.value?.id
-      formDataEdit.title = data.value?.title
-      formDataEdit.firstName = data.value?.firstName
-      formDataEdit.lastName = data.value?.lastName
-      formDataEdit.gender = data.value?.gender
-      formDataEdit.position = data.value?.position
-      formDataEdit.telephone = data.value?.telephone
-      formDataEdit.email = data.value?.email
-      formDataEdit.serviceCenterID = data.value?.serviceCenterID
+    if(prop.id && prop.typeEmployee === 'Contract'){
+      const { data } = await useFetch<{ data: Staff, error: '', status: '' }>('/api/center/staff/getSingleStaff', { method : 'POST' , body : JSON.stringify({ id : prop.id ,
+      typeEmployee : prop.typeEmployee
+      })})
+      formDataEdit.id = data.value?.data?.id
+      formDataEdit.title = data.value?.data?.title
+      formDataEdit.firstName = data.value?.data?.firstName
+      formDataEdit.lastName = data.value?.data?.lastName
+      formDataEdit.gender = data.value?.data?.gender
+      formDataEdit.position = data.value?.data?.position
+      formDataEdit.telephone = data.value?.data?.telephone
+      formDataEdit.email = data.value?.data?.email
+      formDataEdit.serviceCenterID = data.value?.data?.serviceCenterID
     }
 
     const optionsss = [{
-        value: 'official',
+        value: 'Official',
         label: 'មន្ត្រីរាជការ'
       },{
-        value: 'contract',
+        value: 'Contract',
         label: 'មន្ត្រីកិច្ចសន្យា'
       }]
 
@@ -197,7 +200,7 @@ import { string } from 'zod'
     ]
   
     const selectedAddressOption = ref(' ') 
-    const selected = ref('official')    
+    const selected = prop.typeEmployee
 
   const formRulesEditOfficial = {     
     firstNameKH : ['string','required'],
@@ -262,6 +265,64 @@ import { string } from 'zod'
     const isErrorEditOfficial = ref(false);
     const formEditOfficial = computed(() => composableForm.getForm(formNameEditOfficial));
     const validatorEditOfficial = computed(() => formEditOfficial.value.validator);
+    // console.log(prop.id, prop.typeEmployee)
+     if (prop.id && prop.typeEmployee === 'Official') {
+        const { data } = await useFetch<{data : governStaff, error : '', status:'' }>('/api/center/staff/getSingleStaff', {
+          method: 'POST', body: JSON.stringify({
+            id: prop.id,
+            typeEmployee: prop.typeEmployee
+          })
+        })
+        // console.log(data.value?.data)
+        formDataEditOfficial.id = data.value?.data.id
+        formDataEditOfficial.photo = data.value?.data.photo
+        formDataEditOfficial.firstNameKH = data.value?.data.firstNameKH
+        formDataEditOfficial.lastNameKH = data.value?.data.lastNameKH
+        formDataEditOfficial.firstNameEN = data.value?.data.firstNameEN
+        formDataEditOfficial.lastNameEN = data.value?.data.lastNameEN
+        formDataEditOfficial.gender = data.value?.data.gender
+        formDataEditOfficial.DateofBirth = data.value?.data.DateofBirth
+        formDataEditOfficial.ethnicity = data.value?.data.ethnicity
+        formDataEditOfficial.nationality = data.value?.data.nationality
+        formDataEditOfficial.birthAddress = data.value?.data.birthAddress
+        formDataEditOfficial.currentAddress = data.value?.data.currentAddress
+        formDataEditOfficial.permanentAddress = data.value?.data.permanentAddress
+        formDataEditOfficial.telephone = data.value?.data.telephone
+        formDataEditOfficial.email = data.value?.data.email
+        formDataEditOfficial.officialID = data.value?.data.officialID
+        formDataEditOfficial.CambodianSocialID = data.value?.data.CambodianSocialID
+        formDataEditOfficial.sIDValidStart = data.value?.data.sIDValidStart
+        formDataEditOfficial.sIDValidEnd = data.value?.data.sIDValidEnd
+        formDataEditOfficial.physical = data.value?.data.physical
+        formDataEditOfficial.familyInfo = data.value?.data.familyInfo
+        formDataEditOfficial.spouseNameKH = data.value?.data.spouseNameKH
+        formDataEditOfficial.spuseNameEN = data.value?.data.spuseNameEN
+        formDataEditOfficial.spouseDateOfBirth = data.value?.data.spouseDateOfBirth
+        formDataEditOfficial.spouseSID = data.value?.data.spouseSID
+        formDataEditOfficial.spouseBirthAddress = data.value?.data.spouseBirthAddress
+        formDataEditOfficial.spouseCurrentOccupation = data.value?.data.spouseCurrentOccupation
+        formDataEditOfficial.spouseOrganisationName = data.value?.data.spouseOrganisationName
+        formDataEditOfficial.spuseCurrentAddress = data.value?.data.spuseCurrentAddress
+        formDataEditOfficial.fatherFullNameKH = data.value?.data.fatherFullNameKH
+        formDataEditOfficial.FatherOccupation = data.value?.data.FatherOccupation
+        formDataEditOfficial.fatherBrithAddress = data.value?.data.fatherBrithAddress
+        formDataEditOfficial.MotherOcupation = data.value?.data.MotherOcupation
+        formDataEditOfficial.motherFullNameKH = data.value?.data.motherFullNameKH
+        formDataEditOfficial.motherBrirthAddress = data.value?.data.motherBrirthAddress
+        formDataEditOfficial.ECFirstNameKH = data.value?.data.ECFirstNameKH
+        formDataEditOfficial.ECLastNameKH = data.value?.data.ECLastNameKH
+        formDataEditOfficial.ECGender = data.value?.data.ECGender
+        formDataEditOfficial.ECRelationshipAs = data.value?.data.ECRelationshipAs
+        formDataEditOfficial.ECOccupation = data.value?.data.ECOccupation
+        formDataEditOfficial.ECAddress = data.value?.data.ECAddress
+        formDataEditOfficial.ECTelehpone = data.value?.data.ECTelehpone
+        formDataEditOfficial.DateStartOfficialWork = data.value?.data.DateStartOfficialWork
+        formDataEditOfficial.DateWentFullTime = data.value?.data.DateWentFullTime
+        formDataEditOfficial.CurrentRank = data.value?.data.CurrentRank
+        formDataEditOfficial.OfficialLevelKH = data.value?.data.OfficialLevelKH
+        formDataEditOfficial.serviceCenterID = data.value?.data.serviceCenterID
+      }
+
 
     const clearEditOfficial = () => {
       formDataEditOfficial.id   =  null 

@@ -1,10 +1,6 @@
 <script setup lang="ts">
 import {
-  useForm,
   useToast,
-  TwInput,
-  TwForm,
-  TwTextarea,
   type DatatableColumn,
   type DatatableData,
   TwDatatableServer,
@@ -16,6 +12,7 @@ const readOnly = checkIfPageReadOnly()
 // const resource = useResource()
 
 const { data : datauseAuth, status } = useAuth();
+const typeEmployee = ref('Contract')
 
 useHead({
   title: "បុគ្គលិកមណ្ឌល",
@@ -77,10 +74,8 @@ const data = ref({
   },
 });
 
-const globalData: any = ref();
 
 const fetchData = async () => {
-
   const {data: response} = await useFetch <{
     total: number;
     data: DatatableData[];
@@ -93,16 +88,13 @@ const fetchData = async () => {
         q: data.value.search.toString(),
         sortType: data.value.sortType,
         sortBy: data.value.sortBy,         
-        serviceCenterID : true
+        serviceCenterID : true,
+        typeEmployee : typeEmployee.value
       })) ,
         method : 'post'
       }
   );
-  // console.log(response.value?.data)
-  globalData.value = {//@ts-ignore
-    data: response.value?.data  ? response.value?.data: [],
-    totalData: response.value?.total ? response.value?.total : 0,
-  };
+ 
   return {//@ts-ignore
     data: response.value?.data  ? response.value?.data: [],
     totalData: response.value?.total ? response.value?.total : 0,
@@ -110,6 +102,34 @@ const fetchData = async () => {
 }
 
 fetchData()
+
+const fetchDataOfficial = async () => {
+  const { data: response } = await useFetch<{
+    total: number;
+    data: DatatableData[];
+  }>(
+    '/api/center/staff/get',
+    {
+      body: JSON.stringify(({
+        limit: data.value.limit.toString(),
+        skip: data.value.offset.toString(),
+        q: data.value.search.toString(),
+        sortType: data.value.sortType,
+        sortBy: data.value.sortBy,
+        serviceCenterID: true,
+        typeEmployee: 'Official'
+      })),
+      method: 'post'
+    }
+  );
+
+  return {//@ts-ignore
+    data: response.value?.data ? response.value?.data : [],
+    totalData: response.value?.total ? response.value?.total : 0,
+  };
+}
+
+fetchDataOfficial()
 
 const sortClick = (event: any) => {
   const sortBy = data.value.sortBy;
@@ -120,14 +140,23 @@ const sortClick = (event: any) => {
   data.value = { ...data.value, sortBy: sortByNew, sortType: sortTypeNew };
 };
 
-const deleteRecord = async (id: string) => {
-  if(readOnly) return;
+
+const updateTable = () => {
+  data.value.limit === 10 ? (data.value.limit = 5) : (data.value.limit = 10);
+}
+
+const openisTrue = ref(false);
+const openisKey = ref(0)
+const editID = ref("");
+const deleteRecord = async (id: string, typeEmployees: string) => {
+  if (readOnly) return;
   if (!(await confirmDialog())) return;
 
   const { error } = await useFetch("/api/center/staff/delete", {
     method: "POST",
     body: JSON.stringify({
       id: id,
+      typeEmployee: typeEmployee.value
     }),
   });
 
@@ -141,37 +170,33 @@ const deleteRecord = async (id: string) => {
     });
   }
   //update change limit ref in order to refetch data
-  updateTable() 
+  updateTable()
 };
-
-const openisTrue = ref(false);
-const openisKey = ref(0)
-const editID = ref("");
-const editRecord = async (id: string) => {
+const editRecord = async (id: string, typeEmployees : string) => {
   if(readOnly) return;
   // console.log(id)
+  typeEmployee.value = typeEmployees
   openisTrue.value = true
   openisKey.value ++ 
   editID.value = id;  
 }
 
-const openRegisterForm = ()=>{
+const openRegisterForm = (typeEmployees : string)=>{
+  typeEmployee.value = typeEmployees
   openisTrue.value = true
   openisKey.value ++ 
   editID.value = '';  
 }
-const updateTable = ()=>{
-      data.value.limit === 10 ? (data.value.limit = 5) : (data.value.limit = 10);
-    }
 </script>
 
 <template>
   <div class="font-[Battambang]">    
+  
     <div class="mt-5">      
       <div class="flex justify-between">
-            <h2 class=" text-md  lg:text-2xl font-[Moul] text-primary">បញ្ចីបុគ្គលិកមណ្ឌល</h2>                        
-            <UButton @click="openRegisterForm" color="primary"  size="xl" :disabled="readOnly">
-              <h2 class=" text-sm  lg:text-xl font-[Moul]">ចុះឈ្មោះបុគ្គលិកមណ្ឌល </h2>
+            <h2 class=" text-md  lg:text-2xl font-[Moul] text-primary">បញ្ចីមន្ត្រីកិច្ចសន្យា</h2>                        
+            <UButton @click="openRegisterForm('Contract')" color="primary"  size="xl" :disabled="readOnly">
+              <h2 class=" text-sm  lg:text-xl font-[Moul]">ចុះឈ្មោះមន្ត្រីកិច្ចសន្យា </h2>
             </UButton>                                
         </div>
       <hr class="my-2 border dark:border-gray-700" />             
@@ -206,7 +231,7 @@ const updateTable = ()=>{
               color="primary"
               square
               variant="solid"                
-              @click="editRecord(data.id)"
+              @click="editRecord(data.id, 'Contract')"
               >
                 កែសម្រួល
               </UButton >  
@@ -217,7 +242,7 @@ const updateTable = ()=>{
               color="red"
               square
               variant="solid"  
-               @click="deleteRecord(data.id)">
+               @click="deleteRecord(data.id, 'Contract')">
                 លុបចេញ
               </UButton >
             </div>
@@ -230,6 +255,71 @@ const updateTable = ()=>{
         </template>
       </TwDatatableServer>
     </div>
-    <CenterStaffCanvasForm @canvasIsOpen="updateTable"  :readOnly="readOnly" :id="editID" :openisTrue="openisTrue"  :serviceCenterID="null" :key="openisKey"/>   
+
+     <div class="mt-5">      
+        <div class="flex justify-between">
+              <h2 class=" text-md  lg:text-2xl font-[Moul] text-primary">បញ្ចីមន្ត្រីរាជការ</h2>                        
+              <UButton @click="openRegisterForm('Official')" color="primary"  size="xl" :disabled="readOnly">
+                <h2 class=" text-sm  lg:text-xl font-[Moul]">ចុះឈ្មោះមន្ត្រីរាជការ </h2>
+              </UButton>                                
+          </div>
+        <hr class="my-2 border dark:border-gray-700" />             
+        <TwDatatableServer        
+          v-bind:fetch-data="fetchDataOfficial"
+          v-model:search="data.search"
+          v-model:limit="data.limit"
+          v-model:offset="data.offset"
+          v-model:sort-by="data.sortBy"
+          v-model:sort-type="data.sortType"
+          :column="data.column"       
+          :setting="data.setting"
+          @on-sort-change="sortClick"
+        >
+          <template  #row="{ column, data }">
+            <template v-if="column.field === 'name'">      
+              <div class="flex justify-center">
+                {{ data.lastNameKH }} {{ data.firstNameKH }} ភេទ {{ data.gender }}       
+              </div>    
+            </template>
+            <template v-if="column.field === 'description'" >
+              <div class="flex justify-center"> 
+                {{ data.ServiceCenter.nameKH }}            
+              </div>
+            </template>
+            <template v-if="column.field === 'action'">
+              <div class="flex gap-2 justify-center">             
+                <UButton 
+                :disabled ="readOnly"
+                icon="i-heroicons-pencil-square"
+                size="sm"
+                color="primary"
+                square
+                variant="solid"                
+                @click="editRecord(data.id, 'Official')"
+                >
+                  កែសម្រួល
+                </UButton >  
+                <UButton 
+                :disabled ="readOnly"
+                icon="i-heroicons-trash"
+                size="sm"
+                color="red"
+                square
+                variant="solid"  
+                 @click="deleteRecord(data.id, 'Official')">
+                  លុបចេញ
+                </UButton >
+              </div>
+            </template>
+          </template>
+          <template #empty>
+            <div class="bg-white dark:bg-gray-800 text-center w-full">
+              គ្មាន​ទិន្នន័យ
+            </div>
+          </template>
+        </TwDatatableServer>
+      </div>
+
+    <CenterStaffCanvasForm @canvasIsOpen="updateTable"  :typeEmployee="typeEmployee" :readOnly="readOnly" :id="editID" :openisTrue="openisTrue"  :serviceCenterID="null" :key="openisKey"/>   
   </div>
 </template>
