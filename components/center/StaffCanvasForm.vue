@@ -176,6 +176,16 @@ import { string } from 'zod'
         label: 'មន្ត្រីកិច្ចសន្យា'
       }]
 
+      console.log(prop.id, prop.typeEmployee)
+
+      if( prop.id ){
+        if(prop.typeEmployee === optionsss[0].value){
+          optionsss.splice(1,1)
+        }else{
+          optionsss.splice(0,1)
+        }
+      }
+
       const AddressOption = [{
         value  : 'thesame',
         label : 'ដូចអាសយដ្ឋានបច្ចុប្បន្ន' ,
@@ -200,187 +210,13 @@ import { string } from 'zod'
     ]
   
     const selectedAddressOption = ref(' ') 
-    const selected = prop.typeEmployee
-
-  const formRulesEditOfficial = {     
-    firstNameKH : ['string','required'],
-    lastNameKH : ['string','required'],
-    firstNameEN : ['string','required'],
-    lastNameEN : ['string','required'],   
-    serviceCenterID : ['string','required'],
-    }
-    const formNameEditOfficial = "centerStaffFormOfficial";
-    const formDataEditOfficial: {
-    [key: string]: any;
-    } = reactive({       
-    id : prop.id ? prop.id : 'asdf' ,
-    photo : '' ,
-    firstNameKH : '' ,
-    lastNameKH : '' ,
-    firstNameEN : '' ,
-    lastNameEN : '' ,
-    gender : '' ,
-    DateofBirth : '' ,
-    ethnicity : '' ,
-    nationality : '' ,
-    birthAddress : '' ,
-    permanentAddress : '',
-    currentAddress : '' ,
-    telephone : '' ,
-    email : '' ,
-    officialID : '' ,
-    CambodianSocialID : '' ,
-    sIDValidStart : '' ,
-    sIDValidEnd : '' ,
-    physical : '' ,
-    familyInfo : '' ,
-    spouseNameKH : '' ,
-    spuseNameEN : '' ,
-    spouseDateOfBirth : '' ,
-    spouseSID : '' ,
-    spouseBirthAddress : '' ,
-    spouseCurrentOccupation : '' ,
-    spouseOrganisationName : '' ,
-    spuseCurrentAddress : '' ,
-    fatherFullNameKH : '' ,
-    FatherOccupation : '' ,
-    fatherBrithAddress : '' ,
-    MotherOcupation : '' ,
-    motherFullNameKH : '' ,
-    motherBrirthAddress : '' ,
-    ECFirstNameKH : '' ,
-    ECLastNameKH : '' ,
-    ECGender : '' ,
-    ECRelationshipAs : '' ,
-    ECOccupation : '' ,
-    ECAddress : '' ,
-    ECTelehpone : '' ,
-    DateStartOfficialWork : '' ,
-    DateWentFullTime : '' ,
-    CurrentRank : '' ,
-    OfficialLevelKH : '' ,
-    serviceCenterID  : prop.serviceCenterID ? prop.serviceCenterID : '' ,
-    });
-
-    const isErrorEditOfficial = ref(false);
-    const formEditOfficial = computed(() => composableForm.getForm(formNameEditOfficial));
-    const validatorEditOfficial = computed(() => formEditOfficial.value.validator);
-    // console.log(prop.id, prop.typeEmployee)
-     if (prop.id && prop.typeEmployee === 'Official') {
-        const { data } = await useFetch<{data : governStaff, error : '', status:'' }>('/api/center/staff/getSingleStaff', {
-          method: 'POST', body: JSON.stringify({
-            id: prop.id,
-            typeEmployee: prop.typeEmployee
-          })
-        })
-        // console.log(data.value?.data)
-        formDataEditOfficial.id = data.value?.data.id
-        formDataEditOfficial.photo = data.value?.data.photo
-        formDataEditOfficial.firstNameKH = data.value?.data.firstNameKH
-        formDataEditOfficial.lastNameKH = data.value?.data.lastNameKH
-        formDataEditOfficial.firstNameEN = data.value?.data.firstNameEN
-        formDataEditOfficial.lastNameEN = data.value?.data.lastNameEN
-        formDataEditOfficial.gender = data.value?.data.gender
-        formDataEditOfficial.DateofBirth = data.value?.data.DateofBirth
-        formDataEditOfficial.ethnicity = data.value?.data.ethnicity
-        formDataEditOfficial.nationality = data.value?.data.nationality
-        formDataEditOfficial.birthAddress = data.value?.data.birthAddress
-        formDataEditOfficial.currentAddress = data.value?.data.currentAddress
-        formDataEditOfficial.permanentAddress = data.value?.data.permanentAddress
-        formDataEditOfficial.telephone = data.value?.data.telephone
-        formDataEditOfficial.email = data.value?.data.email
-        formDataEditOfficial.officialID = data.value?.data.officialID
-        formDataEditOfficial.CambodianSocialID = data.value?.data.CambodianSocialID
-        formDataEditOfficial.sIDValidStart = data.value?.data.sIDValidStart
-        formDataEditOfficial.sIDValidEnd = data.value?.data.sIDValidEnd
-        formDataEditOfficial.physical = data.value?.data.physical
-        formDataEditOfficial.familyInfo = data.value?.data.familyInfo
-        formDataEditOfficial.spouseNameKH = data.value?.data.spouseNameKH
-        formDataEditOfficial.spuseNameEN = data.value?.data.spuseNameEN
-        formDataEditOfficial.spouseDateOfBirth = data.value?.data.spouseDateOfBirth
-        formDataEditOfficial.spouseSID = data.value?.data.spouseSID
-        formDataEditOfficial.spouseBirthAddress = data.value?.data.spouseBirthAddress
-        formDataEditOfficial.spouseCurrentOccupation = data.value?.data.spouseCurrentOccupation
-        formDataEditOfficial.spouseOrganisationName = data.value?.data.spouseOrganisationName
-        formDataEditOfficial.spuseCurrentAddress = data.value?.data.spuseCurrentAddress
-        formDataEditOfficial.fatherFullNameKH = data.value?.data.fatherFullNameKH
-        formDataEditOfficial.FatherOccupation = data.value?.data.FatherOccupation
-        formDataEditOfficial.fatherBrithAddress = data.value?.data.fatherBrithAddress
-        formDataEditOfficial.MotherOcupation = data.value?.data.MotherOcupation
-        formDataEditOfficial.motherFullNameKH = data.value?.data.motherFullNameKH
-        formDataEditOfficial.motherBrirthAddress = data.value?.data.motherBrirthAddress
-        formDataEditOfficial.ECFirstNameKH = data.value?.data.ECFirstNameKH
-        formDataEditOfficial.ECLastNameKH = data.value?.data.ECLastNameKH
-        formDataEditOfficial.ECGender = data.value?.data.ECGender
-        formDataEditOfficial.ECRelationshipAs = data.value?.data.ECRelationshipAs
-        formDataEditOfficial.ECOccupation = data.value?.data.ECOccupation
-        formDataEditOfficial.ECAddress = data.value?.data.ECAddress
-        formDataEditOfficial.ECTelehpone = data.value?.data.ECTelehpone
-        formDataEditOfficial.DateStartOfficialWork = data.value?.data.DateStartOfficialWork
-        formDataEditOfficial.DateWentFullTime = data.value?.data.DateWentFullTime
-        formDataEditOfficial.CurrentRank = data.value?.data.CurrentRank
-        formDataEditOfficial.OfficialLevelKH = data.value?.data.OfficialLevelKH
-        formDataEditOfficial.serviceCenterID = data.value?.data.serviceCenterID
-      }
-
-
-    const clearEditOfficial = () => {
-      formDataEditOfficial.id   =  null 
-      formDataEditOfficial.photo = null
-      formDataEditOfficial.firstNameKH = null
-      formDataEditOfficial.lastNameKH = null
-      formDataEditOfficial.firstNameEN = null
-      formDataEditOfficial.lastNameEN = null
-      formDataEditOfficial.gender = null
-      formDataEditOfficial.DateofBirth = null
-      formDataEditOfficial.ethnicity = null
-      formDataEditOfficial.nationality = null
-      formDataEditOfficial.birthAddress = null
-      formDataEditOfficial.currentAddress = null
-      formDataEditOfficial.permanentAddress = null
-      formDataEditOfficial.telephone = null
-      formDataEditOfficial.email = null
-      formDataEditOfficial.officialID = null
-      formDataEditOfficial.CambodianSocialID = null
-      formDataEditOfficial.sIDValidStart = null
-      formDataEditOfficial.sIDValidEnd = null
-      formDataEditOfficial.physical = null
-      formDataEditOfficial.familyInfo = null
-      formDataEditOfficial.spouseNameKH = null
-      formDataEditOfficial.spuseNameEN = null
-      formDataEditOfficial.spouseDateOfBirth = null
-      formDataEditOfficial.spouseSID = null
-      formDataEditOfficial.spouseBirthAddress = null
-      formDataEditOfficial.spouseCurrentOccupation = null
-      formDataEditOfficial.spouseOrganisationName = null
-      formDataEditOfficial.spuseCurrentAddress = null
-      formDataEditOfficial.fatherFullNameKH = null
-      formDataEditOfficial.FatherOccupation = null
-      formDataEditOfficial.fatherBrithAddress = null
-      formDataEditOfficial.MotherOcupation = null
-      formDataEditOfficial.motherFullNameKH = null
-      formDataEditOfficial.motherBrirthAddress = null
-      formDataEditOfficial.ECFirstNameKH = null
-      formDataEditOfficial.ECLastNameKH = null
-      formDataEditOfficial.ECGender = null
-      formDataEditOfficial.ECRelationshipAs = null
-      formDataEditOfficial.ECOccupation = null
-      formDataEditOfficial.ECAddress = null
-      formDataEditOfficial.ECTelehpone = null
-      formDataEditOfficial.DateStartOfficialWork = null
-      formDataEditOfficial.DateWentFullTime = null
-      formDataEditOfficial.CurrentRank = null
-      formDataEditOfficial.OfficialLevelKH = null
-
-    setTimeout(() => {
-      validatorEditOfficial.value.clearErrors();
-    }, 100) }
-
+    const selected = ref(prop.typeEmployee)
     const childrenDetails = ref(Array({
       fullnameKH: '',
       gender: '',
       dateofBirth: '',
-      occupation: ''
+      occupation: '',
+      governStaffID : ''
     }))
 
     const EducationDetails = ref(Array({
@@ -456,7 +292,207 @@ import { string } from 'zod'
       RequestedOrginsation: '',
       LetterDetails: '',
       TypeRecieved: '',
-    }))
+    })) 
+
+  const formRulesEditOfficial = {     
+    firstNameKH : ['string','required'],
+    lastNameKH : ['string','required'],
+    firstNameEN : ['string','required'],
+    lastNameEN : ['string','required'],   
+    serviceCenterID : ['string','required'],
+    }
+    const formNameEditOfficial = "centerStaffFormOfficial";
+    const formDataEditOfficial: {
+    [key: string]: any;
+    } = reactive({       
+    id : prop.id ? prop.id : 'asdf' ,
+    photo : '' ,
+    firstNameKH : '' ,
+    lastNameKH : '' ,
+    firstNameEN : '' ,
+    lastNameEN : '' ,
+    gender : '' ,
+    DateofBirth : '' ,
+    ethnicity : '' ,
+    nationality : '' ,
+    birthAddress : '' ,
+    permanentAddress : '',
+    currentAddress : '' ,
+    telephone : '' ,
+    email : '' ,
+    officialID : '' ,
+    CambodianSocialID : '' ,
+    sIDValidStart : '' ,
+    sIDValidEnd : '' ,
+    physical : '' ,
+    familyInfo : '' ,
+    spouseNameKH : '' ,
+    spuseNameEN : '' ,
+    spouseDateOfBirth : '' ,
+    spouseSID : '' ,
+    spouseBirthAddress : '' ,
+    spouseCurrentOccupation : '' ,
+    spouseOrganisationName : '' ,
+    spuseCurrentAddress : '' ,
+    fatherFullNameKH : '' ,
+    FatherOccupation : '' ,
+    fatherBrithAddress : '' ,
+    MotherOcupation : '' ,
+    motherFullNameKH : '' ,
+    motherBrirthAddress : '' ,
+    ECFirstNameKH : '' ,
+    ECLastNameKH : '' ,
+    ECGender : '' ,
+    ECRelationshipAs : '' ,
+    ECOccupation : '' ,
+    ECAddress : '' ,
+    ECTelehpone : '' ,
+    DateStartOfficialWork : '' ,
+    DateWentFullTime : '' ,
+    CurrentRank : '' ,
+    OfficialLevelKH : '' ,
+    serviceCenterID  : prop.serviceCenterID ? prop.serviceCenterID : '' ,
+    });
+
+    const isErrorEditOfficial = ref(false);
+    const formEditOfficial = computed(() => composableForm.getForm(formNameEditOfficial));
+    const validatorEditOfficial = computed(() => formEditOfficial.value.validator);
+    // console.log(prop.id, prop.typeEmployee)
+     if (prop.id && prop.typeEmployee === 'Official') {
+        const { data } = await useFetch<{data : governStaff, error : '', status:'' }>('/api/center/staff/getSingleStaff', {
+          method: 'POST', body: JSON.stringify({
+            id: prop.id,
+            typeEmployee: prop.typeEmployee
+          })
+        })
+
+        console.log(data.value?.data)
+
+        // console.log(data.value?.data)
+        formDataEditOfficial.id = data.value?.data.id
+        formDataEditOfficial.photo = data.value?.data.photo
+        formDataEditOfficial.firstNameKH = data.value?.data.firstNameKH
+        formDataEditOfficial.lastNameKH = data.value?.data.lastNameKH
+        formDataEditOfficial.firstNameEN = data.value?.data.firstNameEN
+        formDataEditOfficial.lastNameEN = data.value?.data.lastNameEN
+        formDataEditOfficial.gender = data.value?.data.gender
+        formDataEditOfficial.DateofBirth = data.value?.data.DateofBirth
+        formDataEditOfficial.ethnicity = data.value?.data.ethnicity
+        formDataEditOfficial.nationality = data.value?.data.nationality
+        formDataEditOfficial.birthAddress = data.value?.data.birthAddress
+        formDataEditOfficial.currentAddress = data.value?.data.currentAddress
+        formDataEditOfficial.permanentAddress = data.value?.data.permanentAddress
+        formDataEditOfficial.telephone = data.value?.data.telephone
+        formDataEditOfficial.email = data.value?.data.email
+        formDataEditOfficial.officialID = data.value?.data.officialID
+        formDataEditOfficial.CambodianSocialID = data.value?.data.CambodianSocialID
+        formDataEditOfficial.sIDValidStart = data.value?.data.sIDValidStart
+        formDataEditOfficial.sIDValidEnd = data.value?.data.sIDValidEnd
+        formDataEditOfficial.physical = data.value?.data.physical
+        formDataEditOfficial.familyInfo = data.value?.data.familyInfo
+        formDataEditOfficial.spouseNameKH = data.value?.data.spouseNameKH
+        formDataEditOfficial.spuseNameEN = data.value?.data.spuseNameEN
+        formDataEditOfficial.spouseDateOfBirth = data.value?.data.spouseDateOfBirth
+        formDataEditOfficial.spouseSID = data.value?.data.spouseSID
+        formDataEditOfficial.spouseBirthAddress = data.value?.data.spouseBirthAddress
+        formDataEditOfficial.spouseCurrentOccupation = data.value?.data.spouseCurrentOccupation
+        formDataEditOfficial.spouseOrganisationName = data.value?.data.spouseOrganisationName
+        formDataEditOfficial.spuseCurrentAddress = data.value?.data.spuseCurrentAddress
+        formDataEditOfficial.fatherFullNameKH = data.value?.data.fatherFullNameKH
+        formDataEditOfficial.FatherOccupation = data.value?.data.FatherOccupation
+        formDataEditOfficial.fatherBrithAddress = data.value?.data.fatherBrithAddress
+        formDataEditOfficial.MotherOcupation = data.value?.data.MotherOcupation
+        formDataEditOfficial.motherFullNameKH = data.value?.data.motherFullNameKH
+        formDataEditOfficial.motherBrirthAddress = data.value?.data.motherBrirthAddress
+        formDataEditOfficial.ECFirstNameKH = data.value?.data.ECFirstNameKH
+        formDataEditOfficial.ECLastNameKH = data.value?.data.ECLastNameKH
+        formDataEditOfficial.ECGender = data.value?.data.ECGender
+        formDataEditOfficial.ECRelationshipAs = data.value?.data.ECRelationshipAs
+        formDataEditOfficial.ECOccupation = data.value?.data.ECOccupation
+        formDataEditOfficial.ECAddress = data.value?.data.ECAddress
+        formDataEditOfficial.ECTelehpone = data.value?.data.ECTelehpone
+        formDataEditOfficial.DateStartOfficialWork = data.value?.data.DateStartOfficialWork
+        formDataEditOfficial.DateWentFullTime = data.value?.data.DateWentFullTime
+        formDataEditOfficial.CurrentRank = data.value?.data.CurrentRank
+        formDataEditOfficial.OfficialLevelKH = data.value?.data.OfficialLevelKH
+        formDataEditOfficial.serviceCenterID = data.value?.data.serviceCenterID
+        //@ts-ignored
+        childrenDetails.value = data.value?.data?.governStaffChildren
+        //@ts-ignored   
+        EducationDetails.value = data.value?.data?.governStaffQualifitcation
+        //@ts-ignored
+        governStaffLanuage.value  = data.value?.data?.governStaffLanuage
+        //@ts-ignored
+        governStaffWorkingHistoryPublic.value  = data.value?.data?.governStaffWorkingHistoryPublic
+        //@ts-ignored
+        governStaffPositionHistory.value  = data.value?.data?.governStaffPositionHistory
+        //@ts-ignored
+        governStaffCertificateLevelup.value  = data.value?.data?.governStaffCertificateLevelup
+        //@ts-ignored
+        governStaffSituationOutsideOriginalOfficial.value  = data.value?.data?.governStaffSituationOutsideOriginalOfficial
+        //@ts-ignored
+        GovernStaffFreeNoSalary.value  = data.value?.data?.governStaffFreeNoSalary
+        //@ts-ignored
+        GovernStaffLetterAppreciation.value  = data.value?.data?.governStaffLetterAppreciation
+        //@ts-ignored
+        governStaffFineHistory.value  = data.value?.data?.governStaffFineHistory
+        //@ts-ignored
+        governStaffWorkingHistoryPrivate.value  = data.value?.data?.governStaffWorkingHistoryPrivate
+        
+      }
+
+
+    const clearEditOfficial = () => {
+      formDataEditOfficial.id   =  null 
+      formDataEditOfficial.photo = null
+      formDataEditOfficial.firstNameKH = null
+      formDataEditOfficial.lastNameKH = null
+      formDataEditOfficial.firstNameEN = null
+      formDataEditOfficial.lastNameEN = null
+      formDataEditOfficial.gender = null
+      formDataEditOfficial.DateofBirth = null
+      formDataEditOfficial.ethnicity = null
+      formDataEditOfficial.nationality = null
+      formDataEditOfficial.birthAddress = null
+      formDataEditOfficial.currentAddress = null
+      formDataEditOfficial.permanentAddress = null
+      formDataEditOfficial.telephone = null
+      formDataEditOfficial.email = null
+      formDataEditOfficial.officialID = null
+      formDataEditOfficial.CambodianSocialID = null
+      formDataEditOfficial.sIDValidStart = null
+      formDataEditOfficial.sIDValidEnd = null
+      formDataEditOfficial.physical = null
+      formDataEditOfficial.familyInfo = null
+      formDataEditOfficial.spouseNameKH = null
+      formDataEditOfficial.spuseNameEN = null
+      formDataEditOfficial.spouseDateOfBirth = null
+      formDataEditOfficial.spouseSID = null
+      formDataEditOfficial.spouseBirthAddress = null
+      formDataEditOfficial.spouseCurrentOccupation = null
+      formDataEditOfficial.spouseOrganisationName = null
+      formDataEditOfficial.spuseCurrentAddress = null
+      formDataEditOfficial.fatherFullNameKH = null
+      formDataEditOfficial.FatherOccupation = null
+      formDataEditOfficial.fatherBrithAddress = null
+      formDataEditOfficial.MotherOcupation = null
+      formDataEditOfficial.motherFullNameKH = null
+      formDataEditOfficial.motherBrirthAddress = null
+      formDataEditOfficial.ECFirstNameKH = null
+      formDataEditOfficial.ECLastNameKH = null
+      formDataEditOfficial.ECGender = null
+      formDataEditOfficial.ECRelationshipAs = null
+      formDataEditOfficial.ECOccupation = null
+      formDataEditOfficial.ECAddress = null
+      formDataEditOfficial.ECTelehpone = null
+      formDataEditOfficial.DateStartOfficialWork = null
+      formDataEditOfficial.DateWentFullTime = null
+      formDataEditOfficial.CurrentRank = null
+      formDataEditOfficial.OfficialLevelKH = null
+
+    setTimeout(() => {
+      validatorEditOfficial.value.clearErrors();
+    }, 100) }
 
     async function submitEditOfficial() {
       if(prop.readOnly) return;
@@ -553,9 +589,6 @@ import { string } from 'zod'
           message: "មិនឈោកជ័យ",
         });
       } else {
-
-        console.log(data.value)
-
         toast.success({
           message: "ជោកជ័យ",
         });
@@ -582,7 +615,7 @@ import { string } from 'zod'
           body: fd,
         });
 
-        console.log("data from backend is ", data.value);   
+        // console.log("data from backend is ", data.value);   
         return data.value
       } catch (error) {
         console.log(error);
@@ -1040,12 +1073,23 @@ import { string } from 'zod'
                     type="text"
                   />
                 </div>
+                <div class="hidden">
+                    <TwInput             
+                      label="មុខរបរ"
+                      v-model="child.governStaffID"
+                      placeholder="មុខរបរ"
+                      :value="prop.id ? prop.id : ''"
+                      type="text"
+                    />
+                  </div>
             </div>
             <div class="col-span-12">
               <UButton color="primary" icon="i-heroicons-users"  size="lg" class="px-4" @click="childrenDetails.push({fullnameKH : '',
                 gender : '',
                 dateofBirth : '',
-                occupation : ''})" > បន្ថែមព័ត៌មានកូន  </UButton>
+                occupation : '',
+                governStaffID : prop.id ? prop.id : ''
+                })" > បន្ថែមព័ត៌មានកូន  </UButton>
                 <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4" @click="childrenDetails.pop()" > លុបព័ត៌មានកូន </UButton>
             </div>
           

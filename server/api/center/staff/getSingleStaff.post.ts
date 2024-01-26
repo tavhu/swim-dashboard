@@ -23,6 +23,19 @@ export default eventHandler(async (event) => {
             where: {
               id: body?.id,
             },
+            include: {
+              governStaffChildren: true,
+              governStaffQualifitcation: true,
+              governStaffLanuage: true,
+              governStaffWorkingHistoryPublic: true,
+              governStaffPositionHistory: true,
+              governStaffCertificateLevelup: true,
+              governStaffSituationOutsideOriginalOfficial: true,
+              governStaffFreeNoSalary: true,
+              governStaffLetterAppreciation: true,
+              governStaffFineHistory: true,
+              governStaffWorkingHistoryPrivate: true,
+            },
           });
 
     //@ts-ignore

@@ -1,4 +1,5 @@
 import { getServerSession } from "#auth";
+import { governStaffChildren } from "@prisma/client";
 
 export default eventHandler(async (event) => {
   const session = await getServerSession(event);
@@ -11,7 +12,6 @@ export default eventHandler(async (event) => {
   }
 
   try {
-    console.log(body);
     const result = await event.context.prisma.governStaff.upsert({
       where: {
         id: body?.id,
@@ -168,6 +168,18 @@ export default eventHandler(async (event) => {
         },
       },
     });
+
+    // if (body?.governStaffChildren) {
+    //   await Promise.allSettled(
+    //     body?.governStaffChildren.map((item: governStaffChildren) =>
+    //       event.context.prisma.governStaffChildren.upsert({
+    //         create: item,
+    //         update: item,
+    //         where: { id: item.id },
+    //       })
+    //     )
+    //   );
+    // }
 
     //@ts-ignored
     setResponseStatus(event, 201);
