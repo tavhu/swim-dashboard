@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 import {
   useForm,
   TwInput,
@@ -216,7 +215,6 @@ import { string } from 'zod'
       gender: '',
       dateofBirth: '',
       occupation: '',
-      governStaffID : ''
     }))
 
     const EducationDetails = ref(Array({
@@ -366,7 +364,7 @@ import { string } from 'zod'
           })
         })
 
-        console.log(data.value?.data)
+        // console.log(data.value?.data)
 
         // console.log(data.value?.data)
         formDataEditOfficial.id = data.value?.data.id
@@ -1073,22 +1071,12 @@ import { string } from 'zod'
                     type="text"
                   />
                 </div>
-                <div class="hidden">
-                    <TwInput             
-                      label="មុខរបរ"
-                      v-model="child.governStaffID"
-                      placeholder="មុខរបរ"
-                      :value="prop.id ? prop.id : ''"
-                      type="text"
-                    />
-                  </div>
             </div>
             <div class="col-span-12">
               <UButton color="primary" icon="i-heroicons-users"  size="lg" class="px-4" @click="childrenDetails.push({fullnameKH : '',
                 gender : '',
                 dateofBirth : '',
                 occupation : '',
-                governStaffID : prop.id ? prop.id : ''
                 })" > បន្ថែមព័ត៌មានកូន  </UButton>
                 <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4" @click="childrenDetails.pop()" > លុបព័ត៌មានកូន </UButton>
             </div>

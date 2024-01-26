@@ -63,6 +63,16 @@ export default eventHandler(async (event) => {
         CurrentRank: body?.CurrentRank,
         OfficialLevelKH: body?.OfficialLevelKH,
         serviceCenterID: body?.serviceCenterID,
+        // governStaffChildren: {
+        //   update: {
+        //     where: {
+        //       id: body?.id,
+        //     },
+        //     data: {
+        //       gender: "sdf",
+        //     },
+        //   },
+        // },
       },
       create: {
         photo: body?.photo,
@@ -116,74 +126,75 @@ export default eventHandler(async (event) => {
             data: body?.governStaffChildren,
           },
         },
-        governStaffQualifitcation: {
-          createMany: {
-            data: body?.governStaffQualifitcation,
-          },
-        },
-        governStaffLanuage: {
-          createMany: {
-            data: body?.governStaffLanuage,
-          },
-        },
-        governStaffWorkingHistoryPublic: {
-          createMany: {
-            data: body?.governStaffWorkingHistoryPublic,
-          },
-        },
-        governStaffWorkingHistoryPrivate: {
-          createMany: {
-            data: body?.governStaffWorkingHistoryPrivate,
-          },
-        },
-        governStaffPositionHistory: {
-          createMany: {
-            data: body?.governStaffPositionHistory,
-          },
-        },
-        governStaffCertificateLevelup: {
-          createMany: {
-            data: body?.governStaffCertificateLevelup,
-          },
-        },
-        governStaffSituationOutsideOriginalOfficial: {
-          createMany: {
-            data: body?.governStaffSituationOutsideOriginalOfficial,
-          },
-        },
-        governStaffFreeNoSalary: {
-          createMany: {
-            data: body?.governStaffFreeNoSalary,
-          },
-        },
-        governStaffLetterAppreciation: {
-          createMany: {
-            data: body?.governStaffLetterAppreciation,
-          },
-        },
-        governStaffFineHistory: {
-          createMany: {
-            data: body?.governStaffFineHistory,
-          },
-        },
+        // governStaffQualifitcation: {
+        //   createMany: {
+        //     data: body?.governStaffQualifitcation,
+        //   },
+        // },
+        // governStaffLanuage: {
+        //   createMany: {
+        //     data: body?.governStaffLanuage,
+        //   },
+        // },
+        // governStaffWorkingHistoryPublic: {
+        //   createMany: {
+        //     data: body?.governStaffWorkingHistoryPublic,
+        //   },
+        // },
+        // governStaffWorkingHistoryPrivate: {
+        //   createMany: {
+        //     data: body?.governStaffWorkingHistoryPrivate,
+        //   },
+        // },
+        // governStaffPositionHistory: {
+        //   createMany: {
+        //     data: body?.governStaffPositionHistory,
+        //   },
+        // },
+        // governStaffCertificateLevelup: {
+        //   createMany: {
+        //     data: body?.governStaffCertificateLevelup,
+        //   },
+        // },
+        // governStaffSituationOutsideOriginalOfficial: {
+        //   createMany: {
+        //     data: body?.governStaffSituationOutsideOriginalOfficial,
+        //   },
+        // },
+        // governStaffFreeNoSalary: {
+        //   createMany: {
+        //     data: body?.governStaffFreeNoSalary,
+        //   },
+        // },
+        // governStaffLetterAppreciation: {
+        //   createMany: {
+        //     data: body?.governStaffLetterAppreciation,
+        //   },
+        // },
+        // governStaffFineHistory: {
+        //   createMany: {
+        //     data: body?.governStaffFineHistory,
+        //   },
+        // },
       },
     });
 
     // if (body?.governStaffChildren) {
-    //   await Promise.allSettled(
-    //     body?.governStaffChildren.map((item: governStaffChildren) =>
+    //   console.log(body?.governStaffChildren);
+    //   const rrr = await Promise.allSettled(
+    //     body?.governStaffChildren.map((item: governStaffChildren) => {
     //       event.context.prisma.governStaffChildren.upsert({
-    //         create: item,
+    //         where: { id: item.id ? item.id : "sa" },
     //         update: item,
-    //         where: { id: item.id },
-    //       })
-    //     )
+    //         create: { ...item, governStaffID: result?.id },
+    //       });
+    //     })
     //   );
+    //   console.log(rrr);
     // }
 
     //@ts-ignored
     setResponseStatus(event, 201);
-
     return { message: "User Update or Created", id: result.id };
   } catch (e) {
     console.log(e);

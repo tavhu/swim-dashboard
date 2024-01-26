@@ -208,6 +208,7 @@ model governStaff {
   DateWentFullTime                            DateTime
   CurrentRank                                 String
   OfficialLevelKH                             String
+  serviceCenterID                             String?
   governStaffChildren                         governStaffChildren[]
   governStaffQualifitcation                   governStaffQualifitcation[]
   governStaffLanuage                          governStaffLanuage[]
@@ -218,7 +219,6 @@ model governStaff {
   governStaffFreeNoSalary                     governStaffFreeNoSalary[]
   governStaffLetterAppreciation               governStaffLetterAppreciation[]
   governStaffFineHistory                      governStaffFineHistory[]
-  serviceCenterID                             String?
   ServiceCenter                               ServiceCenter?                                @relation(fields: [serviceCenterID], references: [id])
   governStaffWorkingHistoryPrivate            governStaffWorkingHistoryPrivate[]
 }

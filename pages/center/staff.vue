@@ -74,6 +74,59 @@ const data = ref({
   },
 });
 
+const dataOfficial = ref({
+  column: [
+    {
+      label: "ឈ្មោះ",
+      field: "name",
+      width: "400px",
+      sortable: false,
+    },
+    {
+      label: "មណ្ឌល",
+      field: "description",
+      width: "800px",
+      sortable: false,
+    },
+    {
+      label: "សកម្មភាព",
+      field: "action",
+      width: "400px",
+      sortable: false,
+    },
+  ] as Array<DatatableColumn>,
+  data: [] as Array<DatatableData>,
+  limit: 5,
+  offset: 0,
+  search: "",
+  sortBy: "id",
+  sortType: "desc",
+  setting: {
+    checkbox: false,
+    limitOption: [
+      {
+        label: "5",
+        value: 5,
+      },
+      {
+        label: "10",
+        value: 10,
+      },
+      {
+        label: "50",
+        value: 50,
+      },
+      {
+        label: "100",
+        value: 100,
+      },
+      {
+        label: "200",
+        value: 200,
+      },
+    ],
+  },
+});
 
 const fetchData = async () => {
   const {data: response} = await useFetch <{
@@ -111,11 +164,11 @@ const fetchDataOfficial = async () => {
     '/api/center/staff/get',
     {
       body: JSON.stringify(({
-        limit: data.value.limit.toString(),
-        skip: data.value.offset.toString(),
-        q: data.value.search.toString(),
-        sortType: data.value.sortType,
-        sortBy: data.value.sortBy,
+        limit: dataOfficial.value.limit.toString(),
+        skip: dataOfficial.value.offset.toString(),
+        q: dataOfficial.value.search.toString(),
+        sortType: dataOfficial.value.sortType,
+        sortBy: dataOfficial.value.sortBy,
         serviceCenterID: true,
         typeEmployee: 'Official'
       })),
@@ -144,6 +197,9 @@ const sortClick = (event: any) => {
 const updateTable = () => {
   data.value.limit === 10 ? (data.value.limit = 5) : (data.value.limit = 10);
 }
+const updateTableOfficial = () => {
+  dataOfficial.value.limit === 10 ? (dataOfficial.value.limit = 5) : (dataOfficial.value.limit = 10);
+}
 
 const openisTrue = ref(false);
 const openisKey = ref(0)
@@ -171,6 +227,7 @@ const deleteRecord = async (id: string, typeEmployees: string) => {
   }
   //update change limit ref in order to refetch data
   updateTable()
+  updateTableOfficial()
 };
 const editRecord = async (id: string, typeEmployees : string) => {
   if(readOnly) return;
@@ -266,13 +323,13 @@ const openRegisterForm = (typeEmployees : string)=>{
         <hr class="my-2 border dark:border-gray-700" />             
         <TwDatatableServer        
           v-bind:fetch-data="fetchDataOfficial"
-          v-model:search="data.search"
-          v-model:limit="data.limit"
-          v-model:offset="data.offset"
-          v-model:sort-by="data.sortBy"
-          v-model:sort-type="data.sortType"
-          :column="data.column"       
-          :setting="data.setting"
+          v-model:search="dataOfficial.search"
+          v-model:limit="dataOfficial.limit"
+          v-model:offset="dataOfficial.offset"
+          v-model:sort-by="dataOfficial.sortBy"
+          v-model:sort-type="dataOfficial.sortType"
+          :column="dataOfficial.column"       
+          :setting="dataOfficial.setting"
           @on-sort-change="sortClick"
         >
           <template  #row="{ column, data }">
