@@ -142,7 +142,7 @@ const fetchData = async () => {
         sortType: data.value.sortType,
         sortBy: data.value.sortBy,         
         serviceCenterID : true,
-        typeEmployee : typeEmployee.value
+        typeEmployee : 'Contract'
       })) ,
         method : 'post'
       }
@@ -271,7 +271,7 @@ const openRegisterForm = (typeEmployees : string)=>{
         <template  #row="{ column, data }">
           <template v-if="column.field === 'name'">      
             <div class="flex justify-center">
-              {{ data.title }}   {{  data.lastName }} {{  data.firstName }} ភេទ {{ data.gender}}       
+                {{  data.lastName }} {{  data.firstName }} ភេទ {{ data.gender}}       
             </div>    
           </template>
           <template v-if="column.field === 'description'" >

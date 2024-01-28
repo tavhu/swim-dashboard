@@ -17,12 +17,10 @@ export default eventHandler(async (event) => {
       },
       update: {
         photo: body?.photo,
-        type: body?.type,
         workingPeroid: body?.workingPeroid,
         attachedContract: body?.attachedContract,
         attachedBackground: body?.attachedBackground,
         attachedFileInfomation: body?.attachedFileInfomation,
-        title: body?.title,
         firstName: body?.firstName,
         lastName: body?.lastName,
         nationality: body?.nationality,
@@ -49,12 +47,10 @@ export default eventHandler(async (event) => {
       },
       create: {
         photo: body?.photo,
-        type: body?.type,
         workingPeroid: body?.workingPeroid,
         attachedContract: body?.attachedContract,
         attachedBackground: body?.attachedBackground,
         attachedFileInfomation: body?.attachedFileInfomation,
-        title: body?.title,
         firstName: body?.firstName,
         lastName: body?.lastName,
         nationality: body?.nationality,
@@ -82,7 +78,7 @@ export default eventHandler(async (event) => {
     });
     //@ts-ignored
     setResponseStatus(event, 201);
-    return { message: "User Update or Created" };
+    return { message: "Update or Created" };
   } catch (e) {
     // console.log(e)
     //@ts-ignore

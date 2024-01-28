@@ -38,7 +38,6 @@ import { string } from 'zod'
     
     const openisTrues = ref()
     const formRulesEdit = {   
-    title : ['string' , 'required'],
     firstName : ['string' , 'required'],
     lastName : ['string' , 'required'],
     gender : ['string'],
@@ -53,13 +52,33 @@ import { string } from 'zod'
     [key: string]: any;
     } = reactive({       
     id : prop.id ? prop.id : 'asdf' ,
-    title  : null ,
-    firstName  : null ,
-    lastName  : null ,
-    gender  : null ,
-    position  : null ,
-    telephone  : null ,
-    email  : null ,
+    photo : '',
+    workingPeroid : '',
+    attachedContract : '',
+    attachedBackground : '',
+    attachedFileInfomation : '',
+    firstName : '',
+    lastName : '',
+    nationality : '',
+    dateofbirth : '',
+    birthAddress : '',
+    brithCity : '',
+    birthDistrict : '',
+    currentAddress : '',
+    currentQualification : '',
+    currentCity : '',
+    currentDistrict : '',
+    sID : '',
+    passport : '',
+    workingEXP : '',
+    workingEXPYes : '',
+    gender : '',
+    position : '',
+    telephone : '',
+    email : '',
+    familyAddress : '',
+    familyPhoneNumber : '',
+    familyEmail : '',
     serviceCenterID  : prop.serviceCenterID ? prop.serviceCenterID : '' ,
     });
 
@@ -72,13 +91,33 @@ import { string } from 'zod'
 
     const clearEdit = () => {
       formDataEdit.id   =  null 
-      formDataEdit.title   =  null 
-      formDataEdit.firstName  =  null 
-      formDataEdit.lastName   =  null 
-      formDataEdit.gender    =  null 
-      formDataEdit.position  =  null 
-      formDataEdit.telephone =  null 
-      formDataEdit.email    =  null 
+      formDataEdit.photo  = null
+      formDataEdit.workingPeroid  = null
+      formDataEdit.attachedContract  = null
+      formDataEdit.attachedBackground  = null
+      formDataEdit.attachedFileInfomation  = null
+      formDataEdit.firstName  = null
+      formDataEdit.lastName  = null
+      formDataEdit.nationality  = null
+      formDataEdit.dateofbirth  = null
+      formDataEdit.birthAddress  = null
+      formDataEdit.brithCity  = null
+      formDataEdit.birthDistrict  = null
+      formDataEdit.currentAddress  = null
+      formDataEdit.currentQualification  = null
+      formDataEdit.currentCity  = null
+      formDataEdit.currentDistrict  = null
+      formDataEdit.sID  = null
+      formDataEdit.passport  = null
+      formDataEdit.workingEXP  = null
+      formDataEdit.workingEXPYes  = null
+      formDataEdit.gender  = null
+      formDataEdit.position  = null
+      formDataEdit.telephone  = null
+      formDataEdit.email  = null
+      formDataEdit.familyAddress  = null
+      formDataEdit.familyPhoneNumber  = null
+      formDataEdit.familyEmail  = null
       formDataEdit.serviceCenterID  =  null 
     setTimeout(() => {
         validatorEdit.value.clearErrors();
@@ -106,13 +145,33 @@ import { string } from 'zod'
     method: "POST",
     body: JSON.stringify({
       id : formDataEdit.id,
-      title : formDataEdit.title,
+      photo : formDataEdit.photo,
+      workingPeroid : formDataEdit.workingPeroid,
+      attachedContract : formDataEdit.attachedContract,
+      attachedBackground : formDataEdit.attachedBackground,
+      attachedFileInfomation : formDataEdit.attachedFileInfomation,
       firstName : formDataEdit.firstName,
       lastName : formDataEdit.lastName,
+      nationality : formDataEdit.nationality,
+      dateofbirth : formDataEdit.dateofbirth,
+      birthAddress : formDataEdit.birthAddress,
+      brithCity : formDataEdit.brithCity,
+      birthDistrict : formDataEdit.birthDistrict,
+      currentAddress : formDataEdit.currentAddress,
+      currentQualification : formDataEdit.currentQualification,
+      currentCity : formDataEdit.currentCity,
+      currentDistrict : formDataEdit.currentDistrict,
+      sID : formDataEdit.sID,
+      passport : formDataEdit.passport,
+      workingEXP : formDataEdit.workingEXP,
+      workingEXPYes : formDataEdit.workingEXPYes,
       gender : formDataEdit.gender,
       position : formDataEdit.position,
       telephone : formDataEdit.telephone,
       email : formDataEdit.email,
+      familyAddress : formDataEdit.familyAddress,
+      familyPhoneNumber : formDataEdit.familyPhoneNumber,
+      familyEmail : formDataEdit.familyEmail,
       serviceCenterID : formDataEdit.serviceCenterID,
     }),
   });
@@ -144,7 +203,6 @@ import { string } from 'zod'
   })
 
   let serviceCenterList : any = []
-
   data.value?.data.forEach(ele =>{
     serviceCenterList.push({
         label : ele.nameKH,
@@ -156,15 +214,36 @@ import { string } from 'zod'
       const { data } = await useFetch<{ data: Staff, error: '', status: '' }>('/api/center/staff/getSingleStaff', { method : 'POST' , body : JSON.stringify({ id : prop.id ,
       typeEmployee : prop.typeEmployee
       })})
+
       formDataEdit.id = data.value?.data?.id
-      formDataEdit.title = data.value?.data?.title
-      formDataEdit.firstName = data.value?.data?.firstName
-      formDataEdit.lastName = data.value?.data?.lastName
-      formDataEdit.gender = data.value?.data?.gender
-      formDataEdit.position = data.value?.data?.position
-      formDataEdit.telephone = data.value?.data?.telephone
-      formDataEdit.email = data.value?.data?.email
-      formDataEdit.serviceCenterID = data.value?.data?.serviceCenterID
+      formDataEdit.photo = data?.value?.data.photo 
+      formDataEdit.workingPeroid = data?.value?.data.workingPeroid 
+      formDataEdit.attachedContract = data?.value?.data.attachedContract 
+      formDataEdit.attachedBackground = data?.value?.data.attachedBackground 
+      formDataEdit.attachedFileInfomation = data?.value?.data.attachedFileInfomation 
+      formDataEdit.firstName = data?.value?.data.firstName 
+      formDataEdit.lastName = data?.value?.data.lastName 
+      formDataEdit.nationality = data?.value?.data.nationality 
+      formDataEdit.dateofbirth = data?.value?.data.dateofbirth 
+      formDataEdit.birthAddress = data?.value?.data.birthAddress 
+      formDataEdit.brithCity = data?.value?.data.brithCity 
+      formDataEdit.birthDistrict = data?.value?.data.birthDistrict 
+      formDataEdit.currentAddress = data?.value?.data.currentAddress 
+      formDataEdit.currentQualification = data?.value?.data.currentQualification 
+      formDataEdit.currentCity = data?.value?.data.currentCity 
+      formDataEdit.currentDistrict = data?.value?.data.currentDistrict 
+      formDataEdit.sID = data?.value?.data.sID 
+      formDataEdit.passport = data?.value?.data.passport 
+      formDataEdit.workingEXP = data?.value?.data.workingEXP 
+      formDataEdit.workingEXPYes = data?.value?.data.workingEXPYes 
+      formDataEdit.gender = data?.value?.data.gender 
+      formDataEdit.position = data?.value?.data.position 
+      formDataEdit.telephone = data?.value?.data.telephone 
+      formDataEdit.email = data?.value?.data.email 
+      formDataEdit.familyAddress = data?.value?.data.familyAddress 
+      formDataEdit.familyPhoneNumber = data?.value?.data.familyPhoneNumber 
+      formDataEdit.familyEmail = data?.value?.data.familyEmail 
+      formDataEdit.serviceCenterID = data?.value?.data.serviceCenterID 
     }
 
     const optionsss = [{
@@ -360,7 +439,8 @@ import { string } from 'zod'
         const { data } = await useFetch<{data : governStaff, error : '', status:'' }>('/api/center/staff/getSingleStaff', {
           method: 'POST', body: JSON.stringify({
             id: prop.id,
-            typeEmployee: prop.typeEmployee
+            typeEmployee: prop.typeEmployee,
+
           })
         })
 
@@ -517,70 +597,73 @@ import { string } from 'zod'
         await useFetch('/api/deleteFile', { method : 'POST' , body : JSON.stringify({imgURL : oldImageURL})})
       }
 
-      const { error, data } = await useFetch('/api/center/staffOfficial/upsert', {
+      const dataInsert = {
+            id: formDataEditOfficial.id,
+            photo: formDataEditOfficial.photo,
+            firstNameKH: formDataEditOfficial.firstNameKH,
+            lastNameKH: formDataEditOfficial.lastNameKH,
+            firstNameEN: formDataEditOfficial.firstNameEN,
+            lastNameEN: formDataEditOfficial.lastNameEN,
+            gender: formDataEditOfficial.gender,
+            DateofBirth: formDataEditOfficial.DateofBirth,
+            ethnicity: formDataEditOfficial.ethnicity,
+            nationality: formDataEditOfficial.nationality,
+            birthAddress: formDataEditOfficial.birthAddress,
+            currentAddress: formDataEditOfficial.currentAddress,
+            permanentAddress: formDataEditOfficial.permanentAddress,
+            telephone: formDataEditOfficial.telephone,
+            email: formDataEditOfficial.email,
+            officialID: formDataEditOfficial.officialID,
+            CambodianSocialID: formDataEditOfficial.CambodianSocialID,
+            sIDValidStart: formDataEditOfficial.sIDValidStart,
+            sIDValidEnd: formDataEditOfficial.sIDValidEnd,
+            physical: formDataEditOfficial.physical,
+            familyInfo: formDataEditOfficial.familyInfo,
+            spouseNameKH: formDataEditOfficial.spouseNameKH,
+            spuseNameEN: formDataEditOfficial.spuseNameEN,
+            spouseDateOfBirth: formDataEditOfficial.spouseDateOfBirth,
+            spouseSID: formDataEditOfficial.spouseSID,
+            spouseBirthAddress: formDataEditOfficial.spouseBirthAddress,
+            spouseCurrentOccupation: formDataEditOfficial.spouseCurrentOccupation,
+            spouseOrganisationName: formDataEditOfficial.spouseOrganisationName,
+            spuseCurrentAddress: formDataEditOfficial.spuseCurrentAddress,
+            fatherFullNameKH: formDataEditOfficial.fatherFullNameKH,
+            FatherOccupation: formDataEditOfficial.FatherOccupation,
+            fatherBrithAddress: formDataEditOfficial.fatherBrithAddress,
+            MotherOcupation: formDataEditOfficial.MotherOcupation,
+            motherFullNameKH: formDataEditOfficial.motherFullNameKH,
+            motherBrirthAddress: formDataEditOfficial.motherBrirthAddress,
+            ECFirstNameKH: formDataEditOfficial.ECFirstNameKH,
+            ECLastNameKH: formDataEditOfficial.ECLastNameKH,
+            ECGender: formDataEditOfficial.ECGender,
+            ECRelationshipAs: formDataEditOfficial.ECRelationshipAs,
+            ECOccupation: formDataEditOfficial.ECOccupation,
+            ECAddress: formDataEditOfficial.ECAddress,
+            ECTelehpone: formDataEditOfficial.ECTelehpone,
+            DateStartOfficialWork: formDataEditOfficial.DateStartOfficialWork,
+            DateWentFullTime: formDataEditOfficial.DateWentFullTime,
+            CurrentRank: formDataEditOfficial.CurrentRank,
+            OfficialLevelKH: formDataEditOfficial.OfficialLevelKH,
+            serviceCenterID: formDataEditOfficial.serviceCenterID,
+            governStaffChildren: prop.id ? childrenDetails.value.map(item =>({...item, governStaffID  : prop.id})) : childrenDetails.value ,
+            governStaffQualifitcation: prop.id ? EducationDetails.value.map(item => ({ ...item, governStaffID: prop.id })) : EducationDetails.value, 
+            governStaffLanuage: prop.id ? governStaffLanuage.value.map(item => ({ ...item, governStaffID: prop.id })) : governStaffLanuage.value,
+            governStaffWorkingHistoryPublic: prop.id ? governStaffWorkingHistoryPublic.value.map(item => ({ ...item, governStaffID: prop.id })) : governStaffWorkingHistoryPublic.value, 
+            governStaffWorkingHistoryPrivate: prop.id ? governStaffWorkingHistoryPrivate.value.map(item => ({ ...item, governStaffID: prop.id })) : governStaffWorkingHistoryPrivate.value, 
+            governStaffPositionHistory: prop.id ? governStaffPositionHistory.value.map(item => ({ ...item, governStaffID: prop.id })) : governStaffPositionHistory.value, 
+            governStaffCertificateLevelup: prop.id ? governStaffCertificateLevelup.value.map(item => ({ ...item, governStaffID: prop.id })) : governStaffCertificateLevelup.value, 
+            governStaffSituationOutsideOriginalOfficial: prop.id ? governStaffSituationOutsideOriginalOfficial.value.map(item => ({ ...item, governStaffID: prop.id })) : governStaffSituationOutsideOriginalOfficial.value, 
+            governStaffFreeNoSalary: prop.id ? GovernStaffFreeNoSalary.value.map(item => ({ ...item, governStaffID: prop.id })) : GovernStaffFreeNoSalary.value, 
+            governStaffLetterAppreciation: prop.id ? GovernStaffLetterAppreciation.value.map(item => ({ ...item, governStaffID: prop.id })) : GovernStaffLetterAppreciation.value,
+            governStaffFineHistory: prop.id ? governStaffFineHistory.value.map(item => ({ ...item, governStaffID: prop.id })) : governStaffFineHistory.value, 
+          }
+      const { error, data } = !prop.id  ? await useFetch('/api/center/staffOfficial/insert', {
         method: "POST",
-        body: JSON.stringify({
-          id : formDataEditOfficial.id,
-          photo : formDataEditOfficial.photo , 
-          firstNameKH : formDataEditOfficial.firstNameKH , 
-          lastNameKH : formDataEditOfficial.lastNameKH , 
-          firstNameEN : formDataEditOfficial.firstNameEN , 
-          lastNameEN : formDataEditOfficial.lastNameEN , 
-          gender : formDataEditOfficial.gender , 
-          DateofBirth : formDataEditOfficial.DateofBirth , 
-          ethnicity : formDataEditOfficial.ethnicity , 
-          nationality : formDataEditOfficial.nationality , 
-          birthAddress : formDataEditOfficial.birthAddress , 
-          currentAddress : formDataEditOfficial.currentAddress , 
-          permanentAddress : formDataEditOfficial.permanentAddress,
-          telephone : formDataEditOfficial.telephone , 
-          email : formDataEditOfficial.email , 
-          officialID : formDataEditOfficial.officialID , 
-          CambodianSocialID : formDataEditOfficial.CambodianSocialID , 
-          sIDValidStart : formDataEditOfficial.sIDValidStart , 
-          sIDValidEnd : formDataEditOfficial.sIDValidEnd , 
-          physical : formDataEditOfficial.physical , 
-          familyInfo : formDataEditOfficial.familyInfo , 
-          spouseNameKH : formDataEditOfficial.spouseNameKH , 
-          spuseNameEN : formDataEditOfficial.spuseNameEN , 
-          spouseDateOfBirth : formDataEditOfficial.spouseDateOfBirth , 
-          spouseSID : formDataEditOfficial.spouseSID , 
-          spouseBirthAddress : formDataEditOfficial.spouseBirthAddress , 
-          spouseCurrentOccupation : formDataEditOfficial.spouseCurrentOccupation , 
-          spouseOrganisationName : formDataEditOfficial.spouseOrganisationName , 
-          spuseCurrentAddress : formDataEditOfficial.spuseCurrentAddress , 
-          fatherFullNameKH : formDataEditOfficial.fatherFullNameKH , 
-          FatherOccupation : formDataEditOfficial.FatherOccupation , 
-          fatherBrithAddress : formDataEditOfficial.fatherBrithAddress , 
-          MotherOcupation : formDataEditOfficial.MotherOcupation , 
-          motherFullNameKH : formDataEditOfficial.motherFullNameKH , 
-          motherBrirthAddress : formDataEditOfficial.motherBrirthAddress , 
-          ECFirstNameKH : formDataEditOfficial.ECFirstNameKH , 
-          ECLastNameKH : formDataEditOfficial.ECLastNameKH , 
-          ECGender : formDataEditOfficial.ECGender , 
-          ECRelationshipAs : formDataEditOfficial.ECRelationshipAs , 
-          ECOccupation : formDataEditOfficial.ECOccupation , 
-          ECAddress : formDataEditOfficial.ECAddress , 
-          ECTelehpone : formDataEditOfficial.ECTelehpone , 
-          DateStartOfficialWork : formDataEditOfficial.DateStartOfficialWork , 
-          DateWentFullTime : formDataEditOfficial.DateWentFullTime , 
-          CurrentRank : formDataEditOfficial.CurrentRank , 
-          OfficialLevelKH : formDataEditOfficial.OfficialLevelKH , 
-          serviceCenterID : formDataEditOfficial.serviceCenterID,
-          governStaffChildren : childrenDetails.value,
-          governStaffQualifitcation : EducationDetails.value,
-          governStaffLanuage : governStaffLanuage.value,
-          governStaffWorkingHistoryPublic: governStaffWorkingHistoryPublic.value,
-          governStaffWorkingHistoryPrivate : governStaffWorkingHistoryPrivate.value,
-          governStaffPositionHistory : governStaffPositionHistory.value,
-          governStaffCertificateLevelup : governStaffCertificateLevelup.value,
-          governStaffSituationOutsideOriginalOfficial : governStaffSituationOutsideOriginalOfficial.value,
-          governStaffFreeNoSalary : GovernStaffFreeNoSalary.value,
-          governStaffLetterAppreciation : GovernStaffLetterAppreciation.value,
-          governStaffFineHistory : governStaffFineHistory.value,
-
-        }),
-      });
+        body: JSON.stringify(dataInsert),
+      }) : await useFetch('/api/center/staffOfficial/update',{
+        method : 'POST',
+        body : JSON.stringify(dataInsert)
+      })
 
       if (error.value?.statusCode) {
         toast.error({
@@ -618,7 +701,7 @@ import { string } from 'zod'
       } catch (error) {
         console.log(error);
       }
-    };
+    }
 
     watch(selectedAddressOption,()=>{      
       if(AddressOption[0]?.value == selectedAddressOption.value){
@@ -631,9 +714,7 @@ import { string } from 'zod'
 </script>
 
 <template>  
-<div>
-
- 
+<div> 
       <TwOffcanvas position="right" width="800px" ref="openisTrues">
       <template #headerTitle>
         <span class="font-[Moul] text-primary"> បញ្ចូលបុគ្គលិកមណ្ឌល </span></template
@@ -666,18 +747,16 @@ import { string } from 'zod'
             }"
           >
           <div class="col-span-3">
-
           </div>
           <div class="col-span-12   lg:col-span-5">          
               <div class="vt-relative vt-col-span-12 lg:col-span-6  vt-flex vt-items-center vt-justify-center">
                 <div class="vt-relative vt-w-96">
-                  <img :src="config.public.origin + '/' + (formDataEditOfficial.logo ? formDataEditOfficial.logo : '') "  :class="(files?.length > 0 ? ' hidden '  : ' ')  " alt="">
+                  <img :src="config.public.origin + '/' + (formDataEditOfficial.photo ? formDataEditOfficial.photo : '') "  :class="(files?.length > 0 ? ' hidden '  : ' ')  " alt="">
                 </div>
               </div>
               <TwFile v-model="files" label="រូបភាព ៤x៦" />
             </div>
             <div class="col-span-4">
-
             </div>
              <div class="col-span-12" >
                 <TwSelect                           
@@ -1894,7 +1973,7 @@ import { string } from 'zod'
                     <div class="col-span-12">
                         <label class="font-bold">ឆ.១-ការលើសរសើរ (គ្រឿងឥស្សរិយយស មេដាយ ប័ណ្ឌសរសើរ)</label>
                     </div>
-                    <div class="col-span-12 grid  grid-cols-1 lg:grid-cols-3 gap-1" v-for="(item,index) in GovernStaffLetterAppreciation" :key="item.letterNumber">
+                    <div class="col-span-12 grid  grid-cols-1 lg:grid-cols-3 gap-1" v-for="(item,index) in GovernStaffLetterAppreciation" :key="index">
                      <div>
                           <TwInput             
                             label="លេខលិខិត"
@@ -1959,7 +2038,7 @@ import { string } from 'zod'
                     <div class="col-span-12">
                         <label class="font-bold"> ឆ.២-ការដាក់វិន័យ</label>
                     </div>
-                    <div class="col-span-12 grid  grid-cols-1 lg:grid-cols-3 gap-1" v-for="(item,index) in governStaffFineHistory" :key="item.letterNumber">
+                    <div class="col-span-12 grid  grid-cols-1 lg:grid-cols-3 gap-1" v-for="(item,index) in governStaffFineHistory" :key="index">
                       <div>
                             <TwInput             
                               label="លេខលិខិត"
@@ -2037,10 +2116,7 @@ import { string } from 'zod'
                   <UButton color="primary" size="lg" class="px-4" type="submit"> រក្សាទុក </UButton>
                 </div>
           </TwForm>            
-
           </div>
-          
-
         </div>
 
         <div v-else>
@@ -2056,18 +2132,31 @@ import { string } from 'zod'
               roleName: 'ឈ្មោះតួនាទី',
               roleDescription: 'ពិពណ៌នាតួនាទី',
             }"
-          >          
-          <div class="col-span-4" >
-            <TwSelect                           
-              label="គោរមងារនាម"
-              name="title"            
-              v-model="formDataEdit.title"            
-              required                    
-              :items="temTitle"
-              placeholder="សូមជ្រើសរើស"           
-            />
-            <CustomErrorMessage name="title" />            
-          </div>  
+          >    
+           <div class="col-span-3">
+            </div>      
+         <div class="col-span-12   lg:col-span-5">          
+                <div class="vt-relative vt-col-span-12 lg:col-span-6  vt-flex vt-items-center vt-justify-center">
+                  <div class="vt-relative vt-w-96">
+                    <img :src="config.public.origin + '/' + (formDataEdit.photo ? formDataEdit.photo : '')"  :class="(files?.length > 0 ? ' hidden ' : ' ')" alt="">
+                  </div>
+                </div>
+                <TwFile v-model="files" label="រូបភាព ៤x៦" />
+              </div>
+              <div class="col-span-4">
+              </div>
+               <div class="col-span-12" >
+                  <TwSelect                           
+                    label="បុគ្គលិករបស់មណ្ឌល"
+                    name="serviceCenterID"            
+                    v-model="formDataEdit.serviceCenterID"            
+                    required                    
+                    :items="serviceCenterList"
+                    placeholder="សូមជ្រើសរើស"           
+                  />
+                  <CustomErrorMessage name="serviceCenterID" />            
+                </div>  
+
           <div class="col-span-4 " >
             <TwSelect                           
               label="ភេទ"
@@ -2078,17 +2167,6 @@ import { string } from 'zod'
               placeholder="សូមជ្រើសរើស"           
             />
             <CustomErrorMessage name="gender" />            
-          </div>  
-          <div class="col-span-4 " >
-            <TwSelect                           
-              label="បុគ្គលិករបស់មណ្ឌល"
-              name="serviceCenterID"            
-              v-model="formDataEdit.serviceCenterID"            
-              required                    
-              :items="serviceCenterList"
-              placeholder="សូមជ្រើសរើស"           
-            />
-            <CustomErrorMessage name="serviceCenterID" />            
           </div>  
           <div class="col-span-12 lg:col-span-6 ">
               <TwInput

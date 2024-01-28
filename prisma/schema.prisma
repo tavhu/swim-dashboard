@@ -129,14 +129,13 @@ model ServiceCenter {
 model Staff {
   id                     String         @id @default(cuid())
   photo                  String
-  type                   String // មន្រ្តីកិច្ចសន្យា ឬ មន្រ្តីក្របខណ្ឌ
   workingPeroid          String? //មន្ត្រីកិច្ចសន្យា
   attachedContract       String? //មន្ត្រីកិច្ចសន្យា
   attachedBackground     String? // ប្រវត្តិរូបមានរូបថត៤x៦ //មន្ត្រីកិច្ចសន្យា
   attachedFileInfomation String //ព្រឹត្តិប័ត្រព័ត៌មានសម្រាប់ស្នើសុំមន្ត្រីកិច្ចសន្យា
-  title                  String
   firstName              String
   lastName               String
+  fullnameEN             String?
   nationality            String
   dateofbirth            String
   birthAddress           String

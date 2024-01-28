@@ -27,7 +27,6 @@ export default eventHandler(async (event) => {
             },
             select: {
               id: true,
-              title: true,
               firstName: true,
               lastName: true,
               gender: true,
@@ -70,6 +69,13 @@ export default eventHandler(async (event) => {
                 },
               },
             },
+            orderBy: {
+              id: "desc",
+            },
+            //@ts-ignore
+            take: body?.limit ? parseInt(body?.limit) : 1000,
+            //@ts-ignore
+            skip: body?.skip ? parseInt(body?.skip) : 0,
           });
 
     //@ts-ignore
