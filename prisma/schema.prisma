@@ -129,10 +129,6 @@ model ServiceCenter {
 model Staff {
   id                     String         @id @default(cuid())
   photo                  String
-  workingPeroid          String? //មន្ត្រីកិច្ចសន្យា
-  attachedContract       String? //មន្ត្រីកិច្ចសន្យា
-  attachedBackground     String? // ប្រវត្តិរូបមានរូបថត៤x៦ //មន្ត្រីកិច្ចសន្យា
-  attachedFileInfomation String //ព្រឹត្តិប័ត្រព័ត៌មានសម្រាប់ស្នើសុំមន្ត្រីកិច្ចសន្យា
   firstName              String
   lastName               String
   fullnameEN             String?
@@ -156,6 +152,10 @@ model Staff {
   familyAddress          String
   familyPhoneNumber      String
   familyEmail            String
+  workingPeroid          String? //មន្ត្រីកិច្ចសន្យា
+  attachedContract       String? //មន្ត្រីកិច្ចសន្យា
+  attachedBackground     String? // ប្រវត្តិរូបមានរូបថត៤x៦ //មន្ត្រីកិច្ចសន្យា
+  attachedFileInfomation String //ព្រឹត្តិប័ត្រព័ត៌មានសម្រាប់ស្នើសុំមន្ត្រីកិច្ចសន្យា
   serviceCenterID        String?
   ServiceCenter          ServiceCenter? @relation(fields: [serviceCenterID], references: [id])
 }

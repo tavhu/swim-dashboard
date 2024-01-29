@@ -38,13 +38,13 @@ import { string } from 'zod'
     
     const openisTrues = ref()
     const formRulesEdit = {   
-    firstName : ['string' , 'required'],
-    lastName : ['string' , 'required'],
-    gender : ['string'],
-    position : ['string'],
-    telephone : ['string'],
-    email : ['string', 'email'],
-    serviceCenterID : ['string','required'],
+    // firstName : ['string' , 'required'],
+    // lastName : ['string' , 'required'],
+    // gender : ['string'],
+    // position : ['string'],
+    // telephone : ['string'],
+    // email : ['string', 'email'],
+    // serviceCenterID : ['string','required'],
     }
 
     const formNameEdit = "centerStaffForm";
@@ -2157,20 +2157,9 @@ import { string } from 'zod'
                   <CustomErrorMessage name="serviceCenterID" />            
                 </div>  
 
-          <div class="col-span-4 " >
-            <TwSelect                           
-              label="ភេទ"
-              name="gender"            
-              v-model="formDataEdit.gender"            
-              required                    
-              :items="[{value : 'ប្រុស', label: 'ប្រុស' } , { value : 'ស្រី' , label : 'ស្រី'}, { value : 'ផ្សេងៗ' , label : 'ផ្សេងៗ'}]"
-              placeholder="សូមជ្រើសរើស"           
-            />
-            <CustomErrorMessage name="gender" />            
-          </div>  
-          <div class="col-span-12 lg:col-span-6 ">
+          <div class="col-span-12 lg:col-span-3 ">
               <TwInput
-                label="ឈ្មោះ"
+                label="នាមខ្លួន"
                 name="firstName"
                 v-model="formDataEdit.firstName"
                 placeholder="បញ្ចូលឈ្មោះ"
@@ -2178,7 +2167,7 @@ import { string } from 'zod'
               />
               <CustomErrorMessage name="firstName" />
             </div>
-            <div class="col-span-12 lg:col-span-6 ">
+            <div class="col-span-12 lg:col-span-3 ">
               <TwInput
                 label="នាមត្រកូល"
                 name="lastName"
@@ -2188,36 +2177,106 @@ import { string } from 'zod'
               />
               <CustomErrorMessage name="lastName" />
             </div>  
+            <div class="col-span-3 " >
+                <TwSelect                           
+                  label="ភេទ"
+                  name="gender"            
+                  v-model="formDataEdit.gender"            
+                  required                    
+                  :items="[{ value: 'ប្រុស', label: 'ប្រុស' }, { value: 'ស្រី', label: 'ស្រី' }, { value: 'ផ្សេងៗ', label: 'ផ្សេងៗ' }]"
+                  placeholder="សូមជ្រើសរើស"           
+                />
+                <CustomErrorMessage name="gender" />            
+              </div> 
+               <div class="col-span-12 lg:col-span-3 ">
+                <TwInput
+                  label="សញ្ជាតិ"
+                  name="lastName"
+                  v-model="formDataEdit.nationality"
+                  placeholder="បញ្ចូលនាមត្រកូល"
+                  type="text"
+                />
+                <CustomErrorMessage name="lastName" />
+              </div>  
             <div class="col-span-12 lg:col-span-6 ">
               <TwInput
-                label="តួនាទី"
-                name="position"
-                v-model="formDataEdit.position"
-                placeholder="បញ្ចូលតួនាទី"
+                label="អក្សរពុម្ភឡាតាំង"
+                name="lastName"
+                v-model="formDataEdit.fullnameEN"
+                placeholder="បញ្ចូលនាមត្រកូល"
                 type="text"
               />
-              <CustomErrorMessage name="position" />
-            </div>    
+              <CustomErrorMessage name="lastName" />
+            </div>   
             <div class="col-span-12 lg:col-span-6 ">
               <TwInput
-                label="លេខទូរស័ព្ទ"
-                name="telephone"
-                v-model="formDataEdit.telephone"
-                placeholder="បញ្ចូលលេខទូរស័ព្ទ"
+                label="សញ្ជាតិ"
+                name="lastName"
+                v-model="formDataEdit.nationality"
+                placeholder="បញ្ចូលនាមត្រកូល"
                 type="text"
               />
-              <CustomErrorMessage name="telephone" />
-            </div>                
-            <div class="col-span-12 lg:col-span-6 ">
-              <TwInput
-                label="អុីមែល"
-                name="email"
-                v-model="formDataEdit.email"
-                placeholder="បញ្ចូលអុីមែល"
-                type="text"
-              />
-              <CustomErrorMessage name="email" />
-            </div>     
+              <CustomErrorMessage name="lastName" />
+            </div>  
+             <div class="col-span-12 lg:col-span-6">
+              <label for="">ខែឆ្នាំកំណើត</label>
+                <Datepicker
+                    v-model="formDataEdit.dateofbirth"
+                    :dayNames="[
+                      'Mo',
+                      'Tu',
+                      'We',
+                      'Th',
+                      'Fr',
+                      'Sa',
+                      'Su',
+                    ]"
+                    position="left"
+                    :maxDate="new Date()"
+                    required
+                    :enableTimePicker="false"></Datepicker>
+            </div>
+             <div class="col-span-12 lg:col-span-6">
+                  <TwInput
+                    label="កម្រិតវប្បធម៌"
+                    name="lastName"
+                    v-model="formDataEdit.currentQualification"
+                    placeholder="បញ្ចូលនាមត្រកូល"
+                    type="text"
+                  />
+                  <CustomErrorMessage name="lastName" />
+                </div>  
+             <div class="col-span-12 ">
+                <TwInput
+                  label="ទីកន្លែងកំណើត"
+                  name="lastName"
+                  v-model="formDataEdit.birthAddress"
+                  placeholder="បញ្ចូលនាមត្រកូល"
+                  type="text"
+                />
+                <CustomErrorMessage name="lastName" />
+              </div>  
+             <div class="col-span-12 ">
+                <TwInput
+                  label="លេខអត្តសញ្ញាណប័ណ្ណខ្មែរ"
+                  name="lastName"
+                  v-model="formDataEdit.sID"
+                  placeholder="បញ្ចូលនាមត្រកូល"
+                  type="text"
+                />
+                <CustomErrorMessage name="lastName" />
+              </div>  
+             <div class="col-span-12 ">
+                <TwInput
+                  label="លិខិតឆ្លងដែន"
+                  name="lastName"
+                  v-model="formDataEdit.passport"
+                  placeholder="បញ្ចូលនាមត្រកូល"
+                  type="text"
+                />
+                <CustomErrorMessage name="lastName" />
+              </div>  
+
 
             <div class="col-span-12  flex justify-end gap-1">
               <UButton

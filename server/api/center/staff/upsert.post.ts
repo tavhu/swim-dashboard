@@ -80,7 +80,7 @@ export default eventHandler(async (event) => {
     setResponseStatus(event, 201);
     return { message: "Update or Created" };
   } catch (e) {
-    // console.log(e)
+    console.log(e);
     //@ts-ignore
     setResponseStatus(event, 412);
     return {
