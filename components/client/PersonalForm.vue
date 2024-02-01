@@ -537,7 +537,7 @@ const cityList = ref(temCity)
                     required
                     :maxDate="new Date()"
                     :enableTimePicker="false"></Datepicker>
-                    </ClientOnly>
+                    </ClientOnly> 
 
                   <CustomErrorMessage name="DateofBirth" />
                 </div>
