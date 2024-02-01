@@ -258,4 +258,19 @@ export default [
       },
     ],
   },
+  {
+    isTitle: false,
+    name: "អតិថិជន",
+    url: "",
+    icon: "users",
+    submenu: [
+      {
+        isTitle: false,
+        name: "ចុះឈ្មោះ",
+        url: "/client/register",
+        icon: "",
+        submenu: [],
+      },
+    ],
+  },
 ];

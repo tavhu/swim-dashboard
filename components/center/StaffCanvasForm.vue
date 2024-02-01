@@ -217,6 +217,7 @@ import { string } from 'zod'
         value : ele.id
       })
     })
+
     const SelectWorkEXP = ref(true)
     const WorkEXP = [{
         value: false,
@@ -474,7 +475,6 @@ import { string } from 'zod'
 
           })
         })
-
         // console.log(data.value?.data)
 
         // console.log(data.value?.data)

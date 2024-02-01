@@ -127,37 +127,38 @@ model ServiceCenter {
 }
 
 model Staff {
-  id                     String         @id @default(cuid())
-  photo                  String
-  firstName              String
-  lastName               String
-  fullnameEN             String?
-  nationality            String
-  dateofbirth            String
-  birthAddress           String
-  brithCity              String?
-  birthDistrict          String?
-  currentAddress         String?
-  currentQualification   String?
-  currentCity            String?
-  currentDistrict        String?
-  sID                    String?
-  passport               String?
-  workingEXP             Boolean //កិច្ចសន្យា
-  workingEXPYes          String?
-  gender                 String
-  position               String
-  telephone              String
-  familyAddress          String
-  familyPhoneNumber      String
-  familyEmail            String
-  workingPeroidStart     DateTime //មន្ត្រីកិច្ចសន្យា
-  workingContractAt      String?
-  attachedContract       String? //មន្ត្រីកិច្ចសន្យា
-  attachedBackground     String? //ប្រវត្តិរូបមានរូបថត៤x៦ //មន្ត្រីកិច្ចសន្យា
-  attachedFileInfomation String? //ព្រឹត្តិប័ត្រព័ត៌មានសម្រាប់ស្នើសុំមន្ត្រីកិច្ចសន្យា
-  serviceCenterID        String?
-  ServiceCenter          ServiceCenter? @relation(fields: [serviceCenterID], references: [id])
+  id                         String                       @id @default(cuid())
+  photo                      String
+  firstName                  String
+  lastName                   String
+  fullnameEN                 String?
+  nationality                String
+  dateofbirth                String
+  birthAddress               String
+  brithCity                  String?
+  birthDistrict              String?
+  currentAddress             String?
+  currentQualification       String?
+  currentCity                String?
+  currentDistrict            String?
+  sID                        String?
+  passport                   String?
+  workingEXP                 Boolean //កិច្ចសន្យា
+  workingEXPYes              String?
+  gender                     String
+  position                   String
+  telephone                  String
+  familyAddress              String
+  familyPhoneNumber          String
+  familyEmail                String
+  workingPeroidStart         DateTime //មន្ត្រីកិច្ចសន្យា
+  workingContractAt          String?
+  attachedContract           String? //មន្ត្រីកិច្ចសន្យា
+  attachedBackground         String? //ប្រវត្តិរូបមានរូបថត៤x៦ //មន្ត្រីកិច្ចសន្យា
+  attachedFileInfomation     String? //ព្រឹត្តិប័ត្រព័ត៌មានសម្រាប់ស្នើសុំមន្ត្រីកិច្ចសន្យា
+  serviceCenterID            String?
+  ServiceCenter              ServiceCenter?               @relation(fields: [serviceCenterID], references: [id])
+  Client_PersonalInformation Client_PersonalInformation[]
 }
 
 model governStaff {
@@ -220,6 +221,7 @@ model governStaff {
   governStaffFineHistory                      governStaffFineHistory[]
   ServiceCenter                               ServiceCenter?                                @relation(fields: [serviceCenterID], references: [id])
   governStaffWorkingHistoryPrivate            governStaffWorkingHistoryPrivate[]
+  Client_PersonalInformation                  Client_PersonalInformation[]
 }
 
 model governStaffChildren {
@@ -346,50 +348,87 @@ model governStaffFineHistory {
 }
 
 model Client_PersonalInformation {
-  id                    String    @id @unique @default(cuid())
-  fullNameKH            String
-  nickName              String
-  ReadableCode          String
-  Gender                String
-  DOB                   DateTime?
-  POB                   String
-  EducationLevel        String?
-  Occupation            String?
-  DateArrested          String? //កាលបរិចេ្ឆទចូលមជ្ឈមណ្ឌលឬឃាត់ខ្លួន
-  homeBA                String
-  StreetBA              String
-  villageBA             String
-  districtBA            String
-  commuteBA             String
-  cityProBA             String
-  FatherOrChaperoneName String?
-  FOCDOB                DateTime?
-  FOCMarried            String?
-  FOCTelandAddress      String?
-  MotherOrChaperoneName String?
-  MOCMarried            String?
-  MOCDOB                DateTime?
-  MOCTelandAddress      String?
-  OtherFamilyMembers    String?
-  CloseFriend           String?
-  ClientSendBy          String
-  ImportantChallenge    String
-  PastActivities        String
-  ReasonUseDrug         String
-  KnownLegalConsequence Boolean
-  typeDrugUsed          String
-  DrugVolumeUsed        String
-  DrugRequecyUse        String
-  DrugDurationUse       String
-  LivingSituation       String
-  UsedtoRehab           Boolean
-  nameCenterorPrison    String? //Array
-  DateTimeServed        DateTime? //Array
-  HowManyTimeHaveServed String?
-  ReasonComingtoCenter  String?
+  id                         String               @id @unique @default(cuid())
+  fullNameKH                 String
+  nickName                   String
+  ReadableCode               String
+  IdentifyCode               String
+  Gender                     String
+  DOB                        DateTime?
+  POB                        String
+  EducationLevel             String?
+  Occupation                 String?
+  DateArrested               String? //កាលបរិចេ្ឆទចូលមជ្ឈមណ្ឌលឬឃាត់ខ្លួន
+  homeBA                     String
+  StreetBA                   String
+  villageBA                  String
+  districtBA                 String
+  commuteBA                  String
+  cityProBA                  String
+  FatherOrChaperoneName      String?
+  FOCDOB                     DateTime?
+  FOCMarried                 String?
+  FOCTelandAddress           String?
+  MotherOrChaperoneName      String?
+  MOCMarried                 String?
+  MOCDOB                     DateTime?
+  MOCTelandAddress           String?
+  OtherFamilyMembers         String?
+  CloseFriend                String?
+  ClientSendBy               String
+  ImportantChallenge         String
+  PastActivities             String
+  ReasonUseDrug              String
+  KnownLegalConsequence      Boolean
+  typeDrugUsed               String
+  DrugVolumeUsed             String
+  DrugRequecyUse             String
+  DrugDurationUse            String
+  LivingSituation            String
+  UsedtoRehab                Boolean
+  HowManyTimeHaveServed      String?
+  ReasonComingtoCenter       String?
+  DailyActivitiesInCenter    String?
+  ActivitiesThatClientLike   String?
+  ClientTalent               String?
+  RelationshipWithFriends    String?
+  RelationshipWithStaff      String?
+  RelationshipWithTeacher    String?
+  RelationshipWithOther      String?
+  ConcernForClientFuture     String?
+  HopeForClientFuture        String?
+  FuturePlanforClient        String? //options
+  FuturePlanforClientDetails String?
+  ClientFeelsHopless         Boolean
+  ClientHoplessDetails       String? //Options
+  InterviewerOpinoin         String?
+  InterviewerID              String
+  InterviewerisGovernStaff   Boolean
+  status                     Boolean              @default(true)
+  InterViewDate              DateTime
+  InterViewerSignature       String?
+  governStaffID              String?
+  StaffID                    String?
+  serviceCenterID            String
+  Staff                      Staff?               @relation(fields: [StaffID], references: [id])
+  governStaff                governStaff?         @relation(fields: [governStaffID], references: [id])
+  ServiceCenter              ServiceCenter        @relation(fields: [serviceCenterID], references: [id])
+  ClientProgress             ClientProgress[]
+  ClientServeHistory         ClientServeHistory[]
+}
 
-  status          Boolean         @default(true)
-  serviceCenterID String
-  ServiceCenter   ServiceCenter   @relation(fields: [serviceCenterID], references: [id])
-  History         ClientHistroy[]
+model ClientServeHistory {
+  id                           String                      @id @unique @default(cuid())
+  nameCenterorPrison           String?
+  DateTimeServed               DateTime
+  Client_PersonalInformationID String
+  Client_PersonalInformation   Client_PersonalInformation? @relation(fields: [Client_PersonalInformationID], references: [id])
+}
+
+model ClientProgress {
+  id                           String                      @id @unique @default(cuid())
+  NoteDateTime                 DateTime
+  Details                      String
+  Client_PersonalInformationID String
+  Client_PersonalInformation   Client_PersonalInformation? @relation(fields: [Client_PersonalInformationID], references: [id])
 }
