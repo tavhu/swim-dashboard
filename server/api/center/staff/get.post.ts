@@ -32,7 +32,6 @@ export default eventHandler(async (event) => {
               gender: true,
               position: true,
               telephone: true,
-              email: true,
               serviceCenterID: true,
               ServiceCenter: {
                 select: {

@@ -4,7 +4,7 @@ export default eventHandler(async (event) => {
   const session = await getServerSession(event);
   const body = await readBody(event);
 
-  // console.log(body)
+  console.log(body);
 
   if (!session) {
     return { status: "unauthenticated" };
@@ -17,7 +17,9 @@ export default eventHandler(async (event) => {
       },
       update: {
         photo: body?.photo,
-        workingPeroid: body?.workingPeroid,
+        fullnameEN: body?.fullnameEN,
+        workingPeroidStart: body?.workingPeroidStart,
+        workingContractAt: body?.workingContractAt,
         attachedContract: body?.attachedContract,
         attachedBackground: body?.attachedBackground,
         attachedFileInfomation: body?.attachedFileInfomation,
@@ -39,7 +41,6 @@ export default eventHandler(async (event) => {
         gender: body?.gender,
         position: body?.position,
         telephone: body?.telephone,
-        email: body?.email,
         familyAddress: body?.familyAddress,
         familyPhoneNumber: body?.familyPhoneNumber,
         familyEmail: body?.familyEmail,
@@ -47,7 +48,9 @@ export default eventHandler(async (event) => {
       },
       create: {
         photo: body?.photo,
-        workingPeroid: body?.workingPeroid,
+        fullnameEN: body?.fullnameEN,
+        workingPeroidStart: body?.workingPeroidStart,
+        workingContractAt: body?.workingContractAt,
         attachedContract: body?.attachedContract,
         attachedBackground: body?.attachedBackground,
         attachedFileInfomation: body?.attachedFileInfomation,
@@ -69,7 +72,6 @@ export default eventHandler(async (event) => {
         gender: body?.gender,
         position: body?.position,
         telephone: body?.telephone,
-        email: body?.email,
         familyAddress: body?.familyAddress,
         familyPhoneNumber: body?.familyPhoneNumber,
         familyEmail: body?.familyEmail,

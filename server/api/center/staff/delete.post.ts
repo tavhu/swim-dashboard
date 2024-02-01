@@ -11,11 +11,17 @@ export default eventHandler(async (event) => {
   }
 
   try {
-    await event.context.prisma.staff.delete({
-      where: {
-        id: body?.id,
-      },
-    });
+    (await body?.typeEmployee) === "Contract"
+      ? event.context.prisma.staff.delete({
+          where: {
+            id: body?.id,
+          },
+        })
+      : event.context.prisma.governStaff.delete({
+          where: {
+            id: body?.id,
+          },
+        });
     //@ts-ignore
     setResponseStatus(event, 201);
     return { message: "delete success" };

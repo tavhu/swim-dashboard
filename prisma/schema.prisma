@@ -98,32 +98,32 @@ model VerificationToken {
 }
 
 model ServiceCenter {
-  id             String        @id @default(cuid())
-  nameKH         String
-  nameEN         String
-  createdAt      DateTime      @default(now())
-  logo           String
-  type           String
-  directorName   String
-  phoneNumber    String
-  PoBox          String
-  email          String
-  website        String
-  locationMap    String
-  Address        String?
-  overview       String?
-  background     String?
-  mission        String?
-  vision         String?
-  goal           String?
-  ProjectSummary String?
-  status         Boolean
-  City           String?
-  District       String?
-  client         Client[]
-  staff          Staff[]
-  governStaff    governStaff[]
-  systemUser     User[]
+  id                         String                       @id @default(cuid())
+  nameKH                     String
+  nameEN                     String
+  createdAt                  DateTime                     @default(now())
+  logo                       String
+  type                       String
+  directorName               String
+  phoneNumber                String
+  PoBox                      String
+  email                      String
+  website                    String
+  locationMap                String
+  Address                    String?
+  overview                   String?
+  background                 String?
+  mission                    String?
+  vision                     String?
+  goal                       String?
+  ProjectSummary             String?
+  status                     Boolean
+  City                       String?
+  District                   String?
+  Client_PersonalInformation Client_PersonalInformation[]
+  staff                      Staff[]
+  governStaff                governStaff[]
+  systemUser                 User[]
 }
 
 model Staff {
@@ -148,14 +148,14 @@ model Staff {
   gender                 String
   position               String
   telephone              String
-  email                  String
   familyAddress          String
   familyPhoneNumber      String
   familyEmail            String
-  workingPeroid          String? //មន្ត្រីកិច្ចសន្យា
+  workingPeroidStart     DateTime //មន្ត្រីកិច្ចសន្យា
+  workingContractAt      String?
   attachedContract       String? //មន្ត្រីកិច្ចសន្យា
-  attachedBackground     String? // ប្រវត្តិរូបមានរូបថត៤x៦ //មន្ត្រីកិច្ចសន្យា
-  attachedFileInfomation String //ព្រឹត្តិប័ត្រព័ត៌មានសម្រាប់ស្នើសុំមន្ត្រីកិច្ចសន្យា
+  attachedBackground     String? //ប្រវត្តិរូបមានរូបថត៤x៦ //មន្ត្រីកិច្ចសន្យា
+  attachedFileInfomation String? //ព្រឹត្តិប័ត្រព័ត៌មានសម្រាប់ស្នើសុំមន្ត្រីកិច្ចសន្យា
   serviceCenterID        String?
   ServiceCenter          ServiceCenter? @relation(fields: [serviceCenterID], references: [id])
 }
@@ -182,14 +182,14 @@ model governStaff {
   sIDValidEnd                                 DateTime
   physical                                    String
   familyInfo                                  String
-  spouseNameKH                                String
-  spuseNameEN                                 String
-  spouseDateOfBirth                           DateTime
-  spouseSID                                   String
-  spouseBirthAddress                          String
-  spouseCurrentOccupation                     String
-  spouseOrganisationName                      String
-  spuseCurrentAddress                         String
+  spouseNameKH                                String?
+  spuseNameEN                                 String?
+  spouseDateOfBirth                           DateTime?
+  spouseSID                                   String?
+  spouseBirthAddress                          String?
+  spouseCurrentOccupation                     String?
+  spouseOrganisationName                      String?
+  spuseCurrentAddress                         String?
   fatherFullNameKH                            String
   FatherOccupation                            String
   fatherBrithAddress                          String
@@ -345,29 +345,51 @@ model governStaffFineHistory {
   TypeRecieved         String
 }
 
-model Client {
-  id              String          @id @unique @default(cuid())
-  title           String
-  firstname       String?
-  lastname        String
-  nameEN          String?
-  sID             String?
-  phoneNumber     String?
-  image           String?
-  address         String?
-  city            String?
-  district        String?
+model Client_PersonalInformation {
+  id                    String    @id @unique @default(cuid())
+  fullNameKH            String
+  nickName              String
+  ReadableCode          String
+  Gender                String
+  DOB                   DateTime?
+  POB                   String
+  EducationLevel        String?
+  Occupation            String?
+  DateArrested          String? //កាលបរិចេ្ឆទចូលមជ្ឈមណ្ឌលឬឃាត់ខ្លួន
+  homeBA                String
+  StreetBA              String
+  villageBA             String
+  districtBA            String
+  commuteBA             String
+  cityProBA             String
+  FatherOrChaperoneName String?
+  FOCDOB                DateTime?
+  FOCMarried            String?
+  FOCTelandAddress      String?
+  MotherOrChaperoneName String?
+  MOCMarried            String?
+  MOCDOB                DateTime?
+  MOCTelandAddress      String?
+  OtherFamilyMembers    String?
+  CloseFriend           String?
+  ClientSendBy          String
+  ImportantChallenge    String
+  PastActivities        String
+  ReasonUseDrug         String
+  KnownLegalConsequence Boolean
+  typeDrugUsed          String
+  DrugVolumeUsed        String
+  DrugRequecyUse        String
+  DrugDurationUse       String
+  LivingSituation       String
+  UsedtoRehab           Boolean
+  nameCenterorPrison    String? //Array
+  DateTimeServed        DateTime? //Array
+  HowManyTimeHaveServed String?
+  ReasonComingtoCenter  String?
+
   status          Boolean         @default(true)
   serviceCenterID String
   ServiceCenter   ServiceCenter   @relation(fields: [serviceCenterID], references: [id])
   History         ClientHistroy[]
-}
-
-model ClientHistroy {
-  id          String   @id @unique @default(cuid())
-  noteDetails String
-  createdAt   DateTime @default(now())
-  editedAt    DateTime
-  clientID    String
-  Client      Client   @relation(fields: [clientID], references: [id])
 }

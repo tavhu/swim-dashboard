@@ -133,7 +133,7 @@ const fetchData = async () => {
     total: number;
     data: DatatableData[];
 }> (
-  '/api/center/staff/get' ,      
+  '/api/center/staff/get',      
       {
         body : JSON.stringify(({
         limit: data.value.limit.toString(),
@@ -143,7 +143,7 @@ const fetchData = async () => {
         sortBy: data.value.sortBy,         
         serviceCenterID : true,
         typeEmployee : 'Contract'
-      })) ,
+      })),
         method : 'post'
       }
   );
@@ -271,7 +271,7 @@ const openRegisterForm = (typeEmployees : string)=>{
         <template  #row="{ column, data }">
           <template v-if="column.field === 'name'">      
             <div class="flex justify-center">
-                {{  data.lastName }} {{  data.firstName }} ភេទ {{ data.gender}}       
+                {{  data.lastName }} {{  data.firstName }}      
             </div>    
           </template>
           <template v-if="column.field === 'description'" >
@@ -312,7 +312,6 @@ const openRegisterForm = (typeEmployees : string)=>{
         </template>
       </TwDatatableServer>
     </div>
-
      <div class="mt-5">      
         <div class="flex justify-between">
               <h2 class=" text-md  lg:text-2xl font-[Moul] text-primary">បញ្ចីមន្ត្រីរាជការ</h2>                        
@@ -376,7 +375,6 @@ const openRegisterForm = (typeEmployees : string)=>{
           </template>
         </TwDatatableServer>
       </div>
-
     <CenterStaffCanvasForm @canvasIsOpen="updateTable"  :typeEmployee="typeEmployee" :readOnly="readOnly" :id="editID" :openisTrue="openisTrue"  :serviceCenterID="null" :key="openisKey"/>   
   </div>
 </template>

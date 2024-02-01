@@ -38,13 +38,9 @@ import { string } from 'zod'
     
     const openisTrues = ref()
     const formRulesEdit = {   
-    // firstName : ['string' , 'required'],
-    // lastName : ['string' , 'required'],
-    // gender : ['string'],
-    // position : ['string'],
-    // telephone : ['string'],
-    // email : ['string', 'email'],
-    // serviceCenterID : ['string','required'],
+    firstName : ['string' , 'required'],
+    lastName : ['string' , 'required'],
+    serviceCenterID : ['string','required'],
     }
 
     const formNameEdit = "centerStaffForm";
@@ -53,7 +49,9 @@ import { string } from 'zod'
     } = reactive({       
     id : prop.id ? prop.id : 'asdf' ,
     photo : '',
-    workingPeroid : '',
+    fullnameEN  : '',
+    workingPeroidStart : '',
+    workingContractAt : '',
     attachedContract : '',
     attachedBackground : '',
     attachedFileInfomation : '',
@@ -75,7 +73,6 @@ import { string } from 'zod'
     gender : '',
     position : '',
     telephone : '',
-    email : '',
     familyAddress : '',
     familyPhoneNumber : '',
     familyEmail : '',
@@ -92,7 +89,9 @@ import { string } from 'zod'
     const clearEdit = () => {
       formDataEdit.id   =  null 
       formDataEdit.photo  = null
-      formDataEdit.workingPeroid  = null
+      formDataEdit.fullnameEN = null
+      formDataEdit.workingPeroidStart  = null
+      formDataEdit.workingContractAt = null
       formDataEdit.attachedContract  = null
       formDataEdit.attachedBackground  = null
       formDataEdit.attachedFileInfomation  = null
@@ -114,7 +113,6 @@ import { string } from 'zod'
       formDataEdit.gender  = null
       formDataEdit.position  = null
       formDataEdit.telephone  = null
-      formDataEdit.email  = null
       formDataEdit.familyAddress  = null
       formDataEdit.familyPhoneNumber  = null
       formDataEdit.familyEmail  = null
@@ -141,12 +139,23 @@ import { string } from 'zod'
     return true;
   }
 
+  const oldImageURL = formDataEdit.photo
+  let image: any
+  image = await handleImageUpload()
+  if (image) {
+    formDataEdit.photo = image[0]
+    //delete old profile from server storage
+    await useFetch('/api/deleteFile', { method: 'POST', body: JSON.stringify({ imgURL: oldImageURL }) })
+  }
+
   const { error } = await useFetch('/api/center/staff/upsert', {
     method: "POST",
     body: JSON.stringify({
       id : formDataEdit.id,
       photo : formDataEdit.photo,
-      workingPeroid : formDataEdit.workingPeroid,
+      fullnameEN : formDataEdit.fullnameEN,
+      workingPeroidStart : formDataEdit.workingPeroidStart,
+      workingContractAt : formDataEdit.workingContractAt,
       attachedContract : formDataEdit.attachedContract,
       attachedBackground : formDataEdit.attachedBackground,
       attachedFileInfomation : formDataEdit.attachedFileInfomation,
@@ -163,12 +172,11 @@ import { string } from 'zod'
       currentDistrict : formDataEdit.currentDistrict,
       sID : formDataEdit.sID,
       passport : formDataEdit.passport,
-      workingEXP : formDataEdit.workingEXP,
+      workingEXP : SelectWorkEXP.value,
       workingEXPYes : formDataEdit.workingEXPYes,
       gender : formDataEdit.gender,
       position : formDataEdit.position,
       telephone : formDataEdit.telephone,
-      email : formDataEdit.email,
       familyAddress : formDataEdit.familyAddress,
       familyPhoneNumber : formDataEdit.familyPhoneNumber,
       familyEmail : formDataEdit.familyEmail,
@@ -209,6 +217,16 @@ import { string } from 'zod'
         value : ele.id
       })
     })
+    const SelectWorkEXP = ref(true)
+    const WorkEXP = [{
+        value: false,
+        label: 'មិនធ្លាប់',
+      },
+      {
+        value: true,
+        label: 'ធ្លាប់',
+      },
+      ]
 
     if(prop.id && prop.typeEmployee === 'Contract'){
       const { data } = await useFetch<{ data: Staff, error: '', status: '' }>('/api/center/staff/getSingleStaff', { method : 'POST' , body : JSON.stringify({ id : prop.id ,
@@ -216,8 +234,9 @@ import { string } from 'zod'
       })})
 
       formDataEdit.id = data.value?.data?.id
+      formDataEdit.fullnameEN = data.value?.data?.fullnameEN
       formDataEdit.photo = data?.value?.data.photo 
-      formDataEdit.workingPeroid = data?.value?.data.workingPeroid 
+      formDataEdit.workingPeroidStart = data?.value?.data.workingPeroidStart 
       formDataEdit.attachedContract = data?.value?.data.attachedContract 
       formDataEdit.attachedBackground = data?.value?.data.attachedBackground 
       formDataEdit.attachedFileInfomation = data?.value?.data.attachedFileInfomation 
@@ -235,11 +254,11 @@ import { string } from 'zod'
       formDataEdit.sID = data?.value?.data.sID 
       formDataEdit.passport = data?.value?.data.passport 
       formDataEdit.workingEXP = data?.value?.data.workingEXP 
+      SelectWorkEXP.value = data?.value?.data.workingEXP ? data?.value?.data.workingEXP : true
       formDataEdit.workingEXPYes = data?.value?.data.workingEXPYes 
       formDataEdit.gender = data?.value?.data.gender 
       formDataEdit.position = data?.value?.data.position 
       formDataEdit.telephone = data?.value?.data.telephone 
-      formDataEdit.email = data?.value?.data.email 
       formDataEdit.familyAddress = data?.value?.data.familyAddress 
       formDataEdit.familyPhoneNumber = data?.value?.data.familyPhoneNumber 
       formDataEdit.familyEmail = data?.value?.data.familyEmail 
@@ -273,6 +292,16 @@ import { string } from 'zod'
         label : 'មិនដូចអាសយដ្ឋានបច្ចុប្បន្ន' ,
       },
     ]
+
+    const SIDOption = [{
+        value: 'SID',
+        label: 'លេខអត្តសញ្ញាណប័ណ្ណខ្មែរ',
+      },
+      {
+        value: 'Passport',
+        label: 'លិខិតឆ្លងដែន',
+      },
+      ]
       const FamilyInformation = [{
         value  : 'single',
         label : 'នៅលីវ' ,
@@ -286,7 +315,9 @@ import { string } from 'zod'
         label : 'មេម៉ាយ/ពោះម៉ាយ' ,
       },
     ]
+
   
+    const SelectSIDOption = ref('SID')
     const selectedAddressOption = ref(' ') 
     const selected = ref(prop.typeEmployee)
     const childrenDetails = ref(Array({
@@ -519,7 +550,6 @@ import { string } from 'zod'
         
       }
 
-
     const clearEditOfficial = () => {
       formDataEditOfficial.id   =  null 
       formDataEditOfficial.photo = null
@@ -723,14 +753,14 @@ import { string } from 'zod'
         <URadio class="font-[battambang] inline-flex ml-5 font-medium" v-for="method of optionsss" :key="method.value" v-model="selected" v-bind="method" />      
       </div>        
       <div class="p-4 overflow-auto font-[battambang]">        
-        <div v-if="selected == optionsss[0].value">         
+        <div v-if="selected !== 'Contract'">         
           <div class="text-center">
-            <h2 class="font-semibold">
+            <h2 class=" font-[Moul]">
             ជីវប្រវត្តិមន្ត្រីរាជការ
            </h2>
           </div>
           <div>
-            <h2 class="font-bold">
+            <h2 class=" font-[Moul]">
               ក.ព័ត៌មានផ្ទាល់ខ្លួន
             </h2>
             <TwForm
@@ -883,7 +913,7 @@ import { string } from 'zod'
             <div class="col-span-12" >
               <label class="font-bold">អាសយដ្ឋានអចិន្ត្រៃយ៍</label>
               <URadio class="font-[battambang] inline-flex ml-5 font-medium" v-for="methods of AddressOption" :key="methods.value" v-model="selectedAddressOption" v-bind="methods" />      
-            </div>  
+            </div>
             <div class="col-span-12 lg:col-span-6 ">
               <TwInput             
                 name="permanentAddress"
@@ -999,11 +1029,11 @@ import { string } from 'zod'
             </div>  
             <hr>
             <div class="col-span-12" >
-                <label class="font-bold">ខ - ព័ត៌មានគ្រួសារ</label>
+                <label class="font-bold font-[Moul]">ខ - ព័ត៌មានគ្រួសារ</label>
                 <URadio class="font-[battambang] inline-flex ml-5 font-medium" v-for="methods of FamilyInformation" :key="methods.value" v-model="formDataEditOfficial.familyInfo" v-bind="methods" />      
               </div> 
             <div class="col-span-12">
-              <label for="" class="font-bold"> ខ.១-ព័ត៌មានប្រពន្ធឬប្តី</label>
+              <label for="" class="font-[Moul]"> ខ.១-ព័ត៌មានប្រពន្ធឬប្តី</label>
             </div>
             <div class="col-span-12 lg:col-span-6 ">
               <TwInput             
@@ -1047,7 +1077,6 @@ import { string } from 'zod'
                   ]"
                   position="left"
                   :maxDate="new Date()"
-                  required
                   :enableTimePicker="false"></Datepicker>
               <CustomErrorMessage name="spouseDateOfBirth" />
             </div>
@@ -1161,7 +1190,7 @@ import { string } from 'zod'
             </div>
           
             <div class="col-span-12">
-              <label class="font-bold"> ខ.៣- ព័ត៌មានឪពុក និងម្តាយបង្កើត</label>
+              <label class=" font-[Moul]"> ខ.៣- ព័ត៌មានឪពុក និងម្តាយបង្កើត</label>
             </div>
             <div class="col-span-12 lg:col-span-6 ">
               <TwInput             
@@ -1224,7 +1253,7 @@ import { string } from 'zod'
               <CustomErrorMessage name="MotherOcupation" />
             </div>
             <div class="col-span-12">
-              <label class="font-bold"> គ-ព័ត៌មានទំនាក់ទំនងក្នុងករណីមានអាសន្ន </label>
+              <label class=" font-[Moul]"> គ-ព័ត៌មានទំនាក់ទំនងក្នុងករណីមានអាសន្ន </label>
             </div>
             <div class="col-span-12 lg:col-span-6 ">
               <TwInput             
@@ -1298,7 +1327,7 @@ import { string } from 'zod'
               <CustomErrorMessage name="ECTelehpone" />
             </div>
             <div class="col-span-12">
-              <label for="" class="font-semibold"> ឃ-កំរិតវប្បធម៌ទូទៅ​ ការបណ្តុះបណ្តាលមុខវិជ្ជាជីវៈ​ និងការបណ្តុះបណ្តាលបន្ត</label>
+              <label for="" class=" font-[Moul]"> ឃ-កំរិតវប្បធម៌ទូទៅ​ ការបណ្តុះបណ្តាលមុខវិជ្ជាជីវៈ​ និងការបណ្តុះបណ្តាលបន្ត</label>
             </div>
             <div class="col-span-12 grid  grid-cols-1 lg:grid-cols-4 gap-2 " v-for="(item,index) in EducationDetails" :key="index">
               <div>
@@ -1402,7 +1431,7 @@ import { string } from 'zod'
                 })" > បន្ថែមព័ត៌មាន  </UButton>
                   <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4" @click="EducationDetails.pop()" > លុបព័ត៌មានកូន </UButton>
             </div>
-            <div class="col-span-12">
+            <div class="col-span-12 font-[Moul]">
               <label for=""> ង-ភាសារបរទេស(សូមបំពេញនូវកម្រិតចំណេះដឹងភាសាបរទេស​)</label>
             </div>
             <div class="col-span-12 grid grid-cols-1 lg:grid-cols-4 gap-2" v-for="(item, index) in governStaffLanuage" :key="index" >
@@ -1454,7 +1483,7 @@ import { string } from 'zod'
                   <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4" @click="governStaffLanuage.pop()" > លុបព័ត៌មានកូន </UButton>
             </div>
             <div class="col-span-12">
-              <label class="font-bold"> ច-ប្រវត្តិការងារ</label>
+              <label class=" font-[Moul]"> ច-ប្រវត្តិការងារ</label>
             </div>
             <div class="col-span-12 lg:col-span-6 ">
               <label for="">ថ្ងៃខែឆ្នាំចូលបម្រើក្របខ័ណ្ឌរដ្ឋ</label>
@@ -1514,10 +1543,10 @@ import { string } from 'zod'
               />
               <CustomErrorMessage name="OfficialLevelKH" />
             </div>
-            <div class="col-span-12">
+            <div class="col-span-12 font-[Moul]">
               <label for=""> ច.១-មុខតំណែង(សូមបំពេញ​ ពីថ្មីទៅចាស់) </label>
             </div>
-            <div class="col-span-12">
+            <div class="col-span-12 font-[Moul]">
                 <label for=""> ច.១.១-ក្នុងវិស័យសាធារណៈ </label>
             </div>
             <div class="col-span-12 grid grid-cols-1 lg:grid-cols-5 gap-2" v-for="(item, index) in governStaffWorkingHistoryPublic" :key="index" >
@@ -1602,7 +1631,7 @@ import { string } from 'zod'
                   })" > បន្ថែមព័ត៌មាន  </UButton>
                     <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4" @click="governStaffWorkingHistoryPublic.pop()" > លុបព័ត៌មាន </UButton>
               </div>
-            <div class="col-span-12">
+            <div class="col-span-12 font-[Moul]">
                 <label for=""> ច.១.២-ក្នុងវិស័យឯកជន </label>
             </div>
             <div class="col-span-12 grid grid-cols-1 lg:grid-cols-4 gap-2" v-for="(item, index) in governStaffWorkingHistoryPrivate" :key="index" >
@@ -1679,7 +1708,7 @@ import { string } from 'zod'
                     <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4" @click="governStaffWorkingHistoryPrivate.pop()" > លុបព័ត៌មានកូន </UButton>
               </div>
                <div class="col-span-12">
-                  <label class="font-bold"> ច.២-ការដំឡើងឋានន្តរស័ក្តិ និងថ្នាក់តាមវេនជ្រើសរើស អតីតភាព ប្តូរប្រភេទក្របខណ្ឌ និងនិយ័តកម្មថ្នាក់ (សូមបំពេញតាមលំដាប់ ពីថ្មីទៅចាស់) </label>
+                  <label class=" font-[Moul]"> ច.២-ការដំឡើងឋានន្តរស័ក្តិ និងថ្នាក់តាមវេនជ្រើសរើស អតីតភាព ប្តូរប្រភេទក្របខណ្ឌ និងនិយ័តកម្មថ្នាក់ (សូមបំពេញតាមលំដាប់ ពីថ្មីទៅចាស់) </label>
               </div>
               <div class="col-span-12 grid grid-cols-1 lg:grid-cols-3 gap-2" v-for="(item, index) in governStaffPositionHistory" :key="index" >
                 <div>
@@ -1762,7 +1791,7 @@ import { string } from 'zod'
                       <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4" @click="governStaffPositionHistory.pop()" > លុបព័ត៌មានកូន </UButton>
                 </div>
                  <div class="col-span-12">
-                    <label class="font-bold"> ច.៣-ការដំឡើងឋានន្តរស័ក្តិ និងថ្នាក់តាមសញ្ញាបត្រ(សូមបំពេញតាមលំដាប់ ពីថ្មីទៅចាស់)</label>
+                    <label class=" font-[Moul]"> ច.៣-ការដំឡើងឋានន្តរស័ក្តិ និងថ្នាក់តាមសញ្ញាបត្រ(សូមបំពេញតាមលំដាប់ ពីថ្មីទៅចាស់)</label>
                 </div>
                 <div class="col-span-12 grid grid-cols-1 lg:grid-cols-3 gap-2" v-for="(item, index) in governStaffCertificateLevelup" :key="index" >
                   <div>
@@ -1836,7 +1865,7 @@ import { string } from 'zod'
                         <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4" @click="governStaffCertificateLevelup.pop()" > លុបព័ត៌មានកូន </UButton>
                   </div>
                   <div class="col-span-12">
-                      <label class="font-bold"> ច.៤-ស្ថានភាពស្ថិតនៅក្រៅក្របខ័ណ្ឌដើម (សូមបំពេញតាមលំដាប់ ពីថ្មីទៅចាស់)</label>
+                      <label class=" font-[Moul]"> ច.៤-ស្ថានភាពស្ថិតនៅក្រៅក្របខ័ណ្ឌដើម (សូមបំពេញតាមលំដាប់ ពីថ្មីទៅចាស់)</label>
                   </div>
                   <div class="col-span-12 grid grid-cols-1 lg:grid-cols-3 gap-2" v-for="(item, index) in governStaffSituationOutsideOriginalOfficial" :key="index" >
                      <div>
@@ -1902,7 +1931,7 @@ import { string } from 'zod'
                           <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4" @click="governStaffSituationOutsideOriginalOfficial.pop()" > លុបព័ត៌មានកូន </UButton>
                     </div>
                   <div class="col-span-12">
-                      <label class="font-bold">ច.៥-ស្ថានភាពស្ថិតនៅក្នុងភាពទំនេរគ្មានបៀវត្ស (សូមបំពេញតាមលំដាប់ ពីថ្មីទៅចាស់)</label>
+                      <label class=" font-[Moul]">ច.៥-ស្ថានភាពស្ថិតនៅក្នុងភាពទំនេរគ្មានបៀវត្ស (សូមបំពេញតាមលំដាប់ ពីថ្មីទៅចាស់)</label>
                   </div>
                   <div class="col-span-12 grid grid-cols-1 lg:grid-cols-4 gap-2" v-for="(item, index) in GovernStaffFreeNoSalary" :key="index" >
                      <div>
@@ -1968,10 +1997,10 @@ import { string } from 'zod'
                           <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4" @click="GovernStaffFreeNoSalary.pop()" > លុបព័ត៌មានកូន </UButton>
                     </div>
                     <div class="col-span-12">
-                        <label class="font-bold">ឆ-ការលើសរសើរ ឬដាក់វិន័យ</label>
+                        <label class=" font-[Moul]">ឆ-ការលើសរសើរ ឬដាក់វិន័យ</label>
                     </div>
                     <div class="col-span-12">
-                        <label class="font-bold">ឆ.១-ការលើសរសើរ (គ្រឿងឥស្សរិយយស មេដាយ ប័ណ្ឌសរសើរ)</label>
+                        <label class=" font-[Moul]">ឆ.១-ការលើសរសើរ (គ្រឿងឥស្សរិយយស មេដាយ ប័ណ្ឌសរសើរ)</label>
                     </div>
                     <div class="col-span-12 grid  grid-cols-1 lg:grid-cols-3 gap-1" v-for="(item,index) in GovernStaffLetterAppreciation" :key="index">
                      <div>
@@ -2036,7 +2065,7 @@ import { string } from 'zod'
                             <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4" @click="GovernStaffLetterAppreciation.pop()" > លុបព័ត៌មានកូន </UButton>
                       </div>
                     <div class="col-span-12">
-                        <label class="font-bold"> ឆ.២-ការដាក់វិន័យ</label>
+                        <label class=" font-[Moul]"> ឆ.២-ការដាក់វិន័យ</label>
                     </div>
                     <div class="col-span-12 grid  grid-cols-1 lg:grid-cols-3 gap-1" v-for="(item,index) in governStaffFineHistory" :key="index">
                       <div>
@@ -2120,6 +2149,14 @@ import { string } from 'zod'
         </div>
 
         <div v-else>
+          <div class="text-center">
+              <h2 class="font-[Moul]">
+              ជីវប្រវត្តិសង្ខេប
+             </h2>
+            </div>
+             <h2 class="font-[Moul]">
+              ក.ព័ត៌មានផ្ទាល់ខ្លួន
+            </h2>
           <TwForm
             :name="formNameEdit"
             class="grid grid-cols-12 gap-2 bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded-lg p-2 shadow"
@@ -2177,7 +2214,7 @@ import { string } from 'zod'
               />
               <CustomErrorMessage name="lastName" />
             </div>  
-            <div class="col-span-3 " >
+            <div class="col-span-12 lg:col-span-3 " >
                 <TwSelect                           
                   label="ភេទ"
                   name="gender"            
@@ -2208,16 +2245,6 @@ import { string } from 'zod'
               />
               <CustomErrorMessage name="lastName" />
             </div>   
-            <div class="col-span-12 lg:col-span-6 ">
-              <TwInput
-                label="សញ្ជាតិ"
-                name="lastName"
-                v-model="formDataEdit.nationality"
-                placeholder="បញ្ចូលនាមត្រកូល"
-                type="text"
-              />
-              <CustomErrorMessage name="lastName" />
-            </div>  
              <div class="col-span-12 lg:col-span-6">
               <label for="">ខែឆ្នាំកំណើត</label>
                 <Datepicker
@@ -2246,37 +2273,114 @@ import { string } from 'zod'
                   />
                   <CustomErrorMessage name="lastName" />
                 </div>  
+                 <div class="col-span-12 lg:col-span-6">
+                  <label for="">ខែឆ្នាំកំណើត</label>
+                    <Datepicker
+                        v-model="formDataEdit.workingPeroidStart"
+                        :dayNames="[
+                          'Mo',
+                          'Tu',
+                          'We',
+                          'Th',
+                          'Fr',
+                          'Sa',
+                          'Su',
+                        ]"
+                        position="left"
+                        :maxDate="new Date()"
+                        required
+                        :enableTimePicker="false"></Datepicker>
+                </div>  
              <div class="col-span-12 ">
                 <TwInput
                   label="ទីកន្លែងកំណើត"
                   name="lastName"
                   v-model="formDataEdit.birthAddress"
-                  placeholder="បញ្ចូលនាមត្រកូល"
+                  placeholder="# ផ្លូវ ភូមិ ឃុំ/សង្កាត់ ស្រុក/ខណ្ឌ រាជធានី/ខេត្ត"
                   type="text"
                 />
                 <CustomErrorMessage name="lastName" />
               </div>  
-             <div class="col-span-12 ">
+              <div class="col-span-12" >
+                <label class="font-bold">លេខអត្តសញ្ញាណប័ណ្ណខ្មែរ ឬលិខិតឆ្លងដែន</label>
+                <URadio class="font-[battambang] inline-flex ml-5 font-medium" v-for="methods of SIDOption" :key="methods.value" v-model="SelectSIDOption" v-bind="methods" />      
+              </div>
+              <div class="col-span-12 lg:col-span-6"  v-if="SelectSIDOption == SIDOption[0].value">
                 <TwInput
                   label="លេខអត្តសញ្ញាណប័ណ្ណខ្មែរ"
                   name="lastName"
                   v-model="formDataEdit.sID"
-                  placeholder="បញ្ចូលនាមត្រកូល"
+                  placeholder="លេខអត្តសញ្ញាណប័ណ្ណខ្មែរ"
                   type="text"
                 />
                 <CustomErrorMessage name="lastName" />
               </div>  
-             <div class="col-span-12 ">
+             <div class="col-span-12 lg:col-span-6" v-else>
                 <TwInput
                   label="លិខិតឆ្លងដែន"
                   name="lastName"
                   v-model="formDataEdit.passport"
-                  placeholder="បញ្ចូលនាមត្រកូល"
+                  placeholder="លិខិតឆ្លងដែន"
+                  type="text"
+                />
+                <CustomErrorMessage name="lastName" />
+              </div>
+              <div class="col-span-12 ">
+                <TwInput
+                  label="ចូលបម្រើការងារជាបុគ្គលិកកិច្ចសន្យានៅ"
+                  name="lastName"
+                  v-model="formDataEdit.workingContractAt"
+                  placeholder="ចូលបម្រើការងារជាបុគ្គលិកកិច្ចសន្យានៅ"
                   type="text"
                 />
                 <CustomErrorMessage name="lastName" />
               </div>  
-
+              <div class="col-span-12" >
+                  <label class="font-[Moul]">បទពិសោធន៍ការងារ៖</label>
+                  <URadio class="font-[battambang] inline-flex ml-5 font-medium" v-for="(methods,index) of WorkEXP" :key="index" v-model="SelectWorkEXP" v-bind="methods" />      
+                </div>
+                <div class="col-span-12 lg:col-span-6" v-if="SelectWorkEXP == true">
+                  <TwInput
+                    label="បំពេញការងារជាមន្រ្តីជាប់កិច្ចសន្យានៅ"
+                    name="lastName"
+                    v-model="formDataEdit.workingEXPYes"
+                    placeholder="បំពេញការងារជាមន្រ្តីជាប់កិច្ចសន្យានៅ"
+                    type="text"
+                  />
+                  <CustomErrorMessage name="lastName" />
+                </div>
+                <div class="col-span-12">
+                   <h2 class="font-[Moul]">
+                      ខ.ព័ត៌មានគ្រួសារ
+                  </h2>
+                </div> 
+                 <div class="col-span-12 lg:col-span-6" >
+                    <TwInput
+                      label="អាសយដ្ឋានបច្ចុប្បន្ន"
+                      name="lastName"
+                      v-model="formDataEdit.familyAddress"
+                      placeholder="# ផ្លូវ ភូមិ ឃុំ/សង្កាត់ ស្រុក/ខណ្ឌ រាជធានី/ខេត្ត"
+                      type="text"
+                    />
+                  </div>
+                 <div class="col-span-12 lg:col-span-6" >
+                    <TwInput
+                      label="លេខទូរស័ព្ទ"
+                      name="lastName"
+                      v-model="formDataEdit.familyPhoneNumber"
+                      placeholder="លេខទូរស័ព្ទ"
+                      type="text"
+                    />
+                  </div>
+                 <div class="col-span-12 lg:col-span-6" >
+                    <TwInput
+                      label="អ៊ីម៉ែល"
+                      name="lastName"
+                      v-model="formDataEdit.familyAddress"
+                      placeholder="អ៊ីម៉ែល"
+                      type="text"
+                    />
+                  </div>
 
             <div class="col-span-12  flex justify-end gap-1">
               <UButton
