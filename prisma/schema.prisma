@@ -367,11 +367,13 @@ model Client_PersonalInformation {
   cityProBA                  String
   FatherOrChaperoneName      String?
   FOCDOB                     DateTime?
+  FOCTel                     String?
   FOCMarried                 String?
   FOCTelandAddress           String?
   MotherOrChaperoneName      String?
   MOCMarried                 String?
   MOCDOB                     DateTime?
+  MOCTel                     String?
   MOCTelandAddress           String?
   OtherFamilyMembers         String?
   CloseFriend                String?
@@ -379,8 +381,10 @@ model Client_PersonalInformation {
   ImportantChallenge         String
   PastActivities             String
   ReasonUseDrug              String
+  ReasonUseDrugOther         String?
   KnownLegalConsequence      Boolean
   typeDrugUsed               String
+  typeDrugUsedOther          String?
   DrugVolumeUsed             String
   DrugRequecyUse             String
   DrugDurationUse            String
@@ -401,6 +405,7 @@ model Client_PersonalInformation {
   FuturePlanforClientDetails String?
   ClientFeelsHopless         Boolean
   ClientHoplessDetails       String? //Options
+  ClientHopelessMultiple     String[]
   InterviewerOpinoin         String?
   InterviewerID              String
   InterviewerisGovernStaff   Boolean
