@@ -127,38 +127,37 @@ model ServiceCenter {
 }
 
 model Staff {
-  id                         String                       @id @default(cuid())
-  photo                      String
-  firstName                  String
-  lastName                   String
-  fullnameEN                 String?
-  nationality                String
-  dateofbirth                String
-  birthAddress               String
-  brithCity                  String?
-  birthDistrict              String?
-  currentAddress             String?
-  currentQualification       String?
-  currentCity                String?
-  currentDistrict            String?
-  sID                        String?
-  passport                   String?
-  workingEXP                 Boolean //កិច្ចសន្យា
-  workingEXPYes              String?
-  gender                     String
-  position                   String
-  telephone                  String
-  familyAddress              String
-  familyPhoneNumber          String
-  familyEmail                String
-  workingPeroidStart         DateTime //មន្ត្រីកិច្ចសន្យា
-  workingContractAt          String?
-  attachedContract           String? //មន្ត្រីកិច្ចសន្យា
-  attachedBackground         String? //ប្រវត្តិរូបមានរូបថត៤x៦ //មន្ត្រីកិច្ចសន្យា
-  attachedFileInfomation     String? //ព្រឹត្តិប័ត្រព័ត៌មានសម្រាប់ស្នើសុំមន្ត្រីកិច្ចសន្យា
-  serviceCenterID            String?
-  ServiceCenter              ServiceCenter?               @relation(fields: [serviceCenterID], references: [id])
-  Client_PersonalInformation Client_PersonalInformation[]
+  id                     String         @id @default(cuid())
+  photo                  String
+  firstName              String
+  lastName               String
+  fullnameEN             String?
+  nationality            String
+  dateofbirth            String
+  birthAddress           String
+  brithCity              String?
+  birthDistrict          String?
+  currentAddress         String?
+  currentQualification   String?
+  currentCity            String?
+  currentDistrict        String?
+  sID                    String?
+  passport               String?
+  workingEXP             Boolean //កិច្ចសន្យា
+  workingEXPYes          String?
+  gender                 String
+  position               String
+  telephone              String
+  familyAddress          String
+  familyPhoneNumber      String
+  familyEmail            String
+  workingPeroidStart     DateTime //មន្ត្រីកិច្ចសន្យា
+  workingContractAt      String?
+  attachedContract       String? //មន្ត្រីកិច្ចសន្យា
+  attachedBackground     String? //ប្រវត្តិរូបមានរូបថត៤x៦ //មន្ត្រីកិច្ចសន្យា
+  attachedFileInfomation String? //ព្រឹត្តិប័ត្រព័ត៌មានសម្រាប់ស្នើសុំមន្ត្រីកិច្ចសន្យា
+  serviceCenterID        String?
+  ServiceCenter          ServiceCenter? @relation(fields: [serviceCenterID], references: [id])
 }
 
 model governStaff {
@@ -221,7 +220,6 @@ model governStaff {
   governStaffFineHistory                      governStaffFineHistory[]
   ServiceCenter                               ServiceCenter?                                @relation(fields: [serviceCenterID], references: [id])
   governStaffWorkingHistoryPrivate            governStaffWorkingHistoryPrivate[]
-  Client_PersonalInformation                  Client_PersonalInformation[]
 }
 
 model governStaffChildren {
@@ -348,8 +346,9 @@ model governStaffFineHistory {
 }
 
 model Client_PersonalInformation {
-  id                         String               @id @unique @default(cuid())
+  id                         String                   @id @unique @default(cuid())
   fullNameKH                 String
+  photo                      String?
   nickName                   String
   ReadableCode               String
   IdentifyCode               String
@@ -405,21 +404,26 @@ model Client_PersonalInformation {
   FuturePlanforClientDetails String?
   ClientFeelsHopless         Boolean
   ClientHoplessDetails       String? //Options
-  ClientHopelessMultiple     String[]
   InterviewerOpinoin         String?
   InterviewerID              String
-  InterviewerisGovernStaff   Boolean
-  status                     Boolean              @default(true)
+  status                     Boolean                  @default(true)
   InterViewDate              DateTime
   InterViewerSignature       String?
-  governStaffID              String?
-  StaffID                    String?
+  InterviewerPosition        String?
   serviceCenterID            String
-  Staff                      Staff?               @relation(fields: [StaffID], references: [id])
-  governStaff                governStaff?         @relation(fields: [governStaffID], references: [id])
-  ServiceCenter              ServiceCenter        @relation(fields: [serviceCenterID], references: [id])
+  ServiceCenter              ServiceCenter            @relation(fields: [serviceCenterID], references: [id])
   ClientProgress             ClientProgress[]
   ClientServeHistory         ClientServeHistory[]
+  ClientHopelessMultiple     ClientHopelessMultiple[]
+}
+
+model ClientHopelessMultiple {
+  id                           String                      @id @unique @default(cuid())
+  value                        String
+  label                        String
+  check                        Boolean
+  Client_PersonalInformation   Client_PersonalInformation? @relation(fields: [client_PersonalInformationId], references: [id])
+  client_PersonalInformationId String?
 }
 
 model ClientServeHistory {
