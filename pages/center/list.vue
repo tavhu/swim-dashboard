@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import {   
+import {
   useToast,
   type DatatableColumn,
   type DatatableData,
   type DropdownItem,
-  TwDatatableServer,  
+  TwDatatableServer,
 } from "vue3-tailwind";
 
 const readOnly = checkIfPageReadOnly()
-const { data  : userDataAuth } = useAuth()
+const { data: userDataAuth } = useAuth()
 const toast = useToast();
 useHead({
   title: "បញ្ចីមណ្ឌល",
@@ -17,12 +17,12 @@ useHead({
 
 const data = ref({
   column: [
-  // {
-  //     label: "ល.រ",
-  //     field: "number",
-  //     width: "50px",
-  //     sortable: false,
-  //   },
+    // {
+    //     label: "ល.រ",
+    //     field: "number",
+    //     width: "50px",
+    //     sortable: false,
+    //   },
     {
       label: "រូបថត",
       field: "logo",
@@ -40,7 +40,7 @@ const data = ref({
       field: "nameEN",
       width: "300px",
       sortable: false,
-    },    
+    },
     {
       label: "ស្ថានភាពមណ្ឌល",
       field: "status",
@@ -91,32 +91,33 @@ const globalData: any = ref();
 const config = useRuntimeConfig()
 // const datareturn :any = ref()
 const fetchData = async () => {
- 
-  const   { data : response}  = await useFetch<{
+
+  const { data: response } = await useFetch<{
     total: number;
     data: DatatableData[];
-}>(
-    '/api/center/get'     
-     ,
-      { body: JSON.stringify({
+  }>(
+    '/api/center/get'
+    ,
+    {
+      body: JSON.stringify({
         limit: data.value.limit.toString(),
         skip: data.value.offset.toString(),
         q: data.value.search.toString(),
         sortType: data.value.sortType,
         sortBy: data.value.sortBy,
-      }) 
-        ,
-        method : 'post'              
-      },      
+      })
+      ,
+      method: 'post'
+    },
   )
- 
+
   globalData.value = {
-    totalData: response.value?.total  , // response["total"],
-    data: response.value?.data  , // response["data"],   
+    totalData: response.value?.total, // response["total"],
+    data: response.value?.data, // response["data"],   
   };
   return {
-    totalData: response?.value?.total ? response?.value?.total : 0 , // response["total"],
-    data: response?.value?.data  ?  response?.value?.data : [] , // response["data"],  
+    totalData: response?.value?.total ? response?.value?.total : 0, // response["total"],
+    data: response?.value?.data ? response?.value?.data : [], // response["data"],  
   }
 }
 
@@ -133,7 +134,7 @@ const sortClick = (event: any) => {
 };
 
 const deleteRecord = async (id: string) => {
-  if(readOnly) return;
+  if (readOnly) return;
   if (!(await confirmDialog())) return;
 
   const { error } = await useFetch("/api/center/delete", {
@@ -143,7 +144,7 @@ const deleteRecord = async (id: string) => {
     }),
   })
 
-  if (error.value?.statusCode){
+  if (error.value?.statusCode) {
     toast.error({
       message: "មិនជោគជ័យ",
     });
@@ -156,14 +157,16 @@ const deleteRecord = async (id: string) => {
   data.value.limit === 10 ? (data.value.limit = 5) : (data.value.limit = 10);
 };
 
-const {data : roleData  } = await useFetch("/api/role/get",{ method : 'get' , query : {
-  //@ts-ignore
-  userID : userDataAuth.value?.sub }
+const { data: roleData } = await useFetch("/api/role/get", {
+  method: 'get', query: {
+    //@ts-ignore
+    userID: userDataAuth.value?.sub
+  }
 })
-const roleDataFormat : DropdownItem [] = new Array({ label : '', value: ''})
+const roleDataFormat: DropdownItem[] = new Array({ label: '', value: '' })
 roleDataFormat.pop()
 //@ts-ignored
-roleData.value?.data?.forEach((ele : any) => {  
+roleData.value?.data?.forEach((ele: any) => {
   roleDataFormat.push(
     {
       label: ele?.name,
@@ -175,37 +178,31 @@ roleData.value?.data?.forEach((ele : any) => {
 const openisTrue = ref(false)
 const openisKey = ref(0)
 const editID = ref(null)
-const serviceCenterID  = ref('')
+const serviceCenterID = ref('')
 
-const addStaff = (CenterID : string)=>{
+const addStaff = (CenterID: string) => {
   serviceCenterID.value = CenterID
   openisTrue.value = true
-  openisKey.value ++ 
+  openisKey.value++
 
 }
+
 </script>
 <template>
-  <div class="font-[Battambang]">   
+  <div class="font-[Battambang]">
     <div class="mt-5">
-        <div class="flex justify-between">
-            <h2 class="text-2xl font-[Moul] text-primary">បញ្ចីមណ្ឌល</h2>         
-                <NuxtLink :to="config.public.origin + '/center'" :disabled="readOnly" >
-                    <UButton  color="primary"  size="xl" :disabled="readOnly">
-                      <h2 class="text-xl font-[Moul]"> បង្កើតមណ្ឌល </h2>
-                    </UButton>
-                </NuxtLink>                   
-        </div>      
-      <hr class="my-2 border dark:border-gray-700" />      
-      <TwDatatableServer
-        v-bind:fetch-data="fetchData"
-        v-model:search="data.search"
-        v-model:limit="data.limit"
-        v-model:offset="data.offset"       
-        v-model:sort-by="data.sortBy"
-        v-model:sort-type="data.sortType"
-        :column="data.column"     
-        @on-sort-change="sortClick"
-      >
+      <div class="flex justify-between">
+        <h2 class="text-2xl font-[Moul] text-primary">បញ្ចីមណ្ឌល</h2>
+        <NuxtLink :to="config.public.origin + '/center'" :disabled="readOnly">
+          <UButton color="primary" size="xl" :disabled="readOnly">
+            <h2 class="text-xl font-[Moul]"> បង្កើតមណ្ឌល </h2>
+          </UButton>
+        </NuxtLink>
+      </div>
+      <hr class="my-2 border dark:border-gray-700" />
+      <TwDatatableServer v-bind:fetch-data="fetchData" v-model:search="data.search" v-model:limit="data.limit"
+        v-model:offset="data.offset" v-model:sort-by="data.sortBy" v-model:sort-type="data.sortType" :column="data.column"
+        @on-sort-change="sortClick">
         <template #row="{ index, column, data }">
           <!-- <template v-if="column.field === 'number'">
             <div class="flex justify-center">       
@@ -214,12 +211,13 @@ const addStaff = (CenterID : string)=>{
           </template> -->
           <template v-if="column.field === 'logo'">
             <div class="flex justify-center">
-              <img :src="config.public.origin + '/' + data.logo" alt="" class="w-12 h-12 rounded-full border border-[#1d152a7a]">
+              <img :src="config.public.origin + '/' + data.logo" alt=""
+                class="w-12 h-12 rounded-full border border-[#1d152a7a]">
             </div>
           </template>
           <template v-if="column.field === 'nameKH'">
             <div class="flex justify-center">
-              {{ data.nameKH }} 
+              {{ data.nameKH }}
             </div>
           </template>
           <template v-if="column.field === 'nameEN'">
@@ -229,30 +227,27 @@ const addStaff = (CenterID : string)=>{
           </template>
           <template v-if="column.field === 'status'">
             <div class="flex justify-center">
-              <span v-if="data.status" class="text-blue-700 dark:text-white">  ដំណើការ </span>
+              <span v-if="data.status" class="text-blue-700 dark:text-white"> ដំណើការ </span>
               <span v-else class="text-red-700"> បិទដំណើការ </span>
             </div>
-          </template>         
+          </template>
           <template v-if="column.field === 'action'">
             <div class="flex gap-2 justify-center">
-              <UButton color="blue" icon="i-heroicons-users" @click="addStaff(data.id)"  :disabled="readOnly">
+              <UButton color="blue" icon="i-heroicons-users" @click="addStaff(data.id)" :disabled="readOnly">
                 ចុះឈ្មោះបុគ្គលិកមណ្ឌល
               </UButton>
-              <NuxtLink
-              :to="config.public.origin + '/center/id/' + data.id "
-              >
-                <UButton color="primary"  icon="i-heroicons-pencil-square" class="border"  :disabled="readOnly">
-                        មើលព័ត៌មានលំអិត
+              <NuxtLink :to="config.public.origin + '/center/id/' + data.id">
+                <UButton color="primary" icon="i-heroicons-pencil-square" class="border" :disabled="readOnly">
+                  មើលព័ត៌មានលំអិត
                 </UButton>
               </NuxtLink>
-              <NuxtLink                     
-                :to="config.public.origin + '/center?id='  + data.id"  :disabled="readOnly"               >               
-                <UButton color="primary"  icon="i-heroicons-pencil-square" class="border"  :disabled="readOnly">
-                      កែសម្រួល
+              <NuxtLink :to="config.public.origin + '/center?id=' + data.id" :disabled="readOnly">
+                <UButton color="primary" icon="i-heroicons-pencil-square" class="border" :disabled="readOnly">
+                  កែសម្រួល
                 </UButton>
               </NuxtLink>
 
-              <UButton color="red" icon="i-heroicons-trash" @click="deleteRecord(data.id)"  :disabled="readOnly">
+              <UButton color="red" icon="i-heroicons-trash" @click="deleteRecord(data.id)" :disabled="readOnly">
                 លុបចេញ
               </UButton>
             </div>
@@ -265,7 +260,7 @@ const addStaff = (CenterID : string)=>{
         </template>
       </TwDatatableServer>
     </div>
-    <CenterStaffCanvasForm  :readOnly="readOnly" :id="null" :openisTrue="openisTrue"  :serviceCenterID="serviceCenterID" :key="openisKey"/>
+    <CenterStaffCanvasForm :readOnly="readOnly" :id="null" :openisTrue="openisTrue" :serviceCenterID="serviceCenterID"
+      :key="openisKey" />
   </div>
-  
 </template>

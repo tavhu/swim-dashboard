@@ -193,7 +193,7 @@ export default [
     submenu: [
       {
         isTitle: false,
-        name: "បញ្ចី",
+        name: "បញ្ជី",
         url: "/contact/list",
         icon: "",
         submenu: [],
@@ -208,7 +208,7 @@ export default [
     submenu: [
       {
         isTitle: false,
-        name: "បញ្ចី",
+        name: "បញ្ជី",
         url: "/register/account",
         icon: "",
         submenu: [],
@@ -237,7 +237,7 @@ export default [
     submenu: [
       {
         isTitle: false,
-        name: "បញ្ចី",
+        name: "បញ្ជី",
         url: "/center/list",
         icon: "",
         submenu: [],
@@ -256,6 +256,20 @@ export default [
         icon: "",
         submenu: [],
       },
+      {
+        isTitle: false,
+        name: "ផែនការមជ្ឈមណ្ឌល",
+        url: "/center/plan",
+        icon: "",
+        submenu: [],
+      },
+      {
+        isTitle: false,
+        name: "ឯកសារកាលប្បវត្តិ",
+        url: "/centerdocumentation",
+        icon: "",
+        submenu: [],
+      },
     ],
   },
   {
@@ -264,6 +278,13 @@ export default [
     url: "",
     icon: "users",
     submenu: [
+      {
+        isTitle: false,
+        name: "បញ្ជី",
+        url: "/client",
+        icon: "",
+        submenu: [],
+      },
       {
         isTitle: false,
         name: "ចុះឈ្មោះ",

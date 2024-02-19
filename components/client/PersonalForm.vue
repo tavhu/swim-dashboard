@@ -440,10 +440,6 @@ const LivingSituationOption = ref(Array({
         label: 'តំបន់ចោរកម្ម',
     },
     {
-        value: 'wealthy',
-        label: 'តំបន់អ្នកមាន',
-    },
-    {
         value: 'frequentviolent',
         label: 'តបន់អំពើហឹង្សាញឹកញាប់',
     },
@@ -456,8 +452,12 @@ const LivingSituationOption = ref(Array({
         label: 'តំបន់ប្រើប្រាស់គ្រឿងញៀន',
     },
     {
+        value: 'wealthy',
+        label: 'តំបន់អ្នកមាន',
+    },
+    {
         value: 'PoorArea',
-        label: 'តំបន់អ្នកក្រ',
+        label: 'តំបន់ក្រីក្រ',
     }
 ))
 
@@ -1114,7 +1114,6 @@ const districtBAPick = () => {
                         </ClientOnly>
                     </div>
                 </div>
-
                 <div class="col-span-12 flex justify-end gap-1 ">
                     <UButton :disabled="readOnly" color="gray" type="button" square size="lg"
                         class="px-4 dark:text-gray-200 dark:!border-gray-800 dark:border" @click="clear()">

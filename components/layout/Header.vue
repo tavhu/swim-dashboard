@@ -24,11 +24,14 @@ const config = useRuntimeConfig()
       <div>
         <NuxtLink to="/" class="flex items-center align-middle font-[moul] gap-3 nowrap text-sm md:text-xl ">
           <img src="/Logo.png" alt="" class="w-10 h-10 md:h-[4.3rem] md:w-[4.3rem] rounded-full  ">
-          <span class="dark:text-white text-blue-900 "> ប្រព័ន្ទគ្រប់គ្រង<span class="text-primary">សុខុមាលភាពសង្គម
+          <span class="dark:text-white text-blue-900 "> ប្រព័ន្ធគ្រប់គ្រងព័ត៌មាន<span class="text-primary">សុខុមាលភាពសង្គម
             </span> </span>
         </NuxtLink>
       </div>
-      <button class="block md:hidden float-right" @click="sidebarStore.mobileOpen = !sidebarStore.mobileOpen">
+
+      <button class="block md:hidden float-right" @click="
+        //@ts-ignore
+        sidebarStore.mobileOpen = !sidebarStore.mobileOpen">
         <div class="-rotate-90">
           <TwFeather type="bar-chart-2"></TwFeather>
         </div>

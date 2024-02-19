@@ -402,7 +402,7 @@ model Client_PersonalInformation {
   HopeForClientFuture        String?
   FuturePlanforClient        String? //options
   FuturePlanforClientDetails String?
-  ClientFeelsHopless         Boolean
+  ClientFeelsHopless         Boolean                  @default(false)
   ClientHoplessDetails       String? //Options
   InterviewerOpinoin         String?
   InterviewerID              String

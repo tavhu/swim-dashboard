@@ -9,6 +9,7 @@ export default eventHandler(async (event) => {
   if (!session) {
     return { status: "unauthenticated" };
   }
+  console.log(body);
 
   try {
     const totalCount =
