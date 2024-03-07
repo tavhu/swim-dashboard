@@ -581,7 +581,7 @@ const districtBAPick = () => {
 
     }
 }
-</script> 
+</script>
 <template>
     <div>
         <div v-if="saving" class="loader"></div>
@@ -596,11 +596,11 @@ const districtBAPick = () => {
             <TwForm :name="formName"
                 class="grid grid-cols-12 gap-2 bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded-lg p-2 shadow"
                 :class="{
-                    'tw-shake': isError,
-                }" :rules="formRules" @submit="submit" :custom-field-name="{
-    roleName: 'ឈ្មោះតួនាទី',
-    roleDescription: 'ពិពណ៌នាតួនាទី',
-}">
+            'tw-shake': isError,
+        }" :rules="formRules" @submit="submit" :custom-field-name="{
+            roleName: 'ឈ្មោះតួនាទី',
+            roleDescription: 'ពិពណ៌នាតួនាទី',
+        }">
                 <div class="col-span-12 flex justify-start  gap-3 mb-5">
                     <TwFeather type="file-text" />
                     <h1 class="text-lg"> ព័ត៌មានលំអិត </h1>
@@ -610,13 +610,14 @@ const districtBAPick = () => {
                         userProfile }}
                 </div> -->
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput label="លេខសំគាល់" name="ReadableCode" v-model="formData.ReadableCode" placeholder="លេខសំគាល់"
-                        type="text" />
+                    <TwInput label="លេខសំគាល់" name="ReadableCode" v-model="formData.ReadableCode"
+                        placeholder="លេខសំគាល់" type="text" />
                     <CustomErrorMessage name="ReadableCode" />
                 </div>
                 <div class="col-span-12">
                     <TwSelect label="មជ្ឈមណ្ឌលព្យាបាលនិងស្តារនីតិសម្បទា" name="serviceCenterID"
-                        v-model="formData.serviceCenterID" required :items="serviceCenterList" placeholder="សូមជ្រើសរើស" />
+                        v-model="formData.serviceCenterID" required :items="serviceCenterList"
+                        placeholder="សូមជ្រើសរើស" />
                     <CustomErrorMessage name="serviceCenterID" />
                 </div>
                 <div class="col-span-3">
@@ -661,14 +662,14 @@ const districtBAPick = () => {
                     <label for=""> ថ្ងៃខែឆ្នាំកំណើត </label>
                     <ClientOnly>
                         <Datepicker v-model="formData.DOB" :dayNames="[
-                            'Mo',
-                            'Tu',
-                            'We',
-                            'Th',
-                            'Fr',
-                            'Sa',
-                            'Su',
-                        ]" position="left" required :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
+            'Mo',
+            'Tu',
+            'We',
+            'Th',
+            'Fr',
+            'Sa',
+            'Su',
+        ]" position="left" required :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
                     </ClientOnly>
 
                     <CustomErrorMessage name="DateofBirth" />
@@ -689,8 +690,8 @@ const districtBAPick = () => {
                     <CustomErrorMessage name="Occupation" />
                 </div>
                 <div class="col-span-12">
-                    <TwInput label="កាលបរិច្ឆេទចូលមជ្ឈមណ្ឌលឬ ឃាត់ខ្លួន" name="DateArrested" v-model="formData.DateArrested"
-                        placeholder="កាលបរិច្ឆេទចូលមជ្ឈមណ្ឌលឬ ឃាត់ខ្លួន" type="text" />
+                    <TwInput label="កាលបរិច្ឆេទចូលមជ្ឈមណ្ឌលឬ ឃាត់ខ្លួន" name="DateArrested"
+                        v-model="formData.DateArrested" placeholder="កាលបរិច្ឆេទចូលមជ្ឈមណ្ឌលឬ ឃាត់ខ្លួន" type="text" />
                     <CustomErrorMessage name="DateArrested" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
@@ -719,7 +720,8 @@ const districtBAPick = () => {
                     </label>
                     <ClientOnly>
                         <USelect :disabled="readOnly" @change="districtBAPick()" name="districtBA" required
-                            v-model="formData.districtBA" :options="temCommuteList" placeholder="សូមជ្រើសរើស" size="lg" />
+                            v-model="formData.districtBA" :options="temCommuteList" placeholder="សូមជ្រើសរើស"
+                            size="lg" />
                     </ClientOnly>
                     <CustomErrorMessage name="districtBA" />
                 </div>
@@ -745,14 +747,14 @@ const districtBAPick = () => {
                     <label for=""> ថ្ងៃខែឆ្នាំកំណើត </label>
                     <ClientOnly>
                         <Datepicker v-model="formData.FOCDOB" :dayNames="[
-                            'Mo',
-                            'Tu',
-                            'We',
-                            'Th',
-                            'Fr',
-                            'Sa',
-                            'Su',
-                        ]" position="left" required :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
+            'Mo',
+            'Tu',
+            'We',
+            'Th',
+            'Fr',
+            'Sa',
+            'Su',
+        ]" position="left" required :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
                     </ClientOnly>
 
                     <CustomErrorMessage name="DateofBirth" />
@@ -761,26 +763,26 @@ const districtBAPick = () => {
                     <label for=""> ថ្ងៃខែឆ្នាំកំណើត </label>
                     <ClientOnly>
                         <Datepicker v-model="formData.MOCDOB" :dayNames="[
-                            'Mo',
-                            'Tu',
-                            'We',
-                            'Th',
-                            'Fr',
-                            'Sa',
-                            'Su',
-                        ]" position="left" required :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
+            'Mo',
+            'Tu',
+            'We',
+            'Th',
+            'Fr',
+            'Sa',
+            'Su',
+        ]" position="left" required :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
                     </ClientOnly>
 
                     <CustomErrorMessage name="DateofBirth" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput label="អាពាហ៍ពិពាហ៍" name="FOCMarried" v-model="formData.FOCMarried" placeholder="អាពាហ៍ពិពាហ៍"
-                        type="text" />
+                    <TwInput label="អាពាហ៍ពិពាហ៍" name="FOCMarried" v-model="formData.FOCMarried"
+                        placeholder="អាពាហ៍ពិពាហ៍" type="text" />
                     <CustomErrorMessage name="FOCMarried" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput label="អាពាហ៍ពិពាហ៍" name="MOCMarried" v-model="formData.MOCMarried" placeholder="អាពាហ៍ពិពាហ៍"
-                        type="text" />
+                    <TwInput label="អាពាហ៍ពិពាហ៍" name="MOCMarried" v-model="formData.MOCMarried"
+                        placeholder="អាពាហ៍ពិពាហ៍" type="text" />
                     <CustomErrorMessage name="MOCMarried" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
@@ -789,8 +791,8 @@ const districtBAPick = () => {
                     <CustomErrorMessage name="FOCTel" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput label="លេខទូរស័ព្ទ" name="FOCTelandAddress" v-model="formData.MOCTel" placeholder="លេខទូរស័ព្ទ"
-                        type="text" />
+                    <TwInput label="លេខទូរស័ព្ទ" name="FOCTelandAddress" v-model="formData.MOCTel"
+                        placeholder="លេខទូរស័ព្ទ" type="text" />
                     <CustomErrorMessage name="FOCTelandAddress" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
@@ -825,40 +827,40 @@ const districtBAPick = () => {
                     <CustomErrorMessage name="ClientSendBy" />
                 </div>
                 <div class="col-span-12 ">
-                    <TwInput label="២.បញ្ហាប្រឈមដោយសំខាន់ៗ" name="ImportantChallenge" v-model="formData.ImportantChallenge"
-                        placeholder="បញ្ហាប្រឈមដោយសំខាន់ៗ" type="text" />
+                    <TwInput label="២.បញ្ហាប្រឈមដោយសំខាន់ៗ" name="ImportantChallenge"
+                        v-model="formData.ImportantChallenge" placeholder="បញ្ហាប្រឈមដោយសំខាន់ៗ" type="text" />
                     <CustomErrorMessage name="ImportantChallenge" />
                 </div>
                 <div class="col-span-12 ">
-                    <TwInput label="៣.សកម្មភាពធ្លាប់បានប្រព្រឹត្ត" name="PastActivities" v-model="formData.PastActivities"
-                        placeholder="សកម្មភាពធ្លាប់បានប្រព្រឹត្ត" type="text" />
+                    <TwInput label="៣.សកម្មភាពធ្លាប់បានប្រព្រឹត្ត" name="PastActivities"
+                        v-model="formData.PastActivities" placeholder="សកម្មភាពធ្លាប់បានប្រព្រឹត្ត" type="text" />
                     <CustomErrorMessage name="PastActivities" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
                     <TwSelect label="ហេតុដែលនាំមានការប្រើប្រាស់គ្រឿងញៀន" name="ReasonUseDrug"
                         v-model="formData.ReasonUseDrug" required :items="[{ value: 'Fun', label: 'ដើម្បីសប្បាយ' }, { value: 'followFriend', label: 'ធ្វើតាមមិត្តភក្តិ' },
-                        { value: 'forceUse', label: 'មានគេបង្ខំ' }, { value: 'try', label: 'ចង់សាក' }, { value: 'familyBroken', label: 'បែកបាក់គ្រួសារ' },
-                        { value: 'other', label: 'មូលហេតុផ្សេង' }
-                        ]" placeholder="សូមជ្រើសរើស" />
+        { value: 'forceUse', label: 'មានគេបង្ខំ' }, { value: 'try', label: 'ចង់សាក' }, { value: 'familyBroken', label: 'បែកបាក់គ្រួសារ' },
+        { value: 'other', label: 'មូលហេតុផ្សេង' }
+        ]" placeholder="សូមជ្រើសរើស" />
                     <CustomErrorMessage name="ReasonUseDrug" />
                 </div>
                 <div v-if="formData.ReasonUseDrug == 'other'" class="col-span-12 lg:col-span-6">
-                    <TwInput label="មូលហេតុផ្សេង" name="ReasonUseDrugOther" required v-model="formData.ReasonUseDrugOther"
-                        placeholder="មូលហេតុផ្សេង" type="text" />
+                    <TwInput label="មូលហេតុផ្សេង" name="ReasonUseDrugOther" required
+                        v-model="formData.ReasonUseDrugOther" placeholder="មូលហេតុផ្សេង" type="text" />
                     <CustomErrorMessage name="ReasonUseDrugOther" />
                 </div>
                 <div class="col-span-12">
                     <label class="">តើអ្នកដឹងទេថា អំពើដែលអ្នកធ្វើជាអំពើដែលនាំមកនូវគ្រោះថ្នាក់និងខុសច្បាប់</label>
                     <URadio class="font-[battambang] inline-flex ml-5 font-medium"
-                        v-for="(methods, index) of LegalConsequence" :key="index" v-model="formData.KnownLegalConsequence"
-                        v-bind="methods" />
+                        v-for="(methods, index) of LegalConsequence" :key="index"
+                        v-model="formData.KnownLegalConsequence" v-bind="methods" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
                     <TwSelect label="ប្រភេទគ្រឿងញៀនធ្លាប់ប្រើប្រាស់" name="typeDrugUsed" v-model="formData.typeDrugUsed"
                         required :items="[{ value: 'SmileGlue', label: 'ហិតកាវ' }, { value: 'yama', label: 'យ៉ាមា-យ៉ាបា' },
-                        { value: 'heroin', label: 'ហេរ៉ូអុីន' }, { value: 'cocain', label: 'កូកាអុីន' }, { value: 'smoking', label: 'ជក់បារី' },
-                        { value: 'drinking', label: 'ផឹកស្រា' }, { value: 'other', label: 'ផ្សេង' }
-                        ]" placeholder="សូមជ្រើសរើស" />
+        { value: 'heroin', label: 'ហេរ៉ូអុីន' }, { value: 'cocain', label: 'កូកាអុីន' }, { value: 'smoking', label: 'ជក់បារី' },
+        { value: 'drinking', label: 'ផឹកស្រា' }, { value: 'other', label: 'ផ្សេង' }
+        ]" placeholder="សូមជ្រើសរើស" />
                     <CustomErrorMessage name="typeDrugUsed" />
                 </div>
                 <div v-if="formData.typeDrugUsed == 'other'" class="col-span-12 lg:col-span-6">
@@ -885,32 +887,34 @@ const districtBAPick = () => {
                 <div class="col-span-12">
                     <label class="text-lg">៥. បរិស្ថាននៃការរស់នៅ</label>
                     <URadio class="font-[battambang] inline-flex ml-5 font-medium"
-                        v-for="(methods, index) of LivingSituationOption" :key="index" v-model="formData.LivingSituation"
-                        v-bind="methods" />
+                        v-for="(methods, index) of LivingSituationOption" :key="index"
+                        v-model="formData.LivingSituation" v-bind="methods" />
                 </div>
                 <div class="col-span-12">
                     <h1 class="text-lg">៦. ការចូលមកស្នាក់នៅ</h1>
-                    <h1 class="text-lg"> តើអ្នកធ្លាប់បានរស់នៅក្នុងមជ្ឈមណ្ឌល ឬពន្ធនាគារណាខ្លះដែរឬទេ មុននឹងចូលមកមជ្ឈមណ្ឌលនេះ?
+                    <h1 class="text-lg"> តើអ្នកធ្លាប់បានរស់នៅក្នុងមជ្ឈមណ្ឌល ឬពន្ធនាគារណាខ្លះដែរឬទេ
+                        មុននឹងចូលមកមជ្ឈមណ្ឌលនេះ?
                     </h1>
                     <div class="col-span-12 grid  grid-cols-1 lg:grid-cols-3 gap-1  items-end "
                         v-for="(child, index) in ClientServeHistory" :key="index">
                         <div>
                             <TwInput label="ឈ្មោះមជ្ឈមណ្ឌល ឬពន្ធនាគារ៖" name="nameCenterorPrison" required
-                                v-model="child.nameCenterorPrison" placeholder="ឈ្មោះមជ្ឈមណ្ឌល ឬពន្ធនាគារ៖" type="text" />
+                                v-model="child.nameCenterorPrison" placeholder="ឈ្មោះមជ្ឈមណ្ឌល ឬពន្ធនាគារ៖"
+                                type="text" />
                             <CustomErrorMessage name="nameCenterorPrison" />
                         </div>
                         <div>
                             <label for="">ថ្ងៃខែ</label>
                             <ClientOnly>
                                 <Datepicker v-model="child.DateTimeServed" :dayNames="[
-                                    'Mo',
-                                    'Tu',
-                                    'We',
-                                    'Th',
-                                    'Fr',
-                                    'Sa',
-                                    'Su',
-                                ]" position="left" required :maxDate="new Date()" :enableTimePicker="false">
+            'Mo',
+            'Tu',
+            'We',
+            'Th',
+            'Fr',
+            'Sa',
+            'Su',
+        ]" position="left" required :maxDate="new Date()" :enableTimePicker="false">
                                 </Datepicker>
                             </ClientOnly>
                         </div>
@@ -923,14 +927,14 @@ const districtBAPick = () => {
                     </div>
                     <div class="col-span-12 mt-2">
                         <UButton color="primary" icon="i-heroicons-users" size="lg" class="px-4" @click="ClientServeHistory.push({
-                            nameCenterorPrison: '',
-                            DateTimeServed: '',
-                        })"> បន្ថែមព័ត៌មាន </UButton>
+            nameCenterorPrison: '',
+            DateTimeServed: '',
+        })"> បន្ថែមព័ត៌មាន </UButton>
                     </div>
                 </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput label="តើអ្នកចូលមករស់នៅក្នុងមជ្ឈមណ្ឌលនេះលើកទីប៉ុន្មាន?" name="HowManyTimeHaveServed" required
-                        v-model="formData.HowManyTimeHaveServed" placeholder="ចំនួន" type="text" />
+                    <TwInput label="តើអ្នកចូលមករស់នៅក្នុងមជ្ឈមណ្ឌលនេះលើកទីប៉ុន្មាន?" name="HowManyTimeHaveServed"
+                        required v-model="formData.HowManyTimeHaveServed" placeholder="ចំនួន" type="text" />
                     <CustomErrorMessage name="HowManyTimeHaveServed" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
@@ -965,8 +969,8 @@ const districtBAPick = () => {
                     <CustomErrorMessage name="RelationshipWithFriends" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput label="បុគ្គលិក" name="RelationshipWithStaff" required v-model="formData.RelationshipWithStaff"
-                        placeholder="" type="text" />
+                    <TwInput label="បុគ្គលិក" name="RelationshipWithStaff" required
+                        v-model="formData.RelationshipWithStaff" placeholder="" type="text" />
                     <CustomErrorMessage name="RelationshipWithStaff" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
@@ -981,8 +985,8 @@ const districtBAPick = () => {
                 </div>
                 <div class="col-span-12">
                     <TwTextarea label="៩.កង្វល់ និងការភ័យខ្លាចរបស់អតិថិជនទាក់ទងនឹងអនាគតរបស់ខ្លួន៖"
-                        name="ConcernForClientFuture" required class="h-[5rem]" v-model="formData.ConcernForClientFuture"
-                        placeholder="" type="text" />
+                        name="ConcernForClientFuture" required class="h-[5rem]"
+                        v-model="formData.ConcernForClientFuture" placeholder="" type="text" />
                     <CustomErrorMessage name="ConcernForClientFuture" />
                 </div>
                 <div class="col-span-12">
@@ -995,16 +999,16 @@ const districtBAPick = () => {
                 <div class="col-span-12 lg:col-span-6">
                     <TwSelect label="១១. ផែនការក្នុងអនាគតដែលបានស្នើឡើង៖" name="FuturePlanforClient"
                         v-model="formData.FuturePlanforClient" required :items="[
-                            { value: 'sentClientTo', label: 'បញ្ជូនអតិថិជនទៅ' }, { value: 'Educated', label: 'អប់រំ ឬបណ្តុះបណ្តាលវិជ្ជាជីវៈ៖' },
-                            { value: 'consultant', label: 'ផ្តល់ការពិគ្រោះបញ្ហា/ពិគ្រោះយោបល់៖' }, { value: 'sentToHospital', label: 'បញ្ចូនទៅសេវាព្យាបាល៖' },
-                            { value: 'other', label: 'ផែនការផ្សេងៗទៀត' },
+            { value: 'sentClientTo', label: 'បញ្ជូនអតិថិជនទៅ' }, { value: 'Educated', label: 'អប់រំ ឬបណ្តុះបណ្តាលវិជ្ជាជីវៈ៖' },
+            { value: 'consultant', label: 'ផ្តល់ការពិគ្រោះបញ្ហា/ពិគ្រោះយោបល់៖' }, { value: 'sentToHospital', label: 'បញ្ចូនទៅសេវាព្យាបាល៖' },
+            { value: 'other', label: 'ផែនការផ្សេងៗទៀត' },
 
-                        ]" placeholder="សូមជ្រើសរើស" />
+        ]" placeholder="សូមជ្រើសរើស" />
                     <CustomErrorMessage name="FuturePlanforClient" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput label="ផែនការក្នុងអនាគតដែលបានស្នើឡើង រៀបរាប់លំអិត" name="FuturePlanforClientDetails" required
-                        v-model="formData.FuturePlanforClientDetails" placeholder="រៀបរាប់លំអិត" type="text" />
+                    <TwInput label="ផែនការក្នុងអនាគតដែលបានស្នើឡើង រៀបរាប់លំអិត" name="FuturePlanforClientDetails"
+                        required v-model="formData.FuturePlanforClientDetails" placeholder="រៀបរាប់លំអិត" type="text" />
                     <CustomErrorMessage name="FuturePlanforClientDetails" />
                 </div>
                 <div class="col-span-12">
@@ -1013,8 +1017,8 @@ const districtBAPick = () => {
                 <div class="col-span-12 lg:col-span-6">
                     <label class="">អតិថិជនធ្លាក់ទឹកចិត្តខ្លាំង (ឧ.ចង់ធ្វើឃាត ប្រើជាតិពុល ប្រើគ្រឿងញៀន ។ល។)</label>
                     <URadio class="font-[battambang] inline-flex ml-5 font-medium"
-                        v-for="(methods, index) of ClientFeelsHopless" :key="index" v-model="formData.ClientFeelsHopless"
-                        v-bind="methods" />
+                        v-for="(methods, index) of ClientFeelsHopless" :key="index"
+                        v-model="formData.ClientFeelsHopless" v-bind="methods" />
                 </div>
                 <div v-if="formData.ClientFeelsHopless" class="col-span-12 lg:col-span-6">
                     <TwInput label="ពត៌មានបន្ថែម" name="ClientHoplessDetails" required
@@ -1043,20 +1047,21 @@ const districtBAPick = () => {
                         <label for="">កាលបរិច្ចេទ</label>
                         <ClientOnly>
                             <Datepicker v-model="child.NoteDateTime" :dayNames="[
-                                'Mo',
-                                'Tu',
-                                'We',
-                                'Th',
-                                'Fr',
-                                'Sa',
-                                'Su',
-                            ]" position="left" required :maxDate="new Date()" :enableTimePicker="false">
+            'Mo',
+            'Tu',
+            'We',
+            'Th',
+            'Fr',
+            'Sa',
+            'Su',
+        ]" position="left" required :maxDate="new Date()" :enableTimePicker="false">
                             </Datepicker>
                         </ClientOnly>
                     </div>
                     <div>
-                        <TwInput label="ការអភិវឌ្ឍន៍សំខាន់ៗ/សេវាដែលបានផ្តល់ឱ្យអតិថិជន" name="nameCenterorPrison" required
-                            v-model="child.Details" placeholder="ការអភិវឌ្ឍន៍សំខាន់ៗ/សេវាដែលបានផ្តល់" type="text" />
+                        <TwInput label="ការអភិវឌ្ឍន៍សំខាន់ៗ/សេវាដែលបានផ្តល់ឱ្យអតិថិជន" name="nameCenterorPrison"
+                            required v-model="child.Details" placeholder="ការអភិវឌ្ឍន៍សំខាន់ៗ/សេវាដែលបានផ្តល់"
+                            type="text" />
                         <CustomErrorMessage name="nameCenterorPrison" />
                     </div>
                     <div>
@@ -1068,24 +1073,24 @@ const districtBAPick = () => {
                 </div>
                 <div class="col-span-12 mt-2">
                     <UButton color="primary" icon="i-heroicons-users" size="lg" class="px-4" @click="ClientProgress.push({
-                        NoteDateTime: '',
-                        Details: '',
-                    })"> បន្ថែមព័ត៌មាន </UButton>
+            NoteDateTime: '',
+            Details: '',
+        })"> បន្ថែមព័ត៌មាន </UButton>
                 </div>
                 <ClientOnly>
                     <TwInput name="interviewID" v-model="formData.InterviewerID" :value="
-                        //@ts-ignored
-                        formData.InterviewerID ? formData.InterviewerID : token.id
-                        " placeholder="ហត្ថលេខា" class="hidden" type="text" />
+            //@ts-ignored
+            formData.InterviewerID ? formData.InterviewerID : token.id
+            " placeholder="ហត្ថលេខា" class="hidden" type="text" />
                 </ClientOnly>
                 <CustomErrorMessage name="interviewID" />
 
                 <div class="col-span-12 grid grid-cols-1 lg:grid-cols-2 gap-1  items-end">
                     <div>
                         ឈ្មោះមន្ត្រីឬបុគ្គលិកសង្គមកិច្ច៖ {{
-                            //@ts-ignored
-                            token.fullname
-                        }}
+            //@ts-ignored
+            token.fullname
+        }}
                     </div>
 
                     <div>
@@ -1094,22 +1099,22 @@ const districtBAPick = () => {
                         <CustomErrorMessage name="InterViewerSignature" />
                     </div>
                     <div>
-                        <TwInput label="តួនាទី" name="InterviewerPosition" required v-model="formData.InterviewerPosition"
-                            placeholder="តួនាទី" type="text" />
+                        <TwInput label="តួនាទី" name="InterviewerPosition" required
+                            v-model="formData.InterviewerPosition" placeholder="តួនាទី" type="text" />
                         <CustomErrorMessage name="InterviewerPosition" />
                     </div>
                     <div>
                         <label for="">កាលបរិច្ចេទ</label>
                         <ClientOnly>
                             <Datepicker v-model="formData.InterViewDate" :dayNames="[
-                                'Mo',
-                                'Tu',
-                                'We',
-                                'Th',
-                                'Fr',
-                                'Sa',
-                                'Su',
-                            ]" position="left" required :maxDate="new Date()" :enableTimePicker="false">
+            'Mo',
+            'Tu',
+            'We',
+            'Th',
+            'Fr',
+            'Sa',
+            'Su',
+        ]" position="left" required :maxDate="new Date()" :enableTimePicker="false">
                             </Datepicker>
                         </ClientOnly>
                     </div>
@@ -1119,7 +1124,8 @@ const districtBAPick = () => {
                         class="px-4 dark:text-gray-200 dark:!border-gray-800 dark:border" @click="clear()">
                         កំណត់ឡើងវិញ
                     </UButton>
-                    <UButton color="primary" type="submit" size="lg" class="px-4" :disabled="readOnly || saving"> រក្សាទុក
+                    <UButton color="primary" type="submit" size="lg" class="px-4" :disabled="readOnly || saving">
+                        រក្សាទុក
                     </UButton>
                 </div>
             </TwForm>
