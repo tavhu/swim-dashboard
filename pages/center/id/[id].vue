@@ -38,7 +38,7 @@
           <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 border-b pb-2 mb-4">
             Staff
           </h2>
-          <UTable :rows="serviceCenter.staff" :columns="staffColumns" />
+          <UTable :rows="staffData" :columns="staffColumns" />
         </div>
 
         <!-- Government Staff Table -->
@@ -46,7 +46,7 @@
           <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 border-b pb-2 mb-4">
             Government Staff
           </h2>
-          <UTable :rows="serviceCenter.governStaff" :columns="governStaffColumns" />
+          <UTable :rows="governStaffData" :columns="governStaffColumns" />
         </div>
       </div>
     </UCard>
@@ -58,7 +58,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 
 const route = useRoute();
@@ -80,6 +80,14 @@ const governStaffColumns = [
   { key: 'telephone', label: 'Phone' }
 ];
 
+const staffData = computed(() => 
+  serviceCenter.value?.staff?.map(s => ({ ...s, fullName: `${s.firstName} ${s.lastName}` })) || []
+);
+
+const governStaffData = computed(() => 
+  serviceCenter.value?.governStaff?.map(s => ({ ...s, fullNameKH: `${s.firstNameKH} ${s.lastNameKH}`, fullNameEN: `${s.firstNameEN} ${s.lastNameEN}` })) || []
+);
+
 onMounted(async () => {
     const id = route.params.id;
     try {
@@ -91,15 +99,7 @@ onMounted(async () => {
             body: JSON.stringify({ id }),
         });
         if (response.ok) {
-            const data = await response.json();
-            // Create computed properties for full names for UTable
-            if (data.staff) {
-              data.staff = data.staff.map(s => ({ ...s, fullName: `${s.firstName} ${s.lastName}` }));
-            }
-            if (data.governStaff) {
-              data.governStaff = data.governStaff.map(s => ({ ...s, fullNameKH: `${s.firstNameKH} ${s.lastNameKH}`, fullNameEN: `${s.firstNameEN} ${s.lastNameEN}`}));
-            }
-            serviceCenter.value = data;
+            serviceCenter.value = await response.json();
         } else {
             console.error('Failed to fetch service center data:', response.statusText);
         }
