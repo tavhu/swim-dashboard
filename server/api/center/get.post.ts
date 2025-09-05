@@ -1,49 +1,25 @@
-import { getServerSession } from "#auth";
+import { PrismaClient } from '@prisma/client';
 
-export default eventHandler(async (event) => {
-  const session = await getServerSession(event);
-  const body = await readBody(event);
+const prisma = new PrismaClient();
 
-  // console.log(body)
+export default defineEventHandler(async (event) => {
+    const { id } = await readBody(event);
 
-  if (!session) {
-    return { status: "unauthenticated" };
-  }
-
-  try {
-    const totalCount = await event.context.prisma.serviceCenter.count();
-    const data = body?.id
-      ? await event.context.prisma.serviceCenter.findFirst({
-          where: {
-            id: body?.id,
-          },
-        })
-      : await event.context.prisma.serviceCenter.findMany({
-          where: {
-            //@ts-ignored
-            id: session.serviceCenterID
-              ? session.serviceCenterID
-              : { not: "null" },
-          },
-          orderBy: {
-            id: "desc",
-          },
-          //@ts-ignore
-          take: body?.limit ? parseInt(body?.limit) : 1000,
-          //@ts-ignore
-          skip: body?.skip ? parseInt(body?.skip) : 0,
+    try {
+        const serviceCenter = await prisma.serviceCenter.findUnique({
+            where: {
+                id: id as string,
+            },
+            include: {
+                staff: true,
+                governStaff: true,
+                systemUser: true,
+                CenterPlan: true,
+            },
         });
-    // console.log(data)
-    //@ts-ignored
-    setResponseStatus(event, 201);
-    return body?.id
-      ? data
-      : { data: data, total: totalCount, error: "", status: "authenticated" };
-  } catch (e) {
-    //@ts-ignored
-    setResponseStatus(event, 412);
-    return {
-      error: e,
-    };
-  }
+        return serviceCenter;
+    } catch (error) {
+        console.error(error);
+        return { error: 'Failed to fetch service center data' };
+    }
 });
