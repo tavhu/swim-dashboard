@@ -3,23 +3,26 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 export default defineEventHandler(async (event) => {
-    const { id } = await readBody(event);
+    const body = await readBody(event);
+    const { page = 1, limit = 10, sortBy = 'nameEN', sortType = 'asc' } = body;
+
+    const skip = (page - 1) * limit;
 
     try {
-        const serviceCenter = await prisma.serviceCenter.findUnique({
-            where: {
-                id: id as string,
-            },
-            include: {
-                staff: true,
-                governStaff: true,
-                systemUser: true,
-                CenterPlan: true,
-            },
-        });
-        return serviceCenter;
+        const [data, total] = await prisma.$transaction([
+            prisma.serviceCenter.findMany({
+                skip,
+                take: limit,
+                orderBy: {
+                    [sortBy]: sortType,
+                },
+            }),
+            prisma.serviceCenter.count(),
+        ]);
+
+        return { data, total };
     } catch (error) {
         console.error(error);
-        return { error: 'Failed to fetch service center data' };
+        return { error: 'Failed to fetch service centers' };
     }
 });
