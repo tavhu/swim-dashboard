@@ -83,7 +83,7 @@ const governStaffColumns = [
 onMounted(async () => {
     const id = route.params.id;
     try {
-        const response = await fetch(`/api/center/getSingle.post`, {
+        const response = await fetch(`/api/center/getSingle`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
