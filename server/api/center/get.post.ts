@@ -4,7 +4,12 @@ const prisma = new PrismaClient();
 
 export default defineEventHandler(async (event) => {
     const body = await readBody(event);
-    const { page = 1, limit = 10, sortBy = 'nameEN', sortType = 'asc' } = body;
+
+    // Default values and parsing to integer
+    const page = body?.page ? parseInt(body.page) : 1;
+    const limit = body?.limit ? parseInt(body.limit) : 10;
+    const sortBy = body?.sortBy || 'nameEN';
+    const sortType = body?.sortType || 'asc';
 
     const skip = (page - 1) * limit;
 
