@@ -20,23 +20,22 @@ useHead({
     <h1 class="text-2xl font-bold">Dashboard</h1>
     <hr class="my-2 border dark:border-gray-700" />
     <div class="grid grid-cols-12 gap-2">
-      <!-- <div class="col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-3">
+       <div class="col-span-12 sm:col-span-6 md:col-span-4 lg:col-span-3">
         <div
           class="p-2 rounded-lg bg-white dark:bg-gray-800 shadow flex justify-between gap-2 h-full"
         >
           <div class="flex flex-col justify-between">
-            <div class="text-gray-500 dark:text-gray-400 font-medium">
-              Today's Money
+            <div class="text-gray-500 dark:text-gray-400 font-bold">
+              គណនីសរុប
             </div>
             <div class="text-gray-700 dark:text-gray-200 font-bold text-lg">
-              $53,000
-              <span class="text-sm text-yellow-600">+55%</span>
+              30
             </div>
           </div>
           <div
-            class="bg-gradient-to-tl from-gray-600 to-gray-900 rounded-lg text-white p-2 flex items-center justify-center px-4"
+            class="bg-gradient-to-tl from-blue-600 to-blue-900 rounded-lg text-white p-2 flex items-center justify-center px-4"
           >
-            <TwFeather type="dollar-sign"></TwFeather>
+            <TwFeather type="lock"></TwFeather>
           </div>
         </div>
       </div>
@@ -46,15 +45,15 @@ useHead({
         >
           <div class="flex flex-col justify-between">
             <div class="text-gray-500 dark:text-gray-400 font-medium">
-              Today's Users
+              អ្នកប្រើប្រាស់ថ្ងៃនេះ
             </div>
             <div class="text-gray-700 dark:text-gray-200 font-bold text-lg">
-              2,300
+              150
               <span class="text-sm text-yellow-600">+3%</span>
             </div>
           </div>
           <div
-            class="bg-gradient-to-tl from-gray-600 to-gray-900 rounded-lg text-white p-2 flex items-center justify-center px-4"
+            class="bg-gradient-to-tl from-green-600 to-green-900 rounded-lg text-white p-2 flex items-center justify-center px-4"
           >
             <TwFeather type="aperture"></TwFeather>
           </div>
@@ -66,7 +65,7 @@ useHead({
         >
           <div class="flex flex-col justify-between">
             <div class="text-gray-500 dark:text-gray-400 font-medium">
-              New Clients
+              ចំនួនអ្នកទទួលសេវា
             </div>
             <div class="text-gray-700 dark:text-gray-200 font-bold text-lg">
               +3,462
@@ -74,7 +73,7 @@ useHead({
             </div>
           </div>
           <div
-            class="bg-gradient-to-tl from-gray-600 to-gray-900 rounded-lg text-white p-2 flex items-center justify-center px-4"
+            class="bg-gradient-to-tl from-yellow-600 to-yellow-900 rounded-lg text-white p-2 flex items-center justify-center px-4"
           >
             <TwFeather type="users"></TwFeather>
           </div>
@@ -86,20 +85,29 @@ useHead({
         >
           <div class="flex flex-col justify-between">
             <div class="text-gray-500 dark:text-gray-400 font-medium">
-              Sales
+              មណ្ឌលសរុប
             </div>
             <div class="text-gray-700 dark:text-gray-200 font-bold text-lg">
-              $103,430
-              <span class="text-sm text-yellow-600">+5%</span>
+              13
+              <span class="text-sm text-yellow-600"></span>
             </div>
           </div>
           <div
             class="bg-gradient-to-tl from-gray-600 to-gray-900 rounded-lg text-white p-2 flex items-center justify-center px-4"
           >
-            <TwFeather type="shopping-cart"></TwFeather>
+            <TwFeather type="home"></TwFeather>
           </div>
         </div>
-      </div> -->
+      </div> 
+    </div>
+    <div class="grid grid-cols-12 gap-2 mt-2">
+      <div class="col-span-12 md:col-span-12">
+        <div class="flex gap-2 rounded-lg p-4 shadow bg-white dark:bg-gray-800">
+          <div class="flex flex-col justify-between">
+           <DashboardChart/>
+          </div>
+        </div>
+      </div>
     </div>
     <!-- <div class="grid grid-cols-12 gap-2 mt-2">
       <div class="col-span-12 md:col-span-7">
@@ -158,6 +166,6 @@ useHead({
           </div>
         </div>
       </div>
-    </div> -->
+    </div>  -->
   </div>
 </template>

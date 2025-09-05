@@ -41,7 +41,7 @@ watch(isDark, () => {
   <div id="dark-mode"  :class="isDark ? 'dark vt-dark' : ''">
     <TwToast position="top-right" :toasts="toasts" />
     <LayoutFloating />
-    <div class="px-0 md:px-3 lg:px-4" >
+    <div class="px-0 md:px-3 lg:px-4 font-[battambang]" >
       <slot />
     </div>
   </div>

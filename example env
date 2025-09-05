@@ -1,0 +1,40 @@
+GITHUB_CLIENT_ID="YOUR_GIHUB_APPLICATION_ID"
+GITHUB_CLIENT_SECRET="YOUR_GIHUB_APPLICATION_SECRET"
+NUXT_SECRET="YOUR_NUXT_SECRET"
+NUXT_ORIGIN="http://localhost:3000"
+CERTBOT_DOMAIN="YOUR_DOMAIN"
+CERTBOT_EMAIL="YOUR_ADMIN_EMAIL"
+NODE_ENV="development"
+
+EMAIL_USER="noreply.cbid@dac.gov.kh"
+EMAIL_PASSWORD="0ygojytQT1"
+EMAIL_HOST="mail.dac.gov.kh"
+
+RECAPTCHA_SERVER_SECRET_KEY="6LfSPg4pAAAAAFNTDkwfBjbG2ZITgi_03yTl9sG_"
+RECAPTCHA_CLIENT_SECRET_KEY="6LfSPg4pAAAAACOVjXEA_w-FNV4YfnXuxcLgCZiO"
+
+NUXT_FIREBASE_TYPE="service_account"
+NUXT_FIREBASE_PROJECT_ID="swim-dab91"
+NUXT_FIREBASE_PRIVATE_KEY_ID="a91cbba81d8a63a343dd0217fd33658136755eb1"
+NUXT_FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nMIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQC3RbqA26CNeJFB\nphAv14lpgT+OOXLMycRh27itemI0hUTTc1oZX6wrmT+D1es0D9RUzB2A1/al4kb4\n9zUManriqVzYO8FJrxMpiyzjp0jTh10iKfY0JU13fMcnLrJ6Jq6HoPXlqT6BG4Su\nitgJpQ2y9wqvrmWYMnqz168eGJGwye4GYaEtfkHONAUPLJmof+j0l3XC7igTxV85\nTmNTJBdhjzuruiq4ZLUOtkA+wBHFT8PXVCk5DHYweEx0tufnXfAyQ+AHS/xqBFoq\nWNx7JI06A/Y2gooMT5Cmpvup5cWH7ZczGhjjNzNl2qeLJNz8t+UHgTMNeghiYuJF\nYWq1DYutAgMBAAECggEAIc559bUNq6r22G5ChCC1F0IhMCIGvCHn2MlICrANl3SR\n2pNnplCQmMY/Ahmetk7JMw8nzhGITNctklU/ctfdbRwipTx4jhf+Z+ZlVGUSOPq6\nQkgNQ1cyL/1TWzXw9DlYbmpRkZijj/s8gVnZOgY5Pa72SKvZz7ZYDf6WLe4ISdzV\n4vy6MuODQlpp5a6XiyLrBpW30Sh7QAbUeqewF1jm7DVo2tM3CmqpLUfTBf6ivDRD\nupT8OdRr/FDlv9Ra3ZO0LXS6/GB1yRoSuwWRd0Aw0dAnpcSSpS4+dcCYt/XMasJO\nWBCTQwo736Ram/4lWa3iQH/UbH092x1K30xJWbBmAQKBgQDY5swRmd6Zuns822Kk\n3O2G4Q4ijfVjmfXxlNYF/dJ992YtpD56ar5bJ/fCSAfqDScWQEIdTkHCE8qFMDGx\n4ykDfh8uAGuO+X4uOfrEXf/F1wlT0q9pEiV9kOVpXkcTda8SQvObiFKjOsHcbxAj\nSjlzc+DuHLujI2TzwDofokn1LQKBgQDYTxHRvU3/aSzNMqf8Fel03sVEPOgSajkL\neus1epFlzkZXGoTnOKDKWT6EcpDAd50V4vN+ReDhCE9J2KrZAvzVeE0XJCzZZ81u\n8Ew2Ci1PuCv3HivZQiUVpbuBTNu9Iniah7CCfOQ0ekqS0NjKDI055Wg3oov9F/X9\nq3qr9I0AgQKBgQDYN2oh+ZLPB/gluERjN+CH3f0rMPv3J9jl04puOpIEBAUVZm7p\ntVLAp9zxDMDm7emS4seFUyd2AiiWEG7ZdyrBUo5eWwjdY5QHHMD/0vxPCYdAyfsV\n8ILy4uft249atKuqtpcE6iYGlWH/Da+2nh0bG96TPo1FmNjfqzXFpw+2mQKBgQCi\nKcUGJJGQ5Vx9CXj+d77pqwjgu3iQNapGfQRQt27Bj/8T1gHFBqMkj/taeDkk0Yem\nnNpG1ERe8Efg6NpMjvzVXLcOnkQxSKyuet/ns4F8vmnXfXsKCZibvf/wU5p5FJqt\n3wPpD5BV90hpAMFF2FsYCHA1JVslhw0X+7Kfr1r2AQKBgQDPy5novzfGK25SwJOw\nK8/87VaP6Ma2FcqqQIVi3SgsOUcpgPylYKqn/gWxa0wxmufmvZlrMAhmaySw+gKm\nIEddkoYM8yvuaVCV/nq94yaHznSaDy8MnYm64tqLVvYiECiV6GmSiip0QVH0XUEp\n0eYUfKSgFHjwujteGhlp3bDWng==\n-----END PRIVATE KEY-----\n"
+NUXT_FIREBASE_CLIENT_EMAIL="firebase-adminsdk-h7ttj@swim-dab91.iam.gserviceaccount.com"
+NUXT_FIREBASE_CLIENT_ID="107741644296442418200"
+NUXT_FIREBASE_AUTH_URI="https://accounts.google.com/o/oauth2/auth"
+NUXT_FIREBASE_TOKEN_URI="https://oauth2.googleapis.com/token"
+NUXT_FIREBASE_AUTH_PROVIDER_CERT_URL="https://www.googleapis.com/oauth2/v1/certs"
+NUXT_FIREBASE_CLIENT_CERT_URL="https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-h7ttj%40swim-dab91.iam.gserviceaccount.com"
+NUXT_FIREBASE_UNIVERSE_DOMAIN="googleapis.com"
+
+
+# This was inserted by `prisma init`:
+# Environment variables declared in this file are automatically made available to Prisma.
+# See the documentation for more detail: https://pris.ly/d/prisma-schema#accessing-environment-variables-from-the-schema
+
+# Prisma supports the native connection string format for PostgreSQL, MySQL, SQLite, SQL Server, MongoDB and CockroachDB.
+# See the documentation for all the connection string options: https://pris.ly/d/connection-strings
+
+# DATABASE_URL="file:./dev.db"
+
+# DATABASE_URL="postgresql://postgres:070873705@localhost:5432/postgresql?schema=public"
+DATABASE_URL="postgres://u1d43t61bl5m8g:pa9a54feb2e7ade8cb968f7bc127a226646961309b14d2e87271602cf79e760d6@c6b7lkfdshud3i.cluster-czz5s0kz4scl.eu-west-1.rds.amazonaws.com:5432/d2rd4cgst6pne7"
+SHADOW_DATABASE_URL ="postgresql://postgres:070873705@localhost:5432/postgresql?schema=public"

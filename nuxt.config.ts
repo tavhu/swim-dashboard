@@ -11,6 +11,7 @@ export default defineNuxtConfig({
   },
 
   css: ["~/assets/css/main.css"],
+
   postcss: {
     plugins: {
       tailwindcss: {},
@@ -28,7 +29,7 @@ export default defineNuxtConfig({
 
   typescript: {
     shim: false,
-    strict: true,
+    strict: false,
   },
 
   runtimeConfig: {
@@ -59,7 +60,9 @@ export default defineNuxtConfig({
     "@nuxt/devtools",
     "@sidebase/nuxt-auth",
     "@nuxt/image",
+    "nuxt-highcharts",
     "@nuxt/ui",
+    "nuxt-file-storage",
     [
       "@nuxtjs/google-fonts",
       {
@@ -82,6 +85,7 @@ export default defineNuxtConfig({
       },
     ],
   ],
+
   auth: {
     autoLogout: true,
     // The module is enabled. Change this to disable the module
@@ -108,15 +112,29 @@ export default defineNuxtConfig({
       addDefaultCallbackUrl: true,
     },
   },
+
   pwa: {
     workbox: {
       enabled: false,
     },
   },
+
   devtools: {
     enabled: true,
   },
+
   colorMode: {
     preference: "light",
   },
+
+  compatibilityDate: "2024-11-27",
+
+  // fileStorage: {
+  //   // enter the absolute path to the location of your storage
+  //   mount: "/public/uploads",
+
+  //   // {OR} use environment variables (recommended)
+  //   // mount: process.env.mount,
+  //   // you need to set the mount in your .env file at the root of your project
+  // },
 });

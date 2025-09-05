@@ -191,7 +191,7 @@ const addStaff = (CenterID: string) => {
         <div class="mt-5">
             <div class="flex justify-between">
                 <h2 class="text-2xl font-[Moul] text-primary">បញ្ចីអតិថិជន</h2>
-                <NuxtLink :to="config.public.origin + '/center'" :disabled="readOnly">
+                <NuxtLink :to="config.public.origin + '/client/register'" :disabled="readOnly">
                     <UButton color="primary" size="xl" :disabled="readOnly">
                         <h2 class="text-xl font-[Moul]"> ចុះឈ្មោះអតិថិជន </h2>
                     </UButton>

@@ -8,7 +8,7 @@ type Schema = z.output<typeof schema>
 definePageMeta({
   layout: "front",
   auth: {
-     unauthenticatedOnly : false,     
+     unauthenticatedOnly : true,     
   }
 });
 const tokenKey = ref('')

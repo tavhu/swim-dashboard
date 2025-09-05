@@ -84,9 +84,11 @@ import { TwButton, TwDialog, TwFeather } from "vue3-tailwind";
               </div>
             </div>
           </transition>
+          
         </div>
       </template>
     </TwDialog>
+
     <NuxtPage />
   </NuxtLayout>
 </template>

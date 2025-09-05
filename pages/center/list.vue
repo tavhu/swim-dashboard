@@ -195,14 +195,14 @@ const addStaff = (CenterID: string) => {
         <h2 class="text-2xl font-[Moul] text-primary">បញ្ចីមណ្ឌល</h2>
         <NuxtLink :to="config.public.origin + '/center'" :disabled="readOnly">
           <UButton color="primary" size="xl" :disabled="readOnly">
-            <h2 class="text-xl font-[Moul]"> បង្កើតមណ្ឌល </h2>
+            <h2 class="text-xl font-[Moul]"> ចុះឈ្មោះមណ្ឌល </h2>
           </UButton>
         </NuxtLink>
       </div>
       <hr class="my-2 border dark:border-gray-700" />
       <TwDatatableServer v-bind:fetch-data="fetchData" v-model:search="data.search" v-model:limit="data.limit"
-        v-model:offset="data.offset" v-model:sort-by="data.sortBy" v-model:sort-type="data.sortType" :column="data.column"
-        @on-sort-change="sortClick">
+        v-model:offset="data.offset" v-model:sort-by="data.sortBy" v-model:sort-type="data.sortType"
+        :column="data.column" @on-sort-change="sortClick">
         <template #row="{ index, column, data }">
           <!-- <template v-if="column.field === 'number'">
             <div class="flex justify-center">       
@@ -260,7 +260,7 @@ const addStaff = (CenterID: string) => {
         </template>
       </TwDatatableServer>
     </div>
-    <CenterStaffCanvasForm :readOnly="readOnly" :id="null" :openisTrue="openisTrue" :serviceCenterID="serviceCenterID"
-      :key="openisKey" />
+    <CenterStaffCanvasForm typeEmployee='Official' :readOnly="readOnly" :id="null" :openisTrue="openisTrue"
+      :serviceCenterID="serviceCenterID" :key="openisKey" />
   </div>
 </template>

@@ -9,11 +9,12 @@ import {
   TwToast,
   TwFile,
 } from 'vue3-tailwind'
-import { type ServiceCenter, type Staff, governStaff } from '@prisma/client'
+import { type ServiceCenter, type Staff, type governStaff } from '@prisma/client'
 import title from '~/store/data/title'
 import Datepicker from "@vuepic/vue-datepicker"
 import "@vuepic/vue-datepicker/dist/main.css"
 import { string } from 'zod'
+import gazetteers from "~/store/data/gazetteers"
 
 const config = useRuntimeConfig()
 const prop = defineProps<{
@@ -60,12 +61,16 @@ const formDataEdit: {
   nationality: '',
   dateofbirth: '',
   birthAddress: '',
-  brithCity: '',
+  birthCity: '',
   birthDistrict: '',
+  birthCommune: '',
+  birthVillage: '',
   currentAddress: '',
-  currentQualification: '',
   currentCity: '',
   currentDistrict: '',
+  currentCommune: '',
+  currentVillage: '',
+  currentQualification: '',
   sID: '',
   passport: '',
   workingEXP: '',
@@ -74,6 +79,10 @@ const formDataEdit: {
   position: '',
   telephone: '',
   familyAddress: '',
+  familyAddressCity: '',
+  familyAddressDistrict: '',
+  familyAddressCommune: '',
+  familyAddressVillage: '',
   familyPhoneNumber: '',
   familyEmail: '',
   serviceCenterID: prop.serviceCenterID ? prop.serviceCenterID : '',
@@ -100,12 +109,16 @@ const clearEdit = () => {
   formDataEdit.nationality = null
   formDataEdit.dateofbirth = null
   formDataEdit.birthAddress = null
-  formDataEdit.brithCity = null
+  formDataEdit.birthCity = null
   formDataEdit.birthDistrict = null
+  formDataEdit.birthCommune = null
+  formDataEdit.birthVillage = null
   formDataEdit.currentAddress = null
-  formDataEdit.currentQualification = null
   formDataEdit.currentCity = null
   formDataEdit.currentDistrict = null
+  formDataEdit.currentCommune = null
+  formDataEdit.currentVillage = null
+  formDataEdit.currentQualification = null
   formDataEdit.sID = null
   formDataEdit.passport = null
   formDataEdit.workingEXP = null
@@ -114,6 +127,10 @@ const clearEdit = () => {
   formDataEdit.position = null
   formDataEdit.telephone = null
   formDataEdit.familyAddress = null
+  formDataEdit.familyAddressCity = null
+  formDataEdit.familyAddressDistrict = null
+  formDataEdit.familyAddressCommune = null
+  formDataEdit.familyAddressVillage = null
   formDataEdit.familyPhoneNumber = null
   formDataEdit.familyEmail = null
   formDataEdit.serviceCenterID = null
@@ -165,12 +182,16 @@ async function submitEdit() {
       nationality: formDataEdit.nationality,
       dateofbirth: formDataEdit.dateofbirth,
       birthAddress: formDataEdit.birthAddress,
-      brithCity: formDataEdit.brithCity,
+      birthCity: formDataEdit.birthCity,
       birthDistrict: formDataEdit.birthDistrict,
+      birthCommune: formDataEdit.birthCommune,
+      birthVillage: formDataEdit.birthVillage,
       currentAddress: formDataEdit.currentAddress,
       currentQualification: formDataEdit.currentQualification,
       currentCity: formDataEdit.currentCity,
       currentDistrict: formDataEdit.currentDistrict,
+      currentCommune: formDataEdit.currentCommune,
+      currentVillage: formDataEdit.currentVillage,
       sID: formDataEdit.sID,
       passport: formDataEdit.passport,
       workingEXP: SelectWorkEXP.value,
@@ -179,6 +200,10 @@ async function submitEdit() {
       position: formDataEdit.position,
       telephone: formDataEdit.telephone,
       familyAddress: formDataEdit.familyAddress,
+      familyAddressCity: formDataEdit.familyAddressCity,
+      familyAddressDistrict: formDataEdit.familyAddressDistrict,
+      familyAddressCommune: formDataEdit.familyAddressCommune,
+      familyAddressVillage: formDataEdit.familyAddressVillage,
       familyPhoneNumber: formDataEdit.familyPhoneNumber,
       familyEmail: formDataEdit.familyEmail,
       serviceCenterID: formDataEdit.serviceCenterID,
@@ -250,12 +275,16 @@ if (prop.id && prop.typeEmployee === 'Contract') {
   formDataEdit.nationality = data?.value?.data.nationality
   formDataEdit.dateofbirth = data?.value?.data.dateofbirth
   formDataEdit.birthAddress = data?.value?.data.birthAddress
-  formDataEdit.brithCity = data?.value?.data.brithCity
+  formDataEdit.birthCity = data?.value?.data.birthCity
   formDataEdit.birthDistrict = data?.value?.data.birthDistrict
+  formDataEdit.birthCommune = data?.value?.data?.birthCommune
+  formDataEdit.birthVillage = data?.value?.data?.birthVillage
   formDataEdit.currentAddress = data?.value?.data.currentAddress
   formDataEdit.currentQualification = data?.value?.data.currentQualification
   formDataEdit.currentCity = data?.value?.data.currentCity
   formDataEdit.currentDistrict = data?.value?.data.currentDistrict
+  formDataEdit.currentCommune = data?.value?.data.currentCommune
+  formDataEdit.currentVillage = data?.value?.data.currentVillage
   formDataEdit.sID = data?.value?.data.sID
   formDataEdit.passport = data?.value?.data.passport
   formDataEdit.workingEXP = data?.value?.data.workingEXP
@@ -265,6 +294,10 @@ if (prop.id && prop.typeEmployee === 'Contract') {
   formDataEdit.position = data?.value?.data.position
   formDataEdit.telephone = data?.value?.data.telephone
   formDataEdit.familyAddress = data?.value?.data.familyAddress
+  formDataEdit.familyAddressCity = data?.value?.data?.familyAddressCity
+  formDataEdit.familyAddressDistrict = data?.value?.data?.familyAddressDistrict
+  formDataEdit.familyAddressCommune = data?.value?.data?.familyAddressCommune
+  formDataEdit.familyAddressVillage = data?.value?.data?.familyAddressVillage
   formDataEdit.familyPhoneNumber = data?.value?.data.familyPhoneNumber
   formDataEdit.familyEmail = data?.value?.data.familyEmail
   formDataEdit.serviceCenterID = data?.value?.data.serviceCenterID
@@ -429,8 +462,20 @@ const formDataEditOfficial: {
   ethnicity: '',
   nationality: '',
   birthAddress: '',
+  birthCity: '',
+  birthDistrict: '',
+  birthCommune: '',
+  birthVillage: '',
   permanentAddress: '',
+  permanentCity: '',
+  permanentDistrict: '',
+  permanentCommune: '',
+  permanentVillage: '',
   currentAddress: '',
+  currentCity: '',
+  currentDistrict: '',
+  currentCommune: '',
+  currentVillage: '',
   telephone: '',
   email: '',
   officialID: '',
@@ -444,21 +489,41 @@ const formDataEditOfficial: {
   spouseDateOfBirth: '',
   spouseSID: '',
   spouseBirthAddress: '',
+  spouseBirthCity: '',
+  spouseBirthDistrict: '',
+  spouseBirthCommune: '',
+  spouseBirthVillage: '',
   spouseCurrentOccupation: '',
   spouseOrganisationName: '',
   spuseCurrentAddress: '',
+  spuseCurrentAddressCity: '',
+  spuseCurrentAddressDistrict: '',
+  spuseCurrentAddressCommune: '',
+  spuseCurrentAddressVillage: '',
   fatherFullNameKH: '',
-  FatherOccupation: '',
-  fatherBrithAddress: '',
-  MotherOcupation: '',
+  fatherOccupation: '',
+  fatherBirthAddress: '',
+  fatherBirthAddressCity: '',
+  fatherBirthAddressDistrict: '',
+  fatherBirthAddressCommune: '',
+  fatherBirthAddressVillage: '',
+  motherOcupation: '',
   motherFullNameKH: '',
-  motherBrirthAddress: '',
+  motherBirthAddress: '',
+  motherBirthAddressCity: '',
+  motherBirthAddressDistrict: '',
+  motherBirthAddressCommune: '',
+  motherBirthAddressVillage: '',
   ECFirstNameKH: '',
   ECLastNameKH: '',
   ECGender: '',
   ECRelationshipAs: '',
   ECOccupation: '',
   ECAddress: '',
+  ECAddressCity: '',
+  ECAddressDistrict: '',
+  ECAddressCommune: '',
+  ECAddressVillage: '',
   ECTelehpone: '',
   DateStartOfficialWork: '',
   DateWentFullTime: '',
@@ -493,8 +558,20 @@ if (prop.id && prop.typeEmployee === 'Official') {
   formDataEditOfficial.ethnicity = data.value?.data.ethnicity
   formDataEditOfficial.nationality = data.value?.data.nationality
   formDataEditOfficial.birthAddress = data.value?.data.birthAddress
+  formDataEditOfficial.birthCity = data?.value?.data?.birthCity
+  formDataEditOfficial.birthDistrict = data?.value?.data?.birthDistrict
+  formDataEditOfficial.birthCommune = data?.value?.data?.birthCommune
+  formDataEditOfficial.birthVillage = data?.value?.data?.birthVillage
   formDataEditOfficial.currentAddress = data.value?.data.currentAddress
+  formDataEditOfficial.currentCity = data.value?.data.currentCity
+  formDataEditOfficial.currentDistrict = data.value?.data.currentDistrict
+  formDataEditOfficial.currentCommune = data.value?.data.currentCommune
+  formDataEditOfficial.currentVillage = data.value?.data.currentVillage
   formDataEditOfficial.permanentAddress = data.value?.data.permanentAddress
+  formDataEditOfficial.permanentCity = data?.value?.data?.permanentCity
+  formDataEditOfficial.permanentDistrict = data?.value?.data?.permanentDistrict
+  formDataEditOfficial.permanentCommune = data?.value?.data?.permanentCommune
+  formDataEditOfficial.permanentVillage = data?.value?.data?.permanentVillage
   formDataEditOfficial.telephone = data.value?.data.telephone
   formDataEditOfficial.email = data.value?.data.email
   formDataEditOfficial.officialID = data.value?.data.officialID
@@ -511,18 +588,34 @@ if (prop.id && prop.typeEmployee === 'Official') {
   formDataEditOfficial.spouseCurrentOccupation = data.value?.data.spouseCurrentOccupation
   formDataEditOfficial.spouseOrganisationName = data.value?.data.spouseOrganisationName
   formDataEditOfficial.spuseCurrentAddress = data.value?.data.spuseCurrentAddress
+  formDataEditOfficial.spuseCurrentAddressCity = data?.value?.data?.spuseCurrentAddressCity
+  formDataEditOfficial.spuseCurrentAddressDistrict = data?.value?.data?.spuseCurrentAddressDistrict
+  formDataEditOfficial.spuseCurrentAddressCommune = data?.value?.data?.spuseCurrentAddressCommune
+  formDataEditOfficial.spuseCurrentAddressVillage = data?.value?.data?.spuseCurrentAddressVillage
   formDataEditOfficial.fatherFullNameKH = data.value?.data.fatherFullNameKH
-  formDataEditOfficial.FatherOccupation = data.value?.data.FatherOccupation
-  formDataEditOfficial.fatherBrithAddress = data.value?.data.fatherBrithAddress
-  formDataEditOfficial.MotherOcupation = data.value?.data.MotherOcupation
+  formDataEditOfficial.fatherOccupation = data.value?.data.fatherOccupation
+  formDataEditOfficial.fatherBirthAddress = data.value?.data.fatherBirthAddress
+  formDataEditOfficial.fatherBirthAddressCity = data?.value?.data?.fatherBirthAddressCity
+  formDataEditOfficial.fatherBirthAddressDistrict = data?.value?.data?.fatherBirthAddressDistrict
+  formDataEditOfficial.fatherBirthAddressCommune = data?.value?.data?.fatherBirthAddressCommune
+  formDataEditOfficial.fatherBirthAddressVillage = data?.value?.data?.fatherBirthAddressVillage
+  formDataEditOfficial.motherOcupation = data.value?.data.motherOcupation
+  formDataEditOfficial.motherBirthAddressCity = data?.value?.data.motherBirthAddressCity
+  formDataEditOfficial.motherBirthAddressDistrict = data?.value?.data.motherBirthAddressDistrict
+  formDataEditOfficial.motherBirthAddressCommune = data?.value?.data.motherBirthAddressCommune
+  formDataEditOfficial.motherBirthAddressVillage = data?.value?.data.motherBirthAddressVillage
   formDataEditOfficial.motherFullNameKH = data.value?.data.motherFullNameKH
-  formDataEditOfficial.motherBrirthAddress = data.value?.data.motherBrirthAddress
+  formDataEditOfficial.motherBirthAddress = data.value?.data.motherBirthAddress
   formDataEditOfficial.ECFirstNameKH = data.value?.data.ECFirstNameKH
   formDataEditOfficial.ECLastNameKH = data.value?.data.ECLastNameKH
   formDataEditOfficial.ECGender = data.value?.data.ECGender
   formDataEditOfficial.ECRelationshipAs = data.value?.data.ECRelationshipAs
   formDataEditOfficial.ECOccupation = data.value?.data.ECOccupation
   formDataEditOfficial.ECAddress = data.value?.data.ECAddress
+  formDataEditOfficial.ECAddressCity = data?.value?.data?.ECAddressCity
+  formDataEditOfficial.ECAddressDistrict = data?.value?.data?.ECAddressDistrict
+  formDataEditOfficial.ECAddressCommune = data?.value?.data?.ECAddressCommune
+  formDataEditOfficial.ECAddressVillage = data?.value?.data?.ECAddressVillage
   formDataEditOfficial.ECTelehpone = data.value?.data.ECTelehpone
   formDataEditOfficial.DateStartOfficialWork = data.value?.data.DateStartOfficialWork
   formDataEditOfficial.DateWentFullTime = data.value?.data.DateWentFullTime
@@ -566,8 +659,20 @@ const clearEditOfficial = () => {
   formDataEditOfficial.ethnicity = null
   formDataEditOfficial.nationality = null
   formDataEditOfficial.birthAddress = null
+  formDataEditOfficial.birthCity = null
+  formDataEditOfficial.birthDistrict = null
+  formDataEditOfficial.birthCommune = null
+  formDataEditOfficial.birthVillage = null
   formDataEditOfficial.currentAddress = null
+  formDataEditOfficial.currentCity = null
+  formDataEditOfficial.currentDistrict = null
+  formDataEditOfficial.currentCommune = null
+  formDataEditOfficial.currentVillage = null
   formDataEditOfficial.permanentAddress = null
+  formDataEditOfficial.permanentCity = null
+  formDataEditOfficial.permanentDistrict = null
+  formDataEditOfficial.permanentCommune = null
+  formDataEditOfficial.permanentVillage = null
   formDataEditOfficial.telephone = null
   formDataEditOfficial.email = null
   formDataEditOfficial.officialID = null
@@ -581,27 +686,46 @@ const clearEditOfficial = () => {
   formDataEditOfficial.spouseDateOfBirth = null
   formDataEditOfficial.spouseSID = null
   formDataEditOfficial.spouseBirthAddress = null
+  formDataEditOfficial.spouseBirthCity = null
+  formDataEditOfficial.spouseBirthDistrict = null
+  formDataEditOfficial.spouseBirthCommune = null
+  formDataEditOfficial.spouseBirthVillage = null
   formDataEditOfficial.spouseCurrentOccupation = null
   formDataEditOfficial.spouseOrganisationName = null
   formDataEditOfficial.spuseCurrentAddress = null
+  formDataEditOfficial.spuseCurrentAddressCity = null
+  formDataEditOfficial.spuseCurrentAddressDistrict = null
+  formDataEditOfficial.spuseCurrentAddressCommune = null
+  formDataEditOfficial.spuseCurrentAddressVillage = null
   formDataEditOfficial.fatherFullNameKH = null
-  formDataEditOfficial.FatherOccupation = null
-  formDataEditOfficial.fatherBrithAddress = null
-  formDataEditOfficial.MotherOcupation = null
+  formDataEditOfficial.fatherOccupation = null
+  formDataEditOfficial.fatherBirthAddress = null
+  formDataEditOfficial.fatherBirthAddressCity = null
+  formDataEditOfficial.fatherBirthAddressDistrict = null
+  formDataEditOfficial.fatherBirthAddressCommune = null
+  formDataEditOfficial.fatherBirthAddressVillage = null
+  formDataEditOfficial.motherOcupation = null
   formDataEditOfficial.motherFullNameKH = null
-  formDataEditOfficial.motherBrirthAddress = null
+  formDataEditOfficial.motherBirthAddress = null
+  formDataEditOfficial.motherBirthAddressCity = null
+  formDataEditOfficial.motherBirthAddressDistrict = null
+  formDataEditOfficial.motherBirthAddressCommune = null
+  formDataEditOfficial.motherBirthAddressVillage = null
   formDataEditOfficial.ECFirstNameKH = null
   formDataEditOfficial.ECLastNameKH = null
   formDataEditOfficial.ECGender = null
   formDataEditOfficial.ECRelationshipAs = null
   formDataEditOfficial.ECOccupation = null
   formDataEditOfficial.ECAddress = null
+  formDataEditOfficial.ECAddressCity = null
+  formDataEditOfficial.ECAddressDistrict = null
+  formDataEditOfficial.ECAddressCommune = null
+  formDataEditOfficial.ECAddressVillage = null
   formDataEditOfficial.ECTelehpone = null
   formDataEditOfficial.DateStartOfficialWork = null
   formDataEditOfficial.DateWentFullTime = null
   formDataEditOfficial.CurrentRank = null
   formDataEditOfficial.OfficialLevelKH = null
-
   setTimeout(() => {
     validatorEditOfficial.value.clearErrors();
   }, 100)
@@ -644,8 +768,20 @@ async function submitEditOfficial() {
     ethnicity: formDataEditOfficial.ethnicity,
     nationality: formDataEditOfficial.nationality,
     birthAddress: formDataEditOfficial.birthAddress,
+    birthCity: formDataEditOfficial.birthCity,
+    birthDistrict: formDataEditOfficial.birthDistrict,
+    birthCommune: formDataEditOfficial.birthCommune,
+    birthVillage: formDataEditOfficial.birthVillage,
     currentAddress: formDataEditOfficial.currentAddress,
+    currentCity: formDataEditOfficial.currentCity,
+    currentDistrict: formDataEditOfficial.currentDistrict,
+    currentCommune: formDataEditOfficial.currentCommune,
+    currentVillage: formDataEditOfficial.currentVillage,
     permanentAddress: formDataEditOfficial.permanentAddress,
+    permanentCity: formDataEditOfficial.permanentCity,
+    permanentDistrict: formDataEditOfficial.permanentDistrict,
+    permanentCommune: formDataEditOfficial.permanentCommune,
+    permanentVillage: formDataEditOfficial.permanentVillage,
     telephone: formDataEditOfficial.telephone,
     email: formDataEditOfficial.email,
     officialID: formDataEditOfficial.officialID,
@@ -659,15 +795,27 @@ async function submitEditOfficial() {
     spouseDateOfBirth: formDataEditOfficial.spouseDateOfBirth,
     spouseSID: formDataEditOfficial.spouseSID,
     spouseBirthAddress: formDataEditOfficial.spouseBirthAddress,
+    spouseBirthCity: formDataEditOfficial.spouseBirthCity,
+    spouseBirthDistrict: formDataEditOfficial.spouseBirthDistrict,
+    spouseBirthCommune: formDataEditOfficial.spouseBirthCommune,
+    spouseBirthVillage: formDataEditOfficial.spouseBirthVillage,
     spouseCurrentOccupation: formDataEditOfficial.spouseCurrentOccupation,
     spouseOrganisationName: formDataEditOfficial.spouseOrganisationName,
     spuseCurrentAddress: formDataEditOfficial.spuseCurrentAddress,
     fatherFullNameKH: formDataEditOfficial.fatherFullNameKH,
-    FatherOccupation: formDataEditOfficial.FatherOccupation,
-    fatherBrithAddress: formDataEditOfficial.fatherBrithAddress,
-    MotherOcupation: formDataEditOfficial.MotherOcupation,
+    fatherOccupation: formDataEditOfficial.fatherOccupation,
+    fatherBirthAddress: formDataEditOfficial.fatherBirthAddress,
+    fatherBirthAddressCity: formDataEditOfficial.fatherBirthAddressCity,
+    fatherBirthAddressDistrict: formDataEditOfficial.fatherBirthAddressDistrict,
+    fatherBirthAddressCommune: formDataEditOfficial.fatherBirthAddressCommune,
+    fatherBirthAddressVillage: formDataEditOfficial.fatherBirthAddressVillage,
+    motherOcupation: formDataEditOfficial.motherOcupation,
     motherFullNameKH: formDataEditOfficial.motherFullNameKH,
-    motherBrirthAddress: formDataEditOfficial.motherBrirthAddress,
+    motherBirthAddress: formDataEditOfficial.motherBirthAddress,
+    motherBirthAddressCity: formDataEditOfficial.motherBirthAddressCity,
+    motherBirthAddressDistrict: formDataEditOfficial.motherBirthAddressDistrict,
+    motherBirthAddressCommune: formDataEditOfficial.motherBirthAddressCommune,
+    motherBirthAddressVillage: formDataEditOfficial.motherBirthAddressVillage,
     ECFirstNameKH: formDataEditOfficial.ECFirstNameKH,
     ECLastNameKH: formDataEditOfficial.ECLastNameKH,
     ECGender: formDataEditOfficial.ECGender,
@@ -675,6 +823,10 @@ async function submitEditOfficial() {
     ECOccupation: formDataEditOfficial.ECOccupation,
     ECAddress: formDataEditOfficial.ECAddress,
     ECTelehpone: formDataEditOfficial.ECTelehpone,
+    ECAddressCity: formDataEditOfficial.ECAddressCity,
+    ECAddressDistrict: formDataEditOfficial.ECAddressDistrict,
+    ECAddressCommune: formDataEditOfficial.ECAddressCommune,
+    ECAddressVillage: formDataEditOfficial.ECAddressVillage,
     DateStartOfficialWork: formDataEditOfficial.DateStartOfficialWork,
     DateWentFullTime: formDataEditOfficial.DateWentFullTime,
     CurrentRank: formDataEditOfficial.CurrentRank,
@@ -746,6 +898,41 @@ watch(selectedAddressOption, () => {
   }
 })
 
+
+let tempCity: any = []
+
+gazetteers.forEach(ele => {
+  tempCity.push({
+    label: ele.name.km + ' (' + ele.code + ')',
+    value: ele.name.km
+  })
+})
+
+const cityList = ref(tempCity)
+
+
+const OfficialtemDistricstList: any = ref([])
+const OfficialSelectedDistrict: any = ref([])
+const SelectedCityValue = computed(() => formDataEditOfficial.birthCity)
+
+watch(SelectedCityValue, () => {
+  OfficialtemDistricstList.value = []
+  OfficialSelectedDistrict.value = []
+  // temCommutesList.value = []
+  // tempVillageList.value = []
+  // SelectedCommute.value = []
+  OfficialSelectedDistrict.value = gazetteers.find((element: any) => {
+    return element.name.km === formDataEditOfficial.birthCity
+  })
+  OfficialSelectedDistrict?.value?.districts?.values?.forEach((eles: any) => {
+    OfficialtemDistricstList?.value?.push({
+      label: eles.name.km + ' (' + eles.code + ')',
+      value: eles.name.km
+    })
+  })
+
+})
+
 </script>
 
 <template>
@@ -771,11 +958,11 @@ watch(selectedAddressOption, () => {
             <TwForm :name="formNameEditOfficial"
               class="grid grid-cols-12 gap-2 bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded-lg p-2 shadow"
               :class="{
-                'tw-shake': isErrorEditOfficial,
-              }" :rules="formRulesEditOfficial" @submit="submitEditOfficial()" :custom-field-name="{
-  roleName: 'ឈ្មោះតួនាទី',
-  roleDescription: 'ពិពណ៌នាតួនាទី',
-}">
+          'tw-shake': isErrorEditOfficial,
+        }" :rules="formRulesEditOfficial" @submit="submitEditOfficial()" :custom-field-name="{
+          roleName: 'ឈ្មោះតួនាទី',
+          roleDescription: 'ពិពណ៌នាតួនាទី',
+        }">
               <div class="col-span-3">
               </div>
               <div class="col-span-12   lg:col-span-5">
@@ -791,8 +978,9 @@ watch(selectedAddressOption, () => {
               <div class="col-span-4">
               </div>
               <div class="col-span-12">
-                <TwSelect label="បុគ្គលិករបស់មណ្ឌល" name="serviceCenterID" v-model="formDataEditOfficial.serviceCenterID"
-                  required :items="serviceCenterList" placeholder="សូមជ្រើសរើស" />
+                <TwSelect label="បុគ្គលិករបស់មណ្ឌល" name="serviceCenterID"
+                  v-model="formDataEditOfficial.serviceCenterID" required :items="serviceCenterList"
+                  placeholder="សូមជ្រើសរើស" />
                 <CustomErrorMessage name="serviceCenterID" />
               </div>
               <div class="col-span-12 lg:col-span-4">
@@ -824,14 +1012,14 @@ watch(selectedAddressOption, () => {
               <div class="col-span-12 lg:col-span-6">
                 <label for=""> ថ្ងៃខែឆ្នាំកំណើត </label>
                 <Datepicker v-model="formDataEditOfficial.DateofBirth" :dayNames="[
-                  'Mo',
-                  'Tu',
-                  'We',
-                  'Th',
-                  'Fr',
-                  'Sa',
-                  'Su',
-                ]" position="left" required :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
+          'Mo',
+          'Tu',
+          'We',
+          'Th',
+          'Fr',
+          'Sa',
+          'Su',
+        ]" position="left" required :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
 
                 <CustomErrorMessage name="DateofBirth" />
               </div>
@@ -847,11 +1035,30 @@ watch(selectedAddressOption, () => {
               </div>
               <div class="col-span-12 lg:col-span-6 ">
                 <TwInput label="ទីកន្លែងកំណើត" name="birthAddress" v-model="formDataEditOfficial.birthAddress"
-                  placeholder="# ផ្លូវ ភូមិ ឃុំ/សង្កាត់ ស្រុក/ខណ្ឌ រាជធានី/ខេត្ត" type="text" />
+                  placeholder="# ផ្លូវ ភូមិ" type="text" />
                 <CustomErrorMessage name="currentAddress" />
               </div>
+
+              <div class="col-span-12 lg:col-span-6">
+                <TwSelect :disabled="readOnly" label="រាជធានី/ខេត្ត" name="city"
+                  v-model="formDataEditOfficial.birthCity" required :items="cityList" placeholder="សូមជ្រើសរើស" />
+                <CustomErrorMessage name="type" />
+              </div>
+              <div class="col-span-12 lg:col-span-6">
+                <label for="" class=" font-bold">
+                  ខណ្ឌ/ស្រុក
+                </label>
+                <ClientOnly>
+                  <USelect :disabled="readOnly" name="District" required v-model="formDataEditOfficial.birthDistrict"
+                    :options="OfficialtemDistricstList" placeholder="សូមជ្រើសរើស" size="lg" />
+                </ClientOnly>
+                <CustomErrorMessage name="type" />
+              </div>
+
+
               <div class="col-span-12 lg:col-span-6 ">
-                <TwInput label="អាសយដ្ឋានបច្ចុប្បន្ន" name="currentAddress" v-model="formDataEditOfficial.currentAddress"
+                <TwInput label="អាសយដ្ឋានបច្ចុប្បន្ន" name="currentAddress"
+                  v-model="formDataEditOfficial.currentAddress"
                   placeholder="# ផ្លូវ ភូមិ ឃុំ/សង្កាត់ ស្រុក/ខណ្ឌ រាជធានី/ខេត្ត" type="text" />
                 <CustomErrorMessage name="currentAddress" />
               </div>
@@ -897,14 +1104,14 @@ watch(selectedAddressOption, () => {
               /> -->
                 <label for="">សុពលភាព</label>
                 <Datepicker v-model="formDataEditOfficial.sIDValidStart" :dayNames="[
-                  'Mo',
-                  'Tu',
-                  'We',
-                  'Th',
-                  'Fr',
-                  'Sa',
-                  'Su',
-                ]" position="left" required :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
+          'Mo',
+          'Tu',
+          'We',
+          'Th',
+          'Fr',
+          'Sa',
+          'Su',
+        ]" position="left" required :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
                 <CustomErrorMessage name="sIDValidStart" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
@@ -917,14 +1124,14 @@ watch(selectedAddressOption, () => {
               /> -->
                 <label for="">ដល់ថ្ងៃ</label>
                 <Datepicker v-model="formDataEditOfficial.sIDValidEnd" :dayNames="[
-                  'Mo',
-                  'Tu',
-                  'We',
-                  'Th',
-                  'Fr',
-                  'Sa',
-                  'Su',
-                ]" position="left" required :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
+          'Mo',
+          'Tu',
+          'We',
+          'Th',
+          'Fr',
+          'Sa',
+          'Su',
+        ]" position="left" required :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
                 <CustomErrorMessage name="sIDValidEnd" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
@@ -962,24 +1169,24 @@ watch(selectedAddressOption, () => {
               /> -->
                 <label for="">ថ្ងៃខែឆ្នាំកំណើត</label>
                 <Datepicker v-model="formDataEditOfficial.spouseDateOfBirth" :dayNames="[
-                  'Mo',
-                  'Tu',
-                  'We',
-                  'Th',
-                  'Fr',
-                  'Sa',
-                  'Su',
-                ]" position="left" :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
+          'Mo',
+          'Tu',
+          'We',
+          'Th',
+          'Fr',
+          'Sa',
+          'Su',
+        ]" position="left" :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
                 <CustomErrorMessage name="spouseDateOfBirth" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
-                <TwInput name="spouseSID" label="លេខអត្តសញ្ញាណប័ណ្ណសញ្ជាតិខ្មែរ" v-model="formDataEditOfficial.spouseSID"
-                  placeholder="លេខអត្តសញ្ញាណប័ណ្ណសញ្ជាតិខ្មែរ" type="text" />
+                <TwInput name="spouseSID" label="លេខអត្តសញ្ញាណប័ណ្ណសញ្ជាតិខ្មែរ"
+                  v-model="formDataEditOfficial.spouseSID" placeholder="លេខអត្តសញ្ញាណប័ណ្ណសញ្ជាតិខ្មែរ" type="text" />
                 <CustomErrorMessage name="spouseSID" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
-                <TwInput name="spouseBirthAddress" label="ទីកន្លែងកំណើត" v-model="formDataEditOfficial.spouseBirthAddress"
-                  placeholder="ទីកន្លែងកំណើត" type="text" />
+                <TwInput name="spouseBirthAddress" label="ទីកន្លែងកំណើត"
+                  v-model="formDataEditOfficial.spouseBirthAddress" placeholder="ទីកន្លែងកំណើត" type="text" />
                 <CustomErrorMessage name="spouseBirthAddress" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
@@ -1014,14 +1221,14 @@ watch(selectedAddressOption, () => {
                 <div>
                   <label for=""> ថ្ងៃខែឆ្នាំកំណើត </label>
                   <Datepicker v-model="child.dateofBirth" :dayNames="[
-                    'Mo',
-                    'Tu',
-                    'We',
-                    'Th',
-                    'Fr',
-                    'Sa',
-                    'Su',
-                  ]" position="left" required :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
+          'Mo',
+          'Tu',
+          'We',
+          'Th',
+          'Fr',
+          'Sa',
+          'Su',
+        ]" position="left" required :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
                 </div>
                 <div>
                   <TwInput label="មុខរបរ" required v-model="child.occupation" placeholder="មុខរបរ" type="text" />
@@ -1029,12 +1236,13 @@ watch(selectedAddressOption, () => {
               </div>
               <div class="col-span-12">
                 <UButton color="primary" icon="i-heroicons-users" size="lg" class="px-4" @click="childrenDetails.push({
-                  fullnameKH: '',
-                  gender: '',
-                  dateofBirth: '',
-                  occupation: '',
-                })"> បន្ថែមព័ត៌មានកូន </UButton>
-                <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4" @click="childrenDetails.pop()">
+          fullnameKH: '',
+          gender: '',
+          dateofBirth: '',
+          occupation: '',
+        })"> បន្ថែមព័ត៌មានកូន </UButton>
+                <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4"
+                  @click="childrenDetails.pop()">
                   លុបព័ត៌មានកូន </UButton>
               </div>
 
@@ -1047,14 +1255,14 @@ watch(selectedAddressOption, () => {
                 <CustomErrorMessage name="fatherFullNameKH" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
-                <TwInput name="fatherBrithAddress" label="ទីកន្លែងកំណើត" v-model="formDataEditOfficial.fatherBrithAddress"
-                  placeholder="ទីកន្លែងកំណើត" type="text" />
-                <CustomErrorMessage name="fatherBrithAddress" />
+                <TwInput name="fatherBirthAddress" label="ទីកន្លែងកំណើត"
+                  v-model="formDataEditOfficial.fatherBirthAddress" placeholder="ទីកន្លែងកំណើត" type="text" />
+                <CustomErrorMessage name="fatherBirthAddress" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
-                <TwInput name="FatherOccupation" label="មុខរបរបច្ចុប្បន្ន" v-model="formDataEditOfficial.FatherOccupation"
-                  placeholder="មុខរបរបច្ចុប្បន្ន" type="text" />
-                <CustomErrorMessage name="FatherOccupation" />
+                <TwInput name="fatherOccupation" label="មុខរបរបច្ចុប្បន្ន"
+                  v-model="formDataEditOfficial.fatherOccupation" placeholder="មុខរបរបច្ចុប្បន្ន" type="text" />
+                <CustomErrorMessage name="fatherOccupation" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
                 <TwInput name="motherFullNameKH" label="ម្តាយឈ្មោះ" v-model="formDataEditOfficial.motherFullNameKH"
@@ -1062,14 +1270,14 @@ watch(selectedAddressOption, () => {
                 <CustomErrorMessage name="motherFullNameKH" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
-                <TwInput name="motherBrirthAddress" label="ទីកន្លែងកំណើត"
-                  v-model="formDataEditOfficial.motherBrirthAddress" placeholder="ទីកន្លែងកំណើត" type="text" />
-                <CustomErrorMessage name="motherBrirthAddress" />
+                <TwInput name="motherBirthAddress" label="ទីកន្លែងកំណើត"
+                  v-model="formDataEditOfficial.motherBirthAddress" placeholder="ទីកន្លែងកំណើត" type="text" />
+                <CustomErrorMessage name="motherBirthAddress" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
-                <TwInput name="MotherOcupation" label="មុខរបរបច្ចុប្បន្ន" v-model="formDataEditOfficial.MotherOcupation"
+                <TwInput name="motherOcupation" label="មុខរបរបច្ចុប្បន្ន" v-model="formDataEditOfficial.motherOcupation"
                   placeholder="មុខរបរបច្ចុប្បន្ន" type="text" />
-                <CustomErrorMessage name="MotherOcupation" />
+                <CustomErrorMessage name="motherOcupation" />
               </div>
               <div class="col-span-12">
                 <label class=" font-[Moul]"> គ-ព័ត៌មានទំនាក់ទំនងក្នុងករណីមានអាសន្ន </label>
@@ -1085,8 +1293,8 @@ watch(selectedAddressOption, () => {
                 <CustomErrorMessage name="ECLastNameKH" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
-                <TwInput name="ECRelationshipAs" label="ទំនាក់ទំនងត្រូវជា" v-model="formDataEditOfficial.ECRelationshipAs"
-                  placeholder="ទំនាក់ទំនងត្រូវជា" type="text" />
+                <TwInput name="ECRelationshipAs" label="ទំនាក់ទំនងត្រូវជា"
+                  v-model="formDataEditOfficial.ECRelationshipAs" placeholder="ទំនាក់ទំនងត្រូវជា" type="text" />
                 <CustomErrorMessage name="ECRelationshipAs" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
@@ -1143,41 +1351,42 @@ watch(selectedAddressOption, () => {
                 <div>
                   <label for="">ថ្ងៃខែឆ្នាំចូលសិក្សា</label>
                   <Datepicker v-model="item.StartDate" :dayNames="[
-                    'Mo',
-                    'Tu',
-                    'We',
-                    'Th',
-                    'Fr',
-                    'Sa',
-                    'Su',
-                  ]" position="left" required :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
+          'Mo',
+          'Tu',
+          'We',
+          'Th',
+          'Fr',
+          'Sa',
+          'Su',
+        ]" position="left" required :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
                   <CustomErrorMessage name="DateStartOfficialWork" />
                 </div>
                 <div>
                   <label for="">ថ្ងៃខែឆ្នាំបញ្ចប់សិក្សា</label>
                   <Datepicker v-model="item.finishDate" :dayNames="[
-                    'Mo',
-                    'Tu',
-                    'We',
-                    'Th',
-                    'Fr',
-                    'Sa',
-                    'Su',
-                  ]" position="left" required :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
+          'Mo',
+          'Tu',
+          'We',
+          'Th',
+          'Fr',
+          'Sa',
+          'Su',
+        ]" position="left" required :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
                   <CustomErrorMessage name="DateStartOfficialWork" />
                 </div>
               </div>
               <div class="col-span-12">
                 <UButton color="primary" icon="i-heroicons-users" size="lg" class="px-4" @click="EducationDetails.push({
-                  couseLevel: '',
-                  SchoolName: '',
-                  SchoolLocation: '',
-                  CertificateLevel: '',
-                  majoring: '',
-                  StartDate: '',
-                  finishDate: '',
-                })"> បន្ថែមព័ត៌មាន </UButton>
-                <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4" @click="EducationDetails.pop()">
+          couseLevel: '',
+          SchoolName: '',
+          SchoolLocation: '',
+          CertificateLevel: '',
+          majoring: '',
+          StartDate: '',
+          finishDate: '',
+        })"> បន្ថែមព័ត៌មាន </UButton>
+                <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4"
+                  @click="EducationDetails.pop()">
                   លុបព័ត៌មានកូន </UButton>
               </div>
               <div class="col-span-12 font-[Moul]">
@@ -1207,13 +1416,14 @@ watch(selectedAddressOption, () => {
               </div>
               <div class="col-span-12">
                 <UButton color="primary" icon="i-heroicons-users" size="lg" class="px-4" @click="governStaffLanuage.push({
-                  langName: '',
-                  read: '',
-                  conversation: '',
-                  writing: '',
-                })"> បន្ថែមព័ត៌មាន </UButton>
+          langName: '',
+          read: '',
+          conversation: '',
+          writing: '',
+        })"> បន្ថែមព័ត៌មាន </UButton>
                 <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4"
-                  @click="governStaffLanuage.pop()"> លុបព័ត៌មានកូន </UButton>
+                  @click="governStaffLanuage.pop()">
+                  លុបព័ត៌មានកូន </UButton>
               </div>
               <div class="col-span-12">
                 <label class=" font-[Moul]"> ច-ប្រវត្តិការងារ</label>
@@ -1221,27 +1431,27 @@ watch(selectedAddressOption, () => {
               <div class="col-span-12 lg:col-span-6 ">
                 <label for="">ថ្ងៃខែឆ្នាំចូលបម្រើក្របខ័ណ្ឌរដ្ឋ</label>
                 <Datepicker v-model="formDataEditOfficial.DateStartOfficialWork" :dayNames="[
-                  'Mo',
-                  'Tu',
-                  'We',
-                  'Th',
-                  'Fr',
-                  'Sa',
-                  'Su',
-                ]" position="left" required :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
+          'Mo',
+          'Tu',
+          'We',
+          'Th',
+          'Fr',
+          'Sa',
+          'Su',
+        ]" position="left" required :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
                 <CustomErrorMessage name="DateStartOfficialWork" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
                 <label for="">ថ្ងៃខែឆ្នាំតាំងស៊ុបក្នុងក្របខ័ណ្ឌរដ្ឋ</label>
                 <Datepicker v-model="formDataEditOfficial.DateWentFullTime" :dayNames="[
-                  'Mo',
-                  'Tu',
-                  'We',
-                  'Th',
-                  'Fr',
-                  'Sa',
-                  'Su',
-                ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
+          'Mo',
+          'Tu',
+          'We',
+          'Th',
+          'Fr',
+          'Sa',
+          'Su',
+        ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
                 <CustomErrorMessage name="DateWentFullTime" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
@@ -1265,27 +1475,27 @@ watch(selectedAddressOption, () => {
                 <div>
                   <label for="">ថ្ងៃខែឆ្នាំចូលបម្រើការងារ</label>
                   <Datepicker v-model="item.DateStartWorking" :dayNames="[
-                    'Mo',
-                    'Tu',
-                    'We',
-                    'Th',
-                    'Fr',
-                    'Sa',
-                    'Su',
-                  ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
+          'Mo',
+          'Tu',
+          'We',
+          'Th',
+          'Fr',
+          'Sa',
+          'Su',
+        ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
                   <CustomErrorMessage name="DateWentFullTime" />
                 </div>
                 <div>
                   <label for="">ថ្ងៃខែបញ្ចប់ការងារ</label>
                   <Datepicker v-model="item.DateStopWorking" :dayNames="[
-                    'Mo',
-                    'Tu',
-                    'We',
-                    'Th',
-                    'Fr',
-                    'Sa',
-                    'Su',
-                  ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
+          'Mo',
+          'Tu',
+          'We',
+          'Th',
+          'Fr',
+          'Sa',
+          'Su',
+        ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
                 </div>
                 <div>
                   <TwInput label="ក្រសួង-ស្ថាប័ន" v-model="item.OgnisationName" placeholder="" type="text" />
@@ -1303,13 +1513,13 @@ watch(selectedAddressOption, () => {
               </div>
               <div class="col-span-12">
                 <UButton color="primary" icon="i-heroicons-users" size="lg" class="px-4" @click="governStaffWorkingHistoryPublic.push({
-                  DateStartWorking: '',
-                  DateStopWorking: '',
-                  OgnisationName: '',
-                  Department: '',
-                  position: '',
-                  SkillInPosition: '',
-                })"> បន្ថែមព័ត៌មាន </UButton>
+          DateStartWorking: '',
+          DateStopWorking: '',
+          OgnisationName: '',
+          Department: '',
+          position: '',
+          SkillInPosition: '',
+        })"> បន្ថែមព័ត៌មាន </UButton>
                 <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4"
                   @click="governStaffWorkingHistoryPublic.pop()"> លុបព័ត៌មាន </UButton>
               </div>
@@ -1321,27 +1531,27 @@ watch(selectedAddressOption, () => {
                 <div>
                   <label for="">ថ្ងៃខែឆ្នាំចូលបម្រើការងារ</label>
                   <Datepicker v-model="item.DateStartWorking" :dayNames="[
-                    'Mo',
-                    'Tu',
-                    'We',
-                    'Th',
-                    'Fr',
-                    'Sa',
-                    'Su',
-                  ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
+          'Mo',
+          'Tu',
+          'We',
+          'Th',
+          'Fr',
+          'Sa',
+          'Su',
+        ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
                   <CustomErrorMessage name="DateWentFullTime" />
                 </div>
                 <div>
                   <label for="">ថ្ងៃខែបញ្ចប់ការងារ</label>
                   <Datepicker v-model="item.DateStopWorking" :dayNames="[
-                    'Mo',
-                    'Tu',
-                    'We',
-                    'Th',
-                    'Fr',
-                    'Sa',
-                    'Su',
-                  ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
+          'Mo',
+          'Tu',
+          'We',
+          'Th',
+          'Fr',
+          'Sa',
+          'Su',
+        ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
                 </div>
                 <div>
                   <TwInput label="គ្រឹះស្ថាន-អង្គភាព" v-model="item.OgnisationName" placeholder="" type="text" />
@@ -1355,17 +1565,18 @@ watch(selectedAddressOption, () => {
               </div>
               <div class="col-span-12">
                 <UButton color="primary" icon="i-heroicons-users" size="lg" class="px-4" @click="governStaffWorkingHistoryPrivate.push({
-                  DateStartWorking: '',
-                  DateStopWorking: '',
-                  OgnisationName: '',
-                  position: '',
-                  SkillInPosition: '',
-                })"> បន្ថែមព័ត៌មាន </UButton>
+          DateStartWorking: '',
+          DateStopWorking: '',
+          OgnisationName: '',
+          position: '',
+          SkillInPosition: '',
+        })"> បន្ថែមព័ត៌មាន </UButton>
                 <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4"
                   @click="governStaffWorkingHistoryPrivate.pop()"> លុបព័ត៌មានកូន </UButton>
               </div>
               <div class="col-span-12">
-                <label class=" font-[Moul]"> ច.២-ការដំឡើងឋានន្តរស័ក្តិ និងថ្នាក់តាមវេនជ្រើសរើស អតីតភាព ប្តូរប្រភេទក្របខណ្ឌ
+                <label class=" font-[Moul]"> ច.២-ការដំឡើងឋានន្តរស័ក្តិ និងថ្នាក់តាមវេនជ្រើសរើស អតីតភាព
+                  ប្តូរប្រភេទក្របខណ្ឌ
                   និងនិយ័តកម្មថ្នាក់ (សូមបំពេញតាមលំដាប់ ពីថ្មីទៅចាស់) </label>
               </div>
               <div class="col-span-12 grid grid-cols-1 lg:grid-cols-3 gap-2"
@@ -1373,14 +1584,14 @@ watch(selectedAddressOption, () => {
                 <div>
                   <label for="">ថ្ងៃខែបញ្ចប់ការងារ</label>
                   <Datepicker v-model="item.ValidDate" :dayNames="[
-                    'Mo',
-                    'Tu',
-                    'We',
-                    'Th',
-                    'Fr',
-                    'Sa',
-                    'Su',
-                  ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
+          'Mo',
+          'Tu',
+          'We',
+          'Th',
+          'Fr',
+          'Sa',
+          'Su',
+        ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
                 </div>
                 <div>
                   <TwInput label="ក្រសួង-ស្ថាប័ន" v-model="item.MinistryName" placeholder="" type="text" />
@@ -1405,14 +1616,14 @@ watch(selectedAddressOption, () => {
               </div>
               <div class="col-span-12">
                 <UButton color="primary" icon="i-heroicons-users" size="lg" class="px-4" @click="governStaffPositionHistory.push({
-                  ValidDate: '',
-                  MinistryName: '',
-                  Department: '',
-                  OfficialSection: '',
-                  oldOfficialLevel: '',
-                  newOffcialLevel: '',
-                  changeTo: '',
-                })"> បន្ថែមព័ត៌មាន </UButton>
+          ValidDate: '',
+          MinistryName: '',
+          Department: '',
+          OfficialSection: '',
+          oldOfficialLevel: '',
+          newOffcialLevel: '',
+          changeTo: '',
+        })"> បន្ថែមព័ត៌មាន </UButton>
                 <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4"
                   @click="governStaffPositionHistory.pop()"> លុបព័ត៌មានកូន </UButton>
               </div>
@@ -1425,14 +1636,14 @@ watch(selectedAddressOption, () => {
                 <div>
                   <label for="">ថ្ងៃខែបញ្ចប់ការងារ</label>
                   <Datepicker v-model="item.validatDate" :dayNames="[
-                    'Mo',
-                    'Tu',
-                    'We',
-                    'Th',
-                    'Fr',
-                    'Sa',
-                    'Su',
-                  ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
+          'Mo',
+          'Tu',
+          'We',
+          'Th',
+          'Fr',
+          'Sa',
+          'Su',
+        ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
                 </div>
                 <div>
                   <TwInput label="គ្រឹះស្ថានបណ្តុះបណ្តាល" v-model="item.SchoolName" placeholder="" type="text" />
@@ -1454,44 +1665,45 @@ watch(selectedAddressOption, () => {
               </div>
               <div class="col-span-12">
                 <UButton color="primary" icon="i-heroicons-users" size="lg" class="px-4" @click="governStaffCertificateLevelup.push({
-                  validatDate: '',
-                  SchoolName: '',
-                  PlaceStudy: '',
-                  ReceivedCertificate: '',
-                  OldPosition: '',
-                  NewPosition: '',
-                })"> បន្ថែមព័ត៌មាន </UButton>
+          validatDate: '',
+          SchoolName: '',
+          PlaceStudy: '',
+          ReceivedCertificate: '',
+          OldPosition: '',
+          NewPosition: '',
+        })"> បន្ថែមព័ត៌មាន </UButton>
                 <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4"
                   @click="governStaffCertificateLevelup.pop()"> លុបព័ត៌មានកូន </UButton>
               </div>
               <div class="col-span-12">
-                <label class=" font-[Moul]"> ច.៤-ស្ថានភាពស្ថិតនៅក្រៅក្របខ័ណ្ឌដើម (សូមបំពេញតាមលំដាប់ ពីថ្មីទៅចាស់)</label>
+                <label class=" font-[Moul]"> ច.៤-ស្ថានភាពស្ថិតនៅក្រៅក្របខ័ណ្ឌដើម (សូមបំពេញតាមលំដាប់
+                  ពីថ្មីទៅចាស់)</label>
               </div>
               <div class="col-span-12 grid grid-cols-1 lg:grid-cols-3 gap-2"
                 v-for="(item, index) in governStaffSituationOutsideOriginalOfficial" :key="index">
                 <div>
                   <label for="">ថ្ងៃខែឆ្នាំចាប់ផ្តើម</label>
                   <Datepicker v-model="item.startDate" :dayNames="[
-                    'Mo',
-                    'Tu',
-                    'We',
-                    'Th',
-                    'Fr',
-                    'Sa',
-                    'Su',
-                  ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
+          'Mo',
+          'Tu',
+          'We',
+          'Th',
+          'Fr',
+          'Sa',
+          'Su',
+        ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
                 </div>
                 <div>
                   <label for="">ថ្ងៃខែឆ្នាំបញ្ចប់</label>
                   <Datepicker v-model="item.endDate" :dayNames="[
-                    'Mo',
-                    'Tu',
-                    'We',
-                    'Th',
-                    'Fr',
-                    'Sa',
-                    'Su',
-                  ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
+          'Mo',
+          'Tu',
+          'We',
+          'Th',
+          'Fr',
+          'Sa',
+          'Su',
+        ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
                 </div>
                 <div>
                   <TwInput label="ក្រសួង/ស្ថាប័ន" v-model="item.OginasationName" placeholder="" type="text" />
@@ -1502,11 +1714,11 @@ watch(selectedAddressOption, () => {
               </div>
               <div class="col-span-12">
                 <UButton color="primary" icon="i-heroicons-users" size="lg" class="px-4" @click="governStaffSituationOutsideOriginalOfficial.push({
-                  startDate: '',
-                  endDate: '',
-                  OginasationName: '',
-                  Position: '',
-                })"> បន្ថែមព័ត៌មាន </UButton>
+          startDate: '',
+          endDate: '',
+          OginasationName: '',
+          Position: '',
+        })"> បន្ថែមព័ត៌មាន </UButton>
                 <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4"
                   @click="governStaffSituationOutsideOriginalOfficial.pop()"> លុបព័ត៌មានកូន </UButton>
               </div>
@@ -1519,26 +1731,26 @@ watch(selectedAddressOption, () => {
                 <div>
                   <label for="">ថ្ងៃខែឆ្នាំចាប់ផ្តើម</label>
                   <Datepicker v-model="item.startDate" :dayNames="[
-                    'Mo',
-                    'Tu',
-                    'We',
-                    'Th',
-                    'Fr',
-                    'Sa',
-                    'Su',
-                  ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
+          'Mo',
+          'Tu',
+          'We',
+          'Th',
+          'Fr',
+          'Sa',
+          'Su',
+        ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
                 </div>
                 <div>
                   <label for="">ថ្ងៃខែឆ្នាំបញ្ចប់</label>
                   <Datepicker v-model="item.endDate" :dayNames="[
-                    'Mo',
-                    'Tu',
-                    'We',
-                    'Th',
-                    'Fr',
-                    'Sa',
-                    'Su',
-                  ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
+          'Mo',
+          'Tu',
+          'We',
+          'Th',
+          'Fr',
+          'Sa',
+          'Su',
+        ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
                 </div>
                 <div>
                   <TwInput label="ក្រសួង/ស្ថាប័ន" v-model="item.Oginisationname" placeholder="" type="text" />
@@ -1549,11 +1761,11 @@ watch(selectedAddressOption, () => {
               </div>
               <div class="col-span-12">
                 <UButton color="primary" icon="i-heroicons-users" size="lg" class="px-4" @click="GovernStaffFreeNoSalary.push({
-                  startDate: '',
-                  endDate: '',
-                  Oginisationname: '',
-                  NumberofMonthandYear: '',
-                })"> បន្ថែមព័ត៌មាន </UButton>
+          startDate: '',
+          endDate: '',
+          Oginisationname: '',
+          NumberofMonthandYear: '',
+        })"> បន្ថែមព័ត៌មាន </UButton>
                 <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4"
                   @click="GovernStaffFreeNoSalary.pop()"> លុបព័ត៌មានកូន </UButton>
               </div>
@@ -1571,14 +1783,14 @@ watch(selectedAddressOption, () => {
                 <div>
                   <label for="">កាលបរិច្ចេទ</label>
                   <Datepicker v-model="item.OfficialDate" :dayNames="[
-                    'Mo',
-                    'Tu',
-                    'We',
-                    'Th',
-                    'Fr',
-                    'Sa',
-                    'Su',
-                  ]" position="left" :maxDate="new Date()" required :enableTimePicker="false">
+          'Mo',
+          'Tu',
+          'We',
+          'Th',
+          'Fr',
+          'Sa',
+          'Su',
+        ]" position="left" :maxDate="new Date()" required :enableTimePicker="false">
                   </Datepicker>
                 </div>
                 <div>
@@ -1594,12 +1806,12 @@ watch(selectedAddressOption, () => {
               </div>
               <div class="col-span-12">
                 <UButton color="primary" icon="i-heroicons-users" size="lg" class="px-4" @click="GovernStaffLetterAppreciation.push({
-                  letterNumber: '',
-                  OfficialDate: '',
-                  RequestedOrginsation: '',
-                  LetterDetails: '',
-                  TypeReceived: '',
-                })"> បន្ថែមព័ត៌មាន </UButton>
+          letterNumber: '',
+          OfficialDate: '',
+          RequestedOrginsation: '',
+          LetterDetails: '',
+          TypeReceived: '',
+        })"> បន្ថែមព័ត៌មាន </UButton>
                 <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4"
                   @click="GovernStaffLetterAppreciation.pop()"> លុបព័ត៌មានកូន </UButton>
               </div>
@@ -1614,14 +1826,14 @@ watch(selectedAddressOption, () => {
                 <div>
                   <label for="">កាលបរិច្ចេទ</label>
                   <Datepicker v-model="item.OffialDate" :dayNames="[
-                    'Mo',
-                    'Tu',
-                    'We',
-                    'Th',
-                    'Fr',
-                    'Sa',
-                    'Su',
-                  ]" position="left" :maxDate="new Date()" required :enableTimePicker="false">
+          'Mo',
+          'Tu',
+          'We',
+          'Th',
+          'Fr',
+          'Sa',
+          'Su',
+        ]" position="left" :maxDate="new Date()" required :enableTimePicker="false">
                   </Datepicker>
                 </div>
                 <div>
@@ -1637,12 +1849,12 @@ watch(selectedAddressOption, () => {
               </div>
               <div class="col-span-12">
                 <UButton color="primary" icon="i-heroicons-users" size="lg" class="px-4" @click="governStaffFineHistory.push({
-                  letterNumber: '',
-                  OffialDate: '',
-                  RequestedOrginsation: '',
-                  LetterDetails: '',
-                  TypeRecieved: '',
-                })"> បន្ថែមព័ត៌មាន </UButton>
+          letterNumber: '',
+          OffialDate: '',
+          RequestedOrginsation: '',
+          LetterDetails: '',
+          TypeRecieved: '',
+        })"> បន្ថែមព័ត៌មាន </UButton>
                 <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4"
                   @click="governStaffFineHistory.pop()"> លុបព័ត៌មានកូន </UButton>
               </div>
@@ -1670,11 +1882,11 @@ watch(selectedAddressOption, () => {
           <TwForm :name="formNameEdit"
             class="grid grid-cols-12 gap-2 bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded-lg p-2 shadow"
             :class="{
-              'tw-shake': isErrorEdit,
-            }" :rules="formRulesEdit" @submit="submitEdit()" :custom-field-name="{
-  roleName: 'ឈ្មោះតួនាទី',
-  roleDescription: 'ពិពណ៌នាតួនាទី',
-}">
+          'tw-shake': isErrorEdit,
+        }" :rules="formRulesEdit" @submit="submitEdit()" :custom-field-name="{
+          roleName: 'ឈ្មោះតួនាទី',
+          roleDescription: 'ពិពណ៌នាតួនាទី',
+        }">
             <div class="col-span-3">
             </div>
             <div class="col-span-12   lg:col-span-5">
@@ -1723,14 +1935,14 @@ watch(selectedAddressOption, () => {
             <div class="col-span-12 lg:col-span-6">
               <label for="">ខែឆ្នាំកំណើត</label>
               <Datepicker v-model="formDataEdit.dateofbirth" :dayNames="[
-                'Mo',
-                'Tu',
-                'We',
-                'Th',
-                'Fr',
-                'Sa',
-                'Su',
-              ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
+          'Mo',
+          'Tu',
+          'We',
+          'Th',
+          'Fr',
+          'Sa',
+          'Su',
+        ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
             </div>
             <div class="col-span-12 lg:col-span-6">
               <TwInput label="កម្រិតវប្បធម៌" name="lastName" v-model="formDataEdit.currentQualification"
@@ -1740,14 +1952,14 @@ watch(selectedAddressOption, () => {
             <div class="col-span-12 lg:col-span-6">
               <label for="">ខែឆ្នាំកំណើត</label>
               <Datepicker v-model="formDataEdit.workingPeroidStart" :dayNames="[
-                'Mo',
-                'Tu',
-                'We',
-                'Th',
-                'Fr',
-                'Sa',
-                'Su',
-              ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
+          'Mo',
+          'Tu',
+          'We',
+          'Th',
+          'Fr',
+          'Sa',
+          'Su',
+        ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
             </div>
             <div class="col-span-12 ">
               <TwInput label="ទីកន្លែងកំណើត" name="lastName" v-model="formDataEdit.birthAddress"
@@ -1771,7 +1983,8 @@ watch(selectedAddressOption, () => {
             </div>
             <div class="col-span-12 ">
               <TwInput label="ចូលបម្រើការងារជាបុគ្គលិកកិច្ចសន្យានៅ" name="lastName"
-                v-model="formDataEdit.workingContractAt" placeholder="ចូលបម្រើការងារជាបុគ្គលិកកិច្ចសន្យានៅ" type="text" />
+                v-model="formDataEdit.workingContractAt" placeholder="ចូលបម្រើការងារជាបុគ្គលិកកិច្ចសន្យានៅ"
+                type="text" />
               <CustomErrorMessage name="lastName" />
             </div>
             <div class="col-span-12">

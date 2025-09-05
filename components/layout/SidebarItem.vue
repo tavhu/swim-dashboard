@@ -67,7 +67,7 @@ onMounted(() => {
         :class="{
           'ml-[0.3rem] rounded-lg border-transparent ' : level === 1
         }"
-        :exact-active-class="level === 1 ? ' bg-primary bg-opacity-40 !md:hover:text-opacity-60 border-b-4 !border-gray-50 !border-opacity-50  font-bold' : ' border-l-2 border-primary font-bold  text-primary'"
+        :exact-active-class="level === 1 ? 'bg-primary bg-opacity-40 !md:hover:text-opacity-60 border-b-4 !border-gray-50 !border-opacity-50  font-bold' : ' border-l-2 border-primary font-bold  text-primary'"
         @click="sidebarStore.mobileOpen = false">
         <TwFeather v-if="item.icon" :type="item.icon"></TwFeather>
         <div class=" md:hidden lg:block select-none whitespace-nowrap overflow-hidden text-ellipsis">

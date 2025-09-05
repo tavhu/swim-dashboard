@@ -120,10 +120,13 @@ model ServiceCenter {
   status                     Boolean
   City                       String?
   District                   String?
+  Commute                    String?
+  Village                    String?
   Client_PersonalInformation Client_PersonalInformation[]
   staff                      Staff[]
   governStaff                governStaff[]
   systemUser                 User[]
+  CenterPlan                 CenterPlan[]
 }
 
 model Staff {
@@ -134,13 +137,17 @@ model Staff {
   fullnameEN             String?
   nationality            String
   dateofbirth            String
-  birthAddress           String
-  brithCity              String?
+  birthCity              String?
   birthDistrict          String?
-  currentAddress         String?
+  birthCommune           String?
+  birthVillage           String?
+  birthAddress           String?
   currentQualification   String?
+  currentAddress         String?
   currentCity            String?
   currentDistrict        String?
+  currentCommune         String?
+  currentVillage         String?
   sID                    String?
   passport               String?
   workingEXP             Boolean //កិច្ចសន្យា
@@ -148,7 +155,11 @@ model Staff {
   gender                 String
   position               String
   telephone              String
-  familyAddress          String
+  familyAddress          String?
+  familyAddressCity      String?
+  familyAddressDistrict  String?
+  familyAddressCommune   String?
+  familyAddressVillage   String?
   familyPhoneNumber      String
   familyEmail            String
   workingPeroidStart     DateTime //មន្ត្រីកិច្ចសន្យា
@@ -172,8 +183,20 @@ model governStaff {
   ethnicity                                   String
   nationality                                 String
   birthAddress                                String
-  currentAddress                              String
-  permanentAddress                            String
+  birthCity                                   String?
+  birthDistrict                               String?
+  birthCommune                                String?
+  birthVillage                                String?
+  currentAddress                              String?
+  currentCity                                 String?
+  currentDistrict                             String?
+  currentCommune                              String?
+  currentVillage                              String?
+  permanentAddress                            String?
+  permanentCity                               String?
+  permanentDistrict                           String?
+  permanentCommune                            String?
+  permanentVillage                            String?
   telephone                                   String
   email                                       String
   officialID                                  String
@@ -187,21 +210,41 @@ model governStaff {
   spouseDateOfBirth                           DateTime?
   spouseSID                                   String?
   spouseBirthAddress                          String?
+  spouseBirthCity                             String?
+  spouseBirthDistrict                         String?
+  spouseBirthCommune                          String?
+  spouseBirthVillage                          String?
   spouseCurrentOccupation                     String?
   spouseOrganisationName                      String?
   spuseCurrentAddress                         String?
+  spuseCurrentAddressCity                     String?
+  spuseCurrentAddressDistrict                 String?
+  spuseCurrentAddressCommune                  String?
+  spuseCurrentAddressVillage                  String?
   fatherFullNameKH                            String
-  FatherOccupation                            String
-  fatherBrithAddress                          String
-  MotherOcupation                             String
+  fatherOccupation                            String?
+  fatherBirthAddress                          String?
+  fatherBirthAddressCity                      String?
+  fatherBirthAddressDistrict                  String?
+  fatherBirthAddressCommune                   String?
+  fatherBirthAddressVillage                   String?
+  motherOcupation                             String?
   motherFullNameKH                            String
-  motherBrirthAddress                         String
+  motherBirthAddress                          String?
+  motherBirthAddressCity                      String?
+  motherBirthAddressDistrict                  String?
+  motherBirthAddressCommune                   String?
+  motherBirthAddressVillage                   String?
   ECFirstNameKH                               String
   ECLastNameKH                                String
   ECGender                                    String
   ECRelationshipAs                            String
   ECOccupation                                String
   ECAddress                                   String
+  ECAddressCity                               String?
+  ECAddressDistrict                           String?
+  ECAddressCommune                            String?
+  ECAddressVillage                            String?
   ECTelehpone                                 String
   DateStartOfficialWork                       DateTime
   DateWentFullTime                            DateTime
@@ -440,4 +483,14 @@ model ClientProgress {
   Details                      String
   Client_PersonalInformationID String
   Client_PersonalInformation   Client_PersonalInformation? @relation(fields: [Client_PersonalInformationID], references: [id])
+}
+
+model CenterPlan {
+  id              String         @id @unique @default(cuid())
+  actvityPlan     String
+  note            String
+  yearPlan        String
+  filePath        String
+  serviceCenterID String?
+  ServiceCenter   ServiceCenter? @relation(fields: [serviceCenterID], references: [id])
 }

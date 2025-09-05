@@ -631,7 +631,10 @@ const districtBAPick = () => {
                     </div>
                     <TwFile v-model="files" label="រូបភាព ៤x៦" />
                 </div>
-                <div class="col-span-4">
+                <div class="col-span-12  lg:col-start-4 lg:col-span-5">
+                    <TwInput label="លេខកូដ" disabled name="IdentifyCode" v-model="formData.IdentifyCode" placeholder="លេខកូដ"
+                        type="text" />
+                    <CustomErrorMessage name="IdentifyCode" />
                 </div>
                 <div class="col-span-12 flex justify-start gap-3 mt-5 mb-5">
                     <!-- <TwFeather type="map-pin" /> -->
@@ -646,11 +649,6 @@ const districtBAPick = () => {
                     <TwInput label="ឈ្មោះហៅក្រៅ" name="nickName" v-model="formData.nickName" placeholder="ឈ្មោះហៅក្រៅ"
                         type="text" />
                     <CustomErrorMessage name="nickName" />
-                </div>
-                <div class="col-span-12 lg:col-span-6">
-                    <TwInput label="លេខកូដ" name="IdentifyCode" v-model="formData.IdentifyCode" placeholder="លេខកូដ"
-                        type="text" />
-                    <CustomErrorMessage name="IdentifyCode" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
                     <TwSelect label="ភេទ" name="Gender" v-model="formData.Gender" required
@@ -690,8 +688,8 @@ const districtBAPick = () => {
                     <CustomErrorMessage name="Occupation" />
                 </div>
                 <div class="col-span-12">
-                    <TwInput label="កាលបរិច្ឆេទចូលមជ្ឈមណ្ឌលឬ ឃាត់ខ្លួន" name="DateArrested"
-                        v-model="formData.DateArrested" placeholder="កាលបរិច្ឆេទចូលមជ្ឈមណ្ឌលឬ ឃាត់ខ្លួន" type="text" />
+                    <TwInput label="កាលបរិច្ឆេទចូលមជ្ឈមណ្ឌល" name="DateArrested"
+                        v-model="formData.DateArrested" placeholder="កាលបរិច្ឆេទចូលមជ្ឈមណ្ឌល" type="text" />
                     <CustomErrorMessage name="DateArrested" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
