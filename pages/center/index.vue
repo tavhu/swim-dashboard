@@ -25,6 +25,7 @@ useHead({
 let readOnly = checkIfPageReadOnly()
 const route = useRoute()
 const edit = route?.query?.id
+const showGoBackButton = ref(false);
 
 const compute = computed(() => route?.query?.id)
 watch(compute, async () => {
@@ -130,6 +131,7 @@ const submit = async () => {
     toast.success({
       message: "ជោគជ័យ",
     });
+    showGoBackButton.value = true;
   }
 };
 
@@ -497,6 +499,7 @@ const cityList = ref(temCity)
             កំណត់ឡើងវិញ
           </UButton>
           <UButton color="primary" type="submit" size="lg" class="px-4" :disabled="readOnly"> រក្សាទុក </UButton>
+          <UButton v-if="showGoBackButton" color="blue" type="button" size="lg" class="px-4 font-[Battambang]" @click="navigateTo('/center/list')"> ត្រលប់ក្រោយ </UButton>
         </div>
       </TwForm>
     </div>
