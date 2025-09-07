@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import { navigateTo } from "#app";
+import { navigateTo, useRouter } from "#app";
+
+const router = useRouter();
+
+const goBack = () => {
+  router.back();
+};
 
 // This simple, original code is correct. The error was on the server.
 const { data: plansData, pending, error, refresh } = await useFetch('/api/center/plan/get', { method: 'POST' });
@@ -72,7 +78,10 @@ const filteredRows = computed(() => {
   <div class="p-4 bg-white dark:bg-gray-900 rounded-lg shadow-md">
     <div class="flex justify-between items-center mb-6">
       <h1 class="text-2xl font-[Moul] text-primary">ឯកសារមជ្ឈមណ្ឌល</h1>
-      <UButton color="primary" @click="navigateTo('/center/plan')">បន្ថែមឯកសារ</UButton>
+      <div class="flex items-center gap-2">
+        <UButton color="gray" @click="goBack()">ត្រឡប់ក្រោយ</UButton>
+        <UButton color="primary" @click="navigateTo('/center/plan')">បន្ថែមឯកសារ</UButton>
+      </div>
     </div>
 
     <div class="mb-4">
