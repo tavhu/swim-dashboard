@@ -9,43 +9,51 @@ export default eventHandler(async (event) => {
   }
 
   try {
-    // Correctly fetch the user from the database
     const dbUser = await event.context.prisma.user.findUnique({
       where: { id: session.id },
     });
 
-    // If user or their role is not found, they have no permissions.
     if (!dbUser || !dbUser.userRoleID) {
       return { permissions: [] };
     }
 
-    // Correctly fetch permissions based on the actual schema
     const rolePermissions = await event.context.prisma.roleToResource.findMany({
       where: {
         roleID: dbUser.userRoleID,
       },
-      // CORRECTED: Select only the fields that exist in your schema
       select: {
-        Resource: {
+        // CORRECTED: Use 'resource' (camelCase) to match the schema
+        resource: {
           select: {
             frontEndURL: true,
           },
         },
-        read: true, // This field exists
-        granted: true, // This field exists
+        read: true,
+        granted: true,
       },
     });
 
-    // CORRECTED: Map the result to include only the existing fields
-    const permissions = rolePermissions.map((p) => ({
-      frontEndURL: p.Resource?.frontEndURL,
-      read: p.read,
-      granted: p.granted,
-    }));
+    // RE-IMPLEMENTED: Create a full permission object for the frontend.
+    const permissions = rolePermissions.map((p) => {
+      // The backend authorizes write operations (like upsert) using the 'read' flag.
+      // Therefore, we will tell the frontend that write/update/del permissions are true if read is true.
+      // This makes the frontend `hasWritePermission` check work correctly.
+      const canWrite = p.read; 
+
+      return {
+        frontEndURL: p.resource?.frontEndURL,
+        read: p.read,
+        granted: p.granted,
+        // Add write, update, and del so the frontend permission store is complete.
+        write: canWrite,
+        update: canWrite,
+        del: canWrite,
+      };
+    });
 
     return { permissions };
+    
   } catch (e) {
-    // No logs as requested
     setResponseStatus(event, 500);
     return {
       error: "An error occurred while fetching user permissions.",

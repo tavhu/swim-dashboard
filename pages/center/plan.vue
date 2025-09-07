@@ -14,9 +14,13 @@ import { onMounted, computed } from "vue";
 import { usePermissionStore } from '~/stores/permission';
 
 const permissionStore = usePermissionStore();
-const canSave = computed(() => permissionStore.hasWritePermission('center-plan'));
+// RE-IMPLEMENTED: Check for 'read' permission, which the backend uses for authorization.
+const canSave = computed(() => permissionStore.hasReadPermission('center-plan'));
 
-const readOnly = checkIfPageReadOnly()
+// RE-IMPLEMENTED: The page is read-only if the user cannot save. This fixes a bug where
+// an undefined function was being called.
+const readOnly = computed(() => !canSave.value);
+
 const { data: userDataAuth } = useAuth()
 const user = computed(() => userDataAuth.value?.user) as any;
 const formName = 'centerPlanForm'
@@ -109,7 +113,7 @@ async function submit() {
 
 const files = ref();
 const handleImageUpload = async () => {
-  if (readOnly) return;
+  if (readOnly.value) return;
   if (!files.value || files.value?.length == 0) return false;
   try {
     const fd = new FormData();
