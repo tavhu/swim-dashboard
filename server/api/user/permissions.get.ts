@@ -46,8 +46,13 @@ export default eventHandler(async (event) => {
     });
 
     return { permissions };
-    
+
   } catch (e) {
+    // Log the actual error to the server console
+    console.error("--- ERROR in /api/user/permissions.get.ts ---");
+    console.error(e);
+    console.error("-------------------------------------------------");
+
     setResponseStatus(event, 500);
     return {
       error: "An error occurred while fetching user permissions.",
