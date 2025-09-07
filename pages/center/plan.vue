@@ -1,19 +1,18 @@
 <script setup lang="ts">
-import {
-  useToast,
-  TwButton,
-  TwErrorMessage,
-  useForm,
-  TwFile,
-  TwForm,
-  TwInput,
-  TwSelect
-} from "vue3-tailwind";
+import { useToast, TwFile, TwForm, TwInput, TwSelect } from "vue3-tailwind";
 import { type ServiceCenter } from '@prisma/client'
-import { onMounted, computed, watch } from "vue";
+import { onMounted, computed, ref, nextTick } from "vue";
 import { usePermissionStore } from '~/stores/permission';
+import { useRouter } from '#app';
 
+const router = useRouter();
 const permissionStore = usePermissionStore();
+
+const isSaved = ref(false);
+
+const goBack = () => {
+  router.back();
+};
 
 const canSave = computed(() => {
   const permission = permissionStore.getPermission('center-plan');
@@ -58,6 +57,7 @@ onMounted(() => {
 
 const isError = ref(false);
 const toast = useToast();
+const { useForm } = await import("vue3-tailwind");
 const composableForm = useForm();
 const form = computed(() => composableForm.getForm(formName));
 const validator = computed(() => form.value.validator);
@@ -66,6 +66,27 @@ const formRules = {
   actvityPlan: ['string', 'required'],
   yearPlan: ['string', 'required'],
   serviceCenterID: ['string', 'required'],
+}
+
+const resetFormForNewEntry = () => {
+  formData.actvityPlan = '';
+  formData.note = '';
+  formData.yearPlan = '';
+  formData.filePath = '';
+  files.value = null;
+  if (!isCenterUser.value) {
+    formData.serviceCenterID = '';
+  }
+  nextTick(() => {
+    if (validator.value) {
+      validator.value.clearErrors();
+    }
+  });
+}
+
+const clearForm = () => {
+  isSaved.value = false;
+  resetFormForNewEntry();
 }
 
 async function submit() {
@@ -108,7 +129,8 @@ async function submit() {
     toast.success({
       message: "ជោគជ័យ",
     });
-    clearForm();
+    isSaved.value = true;
+    resetFormForNewEntry();
   }
 }
 
@@ -133,18 +155,6 @@ const handleImageUpload = async () => {
     console.log(error);
   }
 }
-
-const clearForm = () => {
-  validator.value.clearErrors();
-  formData.actvityPlan = '';
-  formData.note = '';
-  formData.yearPlan = '';
-  formData.filePath = '';
-  files.value = null;
-  if (!isCenterUser.value) {
-    formData.serviceCenterID = '';
-  }
-};
 
 </script>
 <template>
@@ -196,12 +206,19 @@ const clearForm = () => {
         <TwFile v-model="files" :multiple="true" label="ឯកសារ" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" />
       </div>
       <div class="col-span-12 flex justify-end gap-1 ">
-        <UButton color="gray" type="button" square size="lg"
-          class="px-4 dark:text-gray-200 dark:!border-gray-800 dark:border" @click="clearForm()">
-          កំណត់ឡើងវិញ
-        </UButton>
-        <UButton v-if="canSave" color="primary" type="submit" size="lg" class="px-4"> រក្សាទុក
-        </UButton>
+        <div v-if="isSaved" class="col-span-12 flex justify-end gap-1">
+            <UButton color="gray" type="button" square size="lg" class="px-4 dark:text-gray-200 dark:!border-gray-800 dark:border" @click="goBack()">
+                ត្រឡប់ក្រោយ
+            </UButton>
+        </div>
+        <template v-else>
+            <UButton color="gray" type="button" square size="lg" class="px-4 dark:text-gray-200 dark:!border-gray-800 dark:border" @click="clearForm()">
+                កំណត់ឡើងវិញ
+            </UButton>
+            <UButton v-if="canSave" color="primary" type="submit" size="lg" class="px-4">
+                រក្សាទុក
+            </UButton>
+        </template>
       </div>
     </TwForm>
   </div>
