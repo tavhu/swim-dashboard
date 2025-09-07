@@ -5,14 +5,14 @@ export default eventHandler(async (event) => {
   console.log("--- [API] Start /api/center/plan/get ---");
 
   const session = await getServerSession(event);
-  if (!session || !session.user) {
+  if (!session) {
     console.error("[API Error] Session not found. User is unauthenticated.", session);
     setResponseStatus(event, 401);
     console.log("--- [API] End /api/center/plan/get ---");
     return { status: "unauthenticated" };
   }
 
-  const user = session.user as any;
+  const user = session as any;
   console.log("[API Info] User authenticated:", { userID: user.id, roleID: user.roleID, serviceCenterID: user.serviceCenterID });
 
   const referer = event.node.req.headers.referer;
