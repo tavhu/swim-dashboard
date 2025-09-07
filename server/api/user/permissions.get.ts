@@ -20,14 +20,22 @@ export default eventHandler(async (event) => {
         roleID: user.roleID,
         OR: [{ read: true }, { granted: true }],
       },
-      include: {
-        Resource: true,
+      select: {
+        Resource: {
+          select: {
+            frontEndURL: true,
+          },
+        },
+        read: true,
+        granted: true,
       },
     });
 
-    const permissions = rolePermissions
-      .map((p) => p.Resource?.frontEndURL)
-      .filter(Boolean); // Filter out any null/undefined URLs
+    const permissions = rolePermissions.map((p) => ({
+      frontEndURL: p.Resource?.frontEndURL,
+      read: p.read,
+      granted: p.granted,
+    }));
 
     return { permissions };
   } catch (e) {

@@ -11,17 +11,15 @@ export default eventHandler(async (event) => {
   const body = await readBody(event);
 
   try {
-    // Find the resource for the center plan upload page
     const resource = await event.context.prisma.Resource.findFirst({
         where: { frontEndURL: 'center-plan' },
     });
 
     if (!resource) {
         setResponseStatus(event, 404);
-        return { error: "Resource not found." };
+        return { error: "Resource 'center-plan' not found." };
     }
 
-    // Check user's permission for this resource
     const permission = await event.context.prisma.RoleToResource.findFirst({
         where: {
             roleID: user.roleID,
@@ -29,16 +27,15 @@ export default eventHandler(async (event) => {
         },
     });
 
-    // Block access if no permission
-    if (!permission?.granted) {
+    // If no permission record exists, or granted is explicitly false, deny action.
+    if (!permission || !permission.granted) {
         setResponseStatus(event, 403);
         return { error: "Forbidden. You do not have permission to perform this action." };
     }
 
-    // Security Check:
-    // If the user does not have 'granted' permission and has a serviceCenterID,
-    // they can only upsert to their own center.
-    if (!permission.granted && user.serviceCenterID && user.serviceCenterID !== body.serviceCenterID) {
+    // Security Check: If the user is not a full admin and is assigned to a center,
+    // they can only upload to their own center.
+    if (permission.granted === false && user.serviceCenterID && user.serviceCenterID !== body.serviceCenterID) {
         setResponseStatus(event, 403);
         return {
             error: "Forbidden. You do not have permission to upload to this service center.",

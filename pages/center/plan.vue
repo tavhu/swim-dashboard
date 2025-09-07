@@ -11,6 +11,10 @@ import {
 } from "vue3-tailwind";
 import { type ServiceCenter } from '@prisma/client'
 import { onMounted, computed } from "vue";
+import { usePermissionStore } from '~/stores/permission';
+
+const permissionStore = usePermissionStore();
+const canSave = computed(() => permissionStore.hasWritePermission('center-plan'));
 
 const readOnly = checkIfPageReadOnly()
 const { data: userDataAuth } = useAuth()
@@ -198,7 +202,7 @@ const clearForm = () => {
                   placeholder="YYYY" type="text" />
                 <CustomErrorMessage name="yearPlan" />
               </div>
-            <div class="col-span-12">
+            <div class="col-span-12" v-if="canSave">
                 <TwForm_custom v-model="files" :multiple='true' label="ឯកសារ" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"/>
             </div>
             <div class="col-span-12 flex justify-end gap-1 ">
@@ -206,7 +210,7 @@ const clearForm = () => {
                     class="px-4 dark:text-gray-200 dark:!border-gray-800 dark:border" @click="clearForm()">
                     កំណត់ឡើងវិញ
                 </UButton>
-                <UButton color="primary" type="submit" size="lg" class="px-4"> រក្សាទុក
+                <UButton v-if="canSave" color="primary" type="submit" size="lg" class="px-4"> រក្សាទុក
                 </UButton>
             </div>
         </TwForm>
