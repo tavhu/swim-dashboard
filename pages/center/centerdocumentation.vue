@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { navigateTo } from "#app";
 
 const { data: plansData, pending, error, refresh } = await useFetch('/api/center/plan/get', { method: 'POST' });
@@ -33,24 +33,51 @@ const getFileName = (path) => {
   return parts[parts.length - 1];
 };
 
+const searchQuery = ref('');
+
+const filteredRows = computed(() => {
+  if (!searchQuery.value) {
+    return plansData.value?.plans;
+  }
+  return plansData.value?.plans.filter(plan => {
+    return Object.values(plan).some(value => {
+      return String(value).toLowerCase().includes(searchQuery.value.toLowerCase());
+    }) || (plan.ServiceCenter && Object.values(plan.ServiceCenter).some(value => {
+      return String(value).toLowerCase().includes(searchQuery.value.toLowerCase());
+    }));
+  });
+});
+
 </script>
 
 <template>
-  <div>
-    <div class="flex justify-between items-center mb-4">
+  <div class="p-4 bg-white dark:bg-gray-900 rounded-lg shadow-md">
+    <div class="flex justify-between items-center mb-6">
       <h1 class="text-2xl font-[Moul] text-primary">ឯកសារមជ្ឈមណ្ឌល</h1>
       <UButton color="primary" @click="navigateTo('/center/plan')">បន្ថែមឯកសារ</UButton>
     </div>
 
+    <div class="mb-4">
+        <UInput 
+            v-model="searchQuery" 
+            placeholder="ស្វែងរក..."
+            icon="i-heroicons-magnifying-glass-20-solid"
+        />
+    </div>
+
     <UTable 
-      v-if="!pending && !error && plansData.plans"
-      :rows="plansData.plans"
+      v-if="!pending && !error && filteredRows"
+      :rows="filteredRows"
       :columns="columns"
     >
       <template #filePath-data="{ row }">
-        <a v-if="row.filePath" :href="`/${row.filePath}`" target="_blank" class="text-blue-500 hover:underline">
-          {{ getFileName(row.filePath) }}
-        </a>
+        <div v-if="row.filePath">
+            <div v-for="(path, index) in row.filePath.split(',')" :key="index">
+                <a :href="`/${path}`" target="_blank" class="text-blue-500 hover:underline">
+                    {{ getFileName(path) }}
+                </a>
+            </div>
+        </div>
         <span v-else>គ្មានឯកសារ</span>
       </template>
       <template #serviceCenterName-data="{ row }">
