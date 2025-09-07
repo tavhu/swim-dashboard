@@ -5,7 +5,7 @@ export default eventHandler(async (event) => {
   console.log("--- [API] Start /api/center/plan/get ---");
 
   const session = await getServerSession(event);
-  if (!session) {
+  if (!session || !session.user) {
     console.error("[API Error] Session not found. User is unauthenticated.");
     setResponseStatus(event, 401);
     console.log("--- [API] End /api/center/plan/get ---");
