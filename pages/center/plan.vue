@@ -12,6 +12,7 @@ import {
 import { type ServiceCenter } from '@prisma/client'
 import { onMounted, computed, watch } from "vue";
 import { usePermissionStore } from '~/stores/permission';
+import TwFormCustom from "~/components/form/TwForm_custom.vue"
 
 const permissionStore = usePermissionStore();
 
@@ -192,9 +193,9 @@ const clearForm = () => {
         <TwInput label="ផែនការឆ្នាំ" name="yearPlan" v-model="formData.yearPlan" placeholder="YYYY" type="text" />
         <CustomErrorMessage name="yearPlan" />
       </div>
-      <div class="col-span-12" >
-        <FormTwForm_Custom v-model="files" :multiple='true' label="ឯកសារ" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" />
-      </div>  
+      <div class="col-span-12">
+        <TwFormCustom v-model="files" :multiple='true' label="ឯកសារ" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" />
+      </div>
       <div class="col-span-12 flex justify-end gap-1 ">
         <UButton color="gray" type="button" square size="lg"
           class="px-4 dark:text-gray-200 dark:!border-gray-800 dark:border" @click="clearForm()">
