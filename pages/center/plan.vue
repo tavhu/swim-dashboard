@@ -166,7 +166,7 @@ const clearForm = () => {
       <div class="col-span-12 mb-5">
         <h1 class="text-lg"> សកម្មភាពការងារ </h1>
       </div>
-
+      {{ canSave }}
       <div class="col-span-12 lg:col-span-6">
         <TwSelect label="មណ្ឌល" name="serviceCenterID" v-model="formData.serviceCenterID" required
           :items="serviceCenterList" placeholder="សូមជ្រើសរើស" :disabled="isCenterUser" />
