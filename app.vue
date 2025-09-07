@@ -1,7 +1,26 @@
 <script setup lang="ts">
 import { TwButton, TwDialog, TwFeather } from "vue3-tailwind";
+import { usePermissionStore } from '~/stores/permission';
+import { watch } from 'vue';
 
+const { status } = useAuth();
 
+// IMPORTANT: This logic MUST run only on the client.
+// On the server, this code doesn't have the user's session cookie, which causes a 401 error.
+if (process.client) {
+  const permissionStore = usePermissionStore();
+
+  // Watch the authentication status
+  watch(status, (newStatus) => {
+    if (newStatus === 'authenticated') {
+      // If the user is logged in, fetch their permissions.
+      permissionStore.fetchPermissions();
+    } else if (newStatus === 'unauthenticated') {
+      // If the user logs out, clear their permissions from the store.
+      permissionStore.setPermissions([]);
+    }
+  }, { immediate: true }); // immediate: true runs the watcher once on client-side load.
+}
 
 </script>
 <template>
