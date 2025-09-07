@@ -13,27 +13,14 @@ import { type ServiceCenter } from '@prisma/client'
 import { onMounted, computed, watch } from "vue";
 import { usePermissionStore } from '~/stores/permission';
 
-console.log("--- [Vue] Component setup: pages/center/plan.vue ---");
-
 const permissionStore = usePermissionStore();
 
 const canSave = computed(() => {
-  console.log("[Vue] Computing canSave...");
   const permission = permissionStore.getPermission('center-plan');
-  const can = permission?.read ?? false;
-  console.log("[Vue] Permission for 'center-plan':", permission ? JSON.stringify(permission, null, 2) : 'Not found');
-  console.log("[Vue] canSave evaluated to:", can);
-  return can;
+  return permission?.read ?? false;
 });
 
 const readOnly = computed(() => !canSave.value);
-
-// Log the entire permission store state when the component mounts
-onMounted(() => {
-    console.log("[Vue] Component has mounted.");
-    console.log("[Vue] Current permission store state in onMounted:", JSON.stringify(permissionStore.permissions, null, 2));
-    console.log("--- [Vue] End of initial logs for plan.vue ---");
-});
 
 const { data: userDataAuth } = useAuth()
 const user = computed(() => userDataAuth.value?.user) as any;
@@ -206,7 +193,7 @@ const clearForm = () => {
         <CustomErrorMessage name="yearPlan" />
       </div>
       <div class="col-span-12" v-if="canSave">
-        <TwForm_custom v-model="files" :multiple='true' label="ឯកសារ" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" />
+        <TwFormCustom v-model="files" :multiple='true' label="ឯកសារ" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" />
       </div>
       <div class="col-span-12 flex justify-end gap-1 ">
         <UButton color="gray" type="button" square size="lg"

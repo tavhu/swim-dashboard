@@ -2,25 +2,22 @@ import { usePermissionStore } from '~/stores/permission';
 
 export default defineNuxtPlugin(async (nuxtApp) => {
   console.log("--- [Plugin] 0.permission.ts starting ---");
-  if (process.server) {
-    console.log("[Plugin] Running on server side, skipping.");
-    return;
-  }
 
-  console.log("[Plugin] Running on client side.");
+  // Running on client side.
   const permissionStore = usePermissionStore();
 
+  // We only fetch if the permissions aren't already populated. This is key.
+  // During SSR, this will run. On client-side navigation, the store will already
+  // have data, and this will be skipped, preventing re-fetching.
   if (permissionStore.permissions.length === 0) {
     console.log("[Plugin] Permission store is empty, attempting to fetch permissions.");
     try {
       await permissionStore.fetchPermissions();
       console.log("[Plugin] fetchPermissions() has completed.");
-      console.log("[Plugin] Final permissions in store:", JSON.stringify(permissionStore.permissions, null, 2));
     } catch (error) {
       console.error("[Plugin] An error occurred during fetchPermissions:", error);
     }
-  } else {
-    console.log("[Plugin] Permission store already has data, skipping fetch.");
   }
+  
   console.log("--- [Plugin] 0.permission.ts finished ---");
 });
