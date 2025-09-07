@@ -12,7 +12,7 @@ export default eventHandler(async (event) => {
   try {
     // CORRECTED: The resource name was wrong. It should be 'center-documentation'.
     const resource = await event.context.prisma.Resource.findFirst({
-      where: { frontEndURL: 'center-documentation' },
+      where: { frontEndURL: 'center-centerdocumentation' },
     });
 
     if (!resource) {
