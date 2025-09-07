@@ -5,14 +5,14 @@ export default eventHandler(async (event) => {
   console.log("--- [API] Start /api/center/plan/get ---");
 
   const session = await getServerSession(event);
-  if (!session || !session.user) {
+  if (!session) {
     console.error("[API Error] Session not found. User is unauthenticated.");
     setResponseStatus(event, 401);
     console.log("--- [API] End /api/center/plan/get ---");
     return { status: "unauthenticated" };
   }
 
-  const sessionUser = session.user as any;
+  const sessionUser = session as any;
   console.log("[API Info] Session authenticated for user ID:", sessionUser.id);
 
   // Step 1: Fetch the full user from the database using the session ID
