@@ -10,34 +10,17 @@ import {
   TwSelect
 } from "vue3-tailwind";
 import { type ServiceCenter } from '@prisma/client'
-import { onMounted, computed, watch } from "vue";
+import { onMounted, computed } from "vue";
 import { usePermissionStore } from '~/stores/permission';
-
-console.log("--- [Vue] Component setup: pages/center/plan.vue ---");
 
 const permissionStore = usePermissionStore();
 
-// RE-IMPLEMENTED: Use hasReadPermission to control write access, aligning with backend logic.
 const canSave = computed(() => {
-    console.log("[DEBUG] Computing canSave...");
-    const hasPerm = permissionStore.hasReadPermission('center-plan');
-    console.log("[DEBUG] permissionStore.hasReadPermission('center-plan') returned:", hasPerm);
-    return hasPerm;
+  const permission = permissionStore.getPermission('center-plan');
+  return permission?.read ?? false;
 });
 
-// RE-IMPLEMENTED: Define readOnly as the opposite of canSave for clarity and consistency.
 const readOnly = computed(() => !canSave.value);
-
-// Watch for changes in canSave and log its new value
-watch(canSave, (newValue, oldValue) => {
-  console.log(`[DEBUG] canSave value changed from ${oldValue} to ${newValue}`);
-}, { immediate: true });
-
-// Log the entire permission store state when the component mounts
-onMounted(() => {
-    console.log("[DEBUG] Component mounted. Current permission store state:", JSON.stringify(permissionStore.permissions, null, 2));
-    console.log("--- [Vue] End of initial logs ---");
-});
 
 const { data: userDataAuth } = useAuth()
 const user = computed(() => userDataAuth.value?.user) as any;
