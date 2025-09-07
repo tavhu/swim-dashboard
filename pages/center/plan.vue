@@ -179,7 +179,7 @@ const clearForm = () => {
                 <CustomErrorMessage name="yearPlan" />
               </div>
             <div class="col-span-12">
-              <TwFile v-model="files" :multiple='true'  label="ឯកសារ"  />
+              <TwFile v-model="files" :multiple='true'  label="ឯកសារ" accept=".pdf,.doc,.docx" />
             </div>
             <div class="col-span-12 flex justify-end gap-1 ">
                 <UButton color="gray" type="button" square size="lg"
