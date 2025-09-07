@@ -67,7 +67,10 @@ async function submit() {
 
   const fileUploaded = await handleImageUpload()
   if (fileUploaded) {
-    formData.filePath = fileUploaded.join(",");
+    // The upload API returns an object with the paths. 
+    // We need to get the values and join them.
+    const filePaths = Object.values(fileUploaded);
+    formData.filePath = filePaths.join(",");
   }
 
   const { error } = await useFetch("/api/center/plan/upsert", {
