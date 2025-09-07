@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import {
-    useToast,
-    TwButton,
-    TwErrorMessage,
-    useForm,
-    TwFile,
-    TwForm,
-    TwInput,
-    TwSelect
+  useToast,
+  TwButton,
+  TwErrorMessage,
+  useForm,
+  TwFile,
+  TwForm,
+  TwInput,
+  TwSelect
 } from "vue3-tailwind";
 import { type ServiceCenter } from '@prisma/client'
 import { onMounted, computed } from "vue";
@@ -143,76 +143,61 @@ const clearForm = () => {
 
 </script>
 <template>
+  <div>
     <div>
-        <div>
-            <h1 class="text-2xl font-[Moul] text-primary mb-3">
-                ផែនការសកម្មភាពមជ្ឈមណ្ឌល
-            </h1>
-        </div>
-
-         <TwForm :name="formName"
-              class="grid grid-cols-12 gap-2 bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded-lg p-2 shadow"
-              :class="{
-            'tw-shake': isError,
-            }" :rules="formRules" @submit="submit()" :custom-field-name="{
-              actvityPlan: 'ផែនការសកម្មភាព',
-              yearPlan: 'ផែនការឆ្នាំ',
-              serviceCenterID: 'មណ្ឌល'
-            }">
-            <div class="col-span-12 mb-5">
-                <h1 class="text-lg"> សកម្មភាពការងារ </h1>
-            </div>
-
-            <div class="col-span-12 lg:col-span-6">
-              <TwSelect 
-                label="មណ្ឌល" 
-                name="serviceCenterID"  
-                v-model="formData.serviceCenterID" 
-                required
-                :items="serviceCenterList" 
-                placeholder="សូមជ្រើសរើស" 
-                :disabled="isCenterUser" 
-              />
-              <CustomErrorMessage name="serviceCenterID" />
-            </div>
-            <div class="col-span-12 lg:col-span-6">
-                    <TwSelect
-                    label="ផែនការសកម្មភាព"
-                    name="actvityPlan"
-                    required
-                    v-model="formData.actvityPlan"  
-                    :items="[{
-                        value: 'yearly', label: 'ផែនការប្រចាំឆ្នាំ'
-                    },
-                    { value: 'threeyear', label: 'ផែនការមធ្យម' },
-                    { value: 'longterm', label: 'ផែនការរយៈពេលវែង' },
-                    ]" 
-                    placeholder="សូមជ្រើសរើស"
-                    />
-
-                    <CustomErrorMessage name="actvityPlan" />
-            </div>
-             <div class="col-span-12 lg:col-span-6">
-                <TwInput label="កំណត់ចំណាំ"  name="note" v-model="formData.note"
-                  placeholder="កំណត់ចំណាំ" type="text" />
-                <CustomErrorMessage name="note" />
-              </div>
-             <div class="col-span-12 lg:col-span-6">
-                <TwInput label="ផែនការឆ្នាំ" name="yearPlan"  v-model="formData.yearPlan"
-                  placeholder="YYYY" type="text" />
-                <CustomErrorMessage name="yearPlan" />
-              </div>
-            <div class="col-span-12" v-if="canSave">
-                <TwForm_custom v-model="files" :multiple='true' label="ឯកសារ" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"/>
-            </div>
-            <div class="col-span-12 flex justify-end gap-1 ">
-                <UButton color="gray" type="button" square size="lg"
-                    class="px-4 dark:text-gray-200 dark:!border-gray-800 dark:border" @click="clearForm()">
-                    កំណត់ឡើងវិញ
-                </UButton>
-                <UButton v-if="canSave" color="primary" type="submit" size="lg" class="px-4"> រក្សាទុក
-                </UButton>
-            </div>
-        </TwForm>
+      <h1 class="text-2xl font-[Moul] text-primary mb-3">
+        ផែនការសកម្មភាពមជ្ឈមណ្ឌល
+      </h1>
     </div>
+
+    <TwForm :name="formName"
+      class="grid grid-cols-12 gap-2 bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded-lg p-2 shadow"
+      :class="{
+        'tw-shake': isError,
+      }" :rules="formRules" @submit="submit()" :custom-field-name="{
+  actvityPlan: 'ផែនការសកម្មភាព',
+  yearPlan: 'ផែនការឆ្នាំ',
+  serviceCenterID: 'មណ្ឌល'
+}">
+      <div class="col-span-12 mb-5">
+        <h1 class="text-lg"> សកម្មភាពការងារ </h1>
+      </div>
+
+
+      <div class="col-span-12 lg:col-span-6">
+        <TwSelect label="មណ្ឌល" name="serviceCenterID" v-model="formData.serviceCenterID" required
+          :items="serviceCenterList" placeholder="សូមជ្រើសរើស" :disabled="isCenterUser" />
+        <CustomErrorMessage name="serviceCenterID" />
+      </div>
+      <div class="col-span-12 lg:col-span-6">
+        <TwSelect label="ផែនការសកម្មភាព" name="actvityPlan" required v-model="formData.actvityPlan" :items="[{
+          value: 'yearly', label: 'ផែនការប្រចាំឆ្នាំ'
+        },
+        { value: 'threeyear', label: 'ផែនការមធ្យម' },
+        { value: 'longterm', label: 'ផែនការរយៈពេលវែង' },
+        ]" placeholder="សូមជ្រើសរើស" />
+
+        <CustomErrorMessage name="actvityPlan" />
+      </div>
+      <div class="col-span-12 lg:col-span-6">
+        <TwInput label="កំណត់ចំណាំ" name="note" v-model="formData.note" placeholder="កំណត់ចំណាំ" type="text" />
+        <CustomErrorMessage name="note" />
+      </div>
+      <div class="col-span-12 lg:col-span-6">
+        <TwInput label="ផែនការឆ្នាំ" name="yearPlan" v-model="formData.yearPlan" placeholder="YYYY" type="text" />
+        <CustomErrorMessage name="yearPlan" />
+      </div>
+      <div class="col-span-12" v-if="canSave">
+        <TwForm_custom v-model="files" :multiple='true' label="ឯកសារ" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" />
+      </div>
+      <div class="col-span-12 flex justify-end gap-1 ">
+        <UButton color="gray" type="button" square size="lg"
+          class="px-4 dark:text-gray-200 dark:!border-gray-800 dark:border" @click="clearForm()">
+          កំណត់ឡើងវិញ
+        </UButton>
+        <UButton v-if="canSave" color="primary" type="submit" size="lg" class="px-4"> រក្សាទុក
+        </UButton>
+      </div>
+    </TwForm>
+  </div>
 </template>
