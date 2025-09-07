@@ -207,7 +207,7 @@ export default [
           {
             isTitle: false,
             name: "ឯកសារកាលប្បវត្តិ",
-            url: "/centerdocumentation",
+            url: "/center/centerdocumentation",
             icon: "",
             submenu: [],
           },
