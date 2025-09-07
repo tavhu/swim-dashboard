@@ -4,7 +4,7 @@ import { navigateTo } from "#app";
 
 const { data: plansData, pending, error, refresh } = useFetch('/api/center/plan/get', { 
   method: 'POST',
-  server: false  // This is the critical fix. It ensures the fetch only happens on the client.
+  server: false
 });
 
 const activityPlanMap = {
@@ -110,8 +110,10 @@ const filteredRows = computed(() => {
     <div v-else-if="pending">
       <p>Loading...</p>
     </div>
-    <div v-else-if="error">
-      <p>An error occurred while fetching the data.</p>
+    <!-- This is the crucial change. We now display the full error object. -->
+    <div v-else-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+      <strong class="font-bold">An error occurred while fetching the data.</strong>
+      <pre class="mt-2 text-sm">{{ JSON.stringify(error, null, 2) }}</pre>
     </div>
   </div>
 </template>
