@@ -10,17 +10,41 @@ export default eventHandler(async (event) => {
   const user = session.user as any;
   const body = await readBody(event);
 
-  // Security Check:
-  // If the user has a serviceCenterID, they can only upsert to their own center.
-  // An admin (no serviceCenterID) can upsert to any center provided in the body.
-  if (user.serviceCenterID && user.serviceCenterID !== body.serviceCenterID) {
-    setResponseStatus(event, 403);
-    return {
-      error: "Forbidden. You do not have permission to perform this action.",
-    };
-  }
-
   try {
+    // Find the resource for the center plan upload page
+    const resource = await event.context.prisma.Resource.findFirst({
+        where: { frontEndURL: 'center-plan' },
+    });
+
+    if (!resource) {
+        setResponseStatus(event, 404);
+        return { error: "Resource not found." };
+    }
+
+    // Check user's permission for this resource
+    const permission = await event.context.prisma.RoleToResource.findFirst({
+        where: {
+            roleID: user.roleID,
+            resourceID: resource.id,
+        },
+    });
+
+    // Block access if no permission
+    if (!permission?.granted) {
+        setResponseStatus(event, 403);
+        return { error: "Forbidden. You do not have permission to perform this action." };
+    }
+
+    // Security Check:
+    // If the user does not have 'granted' permission and has a serviceCenterID,
+    // they can only upsert to their own center.
+    if (!permission.granted && user.serviceCenterID && user.serviceCenterID !== body.serviceCenterID) {
+        setResponseStatus(event, 403);
+        return {
+            error: "Forbidden. You do not have permission to upload to this service center.",
+        };
+    }
+
     const planData = {
       actvityPlan: body.actvityPlan,
       note: body.note,

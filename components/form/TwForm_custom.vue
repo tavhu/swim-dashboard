@@ -1,4 +1,4 @@
-'''<script setup lang="ts">
+<script setup lang="ts">
 import {
     useToast,
     TwButton,
@@ -153,4 +153,4 @@ const config = useConfig();
     </div>
   </div>
 </div>
-</template>''
+</template>
