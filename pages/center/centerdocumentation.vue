@@ -1,10 +1,25 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { navigateTo } from "#app";
 
-const { data: plansData, pending, error, refresh } = useFetch('/api/center/plan/get', { 
-  method: 'POST',
-  server: false
+// Correct way to perform authenticated client-side fetch
+const { $fetch } = useAuth(); 
+
+const plansData = ref(null);
+const pending = ref(true);
+const error = ref(null);
+
+// Fetch data on component mount (client-side only)
+onMounted(async () => {
+  try {
+    const response = await $fetch('/api/center/plan/get', { method: 'POST' });
+    plansData.value = response;
+  } catch (e) {
+    console.error("Failed to fetch plans:", e);
+    error.value = e;
+  } finally {
+    pending.value = false;
+  }
 });
 
 const activityPlanMap = {
@@ -59,7 +74,7 @@ const filteredRows = computed(() => {
   return plans.filter(plan => {
     const searchLower = searchQuery.value.toLowerCase();
     return (
-      plan.ServiceCenter?.nameKH.toLowerCase().includes(searchLower) ||
+      (plan.ServiceCenter?.nameKH && plan.ServiceCenter.nameKH.toLowerCase().includes(searchLower)) ||
       plan.activityPlanDisplay.toLowerCase().includes(searchLower) ||
       plan.yearPlan.toLowerCase().includes(searchLower) ||
       (plan.note && plan.note.toLowerCase().includes(searchLower))
@@ -89,7 +104,13 @@ const filteredRows = computed(() => {
       v-if="!pending && !error && filteredRows"
       :rows="filteredRows"
       :columns="columns"
+      :loading="pending"
     >
+       <template #loading-state>
+        <div class="flex items-center justify-center h-32">
+          <i class="loader --6"></i>
+        </div>
+      </template>
       <template #filePath-data="{ row }">
         <div v-if="row.filePath">
             <div v-for="(path, index) in row.filePath.split(',')" :key="index">
@@ -108,12 +129,12 @@ const filteredRows = computed(() => {
       </template>
     </UTable>
     <div v-else-if="pending">
-      <p>Loading...</p>
+      <div class="flex items-center justify-center h-32">
+          <i class="loader --6"></i>
+        </div>
     </div>
-    <!-- This is the crucial change. We now display the full error object. -->
-    <div v-else-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-      <strong class="font-bold">An error occurred while fetching the data.</strong>
-      <pre class="mt-2 text-sm">{{ JSON.stringify(error, null, 2) }}</pre>
+    <div v-else-if="error">
+      <p>An error occurred while fetching the data.</p>
     </div>
   </div>
 </template>
