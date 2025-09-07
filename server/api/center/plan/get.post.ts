@@ -4,28 +4,29 @@ import { URL } from 'url';
 export default eventHandler(async (event) => {
   console.log("--- [API] Start /api/center/plan/get ---");
 
-  // CORRECTED: The user data is directly on the session object.
-  const session = await getServerSession(event) as any;
-  if (!session) {
+  const session = await getServerSession(event);
+  if (!session || !session.user) {
     console.error("[API Error] Session not found. User is unauthenticated.");
     setResponseStatus(event, 401);
     console.log("--- [API] End /api/center/plan/get ---");
     return { status: "unauthenticated" };
   }
 
-  console.log("[API Info] Session authenticated for user ID:", session.id);
+  const sessionUser = session.user as any;
+  console.log("[API Info] Session authenticated for user ID:", sessionUser.id);
 
   // Step 1: Fetch the full user from the database using the session ID
   const dbUser = await event.context.prisma.user.findUnique({
-    where: { id: session.id }, // CORRECTED: Use session.id directly
+    where: { id: sessionUser.id },
   });
 
   if (!dbUser) {
-    console.error(`[API Error] User with ID '${session.id}' not found in database.`);
+    console.error(`[API Error] User with ID '${sessionUser.id}' not found in database.`);
     setResponseStatus(event, 404);
     return { error: "Authenticated user not found in database." };
   }
   console.log("[API Info] Fetched full user from DB:", { userID: dbUser.id, roleID: dbUser.userRoleID, serviceCenterID: dbUser.serviceCenterID });
+
 
   const referer = event.node.req.headers.referer;
   console.log(`[API Info] Referer header: ${referer}`);
@@ -62,7 +63,7 @@ export default eventHandler(async (event) => {
     console.log(`[API Info] Querying for permission for roleID: ${dbUser.userRoleID} and resourceID: ${resource.id}`);
     const permission = await event.context.prisma.RoleToResource.findFirst({
       where: {
-        roleID: dbUser.userRoleID,
+        roleID: dbUser.userRoleID, // Using the roleID from the database user
         resourceID: resource.id,
       },
     });
