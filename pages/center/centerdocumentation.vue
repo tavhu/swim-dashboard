@@ -2,7 +2,10 @@
 import { ref, computed } from "vue";
 import { navigateTo } from "#app";
 
-const { data: plansData, pending, error, refresh } = await useFetch('/api/center/plan/get', { method: 'POST' });
+const { data: plansData, pending, error, refresh } = useFetch('/api/center/plan/get', { 
+  method: 'POST',
+  server: false  // This is the critical fix. It ensures the fetch only happens on the client.
+});
 
 const activityPlanMap = {
   yearly: 'ផែនការប្រចាំឆ្នាំ',
