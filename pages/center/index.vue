@@ -256,36 +256,36 @@ const userProfile = ref()
 const currentUser = ref(false)
 
 if (edit) {
-  userProfile.value = await useFetch('/api/center/get', {
+  const { data: userProfile } = await useFetch('/api/center/getSingle', {
     method: 'post',
     body: JSON.stringify({
       id: edit
     })
   })
 
-  formData.status = userProfile.value?.data?.status
-  formData.id = userProfile.value?.data?.id
-  formData.nameKH = userProfile.value?.data?.nameKH
-  formData.nameEN = userProfile.value?.data?.nameEN
-  formData.type = userProfile.value?.data?.type
-  formData.logo = userProfile.value?.data?.logo
-  formData.directorName = userProfile.value?.data?.directorName
-  formData.phoneNumber = userProfile.value?.data?.phoneNumber
-  formData.PoBox = userProfile.value?.data?.PoBox
-  formData.email = userProfile.value?.data?.email
-  formData.website = userProfile.value?.data?.website
-  formData.locationMap = userProfile.value?.data?.locationMap
-  formData.Address = userProfile.value?.data?.Address
-  formData.City = userProfile.value?.data?.City
-  formData.District = userProfile.value?.data?.District
-  formData.Commute = userProfile.value?.data?.Commute
-  formData.Village = userProfile.value?.data?.Village
-  formData.overview = userProfile.value?.data?.overview
-  formData.background = userProfile.value?.data?.background
-  formData.mission = userProfile.value?.data?.mission
-  formData.vision = userProfile.value?.data?.vision
-  formData.goal = userProfile.value?.data?.goal
-  formData.ProjectSummary = userProfile.value?.data?.ProjectSummary
+  formData.status = userProfile.value?.status
+  formData.id = userProfile.value?.id
+  formData.nameKH = userProfile.value?.nameKH
+  formData.nameEN = userProfile.value?.nameEN
+  formData.type = userProfile.value?.type
+  formData.logo = userProfile.value?.logo
+  formData.directorName = userProfile.value?.directorName
+  formData.phoneNumber = userProfile.value?.phoneNumber
+  formData.PoBox = userProfile.value?.PoBox
+  formData.email = userProfile.value?.email
+  formData.website = userProfile.value?.website
+  formData.locationMap = userProfile.value?.locationMap
+  formData.Address = userProfile.value?.Address
+  formData.City = userProfile.value?.City
+  formData.District = userProfile.value?.District
+  formData.Commute = userProfile.value?.Commute
+  formData.Village = userProfile.value?.Village
+  formData.overview = userProfile.value?.overview
+  formData.background = userProfile.value?.background
+  formData.mission = userProfile.value?.mission
+  formData.vision = userProfile.value?.vision
+  formData.goal = userProfile.value?.goal
+  formData.ProjectSummary = userProfile.value?.ProjectSummary
 
 
   // //@ts-ignore
