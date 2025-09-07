@@ -9,11 +9,12 @@ import {
     TwInput,
     TwSelect
 } from "vue3-tailwind";
-import { array } from "zod";
-import { type ServiceCenter, type Staff, type governStaff } from '@prisma/client'
+import { type ServiceCenter } from '@prisma/client'
+import { onMounted, computed } from "vue";
 
 const readOnly = checkIfPageReadOnly()
 const { data: userDataAuth } = useAuth()
+const user = computed(() => userDataAuth.value?.user) as any;
 const formName = 'centerPlanForm'
 
 const formData: {
@@ -37,6 +38,14 @@ data.value?.data.forEach(ele => {
     value: ele.id
   })
 })
+
+const isCenterUser = computed(() => !!user.value?.serviceCenterID);
+
+onMounted(() => {
+  if (isCenterUser.value) {
+    formData.serviceCenterID = user.value.serviceCenterID;
+  }
+});
 
 const isError = ref(false);
 const toast = useToast();
@@ -67,8 +76,6 @@ async function submit() {
 
   const fileUploaded = await handleImageUpload()
   if (fileUploaded) {
-    // The upload API returns an object with the paths. 
-    // We need to get the values and join them.
     const filePaths = Object.values(fileUploaded);
     formData.filePath = filePaths.join(",");
   }
@@ -92,6 +99,7 @@ async function submit() {
     toast.success({
       message: "ជោគជ័យ",
     });
+    clearForm();
   }
 }
 
@@ -122,15 +130,16 @@ const clearForm = () => {
   formData.note = '';
   formData.yearPlan = '';
   formData.filePath = '';
-  formData.serviceCenterID = '';
   files.value = null;
   validator.value.clearErrors();
+  if (!isCenterUser.value) {
+    formData.serviceCenterID = '';
+  }
 };
 
 </script>
 <template>
     <div>
-
         <div>
             <h1 class="text-2xl font-[Moul] text-primary mb-3">
                 ផែនការសកម្មភាពមជ្ឈមណ្ឌល
@@ -151,8 +160,15 @@ const clearForm = () => {
             </div>
 
             <div class="col-span-12 lg:col-span-6">
-              <TwSelect label="មណ្ឌល" name="serviceCenterID"  v-model="formData.serviceCenterID" required
-                :items="serviceCenterList" placeholder="សូមជ្រើសរើស" />
+              <TwSelect 
+                label="មណ្ឌល" 
+                name="serviceCenterID"  
+                v-model="formData.serviceCenterID" 
+                required
+                :items="serviceCenterList" 
+                placeholder="សូមជ្រើសរើស" 
+                :disabled="isCenterUser" 
+              />
               <CustomErrorMessage name="serviceCenterID" />
             </div>
             <div class="col-span-12 lg:col-span-6">
@@ -166,7 +182,8 @@ const clearForm = () => {
                     },
                     { value: 'threeyear', label: 'ផែនការមធ្យម' },
                     { value: 'longterm', label: 'ផែនការរយៈពេលវែង' },
-                    ]" placeholder="សូមជ្រើសរើស"         
+                    ]" 
+                    placeholder="សូមជ្រើសរើស"
                     />
 
                     <CustomErrorMessage name="actvityPlan" />
@@ -182,7 +199,7 @@ const clearForm = () => {
                 <CustomErrorMessage name="yearPlan" />
               </div>
             <div class="col-span-12">
-              <TwFile v-model="files" :multiple='true'  label="ឯកសារ" accept=".pdf,.doc,.docx" />
+                <TwForm_custom v-model="files" :multiple='true' label="ឯកសារ" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"/>
             </div>
             <div class="col-span-12 flex justify-end gap-1 ">
                 <UButton color="gray" type="button" square size="lg"

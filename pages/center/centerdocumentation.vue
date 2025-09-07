@@ -4,6 +4,12 @@ import { navigateTo } from "#app";
 
 const { data: plansData, pending, error, refresh } = await useFetch('/api/center/plan/get', { method: 'POST' });
 
+const activityPlanMap = {
+  yearly: 'ផែនការប្រចាំឆ្នាំ',
+  threeyear: 'ផែនការមធ្យម',
+  longterm: 'ផែនការរយៈពេលវែង',
+};
+
 const columns = [
   {
     key: 'serviceCenterName',
@@ -36,17 +42,28 @@ const getFileName = (path) => {
 const searchQuery = ref('');
 
 const filteredRows = computed(() => {
+  if (!plansData.value || !plansData.value.plans) return [];
+
+  let plans = plansData.value.plans.map(plan => ({
+    ...plan,
+    activityPlanDisplay: activityPlanMap[plan.actvityPlan] || plan.actvityPlan,
+  }));
+
   if (!searchQuery.value) {
-    return plansData.value?.plans;
+    return plans;
   }
-  return plansData.value?.plans.filter(plan => {
-    return Object.values(plan).some(value => {
-      return String(value).toLowerCase().includes(searchQuery.value.toLowerCase());
-    }) || (plan.ServiceCenter && Object.values(plan.ServiceCenter).some(value => {
-      return String(value).toLowerCase().includes(searchQuery.value.toLowerCase());
-    }));
+
+  return plans.filter(plan => {
+    const searchLower = searchQuery.value.toLowerCase();
+    return (
+      plan.ServiceCenter?.nameKH.toLowerCase().includes(searchLower) ||
+      plan.activityPlanDisplay.toLowerCase().includes(searchLower) ||
+      plan.yearPlan.toLowerCase().includes(searchLower) ||
+      (plan.note && plan.note.toLowerCase().includes(searchLower))
+    );
   });
 });
+
 
 </script>
 
@@ -82,6 +99,9 @@ const filteredRows = computed(() => {
       </template>
       <template #serviceCenterName-data="{ row }">
         {{ row.ServiceCenter ? row.ServiceCenter.nameKH : 'មិនមាន' }}
+      </template>
+       <template #actvityPlan-data="{ row }">
+        {{ row.activityPlanDisplay }}
       </template>
     </UTable>
     <div v-else-if="pending">
