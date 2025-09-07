@@ -17,12 +17,13 @@ export default eventHandler(async (event) => {
       return { permissions: [] };
     }
 
+    // CORRECTED: Changed 'resource' to 'Resource' to match the Prisma schema.
     const rolePermissions = await event.context.prisma.roleToResource.findMany({
       where: {
         roleID: dbUser.userRoleID,
       },
       select: {
-        resource: {
+        Resource: {
           select: {
             frontEndURL: true,
           },
@@ -36,7 +37,8 @@ export default eventHandler(async (event) => {
       const canWrite = p.read;
 
       return {
-        frontEndURL: p.resource?.frontEndURL,
+        // CORRECTED: Changed 'p.resource' to 'p.Resource'
+        frontEndURL: p.Resource?.frontEndURL,
         read: p.read,
         granted: p.granted,
         write: canWrite,
@@ -48,7 +50,6 @@ export default eventHandler(async (event) => {
     return { permissions };
 
   } catch (e) {
-    // Log the actual error to the server console
     console.error("--- ERROR in /api/user/permissions.get.ts ---");
     console.error(e);
     console.error("-------------------------------------------------");
