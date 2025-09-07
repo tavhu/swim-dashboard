@@ -23,7 +23,7 @@ export default eventHandler(async (event) => {
       },
       select: {
         // CORRECTED: Use 'resource' (camelCase) to match the schema
-        resource: {
+        Resource: {
           select: {
             frontEndURL: true,
           },
@@ -38,10 +38,10 @@ export default eventHandler(async (event) => {
       // The backend authorizes write operations (like upsert) using the 'read' flag.
       // Therefore, we will tell the frontend that write/update/del permissions are true if read is true.
       // This makes the frontend `hasWritePermission` check work correctly.
-      const canWrite = p.read; 
+      const canWrite = p.read;
 
       return {
-        frontEndURL: p.resource?.frontEndURL,
+        frontEndURL: p.Resource?.frontEndURL,
         read: p.read,
         granted: p.granted,
         // Add write, update, and del so the frontend permission store is complete.
@@ -52,7 +52,6 @@ export default eventHandler(async (event) => {
     });
 
     return { permissions };
-    
   } catch (e) {
     setResponseStatus(event, 500);
     return {

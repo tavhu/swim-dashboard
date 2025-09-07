@@ -15,7 +15,7 @@ import { usePermissionStore } from '~/stores/permission';
 
 const permissionStore = usePermissionStore();
 // RE-IMPLEMENTED: Use hasReadPermission to control write access, aligning with backend logic.
-const canSave = computed(() => permissionStore.hasReadPermission('center-plan'));
+const canSave = computed(() => permissionStore.hasWritePermission('center-plan'));
 
 // RE-IMPLEMENTED: Define readOnly as the opposite of canSave for clarity and consistency.
 const readOnly = computed(() => !canSave.value);
@@ -166,7 +166,6 @@ const clearForm = () => {
       <div class="col-span-12 mb-5">
         <h1 class="text-lg"> សកម្មភាពការងារ </h1>
       </div>
-
 
       <div class="col-span-12 lg:col-span-6">
         <TwSelect label="មណ្ឌល" name="serviceCenterID" v-model="formData.serviceCenterID" required
