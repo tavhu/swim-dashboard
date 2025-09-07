@@ -10,13 +10,14 @@ export default eventHandler(async (event) => {
   const user = session.user as any;
 
   try {
+    // CORRECTED: The resource name was wrong. It should be 'center-documentation'.
     const resource = await event.context.prisma.Resource.findFirst({
-      where: { frontEndURL: 'center-centerdocumentation' },
+      where: { frontEndURL: 'center-documentation' },
     });
 
     if (!resource) {
         setResponseStatus(event, 404);
-        return { error: "Resource 'center-centerdocumentation' not found." };
+        return { error: "Resource 'center-documentation' not found." };
     }
 
     const permission = await event.context.prisma.RoleToResource.findFirst({
@@ -26,14 +27,12 @@ export default eventHandler(async (event) => {
       },
     });
 
-    // If no permission record exists, or read is explicitly false, deny access.
     if (!permission || !permission.read) {
         setResponseStatus(event, 403);
         return { error: "Forbidden. You do not have permission to view this content." };
     }
 
     let whereClause = {};
-    // If permission is not globally granted, and the user is tied to a specific center, filter by that center.
     if (permission.granted === false && user.serviceCenterID) {
       whereClause = { serviceCenterID: user.serviceCenterID };
     }
