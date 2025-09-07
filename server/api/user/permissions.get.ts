@@ -1,7 +1,7 @@
 import { getServerSession } from "#auth";
 
 export default eventHandler(async (event) => {
-  const session = await getServerSession(event) as any;
+  const session = (await getServerSession(event)) as any;
 
   if (!session) {
     setResponseStatus(event, 401);
@@ -11,12 +11,12 @@ export default eventHandler(async (event) => {
   try {
     // Correctly fetch the user from the database
     const dbUser = await event.context.prisma.user.findUnique({
-        where: { id: session.id },
+      where: { id: session.id },
     });
 
     // If user or their role is not found, they have no permissions.
     if (!dbUser || !dbUser.userRoleID) {
-        return { permissions: [] };
+      return { permissions: [] };
     }
 
     // Correctly fetch permissions based on the actual schema
@@ -26,25 +26,24 @@ export default eventHandler(async (event) => {
       },
       // CORRECTED: Select only the fields that exist in your schema
       select: {
-        resource: {
+        Resource: {
           select: {
             frontEndURL: true,
           },
         },
-        read: true,      // This field exists
-        granted: true,  // This field exists
+        read: true, // This field exists
+        granted: true, // This field exists
       },
     });
 
     // CORRECTED: Map the result to include only the existing fields
     const permissions = rolePermissions.map((p) => ({
-      frontEndURL: p.resource?.frontEndURL,
+      frontEndURL: p.Resource?.frontEndURL,
       read: p.read,
       granted: p.granted,
     }));
 
     return { permissions };
-
   } catch (e) {
     // No logs as requested
     setResponseStatus(event, 500);
