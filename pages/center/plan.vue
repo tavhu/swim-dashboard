@@ -14,28 +14,15 @@ import { type ServiceCenter, type Staff, type governStaff } from '@prisma/client
 
 const readOnly = checkIfPageReadOnly()
 const { data: userDataAuth } = useAuth()
-const formName = 'ផែនការសកម្មភាព'
-const planing = ref('')//take serviceCenterID
+const formName = 'centerPlanForm'
 
-const items = [
-  [{
-    label: 'ផែនការប្រចាំឆ្នាំ',
-  },{
-      label: 'ផែនការមធ្យម'
-  },
-  {
-    label: 'ផែនការរយៈពេលវែង'
-  }
-]]
-
-const formNameEditOfficial = "centerStaffFormOfficial";
-const formDataEdit: {
+const formData: {
   [key: string]: any;
 } = reactive({
-  id: 'asdf',
-  planning : '',
-  docNumber: '',
-  year :'',
+  actvityPlan: '',
+  note: '',
+  yearPlan: '',
+  filePath: '',
   serviceCenterID: '',
 });
 
@@ -51,35 +38,58 @@ data.value?.data.forEach(ele => {
   })
 })
 
-const isErrorEdit = ref(false);
+const isError = ref(false);
 const toast = useToast();
 const composableForm = useForm();
-const formEditOfficial = computed(() => composableForm.getForm(formNameEditOfficial));
-const validatorEditOfficial = computed(() => formEditOfficial.value.validator);
+const form = computed(() => composableForm.getForm(formName));
+const validator = computed(() => form.value.validator);
 
-const formRulesEditOfficial = {
-//   firstNameKH: ['string', 'required'],
-//   lastNameKH: ['string', 'required'],
-//   firstNameEN: ['string', 'required'],
-  planning: ['string', 'required'],
+const formRules = {
+  actvityPlan: ['string', 'required'],
+  yearPlan: ['string', 'required'],
   serviceCenterID: ['string', 'required'],
 }
 
-async function submitEditOfficial() {
-     if (!(await confirmDialog())) return;
-  validatorEditOfficial.value.clearErrors();
-  await validatorEditOfficial.value.validate();
-  if (validatorEditOfficial.value.fail()) {
+async function submit() {
+  if (!(await confirmDialog())) return;
+  validator.value.clearErrors();
+  await validator.value.validate();
+  if (validator.value.fail()) {
     toast.error({
-      message: validatorEditOfficial.value.getErrorMessage(),
+      message: validator.value.getErrorMessage(),
     });
-    isErrorEdit.value = true;
+    isError.value = true;
     setTimeout(() => {
-      isErrorEdit.value = false;
+      isError.value = false;
     }, 1000);
     return true;
   }
-  const fileUploaded =  await handleImageUpload()
+
+  const fileUploaded = await handleImageUpload()
+  if (fileUploaded) {
+    formData.filePath = fileUploaded.join(",");
+  }
+
+  const { error } = await useFetch("/api/center/plan/upsert", {
+    method: "POST",
+    body: JSON.stringify({
+      actvityPlan: formData.actvityPlan,
+      note: formData.note,
+      yearPlan: formData.yearPlan,
+      filePath: formData.filePath,
+      serviceCenterID: formData.serviceCenterID,
+    }),
+  });
+
+  if (error.value?.statusCode) {
+    toast.error({
+      message: "មិនជោគជ័យ",
+    });
+  } else {
+    toast.success({
+      message: "ជោគជ័យ",
+    });
+  }
 }
 
 const files = ref();
@@ -98,12 +108,22 @@ const handleImageUpload = async () => {
       body: fd,
     });
 
-    console.log("data from backend is ", data.value);   
     return data.value
   } catch (error) {
     console.log(error);
   }
 }
+
+const clearForm = () => {
+  formData.actvityPlan = '';
+  formData.note = '';
+  formData.yearPlan = '';
+  formData.filePath = '';
+  formData.serviceCenterID = '';
+  files.value = null;
+  validator.value.clearErrors();
+};
+
 </script>
 <template>
     <div>
@@ -113,46 +133,31 @@ const handleImageUpload = async () => {
                 ផែនការសកម្មភាពមជ្ឈមណ្ឌល
             </h1>
         </div>
-        <!-- <table>
-            <th>
-            <td> លេខរៀង </td>
-            <td> សកម្មភាពការងារ </td>
-            <td> ពេលវេលាអនុវត្តសកម្មភាព </td>
-            </th>
-        </table> -->
 
-         <TwForm :name="formNameEditOfficial"
+         <TwForm :name="formName"
               class="grid grid-cols-12 gap-2 bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded-lg p-2 shadow"
               :class="{
-            'tw-shake': isErrorEdit,
-            }" :rules="formRulesEditOfficial" @submit="submitEditOfficial()" :custom-field-name="{
-            roleName: 'ឈ្មោះតួនាទី',
-            roleDescription: 'ពិពណ៌នាតួនាទី',
+            'tw-shake': isError,
+            }" :rules="formRules" @submit="submit()" :custom-field-name="{
+              actvityPlan: 'ផែនការសកម្មភាព',
+              yearPlan: 'ផែនការឆ្នាំ',
+              serviceCenterID: 'មណ្ឌល'
             }">
             <div class="col-span-12 mb-5">
-                <!-- flex justify-start  gap-3 mb-5 -->
                 <h1 class="text-lg"> សកម្មភាពការងារ </h1>
             </div>
 
             <div class="col-span-12 lg:col-span-6">
-              <TwSelect label="មណ្ឌល" name="serviceCenterID"  v-model="formDataEdit.serviceCenterID" required
+              <TwSelect label="មណ្ឌល" name="serviceCenterID"  v-model="formData.serviceCenterID" required
                 :items="serviceCenterList" placeholder="សូមជ្រើសរើស" />
               <CustomErrorMessage name="serviceCenterID" />
             </div>
             <div class="col-span-12 lg:col-span-6">
-                    <!-- <UDropdown label="ផែនការសកម្មភាព" name="typeDrugUsed" v-model="planing"  :items="[{
-                        value: 'yearly', label: 'ផែនការប្រចាំឆ្នាំ'
-                    },
-                    { value: 'threeyear', label: 'ផែនការមធ្យម' },
-                    { value: 'longterm', label: 'ផែនការរយៈពេលវែង' },
-                    ]" placeholder="សូមជ្រើសរើស" />
-
-                    </UDropdown> -->
                     <TwSelect
                     label="ផែនការសកម្មភាព"
-                    name="planning"
+                    name="actvityPlan"
                     required
-                    v-model="formDataEdit.planning"  
+                    v-model="formData.actvityPlan"  
                     :items="[{
                         value: 'yearly', label: 'ផែនការប្រចាំឆ្នាំ'
                     },
@@ -161,28 +166,24 @@ const handleImageUpload = async () => {
                     ]" placeholder="សូមជ្រើសរើស"         
                     />
 
-                    <CustomErrorMessage name="planning" />
+                    <CustomErrorMessage name="actvityPlan" />
             </div>
              <div class="col-span-12 lg:col-span-6">
-                <TwInput label="លេខសំគាល់"  name="lastNameKH" v-model="formDataEdit.docNumber"
-                  placeholder="ឈ្មោះឬលេខឯកសារ" type="text" />
-                <CustomErrorMessage name="lastNameKH" />
+                <TwInput label="កំណត់ចំណាំ"  name="note" v-model="formData.note"
+                  placeholder="កំណត់ចំណាំ" type="text" />
+                <CustomErrorMessage name="note" />
               </div>
              <div class="col-span-12 lg:col-span-6">
-                <TwInput label="ផែនការឆ្នាំ" name="lastNameKH"  v-model="formDataEdit.year"
-                  placeholder="លេខ" type="text" />
-                <CustomErrorMessage name="lastNameKH" />
+                <TwInput label="ផែនការឆ្នាំ" name="yearPlan"  v-model="formData.yearPlan"
+                  placeholder="YYYY" type="text" />
+                <CustomErrorMessage name="yearPlan" />
               </div>
-            <!-- <div class="col-span-12 lg:col-span-6">
-                <TwInput label="លេខរៀង" name="ReadableCode" placeholder="លេខរៀង" t  ype="text" />
-                <CustomErrorMessage name="ReadableCode" />
-            </div> -->
             <div class="col-span-12">
-              <formTwForm_custom v-model="files" :multiple='true'  label="ឯកសារ"  />
+              <TwFile v-model="files" :multiple='true'  label="ឯកសារ"  />
             </div>
             <div class="col-span-12 flex justify-end gap-1 ">
-                <UButton color="gray" type="submit" square size="lg"
-                    class="px-4 dark:text-gray-200 dark:!border-gray-800 dark:border" @click="">
+                <UButton color="gray" type="button" square size="lg"
+                    class="px-4 dark:text-gray-200 dark:!border-gray-800 dark:border" @click="clearForm()">
                     កំណត់ឡើងវិញ
                 </UButton>
                 <UButton color="primary" type="submit" size="lg" class="px-4"> រក្សាទុក
