@@ -2,22 +2,24 @@
 import { ref, computed } from 'vue';
 import { useRouter } from '#app';
 import { useToast } from 'vue3-tailwind';
+import { usePermissionStore } from '~/stores/permission';
 
 const router = useRouter();
 const toast = useToast();
+const permissionStore = usePermissionStore();
 
-// Security
-const canCreate = computed(() => !checkIfPageReadOnly());
-const canEdit = computed(() => !checkIfPageReadOnly());
-const canDelete = computed(() => !checkIfPageReadOnly());
+// --- Security --- //
+const canCreate = computed(() => permissionStore.getPermission('center-documentation')?.create ?? true);
+const canEdit = computed(() => permissionStore.getPermission('center-documentation')?.update ?? true);
+const canDelete = computed(() => permissionStore.getPermission('center-documentation')?.delete ?? true);
 
-// Table state
+// --- Table state --- //
 const page = ref(1);
 const limit = ref(10);
 const search = ref('');
 const sort = ref({ column: 'yearPlan', direction: 'desc' as 'asc' | 'desc' });
 
-// Columns based on CenterPlan model from prisma schema
+// --- Columns --- //
 const columns = [
   { key: 'ServiceCenter.nameKH', label: 'មជ្ឈមណ្ឌល', sortable: true },
   { key: 'yearPlan', label: 'ឆ្នាំ', sortable: true },
@@ -27,20 +29,22 @@ const columns = [
   { key: 'actions', label: 'Actions' },
 ];
 
-// Data fetching from the correct endpoint for CenterPlan
-const { data: result, pending, error, refresh } = useLazyAsyncData<any>(
-  'centerPlans',
-  () => $fetch('/api/center/plan/get', { method: 'POST', body: {} }), // Added body: {} to fix hard refresh
-  {
-    // No server-side pagination in the API, so we fetch all and handle it on the client
+// --- Data Fetching --- //
+// Changed to useFetch with await to ensure data is loaded on server-side hard refresh
+const { data: result, pending, error, refresh } = await useFetch<any>(
+  '/api/center/plan/get-all', 
+  { 
+    method: 'POST',
+    default: () => ({ data: [] }) // Provide a default to prevent errors on initial load
   }
 );
 
-const allPlans = computed(() => result.value?.plans || []);
+const allPlans = computed(() => result.value?.data || []);
 
-// Client-side filtering and sorting
+// --- Client-side Filtering and Sorting --- //
 const filteredAndSortedRows = computed(() => {
-  let rows = [...allPlans.value];
+  // Ensure allPlans is not null or undefined before spreading
+  let rows = allPlans.value ? [...allPlans.value] : [];
 
   // Client-side Search
   if (search.value) {
@@ -61,6 +65,8 @@ const filteredAndSortedRows = computed(() => {
     rows.sort((a, b) => {
       const aValue = getProperty(a, column);
       const bValue = getProperty(b, column);
+      if (aValue === null || aValue === undefined) return 1;
+      if (bValue === null || bValue === undefined) return -1;
       if (aValue < bValue) return direction === 'asc' ? -1 : 1;
       if (aValue > bValue) return direction === 'asc' ? 1 : -1;
       return 0;
@@ -70,7 +76,8 @@ const filteredAndSortedRows = computed(() => {
   return rows;
 });
 
-// Client-side pagination
+
+// --- Client-side Pagination --- //
 const paginatedRows = computed(() => {
   const startIndex = (page.value - 1) * limit.value;
   return filteredAndSortedRows.value.slice(startIndex, startIndex + limit.value);
@@ -78,23 +85,22 @@ const paginatedRows = computed(() => {
 
 const total = computed(() => filteredAndSortedRows.value.length);
 
-// Utility to get nested properties for sorting
+// --- Utilities --- //
 function getProperty(obj: any, path: string) {
   return path.split('.').reduce((o, i) => (o ? o[i] : undefined), obj);
 }
 
-// Debounce search input
+// --- Event Handlers --- //
 const onSearch = useDebounceFn((value) => {
   search.value = value;
   page.value = 1; // Reset to first page on search
 }, 300);
 
-// Sorting handler
 function onSort(s: { column: string; direction: 'asc' | 'desc' }) {
   sort.value = s;
 }
 
-// Actions dropdown items
+// --- Actions --- //
 const actionItems = (row: any) => [
   [
     {
@@ -114,7 +120,6 @@ const actionItems = (row: any) => [
   ],
 ];
 
-// Delete logic
 async function deletePlan(id: string) {
   if (!(await confirmDialog({ title: 'Confirm Deletion', message: 'Are you sure you want to delete this plan?' }))) return;
 
@@ -124,10 +129,10 @@ async function deletePlan(id: string) {
   });
 
   if (error.value) {
-    toast.error({ title: 'Error', message: 'Failed to delete plan. The API endpoint may not exist.' });
+    toast.error({ title: 'Error', message: 'Failed to delete plan.' });
   } else {
     toast.success({ title: 'Success', message: 'Plan deleted successfully.' });
-    refresh(); // Refresh the data from the server
+    refresh();
   }
 }
 
@@ -139,13 +144,11 @@ async function deletePlan(id: string) {
       <h1 class="text-2xl font-[Moul] text-primary">
         ផែនការមជ្ឈមណ្ឌល
       </h1>
-      <!-- Button to add a new plan, links to the plan form -->
       <UButton v-if="canCreate" icon="i-heroicons-plus-circle-20-solid" @click="router.push('/center/plan')">
         បន្ថែមថ្មី
       </UButton>
     </div>
 
-    <!-- Search input -->
     <div class="flex justify-end mb-4">
       <UInput :model-value="search" @update:model-value="onSearch" placeholder="Search..."
         icon="i-heroicons-magnifying-glass-20-solid" />
@@ -153,12 +156,11 @@ async function deletePlan(id: string) {
 
     <UCard :ui="{ body: { padding: 'px-0 sm:p-0' } }">
       <UTable :loading="pending" :columns="columns" :rows="paginatedRows" :sort="sort" @sort="onSort">
-        <!-- Custom template for Service Center name -->
+        
         <template #ServiceCenter.nameKH-data="{ row }">
           {{ row.ServiceCenter?.nameKH || 'N/A' }}
         </template>
 
-        <!-- Custom template for File Path to handle multiple files -->
         <template #filePath-data="{ row }">
           <div v-if="row.filePath && row.filePath.length > 0">
             <div v-for="(path, index) in row.filePath.split(',').filter(p => p.trim())" :key="index">
@@ -170,7 +172,6 @@ async function deletePlan(id: string) {
           <span v-else>No file</span>
         </template>
 
-        <!-- Custom template for actions dropdown -->
         <template #actions-data="{ row }">
           <UDropdown :items="actionItems(row)">
             <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />
@@ -179,7 +180,6 @@ async function deletePlan(id: string) {
       </UTable>
     </UCard>
 
-    <!-- Pagination controls -->
     <div v-if="!pending && total > limit" class="flex flex-wrap justify-between items-center mt-4">
       <div class="text-sm text-gray-500 dark:text-gray-400">
         Showing {{ (page - 1) * limit + 1 }} to {{ Math.min(page * limit, total) }} of {{ total }} entries
