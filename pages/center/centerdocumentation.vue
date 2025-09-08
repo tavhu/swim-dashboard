@@ -11,71 +11,67 @@ const canCreate = computed(() => !checkIfPageReadOnly());
 const canEdit = computed(() => !checkIfPageReadOnly());
 const canDelete = computed(() => !checkIfPageReadOnly());
 
-// Tabs
-const tabItems = ['Contract', 'Official'];
-const selectedTab = ref(0);
-const employeeType = computed(() => tabItems[selectedTab.value]);
-
 // Table state
 const page = ref(1);
 const limit = ref(10);
 const search = ref('');
-
-// Columns (will be dynamic based on tab)
-const columns = computed(() => {
-  const baseColumns = [
-    { key: 'gender', label: 'Gender', sortable: true },
-    { key: 'ServiceCenter.nameKH', label: 'Center', sortable: true },
-    { key: 'actions', label: 'Actions' },
-  ];
-
-  if (employeeType.value === 'Contract') {
-    return [
-      { key: 'lastName', label: 'Last Name', sortable: true },
-      { key: 'firstName', label: 'First Name', sortable: true },
-      { key: 'position', label: 'Position', sortable: true },
-      { key: 'telephone', label: 'Telephone', sortable: true },
-      ...baseColumns,
-    ];
-  } else {
-    return [
-      { key: 'lastNameKH', label: 'Last Name (Khmer)', sortable: true },
-      { key: 'firstNameKH', label: 'First Name (Khmer)', sortable: true },
-      ...baseColumns,
-    ];
-  }
-});
+const sort = ref({ column: 'year', direction: 'desc' as 'asc' | 'desc' });
 
 // Data fetching
 const { data: result, pending, error, refresh } = useLazyAsyncData<any>(
-  'staff-documentation',
-  () => $fetch('/api/center/staff/get', {
-    method: 'POST',
-    body: {
-      typeEmployee: employeeType.value,
-      skip: (page.value - 1) * limit.value,
-      limit: limit.value,
-    },
-  }),
-  {
-    watch: [page, limit, selectedTab],
-  }
+  'centerPlans',
+  () => $fetch('/api/center/plan/get', { method: 'POST' })
 );
 
-// Client-side search and filtering
-const filteredRows = computed(() => {
-  const data = result.value?.data || [];
-  if (!search.value) {
-    return data;
-  }
-  return data.filter((item: any) => {
-    return Object.values(item).some((value) => {
-      return String(value).toLowerCase().includes(search.value.toLowerCase());
+const allPlans = computed(() => result.value?.plans || []);
+
+// Client-side filtering and sorting
+const filteredAndSortedRows = computed(() => {
+  let rows = [...allPlans.value];
+
+  // Search
+  if (search.value) {
+    rows = rows.filter(item => {
+      return Object.values(item).some(value =>
+        String(value).toLowerCase().includes(search.value.toLowerCase())
+      );
     });
-  });
+  }
+
+  // Sort
+  if (sort.value.column) {
+    const { column, direction } = sort.value;
+    rows.sort((a, b) => {
+      const aValue = getProperty(a, column);
+      const bValue = getProperty(b, column);
+      if (aValue < bValue) return direction === 'asc' ? -1 : 1;
+      if (aValue > bValue) return direction === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }
+
+  return rows;
 });
 
-const total = computed(() => result.value?.total || 0);
+// Client-side pagination
+const paginatedRows = computed(() => {
+  const startIndex = (page.value - 1) * limit.value;
+  return filteredAndSortedRows.value.slice(startIndex, startIndex + limit.value);
+});
+
+const total = computed(() => filteredAndSortedRows.value.length);
+
+const columns = [
+  { key: 'ServiceCenter.nameKH', label: 'មជ្ឈមណ្ឌល', sortable: true },
+  { key: 'year', label: 'ឆ្នាំ', sortable: true },
+  { key: 'description', label: 'ការពិពណ៌នា', sortable: true },
+  { key: 'actions', label: 'Actions' },
+];
+
+// Utility to get nested properties for sorting
+function getProperty(obj: any, path: string) {
+  return path.split('.').reduce((o, i) => (o ? o[i] : undefined), obj);
+}
 
 // Debounce search
 const onSearch = useDebounceFn((value) => {
@@ -83,13 +79,18 @@ const onSearch = useDebounceFn((value) => {
   page.value = 1;
 }, 300);
 
+// Sorting
+function onSort(s: { column: string; direction: 'asc' | 'desc' }) {
+  sort.value = s;
+}
+
 // Actions
 const actionItems = (row: any) => [
   [
     {
       label: 'Edit',
       icon: 'i-heroicons-pencil-square-20-solid',
-      click: () => router.push(`/center/staff?id=${row.id}&type=${employeeType.value}`),
+      click: () => router.push(`/center/planform?id=${row.id}`),
       disabled: !canEdit.value,
     },
   ],
@@ -97,33 +98,29 @@ const actionItems = (row: any) => [
     {
       label: 'Delete',
       icon: 'i-heroicons-trash-20-solid',
-      click: () => deleteStaff(row.id),
+      click: () => deletePlan(row.id),
       disabled: !canDelete.value,
     },
   ],
 ];
 
 // Delete logic
-async function deleteStaff(id: string) {
-  if (!(await confirmDialog({ title: 'Confirm Deletion', message: 'Are you sure you want to delete this staff member?' }))) return;
-
-  const { error } = await useFetch('/api/center/staff/delete', {
+async function deletePlan(id: string) {
+  if (!(await confirmDialog({ title: 'Confirm Deletion', message: 'Are you sure you want to delete this plan?' }))) return;
+  
+  // NOTE: Assuming a delete endpoint exists at /api/center/plan/delete
+  const { error } = await useFetch('/api/center/plan/delete', {
     method: 'POST',
-    body: { id, type: employeeType.value }, // Assuming API needs type for deletion
+    body: { id },
   });
 
   if (error.value) {
-    toast.error({ message: 'Failed to delete staff member.' });
+    toast.error({ message: 'Failed to delete plan. The delete API may not exist yet.' });
   } else {
-    toast.success({ message: 'Staff member deleted successfully.' });
+    toast.success({ message: 'Plan deleted successfully.' });
     refresh();
   }
 }
-
-// Watch for tab changes to reset pagination
-watch(selectedTab, () => {
-  page.value = 1;
-});
 
 </script>
 
@@ -131,34 +128,34 @@ watch(selectedTab, () => {
   <div>
     <div class="flex justify-between items-center mb-4">
       <h1 class="text-2xl font-[Moul] text-primary">
-        បញ្ជីឯកសារមន្ត្រី
+        ផែនការមជ្ឈមណ្ឌល
       </h1>
-      <UButton v-if="canCreate" icon="i-heroicons-plus-circle-20-solid" @click="router.push('/center/staff')">
+      <UButton v-if="canCreate" icon="i-heroicons-plus-circle-20-solid" @click="router.push('/center/planform')">
         បន្ថែមថ្មី
       </UButton>
     </div>
-
-    <UTabs :items="tabItems.map(item => ({ label: item }))" v-model="selectedTab" class="mb-4" />
 
     <div class="flex justify-end mb-4">
       <UInput :model-value="search" @update:model-value="onSearch" placeholder="Search..." icon="i-heroicons-magnifying-glass-20-solid" />
     </div>
 
     <UCard :ui="{ body: { padding: 'px-0 sm:p-0' } }">
-        <UTable
-            :loading="pending"
-            :columns="columns"
-            :rows="filteredRows"
-        >
-           <template #ServiceCenter.nameKH-data="{ row }">
-                {{ row.ServiceCenter?.nameKH || 'N/A' }}
-            </template>
-            <template #actions-data="{ row }">
-                <UDropdown :items="actionItems(row)">
-                    <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />
-                </UDropdown>
-            </template>
-        </UTable>
+      <UTable
+        :loading="pending"
+        :columns="columns"
+        :rows="paginatedRows"
+        :sort="sort"
+        @sort="onSort"
+      >
+        <template #ServiceCenter.nameKH-data="{ row }">
+          {{ row.ServiceCenter?.nameKH || 'N/A' }}
+        </template>
+        <template #actions-data="{ row }">
+          <UDropdown :items="actionItems(row)">
+            <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />
+          </UDropdown>
+        </template>
+      </UTable>
     </UCard>
 
     <div v-if="!pending && total > limit" class="flex flex-wrap justify-between items-center mt-4">
