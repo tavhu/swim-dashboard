@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useRouter } from '#app';
 import { useToast } from 'vue3-tailwind';
 
@@ -11,8 +11,14 @@ const canCreate = computed(() => !checkIfPageReadOnly());
 const canEdit = computed(() => !checkIfPageReadOnly());
 const canDelete = computed(() => !checkIfPageReadOnly());
 
+// Search
+const searchQuery = ref('');
+
 // Data
-const { data: services, pending, error, refresh } = await useFetch('/api/service');
+const { data: services, pending, error, refresh } = await useFetch('/api/service', {
+    query: { q: searchQuery },
+    watch: [searchQuery]
+});
 
 const actionItems = (row: any) => [
   [
@@ -52,12 +58,16 @@ async function deleteService(id: string) {
 <template>
   <div>
     <div class="flex justify-between items-center mb-4">
-      <h1 class="text-2xl font-[Moul] text-primary">
-        បញ្ជីសេវាកម្ម
-      </h1>
-      <UButton v-if="canCreate" icon="i-heroicons-plus-circle-20-solid" @click="router.push('/service/register')">
-        បន្ថែមថ្មី
-      </UButton>
+        <h1 class="text-2xl font-[Moul] text-primary">
+            បញ្ជីសេវាកម្ម
+        </h1>
+        <UButton v-if="canCreate" icon="i-heroicons-plus-circle-20-solid" @click="router.push('/service/register')">
+            បន្ថែមថ្មី
+        </UButton>
+    </div>
+
+    <div class="flex justify-end mb-4">
+        <UInput v-model="searchQuery" placeholder="Search..." icon="i-heroicons-magnifying-glass-20-solid" />
     </div>
 
     <div v-if="pending">Loading...</div>

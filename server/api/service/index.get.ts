@@ -4,13 +4,28 @@ const prisma = new PrismaClient();
 
 export default defineEventHandler(async (event) => {
   try {
+    const query = getQuery(event);
+    const searchQuery = query.q as string;
+
+    const whereCondition: any = {
+      isActive: true,
+    };
+
+    if (searchQuery) {
+      whereCondition.OR = [
+        { nameKh: { contains: searchQuery, mode: 'insensitive' } },
+        { providingInstitution: { contains: searchQuery, mode: 'insensitive' } },
+        { purpose: { contains: searchQuery, mode: 'insensitive' } },
+        { legalBasis: { contains: searchQuery, mode: 'insensitive' } },
+        { eligibleClients: { contains: searchQuery, mode: 'insensitive' } },
+      ];
+    }
+
     const services = await prisma.service.findMany({
-      where: {
-        isActive: true,
-      },
+      where: whereCondition,
       orderBy: {
         createdAt: 'desc',
-      }
+      },
     });
 
     return {
