@@ -85,14 +85,13 @@ async function submit() {
       message: "ការចុះឈ្មោះសេវាកម្មបានជោគជ័យ",
     });
     clearForm();
-    router.back();
   }
 }
 
 // Clear Form Logic
 const clearForm = () => {
   Object.keys(formData).forEach(key => {
-    formData[key] = '';
+    (formData as any)[key] = '';
   });
   nextTick(() => {
     if(validator.value) {
