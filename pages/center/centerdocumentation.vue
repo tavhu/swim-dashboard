@@ -187,8 +187,8 @@ const toast = useToast();
             <template #filePath-data="{ row }">
               <div v-if="row.filePath && row.filePath.length > 0">
                 <div v-for="(path, index) in row.filePath.split(',').filter(p => p)" :key="index">
-                    <a :href="'/' + path" target="_blank" class="text-blue-500 hover:underline">
-                        {{ path.split('/').pop() || 'View File' }}
+                    <a :href="path.trim().startsWith('/') ? path.trim() : '/' + path.trim()" target="_blank" class="text-blue-500 hover:underline">
+                        {{ path.trim().split('/').pop() || 'View File' }}
                     </a>
                 </div>
               </div>
