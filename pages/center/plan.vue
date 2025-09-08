@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useToast, TwFile, TwForm, TwInput, TwSelect } from "vue3-tailwind";
 import { type ServiceCenter } from '@prisma/client'
-import { onMounted, computed, ref, nextTick, reactive } from "vue";
+import { onMounted, computed, ref, nextTick, reactive, watch } from "vue";
 import { usePermissionStore } from '~/stores/permission';
 import { useRoute, useRouter } from '#app';
 
@@ -9,62 +9,43 @@ const router = useRouter();
 const route = useRoute();
 const permissionStore = usePermissionStore();
 
+// --- Page Mode & Permissions --- //
 const planId = computed(() => route.query.id as string | undefined);
 const isEditMode = computed(() => !!planId.value);
 
-const isSaved = ref(false);
-
-const goBack = () => {
-  router.push('/center/centerdocumentation');
-};
+const { data: userDataAuth } = useAuth();
+const user = computed(() => userDataAuth.value?.user) as any;
 
 const canSave = computed(() => {
   const permission = permissionStore.getPermission('center-plan');
-  // For now, let's assume read permission means can edit/create.
-  // You might want to refine this based on your permission system (e.g., permission.create, permission.update)
   return permission?.read ?? true; 
 });
-
 const readOnly = computed(() => !canSave.value);
 
-const { data: userDataAuth } = useAuth();
-const user = computed(() => userDataAuth.value?.user) as any;
+// --- Form State --- //
 const formName = 'centerPlanForm';
-
 const formData = reactive({
   id: undefined as string | undefined,
   actvityPlan: '',
   note: '',
   yearPlan: '',
-  filePath: '',
+  filePath: '', // This will be a comma-separated string of paths
   serviceCenterID: '',
 });
+const existingFiles = ref<string[]>([]);
+const files = ref<File[]>([]); // For new file uploads
 
+// --- Data Loading --- //
 const { data: centerData } = await useFetch<{ data: ServiceCenter[] }>('/api/center/get', {
   method: 'POST'
 });
-
 const serviceCenterList = computed(() => 
   centerData.value?.data.map(ele => ({
     label: ele.nameKH,
     value: ele.id
   })) || []
 );
-
 const isCenterUser = computed(() => !!user.value?.serviceCenterID);
-
-const { useForm } = await import("vue3-tailwind");
-const composableForm = useForm();
-const form = computed(() => composableForm.getForm(formName));
-const validator = computed(() => form.value.validator);
-const isError = ref(false);
-const toast = useToast();
-
-const formRules = {
-  actvityPlan: ['string', 'required'],
-  yearPlan: ['string', 'required'],
-  serviceCenterID: ['string', 'required'],
-};
 
 async function fetchPlanData(id: string) {
   try {
@@ -74,6 +55,8 @@ async function fetchPlanData(id: string) {
     });
     if (result.plan) {
       Object.assign(formData, result.plan);
+      // Initialize existing files from the filePath string
+      existingFiles.value = result.plan.filePath ? result.plan.filePath.split(',').filter((f:string) => f) : [];
     } else {
       toast.error({ message: 'Plan not found.' });
       goBack();
@@ -87,35 +70,56 @@ async function fetchPlanData(id: string) {
 onMounted(() => {
   if (isEditMode.value && planId.value) {
     fetchPlanData(planId.value);
-  } else {
-    // For create mode, set default service center if user is a center user
-    if (isCenterUser.value) {
-      formData.serviceCenterID = user.value.serviceCenterID;
-    }
+  } else if (isCenterUser.value) {
+    formData.serviceCenterID = user.value.serviceCenterID;
   }
 });
 
-const resetFormForNewEntry = () => {
-  formData.id = undefined;
-  formData.actvityPlan = '';
-  formData.note = '';
-  formData.yearPlan = '';
-  formData.filePath = '';
-  files.value = null;
-  if (!isCenterUser.value) {
-    formData.serviceCenterID = '';
+watch(planId, (newId) => {
+  if (!newId) {
+    resetFormForNewEntry();
   }
+});
+
+// --- Form Validation --- //
+const { useForm } = await import("vue3-tailwind");
+const composableForm = useForm();
+const form = computed(() => composableForm.getForm(formName));
+const validator = computed(() => form.value.validator);
+const isError = ref(false);
+const toast = useToast();
+const formRules = {
+  actvityPlan: ['string', 'required'],
+  yearPlan: ['string', 'required'],
+  serviceCenterID: ['string', 'required'],
+};
+
+// --- Form Actions --- //
+const goBack = () => {
+  router.push('/center/centerdocumentation');
+};
+
+const resetFormForNewEntry = () => {
+  Object.assign(formData, {
+    id: undefined,
+    actvityPlan: '',
+    note: '',
+    yearPlan: '',
+    filePath: '',
+    serviceCenterID: isCenterUser.value ? user.value.serviceCenterID : '',
+  });
+  files.value = [];
+  existingFiles.value = [];
   nextTick(() => {
     validator.value?.clearErrors();
   });
 }
 
 const clearForm = () => {
-  if (isEditMode.value) {
-    // If editing, reset to original data
-    if (planId.value) fetchPlanData(planId.value);
+  if (isEditMode.value && planId.value) {
+    fetchPlanData(planId.value); // Re-fetch original data
+    files.value = []; // Clear any newly staged files
   } else {
-    // If creating, just clear the form
     resetFormForNewEntry();
   }
 }
@@ -123,7 +127,7 @@ const clearForm = () => {
 async function submit() {
   if (!(await confirmDialog({ title: isEditMode.value ? 'Confirm Update' : 'Confirm Save' }))) return;
   
-  validator.value.clearErrors();
+  if (!validator.value) return;
   await validator.value.validate();
   if (validator.value.fail()) {
     toast.error({ message: validator.value.getErrorMessage() });
@@ -132,59 +136,63 @@ async function submit() {
     return;
   }
 
-  const fileUploaded = await handleImageUpload();
-  if (fileUploaded) {
-    const filePaths = Object.values(fileUploaded);
-    formData.filePath = filePaths.join(",");
-  }
+  // Handle file uploads
+  const uploadedFilePaths = await handleImageUpload();
+  const newFilePaths = uploadedFilePaths ? Object.values(uploadedFilePaths) : [];
+  
+  // Combine old and new file paths
+  const allFilePaths = [...existingFiles.value, ...newFilePaths];
+  formData.filePath = allFilePaths.join(',');
 
+  // Perform the upsert operation
   const { error } = await useFetch("/api/center/plan/upsert", {
     method: "POST",
-    body: formData, // Send the whole formData object, which includes the id for updates
+    body: formData,
   });
 
-  if (error.value?.statusCode) {
-    toast.error({ message: "Save failed" });
+  if (error.value) {
+    toast.error({ message: `Save failed: ${error.value.message}` });
   } else {
     toast.success({ message: "Save successful" });
-    goBack(); // Go back to the list after saving
+    goBack();
   }
 }
 
-const files = ref();
+// --- File Handling --- //
 const handleImageUpload = async () => {
-  if (readOnly.value) return;
-  if (!files.value || files.value?.length == 0) return false;
+  if (readOnly.value || files.value.length === 0) return false;
   try {
     const fd = new FormData();
-    Array.from(files.value).forEach((file, index) => {
-      //@ts-ignore
-      fd.append(index, file);
+    files.value.forEach((file, index) => {
+      fd.append(String(index), file);
     });
 
-    const { data } = await useFetch("/api/user/upload", {
+    const { data } = await useFetch<Record<string, string>>("/api/user/upload", {
       method: "POST",
       body: fd,
     });
-
     return data.value;
-  } catch (error) {
-    console.log(error);
+  } catch (err) {
+    console.error('File upload failed:', err);
+    toast.error({ message: 'File upload failed.' });
+    return null;
   }
+};
+
+function removeExistingFile(index: number) {
+  existingFiles.value.splice(index, 1);
 }
 
 </script>
 
 <template>
   <div>
-    <div>
-      <h1 class="text-2xl font-[Moul] text-primary mb-3">
-        {{ isEditMode ? 'កែសម្រួលផែនការសកម្មភាព' : 'ផែនការសកម្មភាពមជ្ឈមណ្ឌល' }}
-      </h1>
-    </div>
+    <h1 class="text-2xl font-[Moul] text-primary mb-3">
+      {{ isEditMode ? 'កែសម្រួលផែនការសកម្មភាព' : 'ផែនការសកម្មភាពមជ្ឈមណ្ឌល' }}
+    </h1>
 
     <TwForm :name="formName"
-      class="grid grid-cols-12 gap-2 bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded-lg p-2 shadow"
+      class="grid grid-cols-12 gap-4 bg-white dark:bg-gray-900 rounded-lg p-4 shadow"
       :class="{ 'tw-shake': isError }"
       :rules="formRules"
       @submit="submit"
@@ -194,8 +202,8 @@ const handleImageUpload = async () => {
         serviceCenterID: 'មណ្ឌល'
       }">
       
-      <div class="col-span-12 mb-5">
-        <h1 class="text-lg">{{ isEditMode ? 'កែសម្រួលព័ត៌មាន' : 'សកម្មភាពការងារ' }}</h1>
+      <div class="col-span-12">
+        <h2 class="text-lg font-semibold">{{ isEditMode ? 'កែសម្រួលព័ត៌មាន' : 'សកម្មភាពការងារ' }}</h2>
       </div>
 
       <div class="col-span-12 lg:col-span-6">
@@ -219,22 +227,28 @@ const handleImageUpload = async () => {
         <TwInput label="ផែនការឆ្នាំ" name="yearPlan" v-model="formData.yearPlan" placeholder="YYYY" type="text" :disabled="readOnly" />
         <CustomErrorMessage name="yearPlan" />
       </div>
+
+      <!-- File Upload Section -->
       <div class="col-span-12" v-if="canSave">
-        <TwFile v-model="files" :multiple="true" label="ឯកសារ" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" :disabled="readOnly" />
-        <p v-if="isEditMode && formData.filePath" class="text-sm mt-2 text-gray-500">Current file: <a :href="formData.filePath" target="_blank" class="text-blue-500 hover:underline">{{ formData.filePath.split('/').pop() }}</a></p>
+        <TwFile v-model="files" :multiple="true" label="បន្ថែមឯកសារថ្មី" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" :disabled="readOnly" />
       </div>
-      <div class="col-span-12 flex justify-end gap-1 ">
-        <UButton color="gray" type="button" square size="lg"
-          class="px-4 dark:text-gray-200 dark:!border-gray-800 dark:border" @click="goBack()">
-          ត្រឡប់ក្រោយ
-        </UButton>
-        <UButton v-if="canSave" color="gray" type="button" square size="lg"
-          class="px-4 dark:text-gray-200 dark:!border-gray-800 dark:border" @click="clearForm()">
-          {{ isEditMode ? 'បោះបង់' : 'កំណត់ឡើងវិញ' }}
-        </UButton>
-        <UButton v-if="canSave" color="primary" type="submit" size="lg" class="px-4">
-           {{ isEditMode ? 'រក្សាទុកការផ្លាស់ប្តូរ' : 'រក្សាទុក' }}
-        </UButton>
+
+      <!-- Existing Files Display -->
+      <div class="col-span-12" v-if="isEditMode && existingFiles.length > 0">
+          <p class="font-medium mb-2">ឯកសារបច្ចុប្បន្ន:</p>
+          <ul class="list-disc list-inside space-y-1">
+              <li v-for="(file, index) in existingFiles" :key="index" class="flex items-center justify-between">
+                  <a :href="file" target="_blank" class="text-blue-500 hover:underline truncate">{{ file.split('/').pop() }}</a>
+                  <UButton v-if="canSave" icon="i-heroicons-x-mark-20-solid" color="red" variant="ghost" size="xs" @click="removeExistingFile(index)" />
+              </li>
+          </ul>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="col-span-12 flex justify-end gap-2 mt-4">
+        <UButton color="gray" type="button" @click="goBack()">ត្រឡប់ក្រោយ</UButton>
+        <UButton v-if="canSave" color="gray" type="button" @click="clearForm()">{{ isEditMode ? 'បោះបង់' : 'កំណត់ឡើងវិញ' }}</UButton>
+        <UButton v-if="canSave" color="primary" type="submit">{{ isEditMode ? 'រក្សាទុកការផ្លាស់ប្តូរ' : 'រក្សាទុក' }}</UButton>
       </div>
     </TwForm>
   </div>
