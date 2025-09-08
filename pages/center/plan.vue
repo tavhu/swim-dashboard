@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useToast, TwFile, TwForm, TwInput, TwSelect, TwErrorMessage } from "vue3-tailwind";
+import { useToast, TwFile, TwForm, TwInput, TwSelect, TwErrorMessage, useForm } from "vue3-tailwind";
 import { type ServiceCenter } from '@prisma/client'
 import { onMounted, computed, ref, nextTick, reactive, watch } from "vue";
 import { usePermissionStore } from '~/stores/permission';
@@ -82,7 +82,6 @@ watch(planId, (newId) => {
 });
 
 // --- Form Validation --- //
-const { useForm } = await import("vue3-tailwind");
 const composableForm = useForm();
 const form = computed(() => composableForm.getForm(formName));
 const validator = computed(() => form.value.validator);
