@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useToast, TwFile, TwForm, TwInput, TwSelect } from "vue3-tailwind";
+import { useToast, TwFile, TwForm, TwInput, TwSelect, TwErrorMessage } from "vue3-tailwind";
 import { type ServiceCenter } from '@prisma/client'
 import { onMounted, computed, ref, nextTick, reactive, watch } from "vue";
 import { usePermissionStore } from '~/stores/permission';
@@ -223,7 +223,7 @@ function removeExistingFile(index: number) {
       <div class="col-span-12 lg:col-span-6">
         <TwSelect label="មណ្ឌល" name="serviceCenterID" v-model="formData.serviceCenterID" required
           :items="serviceCenterList" placeholder="សូមជ្រើសរើស" :disabled="isCenterUser || readOnly" />
-        <CustomErrorMessage name="serviceCenterID" />
+        <TwErrorMessage name="serviceCenterID" />
       </div>
       <div class="col-span-12 lg:col-span-6">
         <TwSelect label="ផែនការសកម្មភាព" name="actvityPlan" required v-model="formData.actvityPlan" :items="[
@@ -231,15 +231,15 @@ function removeExistingFile(index: number) {
           { value: 'threeyear', label: 'ផែនការមធ្យម' },
           { value: 'longterm', label: 'ផែនការរយៈពេលវែង' },
         ]" placeholder="សូមជ្រើសរើស" :disabled="readOnly" />
-        <CustomErrorMessage name="actvityPlan" />
+        <TwErrorMessage name="actvityPlan" />
       </div>
       <div class="col-span-12 lg:col-span-6">
         <TwInput label="កំណត់ចំណាំ" name="note" v-model="formData.note" placeholder="កំណត់ចំណាំ" type="text" :disabled="readOnly" />
-        <CustomErrorMessage name="note" />
+        <TwErrorMessage name="note" />
       </div>
       <div class="col-span-12 lg:col-span-6">
         <TwInput label="ផែនការឆ្នាំ" name="yearPlan" v-model="formData.yearPlan" placeholder="YYYY" type="text" :disabled="readOnly" required />
-        <CustomErrorMessage name="yearPlan" />
+        <TwErrorMessage name="yearPlan" />
       </div>
 
       <!-- File Upload Section -->
