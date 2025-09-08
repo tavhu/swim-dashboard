@@ -178,6 +178,13 @@ export default [
         submenu: [
           {
             isTitle: false,
+            name: "បញ្ចី",
+            url: "/service",
+            icon: "",
+            submenu: [],
+          },
+          {
+            isTitle: false,
             name: "បង្កើត",
             url: "/service/register",
             icon: "",
