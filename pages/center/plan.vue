@@ -147,7 +147,7 @@ async function submit() {
   // Perform the upsert operation
   const { error } = await useFetch("/api/center/plan/upsert", {
     method: "POST",
-    body: formData,
+    body: { ...formData }, // Spread formData to send a plain object
   });
 
   if (error.value) {
