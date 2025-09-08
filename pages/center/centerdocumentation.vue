@@ -28,12 +28,12 @@ const actvityPlanLabels: { [key: string]: string } = {
 
 // --- Columns --- //
 const columns = [
-  { key: 'ServiceCenter.nameKH', label: 'មជ្ឈមណ្ឌល', sortable: true },
-  { key: 'yearPlan', label: 'ឆ្នាំ', sortable: true },
-  { key: 'actvityPlan', label: 'ផែនការសកម្មភាព', sortable: true },
-  { key: 'note', label: 'កំណត់ចំណាំ', sortable: true },
-  { key: 'filePath', label: 'ឯកសារ', sortable: false },
-  { key: 'actions', label: 'Actions' },
+  { key: 'ServiceCenter.nameKH', label: 'មជ្ឈមណ្ឌល', sortable: true, class: 'w-2/12' },
+  { key: 'yearPlan', label: 'ឆ្នាំ', sortable: true, class: 'w-1/12' },
+  { key: 'actvityPlan', label: 'ផែនការសកម្មភាព', sortable: true, class: 'w-3/12' },
+  { key: 'note', label: 'កំណត់ចំណាំ', sortable: true, class: 'w-3/12' },
+  { key: 'filePath', label: 'ឯកសារ', sortable: false, class: 'w-2/12' },
+  { key: 'actions', label: 'Actions', class: 'w-1/12' },
 ];
 
 // --- Data Fetching --- //
@@ -162,22 +162,39 @@ async function deletePlan(id: string) {
     </div>
 
     <UCard :ui="{ body: { padding: 'px-0 sm:p-0' } }">
-      <UTable :loading="pending" :columns="columns" :rows="paginatedRows" :sort="sort" @sort="onSort">
+      <UTable 
+        :loading="pending" 
+        :columns="columns" 
+        :rows="paginatedRows" 
+        :sort="sort" 
+        @sort="onSort"
+        :ui="{ th: { base: 'whitespace-normal' }, base: 'table-fixed' }"
+      >
         
         <template #ServiceCenter.nameKH-data="{ row }">
-          {{ row.ServiceCenter?.nameKH || 'N/A' }}
+          <UTooltip :text="row.ServiceCenter?.nameKH || 'N/A'">
+            <p class="truncate">{{ row.ServiceCenter?.nameKH || 'N/A' }}</p>
+          </UTooltip>
         </template>
 
         <template #actvityPlan-data="{ row }">
-          {{ actvityPlanLabels[row.actvityPlan] || row.actvityPlan }}
+          <UTooltip :text="actvityPlanLabels[row.actvityPlan] || row.actvityPlan">
+            <p class="truncate">{{ actvityPlanLabels[row.actvityPlan] || row.actvityPlan }}</p>
+          </UTooltip>
+        </template>
+
+        <template #note-data="{ row }">
+          <UTooltip :text="row.note || 'N/A'">
+            <p class="truncate">{{ row.note || 'N/A' }}</p>
+          </UTooltip>
         </template>
 
         <template #filePath-data="{ row }">
-          <div v-if="row.filePath && row.filePath.length > 0">
-            <div v-for="(path, index) in row.filePath.split(',').filter(p => p.trim())" :key="index">
-                <a :href="path.trim().startsWith('/') ? path.trim() : '/' + path.trim()" target="_blank" class="text-blue-500 hover:underline">
-                    {{ path.trim().split('/').pop() || 'View File' }}
-                </a>
+          <div v-if="row.filePath && row.filePath.length > 0" class="truncate">
+            <div v-for="(path, index) in row.filePath.split(',').filter(p => p.trim())" :key="index" class="truncate">
+              <a :href="path.trim().startsWith('/') ? path.trim() : '/' + path.trim()" target="_blank" class="text-blue-500 hover:underline">
+                  {{ path.trim().split('/').pop() || 'View File' }}
+              </a>
             </div>
           </div>
           <span v-else>No file</span>
