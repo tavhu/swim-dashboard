@@ -47,8 +47,8 @@ const total = computed(() => result.value?.total || 0);
 
 // Debounce search
 const onSearch = useDebounceFn((value) => {
-    search.value = value;
-    page.value = 1;
+  search.value = value;
+  page.value = 1;
 }, 300)
 
 // Sorting
@@ -105,85 +105,75 @@ async function deleteService(id: string) {
     </div>
 
     <div class="flex justify-end mb-4">
-        <UInput :model-value="search" @update:model-value="onSearch" placeholder="Search..." icon="i-heroicons-magnifying-glass-20-solid" />
+      <UInput :model-value="search" @update:model-value="onSearch" placeholder="Search..."
+        icon="i-heroicons-magnifying-glass-20-solid" />
     </div>
 
     <UCard :ui="{ body: { padding: 'px-0 sm:p-0' } }">
-        <UTable
-            :loading="pending"
-            :columns="columns"
-            :rows="services"
-            :sort="sort"
-            @sort="onSort"
-            :ui="{
-              base: 'table-fixed w-full'
-            }"
-        >
-          <template #nameKh-data="{ row }">
-            <UTooltip :text="row.nameKh || 'N/A'" :ui="{ base: 'w-96 whitespace-pre-wrap break-words' }">
-              <p class="truncate">{{ row.nameKh || 'N/A' }}</p>
-            </UTooltip>
-          </template>
+      <UTable :loading="pending" :columns="columns" :rows="services" :sort="sort" @sort="onSort" :ui="{
+        base: 'table-fixed w-full'
+      }">
+        <template #nameKh-data="{ row }">
+          <UTooltip :text="row.nameKh || 'N/A'" :ui="{ base: 'w-96  break-words' }">
+            <p class="max-w-[40ch] break-words whitespace-break-spaces  ">{{ row.nameKh || 'N/A' }}</p>
+          </UTooltip>
+        </template>
 
-          <template #providingInstitution-data="{ row }">
-            <UTooltip :text="row.providingInstitution || 'N/A'" :ui="{ base: 'w-96 whitespace-pre-wrap break-words' }">
-              <p class="truncate">{{ row.providingInstitution || 'N/A' }}</p>
-            </UTooltip>
-          </template>
+        <template #providingInstitution-data="{ row }">
+          <UTooltip :text="row.providingInstitution || 'N/A'" :ui="{ base: 'w-96  break-words' }">
+            <p class="max-w-[40ch] break-words whitespace-break-spaces">{{ row.providingInstitution || 'N/A' }}</p>
+          </UTooltip>
+        </template>
 
-          <template #purpose-data="{ row }">
-            <UTooltip :text="row.purpose || 'N/A'" :ui="{ base: 'w-96 whitespace-pre-wrap break-words' }">
-              <p class="truncate">{{ row.purpose || 'N/A' }}</p>
-            </UTooltip>
-          </template>
+        <template #purpose-data="{ row }">
+          <UTooltip :text="row.purpose || 'N/A'" :ui="{ base: 'w-96  break-words' }">
+            <p class="max-w-[40ch] break-words whitespace-break-spaces">{{ row.purpose || 'N/A' }}</p>
+          </UTooltip>
+        </template>
 
-          <template #legalBasis-data="{ row }">
-            <UTooltip :text="row.legalBasis || 'N/A'" :ui="{ base: 'w-96 whitespace-pre-wrap break-words' }">
-              <p class="truncate">{{ row.legalBasis || 'N/A' }}</p>
-            </UTooltip>
-          </template>
+        <template #legalBasis-data="{ row }">
+          <UTooltip :text="row.legalBasis || 'N/A'" :ui="{ base: 'w-96  break-words' }">
+            <p class="max-w-[40ch] break-words whitespace-break-spaces">{{ row.legalBasis || 'N/A' }}</p>
+          </UTooltip>
+        </template>
 
-          <template #eligibleClients-data="{ row }">
-            <UTooltip :text="row.eligibleClients || 'N/A'" :ui="{ base: 'w-96 whitespace-pre-wrap break-words' }">
-              <p class="truncate">{{ row.eligibleClients || 'N/A' }}</p>
-            </UTooltip>
-          </template>
+        <template #eligibleClients-data="{ row }">
+          <UTooltip :text="row.eligibleClients || 'N/A'" :ui="{ base: 'w-96  break-words' }">
+            <p class="max-w-[40ch] break-words whitespace-break-spaces">{{ row.eligibleClients || 'N/A' }}</p>
+          </UTooltip>
+        </template>
 
-          <template #serviceStandard-data="{ row }">
-            <UTooltip :text="row.serviceStandard || 'N/A'" :ui="{ base: 'w-96 whitespace-pre-wrap break-words' }">
-              <p class="truncate">{{ row.serviceStandard || 'N/A' }}</p>
-            </UTooltip>
-          </template>
+        <template #serviceStandard-data="{ row }">
+          <UTooltip :text="row.serviceStandard || 'N/A'" :ui="{ base: 'w-96  break-words' }">
+            <p class="max-w-[40ch] break-words whitespace-break-spaces">{{ row.serviceStandard || 'N/A' }}</p>
+          </UTooltip>
+        </template>
 
-          <template #requiredDocuments-data="{ row }">
-            <UTooltip :text="row.requiredDocuments || 'N/A'" :ui="{ base: 'w-96 whitespace-pre-wrap break-words' }">
-              <p class="truncate">{{ row.requiredDocuments || 'N/A' }}</p>
-            </UTooltip>
-          </template>
+        <template #requiredDocuments-data="{ row }">
+          <UTooltip :text="row.requiredDocuments || 'N/A'" :ui="{ base: 'w-96  break-words' }">
+            <p class="max-w-[40ch] break-words whitespace-break-spaces">{{ row.requiredDocuments || 'N/A' }}</p>
+          </UTooltip>
+        </template>
 
-          <template #feedback-data="{ row }">
-            <UTooltip :text="row.feedback || 'N/A'" :ui="{ base: 'w-96 whitespace-pre-wrap break-words' }">
-              <p class="truncate">{{ row.feedback || 'N/A' }}</p>
-            </UTooltip>
-          </template>
+        <template #feedback-data="{ row }">
+          <UTooltip :text="row.feedback || 'N/A'" :ui="{ base: 'w-96  break-words' }">
+            <p class="max-w-[40ch] break-words whitespace-break-spaces">{{ row.feedback || 'N/A' }}</p>
+          </UTooltip>
+        </template>
 
-            <template #actions-data="{ row }">
-                <UDropdown :items="actionItems(row)">
-                    <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />
-                </UDropdown>
-            </template>
-        </UTable>
+        <template #actions-data="{ row }">
+          <UDropdown :items="actionItems(row)">
+            <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />
+          </UDropdown>
+        </template>
+      </UTable>
     </UCard>
 
     <div v-if="!pending && total > limit" class="flex flex-wrap justify-between items-center mt-4">
       <div class="text-sm text-gray-500 dark:text-gray-400">
         Showing {{ (page - 1) * limit + 1 }} to {{ Math.min(page * limit, total) }} of {{ total }} entries
       </div>
-      <UPagination
-        v-model="page"
-        :page-count="limit"
-        :total="total"
-      />
+      <UPagination v-model="page" :page-count="limit" :total="total" />
     </div>
   </div>
 </template>
