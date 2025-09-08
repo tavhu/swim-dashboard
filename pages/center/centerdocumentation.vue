@@ -8,6 +8,11 @@ const router = useRouter();
 const toast = useToast();
 const permissionStore = usePermissionStore();
 
+useHead({
+  title: "ឯកសារកាលប្បវត្តិ",
+});
+
+
 // --- Security --- //
 const canCreate = computed(() => permissionStore.getPermission('center-documentation')?.create ?? true);
 const canEdit = computed(() => permissionStore.getPermission('center-documentation')?.update ?? true);
@@ -38,8 +43,8 @@ const columns = [
 
 // --- Data Fetching --- //
 const { data: result, pending, error, refresh } = await useFetch<any>(
-  '/api/center/plan/get', 
-  { 
+  '/api/center/plan/get',
+  {
     method: 'POST',
     default: () => ({ plans: [] })
   }
@@ -100,7 +105,7 @@ function getProperty(obj: any, path: string) {
 // --- Event Handlers --- //
 const onSearch = useDebounceFn((value) => {
   search.value = value;
-  page.value = 1; 
+  page.value = 1;
 }, 300);
 
 function onSort(s: { column: string; direction: 'asc' | 'desc' }) {
@@ -162,15 +167,9 @@ async function deletePlan(id: string) {
     </div>
 
     <UCard :ui="{ body: { padding: 'px-0 sm:p-0' } }">
-      <UTable 
-        :loading="pending" 
-        :columns="columns" 
-        :rows="paginatedRows" 
-        :sort="sort" 
-        @sort="onSort"
-        :ui="{ th: { base: 'whitespace-normal' }, base: 'table-fixed' }"
-      >
-        
+      <UTable :loading="pending" :columns="columns" :rows="paginatedRows" :sort="sort" @sort="onSort"
+        :ui="{ th: { base: 'whitespace-normal' }, base: 'table-fixed' }">
+
         <template #ServiceCenter.nameKH-data="{ row }">
           <UTooltip :text="row.ServiceCenter?.nameKH || 'N/A'">
             <p class="truncate">{{ row.ServiceCenter?.nameKH || 'N/A' }}</p>
@@ -190,10 +189,11 @@ async function deletePlan(id: string) {
         </template>
 
         <template #filePath-data="{ row }">
-          <div v-if="row.filePath && row.filePath.length > 0" class="truncate">
-            <div v-for="(path, index) in row.filePath.split(',').filter(p => p.trim())" :key="index" class="truncate">
-              <a :href="path.trim().startsWith('/') ? path.trim() : '/' + path.trim()" target="_blank" class="text-blue-500 hover:underline">
-                  {{ path.trim().split('/').pop() || 'View File' }}
+          <div v-if="row.filePath && row.filePath.length > 0">
+            <div v-for="(path, index) in row.filePath.split(',').filter(p => p.trim())" :key="index">
+              <a :href="path.trim().startsWith('/') ? path.trim() : '/' + path.trim()" target="_blank"
+                class="text-blue-500 hover:underline">
+                {{ path.trim().split('/').pop() || 'View File' }}
               </a>
             </div>
           </div>

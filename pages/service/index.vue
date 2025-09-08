@@ -5,7 +5,9 @@ import { useToast } from 'vue3-tailwind';
 
 const router = useRouter();
 const toast = useToast();
-
+useHead({
+  title: "បញ្ចីសេវាកម្ម",
+});
 // Security
 const canCreate = computed(() => !checkIfPageReadOnly());
 const canEdit = computed(() => !checkIfPageReadOnly());
@@ -45,8 +47,8 @@ const total = computed(() => result.value?.total || 0);
 
 // Debounce search
 const onSearch = useDebounceFn((value) => {
-    search.value = value;
-    page.value = 1;
+  search.value = value;
+  page.value = 1;
 }, 300)
 
 // Sorting
@@ -103,34 +105,25 @@ async function deleteService(id: string) {
     </div>
 
     <div class="flex justify-end mb-4">
-        <UInput :model-value="search" @update:model-value="onSearch" placeholder="Search..." icon="i-heroicons-magnifying-glass-20-solid" />
+      <UInput :model-value="search" @update:model-value="onSearch" placeholder="Search..."
+        icon="i-heroicons-magnifying-glass-20-solid" />
     </div>
 
     <UCard :ui="{ body: { padding: 'px-0 sm:p-0' } }">
-        <UTable
-            :loading="pending"
-            :columns="columns"
-            :rows="services"
-            :sort="sort"
-            @sort="onSort"
-        >
-            <template #actions-data="{ row }">
-                <UDropdown :items="actionItems(row)">
-                    <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />
-                </UDropdown>
-            </template>
-        </UTable>
+      <UTable :loading="pending" :columns="columns" :rows="services" :sort="sort" @sort="onSort">
+        <template #actions-data="{ row }">
+          <UDropdown :items="actionItems(row)">
+            <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />
+          </UDropdown>
+        </template>
+      </UTable>
     </UCard>
 
     <div v-if="!pending && total > limit" class="flex flex-wrap justify-between items-center mt-4">
       <div class="text-sm text-gray-500 dark:text-gray-400">
         Showing {{ (page - 1) * limit + 1 }} to {{ Math.min(page * limit, total) }} of {{ total }} entries
       </div>
-      <UPagination
-        v-model="page"
-        :page-count="limit"
-        :total="total"
-      />
+      <UPagination v-model="page" :page-count="limit" :total="total" />
     </div>
   </div>
 </template>

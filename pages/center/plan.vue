@@ -9,6 +9,11 @@ const router = useRouter();
 const route = useRoute();
 const permissionStore = usePermissionStore();
 
+
+useHead({
+  title: "ឯកសារកាលប្បវត្តិ",
+});
+
 // --- Page Mode & Permissions --- //
 const planId = computed(() => route.query.id as string | undefined);
 const isEditMode = computed(() => !!planId.value);
@@ -18,7 +23,7 @@ const user = computed(() => userDataAuth.value?.user) as any;
 
 const canSave = computed(() => {
   const permission = permissionStore.getPermission('center-plan');
-  return permission?.read ?? true; 
+  return permission?.read ?? true;
 });
 const readOnly = computed(() => !canSave.value);
 
@@ -39,7 +44,7 @@ const files = ref<File[]>([]); // For new file uploads
 const { data: centerData } = await useFetch<{ data: ServiceCenter[] }>('/api/center/get', {
   method: 'POST'
 });
-const serviceCenterList = computed(() => 
+const serviceCenterList = computed(() =>
   centerData.value?.data.map(ele => ({
     label: ele.nameKH,
     value: ele.id
@@ -60,7 +65,7 @@ async function fetchPlanData(id: string) {
       formData.yearPlan = result.plan.yearPlan;
       formData.filePath = result.plan.filePath;
       formData.serviceCenterID = result.plan.serviceCenterID;
-      existingFiles.value = result.plan.filePath ? result.plan.filePath.split(',').filter((f:string) => f) : [];
+      existingFiles.value = result.plan.filePath ? result.plan.filePath.split(',').filter((f: string) => f) : [];
     } else {
       toast.error({ message: 'Plan not found.' });
       goBack();
@@ -127,7 +132,7 @@ const clearForm = () => {
 
 async function submit() {
   if (!(await confirmDialog({ title: isEditMode.value ? 'Confirm Update' : 'Confirm Save' }))) return;
-  
+
   if (!validator.value) return;
 
   // Clear errors before validating, following the pattern from index.vue
@@ -143,7 +148,7 @@ async function submit() {
 
   const uploadedFilePaths = await handleImageUpload();
   const newFilePaths = uploadedFilePaths ? Object.values(uploadedFilePaths) : [];
-  
+
   const allFilePaths = [...existingFiles.value, ...newFilePaths];
 
   const payload = {
@@ -201,17 +206,13 @@ function removeExistingFile(index: number) {
       {{ isEditMode ? 'កែសម្រួលផែនការសកម្មភាព' : 'ផែនការសកម្មភាពមជ្ឈមណ្ឌល' }}
     </h1>
 
-    <TwForm :name="formName"
-      class="grid grid-cols-12 gap-4 bg-white dark:bg-gray-900 rounded-lg p-4 shadow"
-      :class="{ 'tw-shake': isError }"
-      :rules="formRules"
-      @submit="submit"
-      :custom-field-name="{
+    <TwForm :name="formName" class="grid grid-cols-12 gap-4 bg-white dark:bg-gray-900 rounded-lg p-4 shadow"
+      :class="{ 'tw-shake': isError }" :rules="formRules" @submit="submit" :custom-field-name="{
         actvityPlan: 'ផែនការសកម្មភាព',
         yearPlan: 'ផែនការឆ្នាំ',
         serviceCenterID: 'មណ្ឌល'
       }">
-      
+
       <div class="col-span-12">
         <h2 class="text-lg font-semibold">{{ isEditMode ? 'កែសម្រួលព័ត៌មាន' : 'សកម្មភាពការងារ' }}</h2>
       </div>
@@ -221,7 +222,7 @@ function removeExistingFile(index: number) {
           :items="serviceCenterList" placeholder="សូមជ្រើសរើស" :disabled="isCenterUser || readOnly" />
         <CustomErrorMessage name="serviceCenterID" />
       </div>
-      
+
       <div class="col-span-12 lg:col-span-6">
         <TwSelect label="ផែនការសកម្មភាព" name="actvityPlan" required v-model="formData.actvityPlan" :items="[
           { value: 'yearly', label: 'ផែនការប្រចាំឆ្នាំ' },
@@ -230,38 +231,45 @@ function removeExistingFile(index: number) {
         ]" placeholder="សូមជ្រើសរើស" :disabled="readOnly" />
         <CustomErrorMessage name="actvityPlan" />
       </div>
-      
+
       <div class="col-span-12 lg:col-span-6">
-        <TwInput label="កំណត់ចំណាំ" name="note" v-model="formData.note" placeholder="កំណត់ចំណាំ" type="text" :disabled="readOnly" />
+        <TwInput label="កំណត់ចំណាំ" name="note" v-model="formData.note" placeholder="កំណត់ចំណាំ" type="text"
+          :disabled="readOnly" />
         <CustomErrorMessage name="note" />
       </div>
-      
+
       <div class="col-span-12 lg:col-span-6">
-        <TwInput label="ផែនការឆ្នាំ" name="yearPlan" v-model="formData.yearPlan" placeholder="YYYY" type="text" :disabled="readOnly" required />
+        <TwInput label="ផែនការឆ្នាំ" name="yearPlan" v-model="formData.yearPlan" placeholder="YYYY" type="text"
+          :disabled="readOnly" required />
         <CustomErrorMessage name="yearPlan" />
       </div>
 
       <!-- File Upload Section -->
       <div class="col-span-12" v-if="canSave">
-        <TwFile v-model="files" :multiple="true" label="បន្ថែមឯកសារថ្មី" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" :disabled="readOnly" />
+        <TwFile v-model="files" :multiple="true" label="បន្ថែមឯកសារថ្មី" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
+          :disabled="readOnly" />
       </div>
 
       <!-- Existing Files Display -->
       <div class="col-span-12" v-if="isEditMode && existingFiles.length > 0">
-          <p class="font-medium mb-2">ឯកសារបច្ចុប្បន្ន:</p>
-          <ul class="list-disc list-inside space-y-1">
-              <li v-for="(file, index) in existingFiles" :key="index" class="flex items-center justify-between">
-                  <a :href="file" target="_blank" class="text-blue-500 hover:underline truncate">{{ file.split('/').pop() }}</a>
-                  <UButton v-if="canSave" icon="i-heroicons-x-mark-20-solid" color="red" variant="ghost" size="xs" @click="removeExistingFile(index)" />
-              </li>
-          </ul>
+        <p class="font-medium mb-2">ឯកសារបច្ចុប្បន្ន:</p>
+        <ul class="list-disc list-inside space-y-1">
+          <li v-for="(file, index) in existingFiles" :key="index" class="flex items-center justify-between">
+            <a :href="file" target="_blank" class="text-blue-500 hover:underline truncate">{{ file.split('/').pop()
+              }}</a>
+            <UButton v-if="canSave" icon="i-heroicons-x-mark-20-solid" color="red" variant="ghost" size="xs"
+              @click="removeExistingFile(index)" />
+          </li>
+        </ul>
       </div>
 
       <!-- Action Buttons -->
       <div class="col-span-12 flex justify-end gap-2 mt-4">
         <UButton color="gray" type="button" @click="goBack()">ត្រឡប់ក្រោយ</UButton>
-        <UButton v-if="canSave" color="gray" type="button" @click="clearForm()">{{ isEditMode ? 'បោះបង់' : 'កំណត់ឡើងវិញ' }}</UButton>
-        <UButton v-if="canSave" color="primary" type="submit">{{ isEditMode ? 'រក្សាទុកការផ្លាស់ប្តូរ' : 'រក្សាទុក' }}</UButton>
+        <UButton v-if="canSave" color="gray" type="button" @click="clearForm()">{{ isEditMode ? 'បោះបង់' : 'កំណត់ឡើងវិញ'
+          }}</UButton>
+        <UButton v-if="canSave" color="primary" type="submit">{{ isEditMode ? 'រក្សាទុកការផ្លាស់ប្តូរ' : 'រក្សាទុក' }}
+        </UButton>
       </div>
     </TwForm>
   </div>
