@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useToast, TwFile, TwForm, TwInput, TwSelect, useForm } from "vue3-tailwind";
+import { useToast, TwFile, TwForm, TwInput, TwSelect, useForm, TwErrorMessage } from "vue3-tailwind";
 import { type ServiceCenter } from '@prisma/client'
 import { onMounted, computed, ref, nextTick, reactive, watch } from "vue";
 import { usePermissionStore } from '~/stores/permission';
@@ -54,7 +54,6 @@ async function fetchPlanData(id: string) {
       body: { id },
     });
     if (result.plan) {
-      // Assign properties one by one, following the pattern in index.vue
       formData.id = result.plan.id;
       formData.actvityPlan = result.plan.actvityPlan;
       formData.note = result.plan.note;
@@ -119,8 +118,8 @@ const resetFormForNewEntry = () => {
 
 const clearForm = () => {
   if (isEditMode.value && planId.value) {
-    fetchPlanData(planId.value); // Re-fetch original data
-    files.value = []; // Clear any newly staged files
+    fetchPlanData(planId.value);
+    files.value = [];
   } else {
     resetFormForNewEntry();
   }
@@ -138,27 +137,23 @@ async function submit() {
     return;
   }
 
-  // Handle file uploads
   const uploadedFilePaths = await handleImageUpload();
   const newFilePaths = uploadedFilePaths ? Object.values(uploadedFilePaths) : [];
   
-  // Combine old and new file paths
   const allFilePaths = [...existingFiles.value, ...newFilePaths];
 
-  // Construct payload
   const payload = {
     serviceCenterID: formData.serviceCenterID,
     yearPlan: formData.yearPlan,
     actvityPlan: formData.actvityPlan,
     note: formData.note,
     filePath: allFilePaths.join(','),
-    id: formData.id, // Will be undefined for new entries, which is fine
+    id: formData.id,
   };
 
-  // Perform the upsert operation
   const { error } = await useFetch("/api/center/plan/upsert", {
     method: "POST",
-    body: JSON.stringify(payload), // Stringify the body like in index.vue
+    body: JSON.stringify(payload),
   });
 
   if (error.value) {
@@ -220,23 +215,26 @@ function removeExistingFile(index: number) {
       <div class="col-span-12 lg:col-span-6">
         <TwSelect label="មណ្ឌល" name="serviceCenterID" v-model="formData.serviceCenterID" required
           :items="serviceCenterList" placeholder="សូមជ្រើសរើស" :disabled="isCenterUser || readOnly" />
-        <CustomErrorMessage name="serviceCenterID" />
+        <TwErrorMessage name="serviceCenterID" />
       </div>
+      
       <div class="col-span-12 lg:col-span-6">
         <TwSelect label="ផែនការសកម្មភាព" name="actvityPlan" required v-model="formData.actvityPlan" :items="[
           { value: 'yearly', label: 'ផែនការប្រចាំឆ្នាំ' },
           { value: 'threeyear', label: 'ផែនការមធ្យម' },
           { value: 'longterm', label: 'ផែនការរយៈពេលវែង' },
         ]" placeholder="សូមជ្រើសរើស" :disabled="readOnly" />
-        <CustomErrorMessage name="actvityPlan" />
+        <TwErrorMessage name="actvityPlan" />
       </div>
+      
       <div class="col-span-12 lg:col-span-6">
         <TwInput label="កំណត់ចំណាំ" name="note" v-model="formData.note" placeholder="កំណត់ចំណាំ" type="text" :disabled="readOnly" />
-        <CustomErrorMessage name="note" />
+        <TwErrorMessage name="note" />
       </div>
+      
       <div class="col-span-12 lg:col-span-6">
         <TwInput label="ផែនការឆ្នាំ" name="yearPlan" v-model="formData.yearPlan" placeholder="YYYY" type="text" :disabled="readOnly" required />
-        <CustomErrorMessage name="yearPlan" />
+        <TwErrorMessage name="yearPlan" />
       </div>
 
       <!-- File Upload Section -->
