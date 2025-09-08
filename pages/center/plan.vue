@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useToast, TwFile, TwForm, TwInput, TwSelect, TwErrorMessage, useForm } from "vue3-tailwind";
+import { useToast, TwFile, TwForm, TwInput, TwSelect, useForm } from "vue3-tailwind";
 import { type ServiceCenter } from '@prisma/client'
 import { onMounted, computed, ref, nextTick, reactive, watch } from "vue";
 import { usePermissionStore } from '~/stores/permission';
@@ -29,7 +29,7 @@ const formData = reactive({
   actvityPlan: '',
   note: '',
   yearPlan: '',
-  filePath: '', // This will be a comma-separated string of paths
+  filePath: '',
   serviceCenterID: '',
 });
 const existingFiles = ref<string[]>([]);
@@ -54,8 +54,13 @@ async function fetchPlanData(id: string) {
       body: { id },
     });
     if (result.plan) {
-      Object.assign(formData, result.plan);
-      // Initialize existing files from the filePath string
+      // Assign properties one by one, following the pattern in index.vue
+      formData.id = result.plan.id;
+      formData.actvityPlan = result.plan.actvityPlan;
+      formData.note = result.plan.note;
+      formData.yearPlan = result.plan.yearPlan;
+      formData.filePath = result.plan.filePath;
+      formData.serviceCenterID = result.plan.serviceCenterID;
       existingFiles.value = result.plan.filePath ? result.plan.filePath.split(',').filter((f:string) => f) : [];
     } else {
       toast.error({ message: 'Plan not found.' });
@@ -99,14 +104,12 @@ const goBack = () => {
 };
 
 const resetFormForNewEntry = () => {
-  Object.assign(formData, {
-    id: undefined,
-    actvityPlan: '',
-    note: '',
-    yearPlan: '',
-    filePath: '',
-    serviceCenterID: isCenterUser.value ? user.value.serviceCenterID : '',
-  });
+  formData.id = undefined;
+  formData.actvityPlan = '';
+  formData.note = '';
+  formData.yearPlan = '';
+  formData.filePath = '';
+  formData.serviceCenterID = isCenterUser.value ? user.value.serviceCenterID : '';
   files.value = [];
   existingFiles.value = [];
   nextTick(() => {
@@ -141,26 +144,21 @@ async function submit() {
   
   // Combine old and new file paths
   const allFilePaths = [...existingFiles.value, ...newFilePaths];
-  formData.filePath = allFilePaths.join(',');
 
-  // Manually construct the payload to ensure it's a plain object
-  const payload: any = {
+  // Construct payload
+  const payload = {
     serviceCenterID: formData.serviceCenterID,
     yearPlan: formData.yearPlan,
     actvityPlan: formData.actvityPlan,
     note: formData.note,
-    filePath: formData.filePath,
+    filePath: allFilePaths.join(','),
+    id: formData.id, // Will be undefined for new entries, which is fine
   };
-
-  // Add id only if it exists (for updates)
-  if (formData.id) {
-    payload.id = formData.id;
-  }
 
   // Perform the upsert operation
   const { error } = await useFetch("/api/center/plan/upsert", {
     method: "POST",
-    body: payload,
+    body: JSON.stringify(payload), // Stringify the body like in index.vue
   });
 
   if (error.value) {
@@ -222,7 +220,7 @@ function removeExistingFile(index: number) {
       <div class="col-span-12 lg:col-span-6">
         <TwSelect label="មណ្ឌល" name="serviceCenterID" v-model="formData.serviceCenterID" required
           :items="serviceCenterList" placeholder="សូមជ្រើសរើស" :disabled="isCenterUser || readOnly" />
-        <TwErrorMessage name="serviceCenterID" />
+        <CustomErrorMessage name="serviceCenterID" />
       </div>
       <div class="col-span-12 lg:col-span-6">
         <TwSelect label="ផែនការសកម្មភាព" name="actvityPlan" required v-model="formData.actvityPlan" :items="[
@@ -230,15 +228,15 @@ function removeExistingFile(index: number) {
           { value: 'threeyear', label: 'ផែនការមធ្យម' },
           { value: 'longterm', label: 'ផែនការរយៈពេលវែង' },
         ]" placeholder="សូមជ្រើសរើស" :disabled="readOnly" />
-        <TwErrorMessage name="actvityPlan" />
+        <CustomErrorMessage name="actvityPlan" />
       </div>
       <div class="col-span-12 lg:col-span-6">
         <TwInput label="កំណត់ចំណាំ" name="note" v-model="formData.note" placeholder="កំណត់ចំណាំ" type="text" :disabled="readOnly" />
-        <TwErrorMessage name="note" />
+        <CustomErrorMessage name="note" />
       </div>
       <div class="col-span-12 lg:col-span-6">
         <TwInput label="ផែនការឆ្នាំ" name="yearPlan" v-model="formData.yearPlan" placeholder="YYYY" type="text" :disabled="readOnly" required />
-        <TwErrorMessage name="yearPlan" />
+        <CustomErrorMessage name="yearPlan" />
       </div>
 
       <!-- File Upload Section -->
