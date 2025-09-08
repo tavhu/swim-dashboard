@@ -127,6 +127,7 @@ model ServiceCenter {
   governStaff                governStaff[]
   systemUser                 User[]
   CenterPlan                 CenterPlan[]
+  services                   ServicesOnServiceCenters[]
 }
 
 model Staff {
@@ -458,6 +459,7 @@ model Client_PersonalInformation {
   ClientProgress             ClientProgress[]
   ClientServeHistory         ClientServeHistory[]
   ClientHopelessMultiple     ClientHopelessMultiple[]
+  services                   ServicesOnClients[]
 }
 
 model ClientHopelessMultiple {
@@ -493,4 +495,43 @@ model CenterPlan {
   filePath        String
   serviceCenterID String?
   ServiceCenter   ServiceCenter? @relation(fields: [serviceCenterID], references: [id])
+}
+
+model Service {
+  id                   String                       @id @default(cuid())
+  nameKh               String                       @unique // ឈ្មោះសេវា
+  providingInstitution String? // ក្រសួង/ស្ថាប័ន ផ្តល់សេវា
+  purpose              String? // គោលបំណង នៃការផ្តល់សេវា
+  legalBasis           String? // មូលដ្ឋានគតិយុត្ត
+  eligibleClients      String? // អតិថិជនដែលមាន សិទ្ធិទទួលសេវា
+  serviceStandard      String? // ស្តង់ដារសេវា
+  requiredDocuments    String? // តម្រូវការឯកសារ ដើម្បីទទួលបានសេវា
+  feedback             String? // យោបល់
+  isActive             Boolean                      @default(true)
+  createdAt            DateTime                     @default(now())
+  updatedAt            DateTime                     @updatedAt
+  clients              ServicesOnClients[]
+  serviceCenters       ServicesOnServiceCenters[]
+
+  @@map("services")
+}
+
+model ServicesOnClients {
+  client     Client_PersonalInformation @relation(fields: [clientId], references: [id])
+  clientId   String
+  service    Service                    @relation(fields: [serviceId], references: [id])
+  serviceId  String
+  assignedAt DateTime                   @default(now())
+  assignedBy String?
+
+  @@id([clientId, serviceId])
+}
+
+model ServicesOnServiceCenters {
+  serviceCenter   ServiceCenter @relation(fields: [serviceCenterId], references: [id])
+  serviceCenterId String
+  service         Service       @relation(fields: [serviceId], references: [id])
+  serviceId       String
+
+  @@id([serviceCenterId, serviceId])
 }
