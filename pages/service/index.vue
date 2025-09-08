@@ -122,49 +122,49 @@ async function deleteService(id: string) {
             }"
         >
           <template #nameKh-data="{ row }">
-            <UTooltip :text="row.nameKh || 'N/A'" :ui="{ base: 'w-96' }">
+            <UTooltip :text="row.nameKh || 'N/A'" :ui="{ base: 'w-96 whitespace-pre-wrap break-words' }">
               <span>{{ row.nameKh || 'N/A' }}</span>
             </UTooltip>
           </template>
 
           <template #providingInstitution-data="{ row }">
-            <UTooltip :text="row.providingInstitution || 'N/A'" :ui="{ base: 'w-96' }">
+            <UTooltip :text="row.providingInstitution || 'N/A'" :ui="{ base: 'w-96 whitespace-pre-wrap break-words' }">
               <span>{{ row.providingInstitution || 'N/A' }}</span>
             </UTooltip>
           </template>
 
           <template #purpose-data="{ row }">
-            <UTooltip :text="row.purpose || 'N/A'" :ui="{ base: 'w-96' }">
+            <UTooltip :text="row.purpose || 'N/A'" :ui="{ base: 'w-96 whitespace-pre-wrap break-words' }">
               <span>{{ row.purpose || 'N/A' }}</span>
             </UTooltip>
           </template>
 
           <template #legalBasis-data="{ row }">
-            <UTooltip :text="row.legalBasis || 'N/A'" :ui="{ base: 'w-96' }">
+            <UTooltip :text="row.legalBasis || 'N/A'" :ui="{ base: 'w-96 whitespace-pre-wrap break-words' }">
               <span>{{ row.legalBasis || 'N/A' }}</span>
             </UTooltip>
           </template>
 
           <template #eligibleClients-data="{ row }">
-            <UTooltip :text="row.eligibleClients || 'N/A'" :ui="{ base: 'w-96' }">
+            <UTooltip :text="row.eligibleClients || 'N/A'" :ui="{ base: 'w-96 whitespace-pre-wrap break-words' }">
               <span>{{ row.eligibleClients || 'N/A' }}</span>
             </UTooltip>
           </template>
 
           <template #serviceStandard-data="{ row }">
-            <UTooltip :text="row.serviceStandard || 'N/A'" :ui="{ base: 'w-96' }">
+            <UTooltip :text="row.serviceStandard || 'N/A'" :ui="{ base: 'w-96 whitespace-pre-wrap break-words' }">
               <span>{{ row.serviceStandard || 'N/A' }}</span>
             </UTooltip>
           </template>
 
           <template #requiredDocuments-data="{ row }">
-            <UTooltip :text="row.requiredDocuments || 'N/A'" :ui="{ base: 'w-96' }">
+            <UTooltip :text="row.requiredDocuments || 'N/A'" :ui="{ base: 'w-96 whitespace-pre-wrap break-words' }">
               <span>{{ row.requiredDocuments || 'N/A' }}</span>
             </UTooltip>
           </template>
 
           <template #feedback-data="{ row }">
-            <UTooltip :text="row.feedback || 'N/A'" :ui="{ base: 'w-96' }">
+            <UTooltip :text="row.feedback || 'N/A'" :ui="{ base: 'w-96 whitespace-pre-wrap break-words' }">
               <span>{{ row.feedback || 'N/A' }}</span>
             </UTooltip>
           </template>
