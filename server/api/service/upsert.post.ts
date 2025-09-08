@@ -5,38 +5,44 @@ const prisma = new PrismaClient();
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);
+    const { id, ...data } = body;
 
     // Basic validation
-    if (!body.nameKh) {
+    if (!data.nameKh) {
       throw createError({
         statusCode: 400,
         statusMessage: 'Service Name (nameKh) is required.',
       });
     }
 
-    const service = await prisma.service.create({
-      data: {
-        nameKh: body.nameKh,
-        providingInstitution: body.providingInstitution,
-        purpose: body.purpose,
-        legalBasis: body.legalBasis,
-        eligibleClients: body.eligibleClients,
-        serviceStandard: body.serviceStandard,
-        requiredDocuments: body.requiredDocuments,
-        feedback: body.feedback,
-      },
-    });
+    let service;
+    let message;
+
+    if (id) {
+      // Update existing service
+      service = await prisma.service.update({
+        where: { id },
+        data,
+      });
+      message = 'Service updated successfully.';
+    } else {
+      // Create new service
+      service = await prisma.service.create({
+        data,
+      });
+      message = 'Service created successfully.';
+    }
 
     return {
       statusCode: 200,
-      statusMessage: 'Service created successfully.',
+      statusMessage: message,
       data: service,
     };
   } catch (error) {
-    console.error('Error creating service:', error);
+    console.error('Error upserting service:', error);
     // Check if it's a known error type, otherwise throw a generic server error
     if (error.statusCode) {
-        throw error; 
+        throw error;
     }
     throw createError({
       statusCode: 500,
