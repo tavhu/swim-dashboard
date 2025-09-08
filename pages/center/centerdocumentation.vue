@@ -30,20 +30,20 @@ const columns = [
 ];
 
 // --- Data Fetching --- //
-// Changed to useFetch with await to ensure data is loaded on server-side hard refresh
+// Corrected the API endpoint to /api/center/plan/get
 const { data: result, pending, error, refresh } = await useFetch<any>(
-  '/api/center/plan/get-all', 
+  '/api/center/plan/get', 
   { 
     method: 'POST',
-    default: () => ({ data: [] }) // Provide a default to prevent errors on initial load
+    default: () => ({ plans: [] }) // Adjusted default to match expected response structure
   }
 );
 
-const allPlans = computed(() => result.value?.data || []);
+// The API returns { plans: [...] }, so we compute from result.value.plans
+const allPlans = computed(() => result.value?.plans || []);
 
 // --- Client-side Filtering and Sorting --- //
 const filteredAndSortedRows = computed(() => {
-  // Ensure allPlans is not null or undefined before spreading
   let rows = allPlans.value ? [...allPlans.value] : [];
 
   // Client-side Search
