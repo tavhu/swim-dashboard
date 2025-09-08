@@ -129,7 +129,11 @@ async function submit() {
   if (!(await confirmDialog({ title: isEditMode.value ? 'Confirm Update' : 'Confirm Save' }))) return;
   
   if (!validator.value) return;
+
+  // Clear errors before validating, following the pattern from index.vue
+  validator.value.clearErrors();
   await validator.value.validate();
+
   if (validator.value.fail()) {
     toast.error({ message: validator.value.getErrorMessage() });
     isError.value = true;
@@ -215,7 +219,7 @@ function removeExistingFile(index: number) {
       <div class="col-span-12 lg:col-span-6">
         <TwSelect label="មណ្ឌល" name="serviceCenterID" v-model="formData.serviceCenterID" required
           :items="serviceCenterList" placeholder="សូមជ្រើសរើស" :disabled="isCenterUser || readOnly" />
-        <TwErrorMessage name="serviceCenterID" />
+        <CustomErrorMessage name="serviceCenterID" />
       </div>
       
       <div class="col-span-12 lg:col-span-6">
@@ -224,17 +228,17 @@ function removeExistingFile(index: number) {
           { value: 'threeyear', label: 'ផែនការមធ្យម' },
           { value: 'longterm', label: 'ផែនការរយៈពេលវែង' },
         ]" placeholder="សូមជ្រើសរើស" :disabled="readOnly" />
-        <TwErrorMessage name="actvityPlan" />
+        <CustomErrorMessage name="actvityPlan" />
       </div>
       
       <div class="col-span-12 lg:col-span-6">
         <TwInput label="កំណត់ចំណាំ" name="note" v-model="formData.note" placeholder="កំណត់ចំណាំ" type="text" :disabled="readOnly" />
-        <TwErrorMessage name="note" />
+        <CustomErrorMessage name="note" />
       </div>
       
       <div class="col-span-12 lg:col-span-6">
         <TwInput label="ផែនការឆ្នាំ" name="yearPlan" v-model="formData.yearPlan" placeholder="YYYY" type="text" :disabled="readOnly" required />
-        <TwErrorMessage name="yearPlan" />
+        <CustomErrorMessage name="yearPlan" />
       </div>
 
       <!-- File Upload Section -->
