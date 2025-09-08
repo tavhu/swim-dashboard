@@ -1,124 +1,142 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
-import { navigateTo, useRouter } from "#app";
+import { ref, computed, watch } from 'vue';
+import { useRouter } from '#app';
+import { useToast } from 'vue3-tailwind';
 
 const router = useRouter();
+const toast = useToast();
 
-const goBack = () => {
-  router.back();
-};
+// Security
+const canCreate = computed(() => !checkIfPageReadOnly());
+const canEdit = computed(() => !checkIfPageReadOnly());
+const canDelete = computed(() => !checkIfPageReadOnly());
 
-// This simple, original code is correct. The error was on the server.
-const { data: plansData, pending, error, refresh } = await useFetch('/api/center/plan/get', { method: 'POST' });
+// Table state
+const page = ref(1);
+const limit = ref(10);
+const search = ref('');
+const sort = ref({ column: 'nameEN', direction: 'asc' as 'asc' | 'desc' });
 
-const activityPlanMap = {
-  yearly: 'ផែនការប្រចាំឆ្នាំ',
-  threeyear: 'ផែនការមធ្យម',
-  longterm: 'ផែនការរយៈពេលវែង',
-};
-
+// Columns
 const columns = [
-  {
-    key: 'serviceCenterName',
-    label: 'ឈ្មោះមណ្ឌល'
-  },
-  {
-    key: 'actvityPlan',
-    label: 'ផែនការសកម្មភាព'
-  },
-  {
-    key: 'yearPlan',
-    label: 'ផែនការឆ្នាំ'
-  },
-  {
-    key: 'note',
-    label: 'កំណត់ចំណាំ'
-  },
-  {
-    key: 'filePath',
-    label: 'ឯកសារ'
-  }
+    { key: 'nameEN', label: 'Center Name (English)', sortable: true },
+    { key: 'nameKH', label: 'Center Name (Khmer)', sortable: true },
+    { key: 'code', label: 'Code', sortable: true },
+    { key: 'address', label: 'Address', sortable: true },
+    { key: 'actions', label: 'Actions' },
 ];
 
-const getFileName = (path) => {
-  if (!path) return '';
-  const parts = path.split('/');
-  return parts[parts.length - 1];
-};
+// Data fetching
+const { data: result, pending, error, refresh } = useLazyAsyncData<any>(
+    'centers',
+    () => $fetch('/api/center/get', {
+        method: 'POST',
+        body: {
+            page: page.value,
+            limit: limit.value,
+            sortBy: sort.value.column,
+            sortType: sort.value.direction,
+            search: search.value,
+        }
+    }),
+    { 
+        watch: [page, limit, sort, search],
+    }
+);
 
-const searchQuery = ref('');
+const centers = computed(() => result.value?.data || []);
+const total = computed(() => result.value?.total || 0);
 
-const filteredRows = computed(() => {
-  if (!plansData.value || !plansData.value.plans) return [];
+// Debounce search
+const onSearch = useDebounceFn((value) => {
+    search.value = value;
+    page.value = 1;
+}, 300);
 
-  let plans = plansData.value.plans.map(plan => ({
-    ...plan,
-    activityPlanDisplay: activityPlanMap[plan.actvityPlan] || plan.actvityPlan,
-  }));
+// Sorting
+function onSort(s: { column: string; direction: 'asc' | 'desc' }) {
+  sort.value = s;
+}
 
-  if (!searchQuery.value) {
-    return plans;
-  }
+// Actions
+const actionItems = (row: any) => [
+  [
+    {
+      label: 'Edit',
+      icon: 'i-heroicons-pencil-square-20-solid',
+      click: () => router.push(`/center/formcenter?id=${row.id}`),
+      disabled: !canEdit.value,
+    },
+  ],
+  [
+    {
+      label: 'Delete',
+      icon: 'i-heroicons-trash-20-solid',
+      click: () => deleteCenter(row.id),
+      disabled: !canDelete.value,
+    },
+  ],
+];
 
-  return plans.filter(plan => {
-    const searchLower = searchQuery.value.toLowerCase();
-    return (
-      (plan.ServiceCenter?.nameKH && plan.ServiceCenter.nameKH.toLowerCase().includes(searchLower)) ||
-      plan.activityPlanDisplay.toLowerCase().includes(searchLower) ||
-      plan.yearPlan.toLowerCase().includes(searchLower) ||
-      (plan.note && plan.note.toLowerCase().includes(searchLower))
-    );
-  });
-});
+// Delete logic
+async function deleteCenter(id: string) {
+    if (!(await confirmDialog({ title: 'Confirm Deletion', message: 'Are you sure you want to delete this center?' }))) return;
 
+    const { error } = await useFetch('/api/center/delete', {
+        method: 'POST',
+        body: { id },
+    });
+
+    if (error.value) {
+        toast.error({ message: 'Failed to delete center.' });
+    } else {
+        toast.success({ message: 'Center deleted successfully.' });
+        refresh();
+    }
+}
 
 </script>
 
 <template>
-  <div class="p-4 bg-white dark:bg-gray-900 rounded-lg shadow-md">
-    <div class="flex justify-between items-center mb-6">
-      <h1 class="text-2xl font-[Moul] text-primary">ឯកសារមជ្ឈមណ្ឌល</h1>
-      <div class="flex items-center gap-2">
-        <UButton color="gray" @click="goBack()">ត្រឡប់ក្រោយ</UButton>
-        <UButton color="primary" @click="navigateTo('/center/plan')">បន្ថែមឯកសារ</UButton>
+  <div>
+    <div class="flex justify-between items-center mb-4">
+      <h1 class="text-2xl font-[Moul] text-primary">
+        បញ្ជីមជ្ឈមណ្ឌល
+      </h1>
+      <UButton v-if="canCreate" icon="i-heroicons-plus-circle-20-solid" @click="router.push('/center/formcenter')">
+        បន្ថែមថ្មី
+      </UButton>
+    </div>
+
+    <div class="flex justify-end mb-4">
+      <UInput :model-value="search" @update:model-value="onSearch" placeholder="Search..." icon="i-heroicons-magnifying-glass-20-solid" />
+    </div>
+
+    <UCard :ui="{ body: { padding: 'px-0 sm:p-0' } }">
+        <UTable
+            :loading="pending"
+            :columns="columns"
+            :rows="centers"
+            :sort="sort"
+            @sort="onSort"
+        >
+            <template #actions-data="{ row }">
+                <UDropdown :items="actionItems(row)">
+                    <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />
+                </UDropdown>
+            </template>
+        </UTable>
+    </UCard>
+
+    <div v-if="!pending && total > limit" class="flex flex-wrap justify-between items-center mt-4">
+      <div class="text-sm text-gray-500 dark:text-gray-400">
+        Showing {{ (page - 1) * limit + 1 }} to {{ Math.min(page * limit, total) }} of {{ total }} entries
       </div>
-    </div>
-
-    <div class="mb-4">
-        <UInput 
-            v-model="searchQuery" 
-            placeholder="ស្វែងរក..."
-            icon="i-heroicons-magnifying-glass-20-solid"
-        />
-    </div>
-
-    <UTable 
-      v-if="!pending && !error && filteredRows"
-      :rows="filteredRows"
-      :columns="columns"
-    >
-      <template #filePath-data="{ row }">
-        <div v-if="row.filePath">
-            <div v-for="(path, index) in row.filePath.split(',')" :key="index">
-                <a :href="`/${path}`" target="_blank" class="text-blue-500 hover:underline">
-                    {{ getFileName(path) }}
-                </a>
-            </div>
-        </div>
-        <span v-else>គ្មានឯកសារ</span>
-      </template>
-      <template #serviceCenterName-data="{ row }">
-        {{ row.ServiceCenter ? row.ServiceCenter.nameKH : 'មិនមាន' }}
-      </template>
-       <template #actvityPlan-data="{ row }">
-        {{ row.activityPlanDisplay }}
-      </template>
-    </UTable>
-    <div v-else-if="pending">
-      <p>Loading...</p>
-    </div>
-    <div v-else-if="error">
-      <p>An error occurred while fetching the data.</p>
+      <UPagination
+        v-model="page"
+        :page-count="limit"
+        :total="total"
+      />
     </div>
   </div>
 </template>
