@@ -19,6 +19,13 @@ const limit = ref(10);
 const search = ref('');
 const sort = ref({ column: 'yearPlan', direction: 'desc' as 'asc' | 'desc' });
 
+// --- Mappings --- //
+const actvityPlanLabels: { [key: string]: string } = {
+  yearly: 'ផែនការប្រចាំឆ្នាំ',
+  threeyear: 'ផែនការមធ្យម',
+  longterm: 'ផែនការរយៈពេលវែង',
+};
+
 // --- Columns --- //
 const columns = [
   { key: 'ServiceCenter.nameKH', label: 'មជ្ឈមណ្ឌល', sortable: true },
@@ -30,16 +37,14 @@ const columns = [
 ];
 
 // --- Data Fetching --- //
-// Corrected the API endpoint to /api/center/plan/get
 const { data: result, pending, error, refresh } = await useFetch<any>(
   '/api/center/plan/get', 
   { 
     method: 'POST',
-    default: () => ({ plans: [] }) // Adjusted default to match expected response structure
+    default: () => ({ plans: [] })
   }
 );
 
-// The API returns { plans: [...] }, so we compute from result.value.plans
 const allPlans = computed(() => result.value?.plans || []);
 
 // --- Client-side Filtering and Sorting --- //
@@ -50,9 +55,11 @@ const filteredAndSortedRows = computed(() => {
   if (search.value) {
     const searchTerm = search.value.toLowerCase();
     rows = rows.filter(item => {
+      const activityPlanLabel = (actvityPlanLabels[item.actvityPlan] || '').toLowerCase();
       return (
         item.yearPlan?.toLowerCase().includes(searchTerm) ||
         item.actvityPlan?.toLowerCase().includes(searchTerm) ||
+        activityPlanLabel.includes(searchTerm) ||
         item.note?.toLowerCase().includes(searchTerm) ||
         item.ServiceCenter?.nameKH?.toLowerCase().includes(searchTerm)
       );
@@ -93,7 +100,7 @@ function getProperty(obj: any, path: string) {
 // --- Event Handlers --- //
 const onSearch = useDebounceFn((value) => {
   search.value = value;
-  page.value = 1; // Reset to first page on search
+  page.value = 1; 
 }, 300);
 
 function onSort(s: { column: string; direction: 'asc' | 'desc' }) {
@@ -159,6 +166,10 @@ async function deletePlan(id: string) {
         
         <template #ServiceCenter.nameKH-data="{ row }">
           {{ row.ServiceCenter?.nameKH || 'N/A' }}
+        </template>
+
+        <template #actvityPlan-data="{ row }">
+          {{ actvityPlanLabels[row.actvityPlan] || row.actvityPlan }}
         </template>
 
         <template #filePath-data="{ row }">
