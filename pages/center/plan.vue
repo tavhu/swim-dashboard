@@ -125,22 +125,16 @@ const clearForm = () => {
 }
 
 async function submit() {
-  // --- Start Validation --- //
-  if (!validator.value) {
-    console.error("Validator not available!");
-    return;
-  }
+  if (!(await confirmDialog({ title: isEditMode.value ? 'Confirm Update' : 'Confirm Save' }))) return;
+  
+  if (!validator.value) return;
   await validator.value.validate();
   if (validator.value.fail()) {
-    console.log("Validation Failed!", validator.value.getErrors());
-    toast.error({ message: validator.value.getErrorMessage() || "Please check the form for errors." });
+    toast.error({ message: validator.value.getErrorMessage() });
     isError.value = true;
     setTimeout(() => { isError.value = false; }, 1000);
     return;
   }
-  // --- End Validation --- //
-
-  if (!(await confirmDialog({ title: isEditMode.value ? 'Confirm Update' : 'Confirm Save' }))) return;
 
   // Handle file uploads
   const uploadedFilePaths = await handleImageUpload();
@@ -215,7 +209,7 @@ function removeExistingFile(index: number) {
       class="grid grid-cols-12 gap-4 bg-white dark:bg-gray-900 rounded-lg p-4 shadow"
       :class="{ 'tw-shake': isError }"
       :rules="formRules"
-      @submit.prevent="submit"
+      @submit="submit"
       :custom-field-name="{
         actvityPlan: 'ផែនការសកម្មភាព',
         yearPlan: 'ផែនការឆ្នាំ',
