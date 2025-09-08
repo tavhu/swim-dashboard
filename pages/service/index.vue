@@ -2,16 +2,18 @@
 import { ref, watch, computed } from 'vue';
 import { useRouter } from '#app';
 import { useToast } from 'vue3-tailwind';
+import { usePermissionStore } from '~/stores/permission';
 
 const router = useRouter();
 const toast = useToast();
 useHead({
   title: "បញ្ចីសេវាកម្ម",
-});
+});const permissionStore = usePermissionStore();
+
 // Security
-const canCreate = computed(() => !checkIfPageReadOnly());
-const canEdit = computed(() => !checkIfPageReadOnly());
-const canDelete = computed(() => !checkIfPageReadOnly());
+const canCreate = computed(() => permissionStore.getPermission('service')?.create ?? true);
+const canEdit = computed(() => permissionStore.getPermission('service')?.update ?? true);
+const canDelete = computed(() => permissionStore.getPermission('service')?.delete ?? true);
 
 // Table state
 const page = ref(1);
@@ -20,15 +22,15 @@ const search = ref('');
 const sort = ref({ column: 'createdAt', direction: 'desc' as 'asc' | 'desc' });
 
 const columns = [
-  { key: 'nameKh', label: 'ឈ្មោះសេវា', sortable: true },
-  { key: 'providingInstitution', label: 'ក្រសួង/ស្ថាប័ន ផ្តល់សេវា', sortable: true },
-  { key: 'purpose', label: 'គោលបំណង នៃការផ្តល់សេវា', sortable: true },
-  { key: 'legalBasis', label: 'មូលដ្ឋានគតិយុត្ត', sortable: true },
-  { key: 'eligibleClients', label: 'អតិថិជនដែលមាន សិទ្ធិទទួលសេវា', sortable: true },
-  { key: 'serviceStandard', label: 'ស្តង់ដារសេវា', sortable: true },
-  { key: 'requiredDocuments', label: 'តម្រូវការឯកសារ ដើម្បីទទួលបានសេវា', sortable: true },
-  { key: 'feedback', label: 'យោបល់', sortable: true },
-  { key: 'actions', label: 'Actions' }
+  { key: 'nameKh', label: 'ឈ្មោះសេវា', sortable: true, class: 'w-2/12' },
+  { key: 'providingInstitution', label: 'ក្រសួង/ស្ថាប័ន ផ្តល់សេវា', sortable: true, class: 'w-2/12' },
+  { key: 'purpose', label: 'គោលបំណង', sortable: true, class: 'w-1/12' },
+  { key: 'legalBasis', label: 'មូលដ្ឋានគតិយុត្ត', sortable: true, class: 'w-1/12' },
+  { key: 'eligibleClients', label: 'អតិថិជន', sortable: true, class: 'w-1/12' },
+  { key: 'serviceStandard', label: 'ស្តង់ដារ', sortable: true, class: 'w-1/12' },
+  { key: 'requiredDocuments', label: 'ឯកសារតម្រូវ', sortable: true, class: 'w-2/12' },
+  { key: 'feedback', label: 'យោបល់', sortable: true, class: 'w-1/12' },
+  { key: 'actions', label: 'Actions', class: 'w-1/12' }
 ];
 
 // Data fetching
@@ -110,13 +112,19 @@ async function deleteService(id: string) {
     </div>
 
     <UCard :ui="{ body: { padding: 'px-0 sm:p-0' } }">
-      <UTable :loading="pending" :columns="columns" :rows="services" :sort="sort" @sort="onSort">
-        <template #actions-data="{ row }">
-          <UDropdown :items="actionItems(row)">
-            <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />
-          </UDropdown>
-        </template>
-      </UTable>
+        <UTable
+            :loading="pending"
+            :columns="columns"
+            :rows="services"
+            :sort="sort"
+            @sort="onSort"
+        >
+            <template #actions-data="{ row }">
+                <UDropdown :items="actionItems(row)">
+                    <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />
+                </UDropdown>
+            </template>
+        </UTable>
     </UCard>
 
     <div v-if="!pending && total > limit" class="flex flex-wrap justify-between items-center mt-4">
