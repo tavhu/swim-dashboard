@@ -20,15 +20,15 @@ const search = ref('');
 const sort = ref({ column: 'createdAt', direction: 'desc' as 'asc' | 'desc' });
 
 const columns = [
-  { key: 'nameKh', label: 'ឈ្មោះសេវា', sortable: true, class: 'w-2/12' },
-  { key: 'providingInstitution', label: 'ក្រសួង/ស្ថាប័ន', sortable: true, class: 'w-2/12' },
-  { key: 'purpose', label: 'គោលបំណង', sortable: true, class: 'w-1/12' },
-  { key: 'legalBasis', label: 'គតិយុត្ត', sortable: true, class: 'w-1/12' },
-  { key: 'eligibleClients', label: 'អតិថិជន', sortable: true, class: 'w-1/12' },
-  { key: 'serviceStandard', label: 'ស្តង់ដារ', sortable: true, class: 'w-1/12' },
-  { key: 'requiredDocuments', label: 'ឯកសារ', sortable: true, class: 'w-2/12' },
-  { key: 'feedback', label: 'យោបល់', sortable: true, class: 'w-1/12' },
-  { key: 'actions', label: 'Actions', class: 'w-1/12' }
+  { key: 'nameKh', label: 'ឈ្មោះសេវា', sortable: true, class: 'w-[15%]' },
+  { key: 'providingInstitution', label: 'ក្រសួង/ស្ថាប័ន', sortable: true, class: 'w-[15%]' },
+  { key: 'purpose', label: 'គោលបំណង', sortable: true, class: 'w-[10%]' },
+  { key: 'legalBasis', label: 'គតិយុត្ត', sortable: true, class: 'w-[10%]' },
+  { key: 'eligibleClients', label: 'អតិថិជន', sortable: true, class: 'w-[10%]' },
+  { key: 'serviceStandard', label: 'ស្តង់ដារ', sortable: true, class: 'w-[10%]' },
+  { key: 'requiredDocuments', label: 'ឯកសារ', sortable: true, class: 'w-[15%]' },
+  { key: 'feedback', label: 'យោបល់', sortable: true, class: 'w-[10%]' },
+  { key: 'actions', label: 'Actions', class: 'w-[5%]' }
 ];
 
 // Data fetching
@@ -115,53 +115,57 @@ async function deleteService(id: string) {
             :rows="services"
             :sort="sort"
             @sort="onSort"
-            :ui="{ th: { base: 'whitespace-normal text-sm' }, base: 'table-fixed' }"
+            :ui="{
+              base: 'table-fixed w-full',
+              th: { base: 'truncate' },
+              td: { base: 'truncate' } 
+            }"
         >
           <template #nameKh-data="{ row }">
-            <UTooltip :text="row.nameKh || 'N/A'">
-              <p class="truncate">{{ row.nameKh || 'N/A' }}</p>
+            <UTooltip :text="row.nameKh || 'N/A'" :ui="{ base: 'w-96' }">
+              <span>{{ row.nameKh || 'N/A' }}</span>
             </UTooltip>
           </template>
 
           <template #providingInstitution-data="{ row }">
-            <UTooltip :text="row.providingInstitution || 'N/A'">
-              <p class="truncate">{{ row.providingInstitution || 'N/A' }}</p>
+            <UTooltip :text="row.providingInstitution || 'N/A'" :ui="{ base: 'w-96' }">
+              <span>{{ row.providingInstitution || 'N/A' }}</span>
             </UTooltip>
           </template>
 
           <template #purpose-data="{ row }">
-            <UTooltip :text="row.purpose || 'N/A'">
-              <p class="truncate">{{ row.purpose || 'N/A' }}</p>
+            <UTooltip :text="row.purpose || 'N/A'" :ui="{ base: 'w-96' }">
+              <span>{{ row.purpose || 'N/A' }}</span>
             </UTooltip>
           </template>
 
           <template #legalBasis-data="{ row }">
-            <UTooltip :text="row.legalBasis || 'N/A'">
-              <p class="truncate">{{ row.legalBasis || 'N/A' }}</p>
+            <UTooltip :text="row.legalBasis || 'N/A'" :ui="{ base: 'w-96' }">
+              <span>{{ row.legalBasis || 'N/A' }}</span>
             </UTooltip>
           </template>
 
           <template #eligibleClients-data="{ row }">
-            <UTooltip :text="row.eligibleClients || 'N/A'">
-              <p class="truncate">{{ row.eligibleClients || 'N/A' }}</p>
+            <UTooltip :text="row.eligibleClients || 'N/A'" :ui="{ base: 'w-96' }">
+              <span>{{ row.eligibleClients || 'N/A' }}</span>
             </UTooltip>
           </template>
 
           <template #serviceStandard-data="{ row }">
-            <UTooltip :text="row.serviceStandard || 'N/A'">
-              <p class="truncate">{{ row.serviceStandard || 'N/A' }}</p>
+            <UTooltip :text="row.serviceStandard || 'N/A'" :ui="{ base: 'w-96' }">
+              <span>{{ row.serviceStandard || 'N/A' }}</span>
             </UTooltip>
           </template>
 
           <template #requiredDocuments-data="{ row }">
-            <UTooltip :text="row.requiredDocuments || 'N/A'">
-              <p class="truncate">{{ row.requiredDocuments || 'N/A' }}</p>
+            <UTooltip :text="row.requiredDocuments || 'N/A'" :ui="{ base: 'w-96' }">
+              <span>{{ row.requiredDocuments || 'N/A' }}</span>
             </UTooltip>
           </template>
 
           <template #feedback-data="{ row }">
-            <UTooltip :text="row.feedback || 'N/A'">
-              <p class="truncate">{{ row.feedback || 'N/A' }}</p>
+            <UTooltip :text="row.feedback || 'N/A'" :ui="{ base: 'w-96' }">
+              <span>{{ row.feedback || 'N/A' }}</span>
             </UTooltip>
           </template>
 
