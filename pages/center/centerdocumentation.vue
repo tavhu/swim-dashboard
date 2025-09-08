@@ -15,9 +15,18 @@ const canDelete = computed(() => !checkIfPageReadOnly());
 const page = ref(1);
 const limit = ref(10);
 const search = ref('');
-const sort = ref({ column: 'year', direction: 'desc' as 'asc' | 'desc' });
+const sort = ref({ column: 'yearPlan', direction: 'desc' as 'asc' | 'desc' });
 
-// Data fetching
+// Columns based on CenterPlan model
+const columns = [
+  { key: 'ServiceCenter.nameKH', label: 'មជ្ឈមណ្ឌល', sortable: true },
+  { key: 'yearPlan', label: 'ឆ្នាំ', sortable: true },
+  { key: 'actvityPlan', label: 'ផែនការសកម្មភាព', sortable: true }, // Corrected spelling as per schema
+  { key: 'note', label: 'កំណត់ចំណាំ', sortable: true },
+  { key: 'actions', label: 'Actions' },
+];
+
+// Data fetching from the correct endpoint
 const { data: result, pending, error, refresh } = useLazyAsyncData<any>(
   'centerPlans',
   () => $fetch('/api/center/plan/get', { method: 'POST' })
@@ -61,13 +70,6 @@ const paginatedRows = computed(() => {
 
 const total = computed(() => filteredAndSortedRows.value.length);
 
-const columns = [
-  { key: 'ServiceCenter.nameKH', label: 'មជ្ឈមណ្ឌល', sortable: true },
-  { key: 'year', label: 'ឆ្នាំ', sortable: true },
-  { key: 'description', label: 'ការពិពណ៌នា', sortable: true },
-  { key: 'actions', label: 'Actions' },
-];
-
 // Utility to get nested properties for sorting
 function getProperty(obj: any, path: string) {
   return path.split('.').reduce((o, i) => (o ? o[i] : undefined), obj);
@@ -104,12 +106,11 @@ const actionItems = (row: any) => [
   ],
 ];
 
-// Delete logic
+// Delete logic (assuming a delete endpoint will be created)
 async function deletePlan(id: string) {
   if (!(await confirmDialog({ title: 'Confirm Deletion', message: 'Are you sure you want to delete this plan?' }))) return;
-  
-  // NOTE: Assuming a delete endpoint exists at /api/center/plan/delete
-  const { error } = await useFetch('/api/center/plan/delete', {
+
+  const { error } = await useFetch('/api/center/plan/delete', { // Placeholder for delete API
     method: 'POST',
     body: { id },
   });
