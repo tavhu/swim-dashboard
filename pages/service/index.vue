@@ -6,9 +6,7 @@ import { usePermissionStore } from '~/stores/permission';
 
 const router = useRouter();
 const toast = useToast();
-useHead({
-  title: "បញ្ចីសេវាកម្ម",
-});const permissionStore = usePermissionStore();
+const permissionStore = usePermissionStore();
 
 // Security
 const canCreate = computed(() => permissionStore.getPermission('service')?.create ?? true);
@@ -23,12 +21,12 @@ const sort = ref({ column: 'createdAt', direction: 'desc' as 'asc' | 'desc' });
 
 const columns = [
   { key: 'nameKh', label: 'ឈ្មោះសេវា', sortable: true, class: 'w-2/12' },
-  { key: 'providingInstitution', label: 'ក្រសួង/ស្ថាប័ន ផ្តល់សេវា', sortable: true, class: 'w-2/12' },
+  { key: 'providingInstitution', label: 'ក្រសួង/ស្ថាប័ន', sortable: true, class: 'w-2/12' },
   { key: 'purpose', label: 'គោលបំណង', sortable: true, class: 'w-1/12' },
-  { key: 'legalBasis', label: 'មូលដ្ឋានគតិយុត្ត', sortable: true, class: 'w-1/12' },
+  { key: 'legalBasis', label: 'គតិយុត្ត', sortable: true, class: 'w-1/12' },
   { key: 'eligibleClients', label: 'អតិថិជន', sortable: true, class: 'w-1/12' },
   { key: 'serviceStandard', label: 'ស្តង់ដារ', sortable: true, class: 'w-1/12' },
-  { key: 'requiredDocuments', label: 'ឯកសារតម្រូវ', sortable: true, class: 'w-2/12' },
+  { key: 'requiredDocuments', label: 'ឯកសារ', sortable: true, class: 'w-2/12' },
   { key: 'feedback', label: 'យោបល់', sortable: true, class: 'w-1/12' },
   { key: 'actions', label: 'Actions', class: 'w-1/12' }
 ];
@@ -49,8 +47,8 @@ const total = computed(() => result.value?.total || 0);
 
 // Debounce search
 const onSearch = useDebounceFn((value) => {
-  search.value = value;
-  page.value = 1;
+    search.value = value;
+    page.value = 1;
 }, 300)
 
 // Sorting
@@ -107,8 +105,7 @@ async function deleteService(id: string) {
     </div>
 
     <div class="flex justify-end mb-4">
-      <UInput :model-value="search" @update:model-value="onSearch" placeholder="Search..."
-        icon="i-heroicons-magnifying-glass-20-solid" />
+        <UInput :model-value="search" @update:model-value="onSearch" placeholder="Search..." icon="i-heroicons-magnifying-glass-20-solid" />
     </div>
 
     <UCard :ui="{ body: { padding: 'px-0 sm:p-0' } }">
@@ -118,7 +115,56 @@ async function deleteService(id: string) {
             :rows="services"
             :sort="sort"
             @sort="onSort"
+            :ui="{ th: { base: 'whitespace-normal text-sm' }, base: 'table-fixed' }"
         >
+          <template #nameKh-data="{ row }">
+            <UTooltip :text="row.nameKh || 'N/A'">
+              <p class="truncate">{{ row.nameKh || 'N/A' }}</p>
+            </UTooltip>
+          </template>
+
+          <template #providingInstitution-data="{ row }">
+            <UTooltip :text="row.providingInstitution || 'N/A'">
+              <p class="truncate">{{ row.providingInstitution || 'N/A' }}</p>
+            </UTooltip>
+          </template>
+
+          <template #purpose-data="{ row }">
+            <UTooltip :text="row.purpose || 'N/A'">
+              <p class="truncate">{{ row.purpose || 'N/A' }}</p>
+            </UTooltip>
+          </template>
+
+          <template #legalBasis-data="{ row }">
+            <UTooltip :text="row.legalBasis || 'N/A'">
+              <p class="truncate">{{ row.legalBasis || 'N/A' }}</p>
+            </UTooltip>
+          </template>
+
+          <template #eligibleClients-data="{ row }">
+            <UTooltip :text="row.eligibleClients || 'N/A'">
+              <p class="truncate">{{ row.eligibleClients || 'N/A' }}</p>
+            </UTooltip>
+          </template>
+
+          <template #serviceStandard-data="{ row }">
+            <UTooltip :text="row.serviceStandard || 'N/A'">
+              <p class="truncate">{{ row.serviceStandard || 'N/A' }}</p>
+            </UTooltip>
+          </template>
+
+          <template #requiredDocuments-data="{ row }">
+            <UTooltip :text="row.requiredDocuments || 'N/A'">
+              <p class="truncate">{{ row.requiredDocuments || 'N/A' }}</p>
+            </UTooltip>
+          </template>
+
+          <template #feedback-data="{ row }">
+            <UTooltip :text="row.feedback || 'N/A'">
+              <p class="truncate">{{ row.feedback || 'N/A' }}</p>
+            </UTooltip>
+          </template>
+
             <template #actions-data="{ row }">
                 <UDropdown :items="actionItems(row)">
                     <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />
@@ -131,7 +177,11 @@ async function deleteService(id: string) {
       <div class="text-sm text-gray-500 dark:text-gray-400">
         Showing {{ (page - 1) * limit + 1 }} to {{ Math.min(page * limit, total) }} of {{ total }} entries
       </div>
-      <UPagination v-model="page" :page-count="limit" :total="total" />
+      <UPagination
+        v-model="page"
+        :page-count="limit"
+        :total="total"
+      />
     </div>
   </div>
 </template>
