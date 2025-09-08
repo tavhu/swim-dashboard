@@ -30,7 +30,7 @@ const columns = [
 // Data fetching from the correct endpoint for CenterPlan
 const { data: result, pending, error, refresh } = useLazyAsyncData<any>(
   'centerPlans',
-  () => $fetch('/api/center/plan/get', { method: 'POST' }),
+  () => $fetch('/api/center/plan/get', { method: 'POST', body: {} }), // Added body: {} to fix hard refresh
   {
     // No server-side pagination in the API, so we fetch all and handle it on the client
   }
@@ -158,11 +158,15 @@ async function deletePlan(id: string) {
           {{ row.ServiceCenter?.nameKH || 'N/A' }}
         </template>
 
-        <!-- Custom template for File Path to make it a link -->
+        <!-- Custom template for File Path to handle multiple files -->
         <template #filePath-data="{ row }">
-          <a :href="row.filePath" target="_blank" class="text-blue-500 hover:underline" v-if="row.filePath">
-            View File.
-          </a>
+          <div v-if="row.filePath && row.filePath.length > 0">
+            <div v-for="(path, index) in row.filePath.split(',').filter(p => p.trim())" :key="index">
+                <a :href="path.trim().startsWith('/') ? path.trim() : '/' + path.trim()" target="_blank" class="text-blue-500 hover:underline">
+                    {{ path.trim().split('/').pop() || 'View File' }}
+                </a>
+            </div>
+          </div>
           <span v-else>No file</span>
         </template>
 
