@@ -144,14 +144,28 @@ async function submit() {
   const allFilePaths = [...existingFiles.value, ...newFilePaths];
   formData.filePath = allFilePaths.join(',');
 
+  // Manually construct the payload to ensure it's a plain object
+  const payload: any = {
+    serviceCenterID: formData.serviceCenterID,
+    yearPlan: formData.yearPlan,
+    actvityPlan: formData.actvityPlan,
+    note: formData.note,
+    filePath: formData.filePath,
+  };
+
+  // Add id only if it exists (for updates)
+  if (formData.id) {
+    payload.id = formData.id;
+  }
+
   // Perform the upsert operation
   const { error } = await useFetch("/api/center/plan/upsert", {
     method: "POST",
-    body: { ...formData }, // Spread formData to send a plain object
+    body: payload,
   });
 
   if (error.value) {
-    toast.error({ message: `Save failed: ${error.value.message}` });
+    toast.error({ message: `Save failed: ${error.value.data?.message || 'An unknown error occurred.'}` });
   } else {
     toast.success({ message: "Save successful" });
     goBack();
