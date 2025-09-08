@@ -8,18 +8,13 @@ import {
   TwInput,
 } from "vue3-tailwind";
 import { reactive, computed, ref, nextTick } from "vue";
-import { usePermissionStore } from '~/stores/permission';
 import { useRouter } from '#app';
 
-const permissionStore = usePermissionStore();
 const router = useRouter();
 
 // Security
-const canSave = computed(() => {
-  const permission = permissionStore.getPermission('service-register'); // Assumed permission name
-  return permission?.read ?? false; // Assuming 'read' access allows creation
-});
-const readOnly = computed(() => !canSave.value);
+const readOnly = computed(() => checkIfPageReadOnly());
+const canSave = computed(() => !readOnly.value);
 
 const formName = 'serviceRegisterForm';
 
@@ -85,6 +80,7 @@ async function submit() {
       message: "ការចុះឈ្មោះសេវាកម្មបានជោគជ័យ",
     });
     clearForm();
+    router.back();
   }
 }
 
@@ -165,7 +161,7 @@ const clearForm = () => {
       </div>
 
       <div class="col-span-12 flex justify-end gap-2 mt-4">
-        <UButton color="gray" type="button" @click="clearForm()">
+        <UButton color="gray" type="button" @click="clearForm()" :disabled="readOnly">
           កំណត់ឡើងវិញ
         </UButton>
         <UButton v-if="canSave" color="primary" type="submit">
