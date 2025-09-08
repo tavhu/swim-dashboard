@@ -206,19 +206,20 @@ const handleImageUpload = async () => {
         <TwFile v-model="files" :multiple="true" label="ឯកសារ" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" />
       </div>
       <div class="col-span-12 flex justify-end gap-1 ">
-        <div v-if="isSaved" class="col-span-12 flex justify-end gap-1">
-            <UButton color="gray" type="button" square size="lg" class="px-4 dark:text-gray-200 dark:!border-gray-800 dark:border" @click="goBack()">
-                ត្រឡប់ក្រោយ
-            </UButton>
-        </div>
-        <template v-else>
-            <UButton color="gray" type="button" square size="lg" class="px-4 dark:text-gray-200 dark:!border-gray-800 dark:border" @click="clearForm()">
-                កំណត់ឡើងវិញ
-            </UButton>
-            <UButton v-if="canSave" color="primary" type="submit" size="lg" class="px-4">
-                រក្សាទុក
-            </UButton>
-        </template>
+
+        <UButton color="gray" type="button" square size="lg"
+          class="px-4 dark:text-gray-200 dark:!border-gray-800 dark:border" @click="goBack()">
+          ត្រឡប់ក្រោយ
+        </UButton>
+
+        <UButton color="gray" type="button" square size="lg"
+          class="px-4 dark:text-gray-200 dark:!border-gray-800 dark:border" @click="clearForm()">
+          កំណត់ឡើងវិញ
+        </UButton>
+        <UButton v-if="canSave" color="primary" type="submit" size="lg" class="px-4">
+          រក្សាទុក
+        </UButton>
+
       </div>
     </TwForm>
   </div>
