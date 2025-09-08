@@ -158,6 +158,8 @@ async function submit() {
     payload.id = formData.id;
   }
 
+  console.log('Sending payload:', payload);
+
   // Perform the upsert operation
   const { error } = await useFetch("/api/center/plan/upsert", {
     method: "POST",
@@ -165,6 +167,7 @@ async function submit() {
   });
 
   if (error.value) {
+    console.error('Save Error:', error.value);
     toast.error({ message: `Save failed: ${error.value.data?.message || 'An unknown error occurred.'}` });
   } else {
     toast.success({ message: "Save successful" });
