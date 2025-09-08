@@ -172,6 +172,21 @@ export default [
     submenu: [
       {
         isTitle: false,
+        name: "សេវា",
+        url: "",
+        icon: "message-square",
+        submenu: [
+          {
+            isTitle: false,
+            name: "បង្កើត",
+            url: "/service/register",
+            icon: "",
+            submenu: [],
+          },
+        ],
+      },
+      {
+        isTitle: false,
         name: "មណ្ឌល",
         url: "",
         icon: "home",
