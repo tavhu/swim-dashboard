@@ -1,85 +1,49 @@
-import { getServerSession } from "#auth";
-import { URL } from "url";
+import { PrismaClient } from '@prisma/client';
 
-export default eventHandler(async (event) => {
-  const session = (await getServerSession(event)) as any;
-  if (!session) {
-    setResponseStatus(event, 401);
-    return { status: "unauthenticated" };
-  }
+const prisma = new PrismaClient();
 
-  const dbUser = await event.context.prisma.user.findUnique({
-    where: { id: session.id },
-  });
-
-  if (!dbUser) {
-    setResponseStatus(event, 404);
-    return { error: "Authenticated user not found in database." };
-  }
-
-  const referer = event.node.req.headers.referer;
-  if (!referer) {
-    setResponseStatus(event, 400);
-    return { error: "Request is missing the 'referer' header." };
-  }
-
-  const refererUrl = new URL(referer);
-  const frontEndURL = refererUrl.pathname.substring(1).replace(/\//g, "-");
+export default defineEventHandler(async (event) => {
   const body = await readBody(event);
+  
+  const { id, serviceCenterID, yearPlan, actvityPlan, note, filePath } = body;
+
+  // Basic validation
+  if (!serviceCenterID || !yearPlan || !actvityPlan) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Missing required fields: serviceCenterID, yearPlan, and actvityPlan are required.',
+    });
+  }
 
   try {
-    const resource = await event.context.prisma.resources.findFirst({
-      where: { frontEndURL: frontEndURL },
-    });
-
-    if (!resource) {
-      setResponseStatus(event, 404);
-      return { error: `Resource '${frontEndURL}' not found.` };
-    }
-
-    const permission = await event.context.prisma.roleToResource.findFirst({
-      where: {
-        roleID: dbUser.userRoleID,
-        resourceID: resource.id,
+    // If an ID is provided, update the existing record. Otherwise, create a new one.
+    const result = await prisma.centerPlan.upsert({
+      where: { id: id || '' }, // Provide a dummy string for id if it's null/undefined
+      update: {
+        serviceCenterID,
+        yearPlan,
+        actvityPlan,
+        note,
+        filePath,
+      },
+      create: {
+        serviceCenterID,
+        yearPlan,
+        actvityPlan,
+        note,
+        filePath,
       },
     });
 
-    // CORRECTED: Check for 'read' permission as per the actual schema.
-    // This assumes that users who can read the resource can also write to it.
-    if (!permission || !permission.read) {
-      setResponseStatus(event, 403);
-      return {
-        error: `Forbidden. You do not have permission to perform this action.`,
-      };
-    }
-
-    if (permission.granted === false && dbUser.serviceCenterID) {
-      if (dbUser.serviceCenterID !== body.serviceCenterID) {
-        setResponseStatus(event, 403);
-        return {
-          error:
-            "Forbidden. You do not have permission to create a plan for this service center.",
-        };
-      }
-    }
-
-    const planData = {
-      actvityPlan: body.actvityPlan,
-      note: body.note,
-      yearPlan: body.yearPlan,
-      filePath: body.filePath,
-      serviceCenterID: body.serviceCenterID,
-    };
-
-    const upsertedPlan = await event.context.prisma.centerPlan.create({
-      data: planData,
-    });
-
-    return { status: "success", data: upsertedPlan };
-  } catch (e) {
-    setResponseStatus(event, 500);
     return {
-      error: "An error occurred while creating or updating the plan.",
+      statusCode: id ? 200 : 201, // 200 OK for update, 201 Created for create
+      plan: result,
     };
+  } catch (error: any) {
+    console.error('Error in upsert operation:', error);
+    throw createError({
+      statusCode: 500,
+      statusMessage: 'Error in upsert operation.',
+    });
   }
 });

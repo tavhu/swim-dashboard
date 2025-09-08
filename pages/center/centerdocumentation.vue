@@ -100,7 +100,7 @@ const actionItems = (row: any) => [
     {
       label: 'Edit',
       icon: 'i-heroicons-pencil-square-20-solid',
-      click: () => router.push(`/center/planform?id=${row.id}`),
+      click: () => router.push(`/center/plan?id=${row.id}`),
       disabled: !canEdit.value,
     },
   ],
@@ -118,7 +118,6 @@ const actionItems = (row: any) => [
 async function deletePlan(id: string) {
   if (!(await confirmDialog({ title: 'Confirm Deletion', message: 'Are you sure you want to delete this plan?' }))) return;
 
-  // This endpoint does not exist yet and needs to be created
   const { error } = await useFetch('/api/center/plan/delete', { 
     method: 'POST',
     body: { id },
@@ -141,7 +140,7 @@ async function deletePlan(id: string) {
         ផែនការមជ្ឈមណ្ឌល
       </h1>
       <!-- Button to add a new plan, links to the plan form -->
-      <UButton v-if="canCreate" icon="i-heroicons-plus-circle-20-solid" @click="router.push('/center/planform')">
+      <UButton v-if="canCreate" icon="i-heroicons-plus-circle-20-solid" @click="router.push('/center/plan')">
         បន្ថែមថ្មី
       </UButton>
     </div>
