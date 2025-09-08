@@ -125,16 +125,22 @@ const clearForm = () => {
 }
 
 async function submit() {
-  if (!(await confirmDialog({ title: isEditMode.value ? 'Confirm Update' : 'Confirm Save' }))) return;
-  
-  if (!validator.value) return;
+  // --- Start Validation --- //
+  if (!validator.value) {
+    console.error("Validator not available!");
+    return;
+  }
   await validator.value.validate();
   if (validator.value.fail()) {
-    toast.error({ message: validator.value.getErrorMessage() });
+    console.log("Validation Failed!", validator.value.getErrors());
+    toast.error({ message: validator.value.getErrorMessage() || "Please check the form for errors." });
     isError.value = true;
     setTimeout(() => { isError.value = false; }, 1000);
     return;
   }
+  // --- End Validation --- //
+
+  if (!(await confirmDialog({ title: isEditMode.value ? 'Confirm Update' : 'Confirm Save' }))) return;
 
   // Handle file uploads
   const uploadedFilePaths = await handleImageUpload();
@@ -158,8 +164,6 @@ async function submit() {
     payload.id = formData.id;
   }
 
-  console.log('Sending payload:', payload);
-
   // Perform the upsert operation
   const { error } = await useFetch("/api/center/plan/upsert", {
     method: "POST",
@@ -167,7 +171,6 @@ async function submit() {
   });
 
   if (error.value) {
-    console.error('Save Error:', error.value);
     toast.error({ message: `Save failed: ${error.value.data?.message || 'An unknown error occurred.'}` });
   } else {
     toast.success({ message: "Save successful" });
@@ -212,7 +215,7 @@ function removeExistingFile(index: number) {
       class="grid grid-cols-12 gap-4 bg-white dark:bg-gray-900 rounded-lg p-4 shadow"
       :class="{ 'tw-shake': isError }"
       :rules="formRules"
-      @submit="submit"
+      @submit.prevent="submit"
       :custom-field-name="{
         actvityPlan: 'ផែនការសកម្មភាព',
         yearPlan: 'ផែនការឆ្នាំ',
@@ -241,7 +244,7 @@ function removeExistingFile(index: number) {
         <CustomErrorMessage name="note" />
       </div>
       <div class="col-span-12 lg:col-span-6">
-        <TwInput label="ផែនការឆ្នាំ" name="yearPlan" v-model="formData.yearPlan" placeholder="YYYY" type="text" :disabled="readOnly" />
+        <TwInput label="ផែនការឆ្នាំ" name="yearPlan" v-model="formData.yearPlan" placeholder="YYYY" type="text" :disabled="readOnly" required />
         <CustomErrorMessage name="yearPlan" />
       </div>
 
