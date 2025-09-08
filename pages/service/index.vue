@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 import { useRouter } from '#app';
 import { useToast } from 'vue3-tailwind';
 
@@ -11,15 +11,44 @@ const canCreate = computed(() => !checkIfPageReadOnly());
 const canEdit = computed(() => !checkIfPageReadOnly());
 const canDelete = computed(() => !checkIfPageReadOnly());
 
-// Search
-const searchQuery = ref('');
+// Table state
+const page = ref(1);
+const limit = ref(10);
+const search = ref('');
+const sort = ref({ column: 'createdAt', direction: 'desc' as 'asc' | 'desc' });
 
-// Data
-const { data: services, pending, error, refresh } = await useFetch('/api/service', {
-    query: { q: searchQuery },
-    watch: [searchQuery]
+const columns = [
+  { key: 'nameKh', label: 'ឈ្មោះសេវា', sortable: true },
+  { key: 'providingInstitution', label: 'ក្រសួង/ស្ថាប័ន', sortable: true },
+  { key: 'actions', label: 'Actions' }
+];
+
+// Data fetching
+const { data: result, pending, error, refresh } = useLazyFetch<any>('/api/service', {
+  query: {
+    search: search,
+    offset: computed(() => (page.value - 1) * limit.value),
+    limit: limit,
+    sortBy: computed(() => sort.value.column),
+    sortType: computed(() => sort.value.direction),
+  }
 });
 
+const services = computed(() => result.value?.data || []);
+const total = computed(() => result.value?.total || 0);
+
+// Debounce search
+const onSearch = useDebounceFn((value) => {
+    search.value = value;
+    page.value = 1;
+}, 300)
+
+// Sorting
+function onSort(s: { column: string; direction: 'asc' | 'desc' }) {
+  sort.value = s;
+}
+
+// Actions
 const actionItems = (row: any) => [
   [
     {
@@ -39,6 +68,7 @@ const actionItems = (row: any) => [
   ],
 ];
 
+// Delete logic
 async function deleteService(id: string) {
   if (!(await confirmDialog({ title: 'Confirm Deletion', message: 'Are you sure you want to delete this service?' }))) return;
 
@@ -50,7 +80,7 @@ async function deleteService(id: string) {
     toast.error({ message: 'Failed to delete service.' });
   } else {
     toast.success({ message: 'Service deleted successfully.' });
-    refresh(); // Refresh the data
+    refresh();
   }
 }
 </script>
@@ -58,44 +88,41 @@ async function deleteService(id: string) {
 <template>
   <div>
     <div class="flex justify-between items-center mb-4">
-        <h1 class="text-2xl font-[Moul] text-primary">
-            បញ្ជីសេវាកម្ម
-        </h1>
-        <UButton v-if="canCreate" icon="i-heroicons-plus-circle-20-solid" @click="router.push('/service/register')">
-            បន្ថែមថ្មី
-        </UButton>
+      <h1 class="text-2xl font-[Moul] text-primary">
+        បញ្ជីសេវាកម្ម
+      </h1>
+      <UButton v-if="canCreate" icon="i-heroicons-plus-circle-20-solid" @click="router.push('/service/register')">
+        បន្ថែមថ្មី
+      </UButton>
     </div>
 
     <div class="flex justify-end mb-4">
-        <UInput v-model="searchQuery" placeholder="Search..." icon="i-heroicons-magnifying-glass-20-solid" />
+        <UInput :model-value="search" @update:model-value="onSearch" placeholder="Search..." icon="i-heroicons-magnifying-glass-20-solid" />
     </div>
 
-    <div v-if="pending">Loading...</div>
-    <div v-else-if="error">Error loading services.</div>
-    
-    <div v-else class="space-y-4">
-        <UCard v-for="service in services.data" :key="service.id">
-            <template #header>
-                <div class="flex justify-between items-center">
-                    <h2 class="text-xl font-bold text-gray-900 dark:text-white">
-                        {{ service.nameKh }}
-                    </h2>
-                    <UDropdown :items="actionItems(service)">
-                        <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />
-                    </UDropdown>
-                </div>
-            </template>
+    <UTable
+        :loading="pending"
+        :columns="columns"
+        :rows="services"
+        :sort="sort"
+        @sort="onSort"
+    >
+        <template #actions-data="{ row }">
+            <UDropdown :items="actionItems(row)">
+                <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />
+            </UDropdown>
+        </template>
+    </UTable>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-gray-700 dark:text-gray-300">
-                <p><strong class="dark:text-white">ក្រសួង/ស្ថាប័ន ផ្តល់សេវា:</strong> {{ service.providingInstitution }}</p>
-                <p><strong class="dark:text-white">គោលបំណង នៃការផ្តល់សេវា:</strong> {{ service.purpose }}</p>
-                <p><strong class="dark:text-white">មូលដ្ឋានគតិយុត្ត:</strong> {{ service.legalBasis }}</p>
-                <p><strong class="dark:text-white">អតិថិជនដែលមាន សិទ្ធិទទួលសេវា:</strong> {{ service.eligibleClients }}</p>
-                <p class="md:col-span-2"><strong class="dark:text-white">ស្តង់ដារសេវា:</strong> {{ service.serviceStandard }}</p>
-                <p class="md:col-span-2"><strong class="dark:text-white">តម្រូវការឯកសារ ដើម្បីទទួលបានសេវា:</strong> {{ service.requiredDocuments }}</p>
-                <p class="md:col-span-2"><strong class="dark:text-white">យោបល់:</strong> {{ service.feedback }}</p>
-            </div>
-        </UCard>
+    <div v-if="!pending && total > limit" class="flex flex-wrap justify-between items-center mt-4">
+      <div class="text-sm text-gray-500 dark:text-gray-400">
+        Showing {{ (page - 1) * limit + 1 }} to {{ Math.min(page * limit, total) }} of {{ total }} entries
+      </div>
+      <UPagination
+        v-model="page"
+        :page-count="limit"
+        :total="total"
+      />
     </div>
   </div>
 </template>
