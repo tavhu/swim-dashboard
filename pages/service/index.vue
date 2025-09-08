@@ -19,7 +19,13 @@ const sort = ref({ column: 'createdAt', direction: 'desc' as 'asc' | 'desc' });
 
 const columns = [
   { key: 'nameKh', label: 'ឈ្មោះសេវា', sortable: true },
-  { key: 'providingInstitution', label: 'ក្រសួង/ស្ថាប័ន', sortable: true },
+  { key: 'providingInstitution', label: 'ក្រសួង/ស្ថាប័ន ផ្តល់សេវា', sortable: true },
+  { key: 'purpose', label: 'គោលបំណង នៃការផ្តល់សេវា', sortable: true },
+  { key: 'legalBasis', label: 'មូលដ្ឋានគតិយុត្ត', sortable: true },
+  { key: 'eligibleClients', label: 'អតិថិជនដែលមាន សិទ្ធិទទួលសេវា', sortable: true },
+  { key: 'serviceStandard', label: 'ស្តង់ដារសេវា', sortable: true },
+  { key: 'requiredDocuments', label: 'តម្រូវការឯកសារ ដើម្បីទទួលបានសេវា', sortable: true },
+  { key: 'feedback', label: 'យោបល់', sortable: true },
   { key: 'actions', label: 'Actions' }
 ];
 
@@ -100,19 +106,21 @@ async function deleteService(id: string) {
         <UInput :model-value="search" @update:model-value="onSearch" placeholder="Search..." icon="i-heroicons-magnifying-glass-20-solid" />
     </div>
 
-    <UTable
-        :loading="pending"
-        :columns="columns"
-        :rows="services"
-        :sort="sort"
-        @sort="onSort"
-    >
-        <template #actions-data="{ row }">
-            <UDropdown :items="actionItems(row)">
-                <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />
-            </UDropdown>
-        </template>
-    </UTable>
+    <UCard :ui="{ body: { padding: 'px-0 sm:p-0' } }">
+        <UTable
+            :loading="pending"
+            :columns="columns"
+            :rows="services"
+            :sort="sort"
+            @sort="onSort"
+        >
+            <template #actions-data="{ row }">
+                <UDropdown :items="actionItems(row)">
+                    <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />
+                </UDropdown>
+            </template>
+        </UTable>
+    </UCard>
 
     <div v-if="!pending && total > limit" class="flex flex-wrap justify-between items-center mt-4">
       <div class="text-sm text-gray-500 dark:text-gray-400">
