@@ -116,55 +116,54 @@ async function deleteService(id: string) {
             :sort="sort"
             @sort="onSort"
             :ui="{
-              base: 'table-fixed w-full',
-              th: { base: 'truncate' }
+              base: 'table-fixed w-full'
             }"
         >
           <template #nameKh-data="{ row }">
             <UTooltip :text="row.nameKh || 'N/A'" :ui="{ base: 'w-96 whitespace-pre-wrap break-words' }">
-              <span class="truncate">{{ row.nameKh || 'N/A' }}</span>
+              <p class="truncate">{{ row.nameKh || 'N/A' }}</p>
             </UTooltip>
           </template>
 
           <template #providingInstitution-data="{ row }">
             <UTooltip :text="row.providingInstitution || 'N/A'" :ui="{ base: 'w-96 whitespace-pre-wrap break-words' }">
-              <span class="truncate">{{ row.providingInstitution || 'N/A' }}</span>
+              <p class="truncate">{{ row.providingInstitution || 'N/A' }}</p>
             </UTooltip>
           </template>
 
           <template #purpose-data="{ row }">
             <UTooltip :text="row.purpose || 'N/A'" :ui="{ base: 'w-96 whitespace-pre-wrap break-words' }">
-              <span class="truncate">{{ row.purpose || 'N/A' }}</span>
+              <p class="truncate">{{ row.purpose || 'N/A' }}</p>
             </UTooltip>
           </template>
 
           <template #legalBasis-data="{ row }">
             <UTooltip :text="row.legalBasis || 'N/A'" :ui="{ base: 'w-96 whitespace-pre-wrap break-words' }">
-              <span class="truncate">{{ row.legalBasis || 'N/A' }}</span>
+              <p class="truncate">{{ row.legalBasis || 'N/A' }}</p>
             </UTooltip>
           </template>
 
           <template #eligibleClients-data="{ row }">
             <UTooltip :text="row.eligibleClients || 'N/A'" :ui="{ base: 'w-96 whitespace-pre-wrap break-words' }">
-              <span class="truncate">{{ row.eligibleClients || 'N/A' }}</span>
+              <p class="truncate">{{ row.eligibleClients || 'N/A' }}</p>
             </UTooltip>
           </template>
 
           <template #serviceStandard-data="{ row }">
             <UTooltip :text="row.serviceStandard || 'N/A'" :ui="{ base: 'w-96 whitespace-pre-wrap break-words' }">
-              <span class="truncate">{{ row.serviceStandard || 'N/A' }}</span>
+              <p class="truncate">{{ row.serviceStandard || 'N/A' }}</p>
             </UTooltip>
           </template>
 
           <template #requiredDocuments-data="{ row }">
             <UTooltip :text="row.requiredDocuments || 'N/A'" :ui="{ base: 'w-96 whitespace-pre-wrap break-words' }">
-              <span class="truncate">{{ row.requiredDocuments || 'N/A' }}</span>
+              <p class="truncate">{{ row.requiredDocuments || 'N/A' }}</p>
             </UTooltip>
           </template>
 
           <template #feedback-data="{ row }">
             <UTooltip :text="row.feedback || 'N/A'" :ui="{ base: 'w-96 whitespace-pre-wrap break-words' }">
-              <span class="truncate">{{ row.feedback || 'N/A' }}</span>
+              <p class="truncate">{{ row.feedback || 'N/A' }}</p>
             </UTooltip>
           </template>
 
