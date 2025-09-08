@@ -7,8 +7,16 @@ export default defineEventHandler(async (event) => {
   
   const { id, serviceCenterID, yearPlan, actvityPlan, note, filePath } = body;
 
+  const data = {
+    serviceCenterID,
+    yearPlan,
+    actvityPlan,
+    note,
+    filePath,
+  };
+
   // Basic validation
-  if (!serviceCenterID || !yearPlan || !actvityPlan) {
+  if (!data.serviceCenterID || !data.yearPlan || !data.actvityPlan) {
     throw createError({
       statusCode: 400,
       statusMessage: 'Missing required fields: serviceCenterID, yearPlan, and actvityPlan are required.',
@@ -16,34 +24,35 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    // If an ID is provided, update the existing record. Otherwise, create a new one.
-    const result = await prisma.centerPlan.upsert({
-      where: { id: id || '' }, // Provide a dummy string for id if it's null/undefined
-      update: {
-        serviceCenterID,
-        yearPlan,
-        actvityPlan,
-        note,
-        filePath,
-      },
-      create: {
-        serviceCenterID,
-        yearPlan,
-        actvityPlan,
-        note,
-        filePath,
-      },
-    });
+    let result;
+    if (id) {
+      // If an ID is provided, update the existing record.
+      result = await prisma.centerPlan.update({
+        where: { id },
+        data,
+      });
+    } else {
+      // Otherwise, create a new record.
+      result = await prisma.centerPlan.create({
+        data,
+      });
+    }
 
     return {
       statusCode: id ? 200 : 201, // 200 OK for update, 201 Created for create
       plan: result,
     };
   } catch (error: any) {
-    console.error('Error in upsert operation:', error);
+    console.error('Error in save operation:', error);
+    if (error.code === 'P2025') {
+       throw createError({
+        statusCode: 404,
+        statusMessage: `Plan with ID ${id} not found.`,
+      });
+    }
     throw createError({
       statusCode: 500,
-      statusMessage: 'Error in upsert operation.',
+      statusMessage: 'An error occurred during the save operation.',
     });
   }
 });
