@@ -55,12 +55,16 @@ const services = computed(() => result.value?.data || []);
 const total = computed(() => result.value?.total || 0);
 
 // Canvas logic
-const canvasRef = ref<InstanceType<typeof ServiceDetailsCanvas> | null>(null);
-const canvasData = ref({ title: '', content: '' });
+const showCanvas = ref(false);
+const canvasTitle = ref('');
+const canvasContent = ref('');
+const canvasKey = ref(0);
 
 function showDetails(title: string, content: string) {
-  canvasData.value = { title, content };
-  canvasRef.value?.open();
+  canvasTitle.value = title;
+  canvasContent.value = content;
+  showCanvas.value = true;
+  canvasKey.value++; // Increment the key to force re-render
 }
 
 // Debounce search
@@ -185,8 +189,13 @@ async function deleteService(id: string) {
         :total="total"
       />
     </div>
-    
-    <ServiceDetailsCanvas ref="canvasRef" :data="canvasData" />
+
+    <ServiceDetailsCanvas 
+      v-model="showCanvas" 
+      :title="canvasTitle" 
+      :content="canvasContent" 
+      :key="canvasKey" 
+    />
 
   </div>
 </template>

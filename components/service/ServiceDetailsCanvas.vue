@@ -1,34 +1,29 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed } from 'vue';
 import { TwOffcanvas } from 'vue3-tailwind';
 
-// Props to accept the title and content for the canvas
 const props = defineProps({
-  data: {
-    type: Object,
-    default: () => ({ title: '', content: '' }),
-  },
+  modelValue: Boolean, // for v-model
+  title: String,
+  content: String,
 });
 
-// A ref to control the visibility of the canvas, bound with v-model
-const show = ref(false);
+const emit = defineEmits(['update:modelValue']);
 
-// Define a method to open the canvas, which will be called from the parent page
-const open = () => {
-  show.value = true;
-};
-
-// Expose the `open` method so the parent component can call it
-defineExpose({ open });
+// Local state for the canvas, synced with the parent's v-model
+const show = computed({
+  get: () => props.modelValue,
+  set: (value) => emit('update:modelValue', value),
+});
 </script>
 
 <template>
   <TwOffcanvas position="right" width="800px" v-model="show">
     <template #headerTitle>
-      <span class="font-[Moul] text-primary">{{ data.title || 'ព័ត៌មានលម្អិត' }}</span>
+      <span class="font-[Moul] text-primary">{{ title }}</span>
     </template>
     <div class="p-4 overflow-auto font-[battambang]">
-      <p class="whitespace-pre-wrap break-words">{{ data.content || 'N/A' }}</p>
+      <p class="whitespace-pre-wrap break-words">{{ content }}</p>
     </div>
   </TwOffcanvas>
 </template>
