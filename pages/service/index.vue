@@ -41,7 +41,7 @@ const columns = [
 ];
 
 // Data fetching
-const { data: result, pending, error, refresh } = useLazyFetch<any>('/api/service', {
+const { data: result, status, error, refresh } = useLazyFetch<any>('/api/service', {
   query: {
     search: search,
     offset: computed(() => (page.value - 1) * limit.value),
@@ -64,7 +64,7 @@ function showDetails(title: string, content: string) {
   canvasTitle.value = title;
   canvasContent.value = content;
   showCanvas.value = true;
-  canvasKey.value++; // Increment the key to force re-render
+  canvasKey.value++;
 }
 
 // Debounce search
@@ -132,7 +132,7 @@ async function deleteService(id: string) {
 
     <UCard :ui="{ body: { padding: 'px-0 sm:p-0' } }">
         <UTable
-            :loading="pending"
+            :loading="status === 'pending'"
             :columns="columns"
             :rows="services"
             :sort="sort"
@@ -179,7 +179,7 @@ async function deleteService(id: string) {
         </UTable>
     </UCard>
 
-    <div v-if="!pending && total > limit" class="flex flex-wrap justify-between items-center mt-4">
+    <div v-if="status !== 'pending' && total > limit" class="flex flex-wrap justify-between items-center mt-4">
       <div class="text-sm text-gray-500 dark:text-gray-400">
         Showing {{ (page - 1) * limit + 1 }} to {{ Math.min(page * limit, total) }} of {{ total }} entries
       </div>
@@ -192,7 +192,8 @@ async function deleteService(id: string) {
 
     <ClientOnly>
       <ServiceDetailsCanvas 
-        v-model="showCanvas" 
+        v-if="showCanvas"
+        :openisTrue="showCanvas" 
         :title="canvasTitle" 
         :content="canvasContent" 
         :key="canvasKey" 

@@ -1,24 +1,24 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { ref, onMounted } from 'vue';
 import { TwOffcanvas } from 'vue3-tailwind';
 
 const props = defineProps({
-  modelValue: Boolean, // for v-model
+  openisTrue: Boolean,
   title: String,
   content: String,
 });
 
-const emit = defineEmits(['update:modelValue']);
+const offcanvas = ref<any>(null);
 
-// Local state for the canvas, synced with the parent's v-model
-const show = computed({
-  get: () => props.modelValue,
-  set: (value) => emit('update:modelValue', value),
+onMounted(() => {
+  if (props.openisTrue) {
+    offcanvas.value?.openOffCanvas();
+  }
 });
 </script>
 
 <template>
-  <TwOffcanvas position="right" width="800px" v-model="show">
+  <TwOffcanvas ref="offcanvas" position="right" width="800px">
     <template #headerTitle>
       <span class="font-[Moul] text-primary">{{ title }}</span>
     </template>
