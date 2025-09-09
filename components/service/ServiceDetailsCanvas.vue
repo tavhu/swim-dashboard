@@ -10,12 +10,12 @@ const props = defineProps({
   },
 });
 
-// Create a ref for the canvas component
-const canvasRef = ref<InstanceType<typeof TwOffcanvas> | null>(null);
+// A ref to control the visibility of the canvas, bound with v-model
+const show = ref(false);
 
 // Define a method to open the canvas, which will be called from the parent page
 const open = () => {
-  canvasRef.value?.open();
+  show.value = true;
 };
 
 // Expose the `open` method so the parent component can call it
@@ -23,7 +23,7 @@ defineExpose({ open });
 </script>
 
 <template>
-  <TwOffcanvas position="right" width="800px" ref="canvasRef">
+  <TwOffcanvas position="right" width="800px" v-model="show">
     <template #headerTitle>
       <span class="font-[Moul] text-primary">{{ data.title || 'ព័ត៌មានលម្អិត' }}</span>
     </template>
