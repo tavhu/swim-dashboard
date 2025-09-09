@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue';
+import { ref, computed } from 'vue';
 import { useRouter } from '#app';
 import { useToast } from 'vue3-tailwind';
 import { usePermissionStore } from '~/stores/permission';
+import ServiceDetailsCanvas from '~/components/service/ServiceDetailsCanvas.vue';
 
 const router = useRouter();
 const toast = useToast();
@@ -19,7 +20,7 @@ const limit = ref(10);
 const search = ref('');
 const sort = ref({ column: 'createdAt', direction: 'desc' as 'asc' | 'desc' });
 
-// Helper function to truncate text as requested
+// Helper function to truncate text
 const truncate = (value: string | null, length = 120) => {
   if (!value || value.length <= length) {
     return value || 'N/A';
@@ -53,10 +54,19 @@ const { data: result, pending, error, refresh } = useLazyFetch<any>('/api/servic
 const services = computed(() => result.value?.data || []);
 const total = computed(() => result.value?.total || 0);
 
+// Canvas logic
+const canvasRef = ref<InstanceType<typeof ServiceDetailsCanvas> | null>(null);
+const canvasData = ref({ title: '', content: '' });
+
+function showDetails(title: string, content: string) {
+  canvasData.value = { title, content };
+  canvasRef.value?.open();
+}
+
 // Debounce search
 const onSearch = useDebounceFn((value) => {
-  search.value = value;
-  page.value = 1;
+    search.value = value;
+    page.value = 1;
 }, 300)
 
 // Sorting
@@ -113,75 +123,70 @@ async function deleteService(id: string) {
     </div>
 
     <div class="flex justify-end mb-4">
-      <UInput :model-value="search" @update:model-value="onSearch" placeholder="Search..."
-        icon="i-heroicons-magnifying-glass-20-solid" />
+        <UInput :model-value="search" @update:model-value="onSearch" placeholder="Search..." icon="i-heroicons-magnifying-glass-20-solid" />
     </div>
 
     <UCard :ui="{ body: { padding: 'px-0 sm:p-0' } }">
-      <UTable :loading="pending" :columns="columns" :rows="services" :sort="sort" @sort="onSort" :ui="{
-        base: 'table-fixed w-full'
-      }">
-        <template #nameKh-data="{ row }">
-          <UTooltip :text="row.nameKh || 'N/A'" :ui="{ base: 'w-96 break-words' }">
-            <p class="whitespace-pre-wrap break-words">{{ truncate(row.nameKh) }}</p>
-          </UTooltip>
-        </template>
+        <UTable
+            :loading="pending"
+            :columns="columns"
+            :rows="services"
+            :sort="sort"
+            @sort="onSort"
+            :ui="{ base: 'table-fixed w-full' }"
+        >
+          <template #nameKh-data="{ row }">
+            <p class="truncate cursor-pointer" @click="showDetails('ឈ្មោះសេវា', row.nameKh)">{{ truncate(row.nameKh) }}</p>
+          </template>
 
-        <template #providingInstitution-data="{ row }">
-          <UTooltip :text="row.providingInstitution || 'N/A'" :ui="{ base: 'w-96 whitespace-pre-wrap break-words' }">
-            <p class="whitespace-pre-wrap break-words">{{ truncate(row.providingInstitution) }}</p>
-          </UTooltip>
-        </template>
+          <template #providingInstitution-data="{ row }">
+            <p class="truncate cursor-pointer" @click="showDetails('ក្រសួង/ស្ថាប័ន', row.providingInstitution)">{{ truncate(row.providingInstitution) }}</p>
+          </template>
 
-        <template #purpose-data="{ row }">
-          <UTooltip :text="row.purpose || 'N/A'" :ui="{ base: 'w-96 whitespace-pre-wrap break-words' }">
-            <p class="whitespace-pre-wrap break-words">{{ truncate(row.purpose) }}</p>
-          </UTooltip>
-        </template>
+          <template #purpose-data="{ row }">
+            <p class="truncate cursor-pointer" @click="showDetails('គោលបំណង', row.purpose)">{{ truncate(row.purpose) }}</p>
+          </template>
 
-        <template #legalBasis-data="{ row }">
-          <UTooltip :text="row.legalBasis || 'N/A'" :ui="{ base: 'w-96 whitespace-pre-wrap break-words' }">
-            <p class="whitespace-pre-wrap break-words">{{ truncate(row.legalBasis) }}</p>
-          </UTooltip>
-        </template>
+          <template #legalBasis-data="{ row }">
+            <p class="truncate cursor-pointer" @click="showDetails('គតិយុត្ត', row.legalBasis)">{{ truncate(row.legalBasis) }}</p>
+          </template>
 
-        <template #eligibleClients-data="{ row }">
-          <UTooltip :text="row.eligibleClients || 'N/A'" :ui="{ base: 'w-96 whitespace-pre-wrap break-words' }">
-            <p class="whitespace-pre-wrap break-words">{{ truncate(row.eligibleClients) }}</p>
-          </UTooltip>
-        </template>
+          <template #eligibleClients-data="{ row }">
+            <p class="truncate cursor-pointer" @click="showDetails('អតិថិជន', row.eligibleClients)">{{ truncate(row.eligibleClients) }}</p>
+          </template>
 
-        <template #serviceStandard-data="{ row }">
-          <UTooltip :text="row.serviceStandard || 'N/A'" :ui="{ base: 'w-96 whitespace-pre-wrap break-words' }">
-            <p class="whitespace-pre-wrap break-words">{{ truncate(row.serviceStandard) }}</p>
-          </UTooltip>
-        </template>
+          <template #serviceStandard-data="{ row }">
+            <p class="truncate cursor-pointer" @click="showDetails('ស្តង់ដារ', row.serviceStandard)">{{ truncate(row.serviceStandard) }}</p>
+          </template>
 
-        <template #requiredDocuments-data="{ row }">
-          <UTooltip :text="row.requiredDocuments || 'N/A'" :ui="{ base: 'w-96 whitespace-pre-wrap break-words' }">
-            <p class="whitespace-pre-wrap break-words">{{ truncate(row.requiredDocuments) }}</p>
-          </UTooltip>
-        </template>
+          <template #requiredDocuments-data="{ row }">
+            <p class="truncate cursor-pointer" @click="showDetails('ឯកសារ', row.requiredDocuments)">{{ truncate(row.requiredDocuments) }}</p>
+          </template>
 
-        <template #feedback-data="{ row }">
-          <UTooltip :text="row.feedback || 'N/A'" :ui="{ base: 'w-96 whitespace-pre-wrap break-words' }">
-            <p class="whitespace-pre-wrap break-words">{{ truncate(row.feedback) }}</p>
-          </UTooltip>
-        </template>
+          <template #feedback-data="{ row }">
+            <p class="truncate cursor-pointer" @click="showDetails('យោបល់', row.feedback)">{{ truncate(row.feedback) }}</p>
+          </template>
 
-        <template #actions-data="{ row }">
-          <UDropdown :items="actionItems(row)">
-            <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />
-          </UDropdown>
-        </template>
-      </UTable>
+            <template #actions-data="{ row }">
+                <UDropdown :items="actionItems(row)">
+                    <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />
+                </UDropdown>
+            </template>
+        </UTable>
     </UCard>
 
     <div v-if="!pending && total > limit" class="flex flex-wrap justify-between items-center mt-4">
       <div class="text-sm text-gray-500 dark:text-gray-400">
         Showing {{ (page - 1) * limit + 1 }} to {{ Math.min(page * limit, total) }} of {{ total }} entries
       </div>
-      <UPagination v-model="page" :page-count="limit" :total="total" />
+      <UPagination
+        v-model="page"
+        :page-count="limit"
+        :total="total"
+      />
     </div>
+    
+    <ServiceDetailsCanvas ref="canvasRef" :data="canvasData" />
+
   </div>
 </template>
