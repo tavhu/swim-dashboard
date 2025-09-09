@@ -190,12 +190,14 @@ async function deleteService(id: string) {
       />
     </div>
 
-    <ServiceDetailsCanvas 
-      v-model="showCanvas" 
-      :title="canvasTitle" 
-      :content="canvasContent" 
-      :key="canvasKey" 
-    />
+    <ClientOnly>
+      <ServiceDetailsCanvas 
+        v-model="showCanvas" 
+        :title="canvasTitle" 
+        :content="canvasContent" 
+        :key="canvasKey" 
+      />
+    </ClientOnly>
 
   </div>
 </template>
