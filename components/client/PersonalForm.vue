@@ -532,7 +532,7 @@ if (prop.id) {
     ClientRegister.value = true
 }
 
-// --- START: Address Dropdown Logic (Corrected for Villages) ---
+// --- START: Address Dropdown Logic (Corrected) ---
 
 const provinceList = computed(() => {
     return addressData.map(province => ({
@@ -543,67 +543,86 @@ const provinceList = computed(() => {
 
 const districtList = ref<DropdownItem[]>([]);
 const communeList = ref<DropdownItem[]>([]);
-const villageList = ref<DropdownItem[]>([]); // For the village dropdown
+const villageList = ref<DropdownItem[]>([]);
 
-const findDistrictsByProvince = (provinceName: string) => {
-    const province = addressData.find(p => p.code === provinceName);
+const findDistrictsByProvince = (provinceCode: string) => {
+    const province = addressData.find(p => p.code === provinceCode);
     return province?.districts.values.map(d => ({ label: d.name.km, value: d.code })) || [];
 };
 
-const findCommunesByDistrict = (provinceName: string, districtName: string) => {
-    const province = addressData.find(p => p.code === provinceName);
-    const district = province?.districts.values.find(d => d.code === districtName);
+const findCommunesByDistrict = (provinceCode: string, districtCode: string) => {
+    const province = addressData.find(p => p.code === provinceCode);
+    const district = province?.districts.values.find(d => d.code === districtCode);
     return district?.communes.values.map(c => ({ label: c.name.km, value: c.code })) || [];
 };
 
-// Corrected function to find villages
-const findVillagesByCommune = (provinceName: string, districtName: string, communeName: string) => {
-    const province = addressData.find(p => p.code === provinceName);
+const findVillagesByCommune = (provinceCode: string, districtCode: string, communeCode: string) => {
+    const province = addressData.find(p => p.code === provinceCode);
     if (!province) return [];
-    const district = province.districts.values.find(d => d.code === districtName);
+    const district = province.districts.values.find(d => d.code === districtCode);
     if (!district) return [];
-    const commune = district.communes.values.find(c => c.code === communeName);
-    // The correct property for the village list is 'd' and for the name is 'vn'
+    const commune = district.communes.values.find(c => c.code === communeCode);
     return commune?.villages.values?.map(village => ({ label: village.name.km, value: village.code })) || [];
 };
 
+// Pre-populate dropdowns if in edit mode
+if (prop.id && formData.cityProBA) {
+    districtList.value = findDistrictsByProvince(formData.cityProBA);
+    if (formData.districtBA) {
+        communeList.value = findCommunesByDistrict(formData.cityProBA, formData.districtBA);
+        if (formData.communeBA) {
+            villageList.value = findVillagesByCommune(formData.cityProBA, formData.districtBA, formData.communeBA);
+        }
+    }
+}
+
 // Watch for changes in the Province dropdown (cityProBA)
-watch(() => formData.cityProBA, (newProvince) => {
-    formData.communeBA = '';
-    formData.districtBA = '';
-    formData.villageBA = '';
+watch(() => formData.cityProBA, (newProvince, oldProvince) => {
+    // Only reset if it's a real change triggered by the user
+    if (newProvince !== oldProvince) {
+        formData.districtBA = '';
+        formData.communeBA = '';
+        formData.villageBA = '';
+    }
+
     districtList.value = [];
     communeList.value = [];
-    villageList.value = []; // Clear village list
+    villageList.value = [];
 
     if (newProvince) {
         districtList.value = findDistrictsByProvince(newProvince);
     }
-}, { immediate: true });
+});
 
-// Watch for changes in the District dropdown (communeBA)
-watch(() => formData.communeBA, (newDistrict) => {
-    formData.districtBA = '';
-    formData.villageBA = '';
+// Watch for changes in the District dropdown (districtBA)
+watch(() => formData.districtBA, (newDistrict, oldDistrict) => {
+    if (newDistrict !== oldDistrict) {
+        formData.communeBA = '';
+        formData.villageBA = '';
+    }
+
     communeList.value = [];
-    villageList.value = []; // Clear village list
+    villageList.value = [];
 
     if (newDistrict && formData.cityProBA) {
         communeList.value = findCommunesByDistrict(formData.cityProBA, newDistrict);
     }
-}, { immediate: true });
+});
 
-// Watch for changes in the Commune dropdown (districtBA)
-watch(() => formData.districtBA, (newCommune) => {
-    formData.villageBA = '';
-    villageList.value = []; // Clear village list
-
-    if (newCommune && formData.cityProBA && formData.communeBA) {
-        villageList.value = findVillagesByCommune(formData.cityProBA, formData.communeBA, newCommune);
+// Watch for changes in the Commune dropdown (communeBA)
+watch(() => formData.communeBA, (newCommune, oldCommune) => {
+    if (newCommune !== oldCommune) {
+        formData.villageBA = '';
     }
-}, { immediate: true });
 
-// --- END: Address Dropdown Logic (Corrected for Villages) ---
+    villageList.value = [];
+
+    if (newCommune && formData.cityProBA && formData.districtBA) {
+        villageList.value = findVillagesByCommune(formData.cityProBA, formData.districtBA, newCommune);
+    }
+});
+
+// --- END: Address Dropdown Logic (Corrected) ---
 </script>
 <template>
     <div>
