@@ -1,5 +1,4 @@
 import { getServerSession } from "#auth";
-import { governStaffChildren } from "@prisma/client";
 
 export default eventHandler(async (event) => {
   const session = await getServerSession(event);
@@ -31,7 +30,7 @@ export default eventHandler(async (event) => {
           StreetBA: body?.StreetBA,
           villageBA: body?.villageBA,
           districtBA: body?.districtBA,
-          commuteBA: body?.commuteBA,
+          commuteBA: body?.communeBA,
           cityProBA: body?.cityProBA,
           FatherOrChaperoneName: body?.FatherOrChaperoneName,
           FOCDOB: body?.FOCDOB,
