@@ -13,7 +13,7 @@ import {
     TwTextarea,
 } from "vue3-tailwind";
 import orgType from '~~/store/data/orgType'
-import addressData from '~~/store/data/address';
+import addressData from '~~/store/data/gazetteers';
 import { type ServiceCenter } from '@prisma/client'
 import Datepicker from "@vuepic/vue-datepicker"
 import "@vuepic/vue-datepicker/dist/main.css"
@@ -533,66 +533,79 @@ if (prop.id) {
     ClientRegister.value = true
 }
 
-// --- START: Address Dropdown Logic ---
+// --- START: Address Dropdown Logic (Corrected for Villages) ---
 
 const provinceList = computed(() => {
     return addressData.map(province => ({
-        label: province.name,
-        value: province.name,
+        label: province.name.km,
+        value: province.code,
     }));
 });
 
 const districtList = ref<DropdownItem[]>([]);
 const communeList = ref<DropdownItem[]>([]);
+const villageList = ref<DropdownItem[]>([]); // For the village dropdown
 
 const findDistrictsByProvince = (provinceName: string) => {
-    const province = addressData.find(p => p.name === provinceName);
-    return province?.ls.map(d => ({ label: d.bn, value: d.bn })) || [];
+    const province = addressData.find(p => p.code === provinceName);
+    return province?.districts.values.map(d => ({ label: d.name.km, value: d.code })) || [];
 };
 
 const findCommunesByDistrict = (provinceName: string, districtName: string) => {
-    const province = addressData.find(p => p.name === provinceName);
-    const district = province?.ls.find(d => d.bn === districtName);
-    return district?.c.map(c => ({ label: c.cn, value: c.cn })) || [];
+    const province = addressData.find(p => p.code === provinceName);
+    const district = province?.districts.values.find(d => d.code === districtName);
+    return district?.communes.values.map(c => ({ label: c.name.km, value: c.code })) || [];
+};
+
+// Corrected function to find villages
+const findVillagesByCommune = (provinceName: string, districtName: string, communeName: string) => {
+    const province = addressData.find(p => p.code === provinceName);
+    if (!province) return [];
+    const district = province.districts.values.find(d => d.code === districtName);
+    if (!district) return [];
+    const commune = district.communes.values.find(c => c.code === communeName);
+    // The correct property for the village list is 'd' and for the name is 'vn'
+    return commune?.villages.values?.map(village => ({ label: village.name.km, value: village.code })) || [];
 };
 
 // Watch for changes in the Province dropdown (cityProBA)
 watch(() => formData.cityProBA, (newProvince) => {
-    // When province changes, clear all downstream fields and lists
     formData.communeBA = '';
     formData.districtBA = '';
     formData.villageBA = '';
-
     districtList.value = [];
     communeList.value = [];
+    villageList.value = []; // Clear village list
 
     if (newProvince) {
-        // Then, populate the district list
         districtList.value = findDistrictsByProvince(newProvince);
     }
-}, { immediate: true }); // 'immediate' ensures this runs on component load to handle edit mode
+}, { immediate: true });
 
 // Watch for changes in the District dropdown (communeBA)
 watch(() => formData.communeBA, (newDistrict) => {
-    // When district changes, clear the commune and village
     formData.districtBA = '';
     formData.villageBA = '';
-
     communeList.value = [];
+    villageList.value = []; // Clear village list
 
     if (newDistrict && formData.cityProBA) {
-        // Then, populate the commune list
         communeList.value = findCommunesByDistrict(formData.cityProBA, newDistrict);
     }
 }, { immediate: true });
 
 // Watch for changes in the Commune dropdown (districtBA)
-watch(() => formData.districtBA, () => {
-    // When commune changes, just clear the village input.
+watch(() => formData.districtBA, (newCommune) => {
     formData.villageBA = '';
+    villageList.value = []; // Clear village list
+
+    if (newCommune && formData.cityProBA && formData.communeBA) {
+        villageList.value = findVillagesByCommune(formData.cityProBA, formData.communeBA, newCommune);
+    }
 }, { immediate: true });
 
-// --- END: Address Dropdown Logic ---
+// --- END: Address Dropdown Logic (Corrected for Villages) ---
+
 
 </script>
 <template>
@@ -736,10 +749,11 @@ watch(() => formData.districtBA, () => {
                     <CustomErrorMessage name="districtBA" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput :disabled="readOnly" label="ភូមិ-ក្រុម" name="villageBA" v-model="formData.villageBA"
-                        placeholder="សូមបញ្ចូលភូមិ-ក្រុម" type="text" required />
+                    <TwSelect :disabled="readOnly || !formData.districtBA" label="ភូមិ-ក្រុម" name="villageBA"
+                        v-model="formData.villageBA" :items="villageList" placeholder="សូមជ្រើសរើស" required />
                     <CustomErrorMessage name="villageBA" />
                 </div>
+
                 <!-- END: Corrected Address Fields -->
 
                 <div class="col-span-12 flex justify-start gap-3 mt-5 mb-5">
