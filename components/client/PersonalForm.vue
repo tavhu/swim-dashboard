@@ -71,7 +71,7 @@ const formData: {
     StreetBA: '',
     villageBA: '',
     districtBA: '',
-    commuteBA: '',
+    communeBA: '',
     cityProBA: '',
     FatherOrChaperoneName: '',
     FOCDOB: '',
@@ -207,7 +207,7 @@ const submit = async () => {
         StreetBA: formData.StreetBA,
         villageBA: formData.villageBA,
         districtBA: formData.districtBA,
-        commuteBA: formData.commuteBA,
+        communeBA: formData.communeBA,
         cityProBA: formData.cityProBA,
         FatherOrChaperoneName: formData.FatherOrChaperoneName,
         FOCDOB: formData.FOCDOB,
@@ -298,7 +298,7 @@ const clear = () => {
     formData.StreetBA = null
     formData.villageBA = null
     formData.districtBA = null
-    formData.commuteBA = null
+    formData.communeBA = null
     formData.cityProBA = null
     formData.FatherOrChaperoneName = null
     formData.FOCDOB = null
@@ -472,7 +472,7 @@ if (prop.id) {
     formData.StreetBA = userProfile.value?.data?.StreetBA
     formData.villageBA = userProfile.value?.data?.villageBA
     formData.districtBA = userProfile.value?.data?.districtBA
-    formData.commuteBA = userProfile.value?.data?.commuteBA
+    formData.communeBA = userProfile.value?.data?.communeBA
     formData.cityProBA = userProfile.value?.data?.cityProBA
     formData.FatherOrChaperoneName = userProfile.value?.data?.FatherOrChaperoneName
     formData.FOCDOB = userProfile.value?.data?.FOCDOB
