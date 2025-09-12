@@ -12,8 +12,7 @@ import {
     type DropdownItem,
     TwTextarea,
 } from "vue3-tailwind";
-import orgType from '~~/store/data/orgType'
-import city from '~~/store/data/address'
+import addressData from '~~/store/data/address'
 import { type ServiceCenter } from '@prisma/client'
 import Datepicker from "@vuepic/vue-datepicker"
 import "@vuepic/vue-datepicker/dist/main.css"
@@ -31,25 +30,20 @@ const prop = defineProps<{
     id: string | undefined | null,
 }>()
 
-// console.log(prop.id)
-
-// const edit = ref(prop.id) //'cls8m4kxp000rnqlidfpfw5rb'  //  //route?.query?.id
 const { data } = await useFetch<{ data: ServiceCenter[] }>('/api/center/get', {
     method: 'POST'
 })
 
-let serviceCenterList: any = []
-data.value?.data.forEach(ele => {
-    serviceCenterList.push({
-        label: ele.nameKH,
-        value: ele.id
-    })
-})
+let serviceCenterList: DropdownItem[] = data.value?.data.map(ele => ({
+    label: ele.nameKH,
+    value: ele.id
+})) || [];
+
 const saving = ref(false)
 const config = useRuntimeConfig()
 const toast = useToast()
 const composableForm = useForm()
-const formName = "center"
+const formName = "personal-form"
 const formData: {
     [key: string]: any;
 } = reactive({
@@ -71,7 +65,7 @@ const formData: {
     StreetBA: '',
     villageBA: '',
     districtBA: '',
-    commuteBA: '',
+    communeBA: '',
     cityProBA: '',
     FatherOrChaperoneName: '',
     FOCDOB: '',
@@ -90,7 +84,7 @@ const formData: {
     PastActivities: '',
     ReasonUseDrug: '',
     ReasonUseDrugOther: '',
-    KnownLegalConsequence: '',
+    KnownLegalConsequence: false,
     typeDrugUsed: '',
     typeDrugUsedOther: '',
     DrugVolumeUsed: '',
@@ -119,9 +113,72 @@ const formData: {
     InterViewerSignature: '',
     InterviewerPosition: '',
     serviceCenterID: '',
-})
-const formRules = {
-}
+});
+
+// --- Start of New Address Logic ---
+
+const provinceList = computed(() => {
+    return addressData.map(province => ({
+        label: province.name,
+        value: province.name,
+    }));
+});
+
+const districtList = ref<DropdownItem[]>([]);
+const communeList = ref<DropdownItem[]>([]);
+
+const findDistrictsByProvince = (provinceName: string) => {
+    const province = addressData.find(p => p.name === provinceName);
+    return province?.ls.map(d => ({ label: d.bn, value: d.bn })) || [];
+};
+
+const findCommunesByDistrict = (provinceName: string, districtName: string) => {
+    const province = addressData.find(p => p.name === provinceName);
+    const district = province?.ls.find(d => d.bn === districtName);
+    // Important: The village data `d` is null in address.ts, so we can't populate villages.
+    return district?.c.map(c => ({ label: c.cn, value: c.cn })) || [];
+};
+
+// Watch for changes in the Province dropdown
+watch(() => formData.cityProBA, (newProvince) => {
+    // When province changes, clear the values and lists for district and commune.
+    formData.communeBA = '';
+    formData.districtBA = '';
+    formData.villageBA = ''; // Also clear the manual village input
+
+    communeList.value = [];
+    districtList.value = [];
+
+    if (newProvince) {
+        // If a new province is selected, populate the district list.
+        districtList.value = findDistrictsByProvince(newProvince);
+    }
+}, { immediate: true }); // `immediate` runs the watcher on component load
+
+// Watch for changes in the District dropdown
+watch(() => formData.communeBA, (newDistrict) => {
+    // When district changes, clear the values and list for commune.
+    formData.districtBA = '';
+    formData.villageBA = '';
+
+    communeList.value = [];
+
+    if (newDistrict && formData.cityProBA) {
+        // If a new district is selected, populate the commune list.
+        communeList.value = findCommunesByDistrict(formData.cityProBA, newDistrict);
+    }
+}, { immediate: true });
+
+// Watch for changes in the Commune dropdown
+watch(() => formData.districtBA, () => {
+    // When commune changes, just clear the village input.
+    formData.villageBA = '';
+}, { immediate: true });
+
+// --- End of New Address Logic ---
+
+
+const formRules = {}
 
 const isError = ref(false);
 const form = computed(() => composableForm.getForm(formName));
@@ -166,7 +223,6 @@ const ClientHopelessMultiple = ref(Array(
 ))
 const submit = async () => {
     // if (readOnly) return;
-    // console.log('123')
     if (!(await confirmDialog())) return;
     validator.value.clearErrors();
     await validator.value.validate();
@@ -191,71 +247,7 @@ const submit = async () => {
     }
 
     const form_data = {
-        id: formData.id,
-        fullNameKH: formData.fullNameKH,
-        IdentifyCode: formData.IdentifyCode,
-        photo: formData.photo,
-        nickName: formData.nickName,
-        ReadableCode: formData.ReadableCode,
-        Gender: formData.Gender,
-        DOB: formData.DOB,
-        POB: formData.POB,
-        EducationLevel: formData.EducationLevel,
-        Occupation: formData.Occupation,
-        DateArrested: formData.DateArrested,
-        homeBA: formData.homeBA,
-        StreetBA: formData.StreetBA,
-        villageBA: formData.villageBA,
-        districtBA: formData.districtBA,
-        commuteBA: formData.commuteBA,
-        cityProBA: formData.cityProBA,
-        FatherOrChaperoneName: formData.FatherOrChaperoneName,
-        FOCDOB: formData.FOCDOB,
-        FOCTel: formData.FOCTel,
-        FOCMarried: formData.FOCMarried,
-        FOCTelandAddress: formData.FOCTelandAddress,
-        MotherOrChaperoneName: formData.MotherOrChaperoneName,
-        MOCMarried: formData.MOCMarried,
-        MOCDOB: formData.MOCDOB,
-        MOCTel: formData.MOCTel,
-        MOCTelandAddress: formData.MOCTelandAddress,
-        OtherFamilyMembers: formData.OtherFamilyMembers,
-        CloseFriend: formData.CloseFriend,
-        ClientSendBy: formData.ClientSendBy,
-        ImportantChallenge: formData.ImportantChallenge,
-        PastActivities: formData.PastActivities,
-        ReasonUseDrug: formData.ReasonUseDrug,
-        ReasonUseDrugOther: formData.ReasonUseDrugOther,
-        KnownLegalConsequence: formData.KnownLegalConsequence,
-        typeDrugUsed: formData.typeDrugUsed,
-        typeDrugUsedOther: formData.typeDrugUsedOther,
-        DrugVolumeUsed: formData.DrugVolumeUsed,
-        DrugRequecyUse: formData.DrugRequecyUse,
-        DrugDurationUse: formData.DrugDurationUse,
-        LivingSituation: formData.LivingSituation,
-        UsedtoRehab: formData.UsedtoRehab,
-        HowManyTimeHaveServed: formData.HowManyTimeHaveServed,
-        ReasonComingtoCenter: formData.ReasonComingtoCenter,
-        DailyActivitiesInCenter: formData.DailyActivitiesInCenter,
-        ActivitiesThatClientLike: formData.ActivitiesThatClientLike,
-        ClientTalent: formData.ClientTalent,
-        RelationshipWithFriends: formData.RelationshipWithFriends,
-        RelationshipWithStaff: formData.RelationshipWithStaff,
-        RelationshipWithTeacher: formData.RelationshipWithTeacher,
-        RelationshipWithOther: formData.RelationshipWithOther,
-        ConcernForClientFuture: formData.ConcernForClientFuture,
-        HopeForClientFuture: formData.HopeForClientFuture,
-        FuturePlanforClient: formData.FuturePlanforClient,
-        FuturePlanforClientDetails: formData.FuturePlanforClientDetails,
-        ClientFeelsHopless: formData.ClientFeelsHopless,
-        ClientHoplessDetails: formData.ClientHoplessDetails,
-        InterviewerOpinoin: formData.InterviewerOpinoin,
-        InterviewerID: formData.InterviewerID,
-        status: formData.status,
-        InterViewDate: formData.InterViewDate,
-        InterViewerSignature: formData.InterViewerSignature,
-        InterviewerPosition: formData.InterviewerPosition,
-        serviceCenterID: formData.serviceCenterID,
+        ...formData, // Keep all form data
         ClientProgress: prop.id ? ClientProgress.value.map(item => ({ ...item, Client_PersonalInformationID: prop.id })) : ClientProgress.value,
         ClientServeHistory: prop?.id ? ClientServeHistory.value.map(item => ({ ...item, Client_PersonalInformationID: prop.id })) : ClientServeHistory.value,
         ClientHopelessMultiple: prop?.id ? ClientHopelessMultiple.value.map(item => ({ ...item, client_PersonalInformationId: prop.id })) : ClientHopelessMultiple.value,
@@ -278,6 +270,7 @@ const submit = async () => {
     }
     saving.value = false
 };
+
 const clear = () => {
     if (prop.readOnly) return;
     formData.status = false
@@ -368,219 +361,58 @@ const handleImageUpload = async () => {
             method: "POST",
             body: fd,
         });
-
-        console.log("data from backend is ", data.value);
         return data.value
     } catch (error) {
         console.log(error);
     }
 };
-
-const commute = ref()
-const temCommuteList: any = ref([])
-const SelectedCityValue = computed(() => formData.cityProBA)
-
-watch(SelectedCityValue, () => {
-    temCommuteList.value = []
-    commute.value = city.find((element: any) => {
-        // console.log(element.name)
-        return element.name === formData.cityProBA
-    })?.ls.forEach((ele) => {
-        temCommuteList.value.push({
-            label: ele.bn,
-            value: ele.bn,
-            disabled: true,
-        })
-        ele.c.forEach((item => {
-            temCommuteList.value.push({
-                label: " ( " + item.cc + " ) " + item.cn,
-                value: item.cn
-            })
-        }))
-    })
-})
-
-// edit part
-const userProfile = ref()
-const currentUser = ref(false)
-
-const LegalConsequence = [{
-    value: false,
-    label: 'មិនដឹង',
-},
-{
-    value: true,
-    label: 'ដឹង',
-},
-]
-const ClientFeelsHopless = [{
-    value: false,
-    label: 'ធម្មតា',
-},
-{
-    value: true,
-    label: 'បាក់ទឹកចិត្ត',
-},
-]
-
-const LivingSituationOption = ref(Array({
-    value: 'rural',
-    label: 'ជនបទ',
-},
-    {
-        value: 'Anarchy',
-        label: 'តំបន់អនាធិបតេយ្យ',
-    },
-    {
-        value: 'Crowded',
-        label: 'ទីប្រជុំជន',
-    },
-    {
-        value: 'thief',
-        label: 'តំបន់ចោរកម្ម',
-    },
-    {
-        value: 'frequentviolent',
-        label: 'តបន់អំពើហឹង្សាញឹកញាប់',
-    },
-    {
-        value: 'gangArea',
-        label: 'តំបន់ ក្រុមបងធំ',
-    },
-    {
-        value: 'DrugArea',
-        label: 'តំបន់ប្រើប្រាស់គ្រឿងញៀន',
-    },
-    {
-        value: 'wealthy',
-        label: 'តំបន់អ្នកមាន',
-    },
-    {
-        value: 'PoorArea',
-        label: 'តំបន់ក្រីក្រ',
-    }
-))
-
-
-const ClientServeHistory = ref(Array({
-    nameCenterorPrison: '',
-    DateTimeServed: '',
-}))
-
-const ClientProgress = ref(Array({
-    NoteDateTime: '',
-    Details: '',
-}))
-
+// Logic for fetching and populating data when editing
 if (prop.id) {
-    userProfile.value = await useFetch('/api/client/personalInformationGet', {
+    const { data: userProfileData } = await useFetch<any>('/api/client/personalInformationGet', {
         method: 'post',
-        body: JSON.stringify({
-            id: prop.id
-        })
-    })
+        body: JSON.stringify({ id: prop.id })
+    });
 
-    formData.id = userProfile.value?.data?.id
-    formData.photo = userProfile.value?.data?.photo
-    formData.IdentifyCode = userProfile.value?.data?.IdentifyCode
-    formData.fullNameKH = userProfile.value?.data?.fullNameKH
-    formData.nickName = userProfile.value?.data?.nickName
-    formData.ReadableCode = userProfile.value?.data?.ReadableCode
-    formData.Gender = userProfile.value?.data?.Gender
-    formData.DOB = userProfile.value?.data?.DOB
-    formData.POB = userProfile.value?.data?.POB
-    formData.EducationLevel = userProfile.value?.data?.EducationLevel
-    formData.Occupation = userProfile.value?.data?.Occupation
-    formData.DateArrested = userProfile.value?.data?.DateArrested
-    formData.homeBA = userProfile.value?.data?.homeBA
-    formData.StreetBA = userProfile.value?.data?.StreetBA
-    formData.villageBA = userProfile.value?.data?.villageBA
-    formData.districtBA = userProfile.value?.data?.districtBA
-    formData.commuteBA = userProfile.value?.data?.commuteBA
-    formData.cityProBA = userProfile.value?.data?.cityProBA
-    formData.FatherOrChaperoneName = userProfile.value?.data?.FatherOrChaperoneName
-    formData.FOCDOB = userProfile.value?.data?.FOCDOB
-    formData.FOCTel = userProfile.value?.data?.FOCTel
-    formData.FOCMarried = userProfile.value?.data?.FOCMarried
-    formData.FOCTelandAddress = userProfile.value?.data?.FOCTelandAddress
-    formData.MotherOrChaperoneName = userProfile.value?.data?.MotherOrChaperoneName
-    formData.MOCMarried = userProfile.value?.data?.MOCMarried
-    formData.MOCDOB = userProfile.value?.data?.MOCDOB
-    formData.MOCTel = userProfile.value?.data?.MOCTel
-    formData.MOCTelandAddress = userProfile.value?.data?.MOCTelandAddress
-    formData.OtherFamilyMembers = userProfile.value?.data?.OtherFamilyMembers
-    formData.CloseFriend = userProfile.value?.data?.CloseFriend
-    formData.ClientSendBy = userProfile.value?.data?.ClientSendBy
-    formData.ImportantChallenge = userProfile.value?.data?.ImportantChallenge
-    formData.PastActivities = userProfile.value?.data?.PastActivities
-    formData.ReasonUseDrug = userProfile.value?.data?.ReasonUseDrug
-    formData.ReasonUseDrugOther = userProfile.value?.data?.ReasonUseDrugOther
-    formData.KnownLegalConsequence = userProfile.value?.data?.KnownLegalConsequence
-    formData.typeDrugUsed = userProfile.value?.data?.typeDrugUsed
-    formData.typeDrugUsedOther = userProfile.value?.data?.typeDrugUsedOther
-    formData.DrugVolumeUsed = userProfile.value?.data?.DrugVolumeUsed
-    formData.DrugRequecyUse = userProfile.value?.data?.DrugRequecyUse
-    formData.DrugDurationUse = userProfile.value?.data?.DrugDurationUse
-    formData.LivingSituation = userProfile.value?.data?.LivingSituation
-    formData.UsedtoRehab = userProfile.value?.data?.UsedtoRehab
-    formData.HowManyTimeHaveServed = userProfile.value?.data?.HowManyTimeHaveServed
-    formData.ReasonComingtoCenter = userProfile.value?.data?.ReasonComingtoCenter
-    formData.DailyActivitiesInCenter = userProfile.value?.data?.DailyActivitiesInCenter
-    formData.ActivitiesThatClientLike = userProfile.value?.data?.ActivitiesThatClientLike
-    formData.ClientTalent = userProfile.value?.data?.ClientTalent
-    formData.RelationshipWithFriends = userProfile.value?.data?.RelationshipWithFriends
-    formData.RelationshipWithStaff = userProfile.value?.data?.RelationshipWithStaff
-    formData.RelationshipWithTeacher = userProfile.value?.data?.RelationshipWithTeacher
-    formData.RelationshipWithOther = userProfile.value?.data?.RelationshipWithOther
-    formData.ConcernForClientFuture = userProfile.value?.data?.ConcernForClientFuture
-    formData.HopeForClientFuture = userProfile.value?.data?.HopeForClientFuture
-    formData.FuturePlanforClient = userProfile.value?.data?.FuturePlanforClient
-    formData.FuturePlanforClientDetails = userProfile.value?.data?.FuturePlanforClientDetails
-    ClientHopelessMultiple.value = userProfile.value?.data?.ClientHopelessMultiple
-    formData.ClientFeelsHopless = userProfile.value?.data?.ClientFeelsHopless
-    formData.ClientHoplessDetails = userProfile.value?.data?.ClientHoplessDetails
-    formData.InterviewerOpinoin = userProfile.value?.data?.InterviewerOpinoin
-    formData.InterviewerID = userProfile.value?.data?.InterviewerID
-    formData.status = userProfile.value?.data?.status
-    formData.InterViewDate = userProfile.value?.data?.InterViewDate
-    formData.InterViewerSignature = userProfile.value?.data?.InterViewerSignature
-    formData.InterviewerPosition = userProfile.value?.data?.InterviewerPosition
-    formData.serviceCenterID = userProfile.value?.data?.serviceCenterID
-    ClientServeHistory.value = userProfile.value?.data?.ClientServeHistory
-    ClientProgress.value = userProfile?.value?.data?.ClientProgress
+    if (userProfileData.value?.data) {
+        // Use Object.assign to merge fetched data into formData
+        Object.assign(formData, userProfileData.value.data);
 
-    // //@ts-ignore
-    // if(route?.query?.id === userDataAuth.value?.id){
-    //   // console.log('current User')
-    //   currentUser.value = true
-    // }
+        // After data is loaded, we need to populate the dropdown lists
+        // for the existing address. The `watch` functions will handle this.
+        // We just need to make sure the initial data is set.
+        if (formData.cityProBA) {
+            districtList.value = findDistrictsByProvince(formData.cityProBA);
+        }
+        if (formData.cityProBA && formData.communeBA) {
+            communeList.value = findCommunesByDistrict(formData.cityProBA, formData.communeBA);
+        }
+
+        // Keep your existing logic for other related data
+        ClientServeHistory.value = userProfileData.value.data.ClientServeHistory || [];
+        ClientProgress.value = userProfileData.value.data.ClientProgress || [];
+        ClientHopelessMultiple.value = userProfileData.value.data.ClientHopelessMultiple || [];
+    }
     ClientRegister.value = true
 }
 
-let temCity: any = []
+const LegalConsequence = [{ value: false, label: 'មិនដឹង' }, { value: true, label: 'ដឹង' }];
+const ClientFeelsHopless = [{ value: false, label: 'ធម្មតា' }, { value: true, label: 'បាក់ទឹកចិត្ត' }];
 
-city.forEach(ele => {
-    temCity.push({
-        label: ele.name,
-        value: ele.name
-    })
-})
+const LivingSituationOption = ref([
+    { value: 'rural', label: 'ជនបទ' },
+    { value: 'Anarchy', label: 'តំបន់អនាធិបតេយ្យ' },
+    { value: 'Crowded', label: 'ទីប្រជុំជន' },
+    { value: 'thief', label: 'តំបន់ចោរកម្ម' },
+    { value: 'frequentviolent', label: 'តបន់អំពើហឹង្សាញឹកញាប់' },
+    { value: 'gangArea', label: 'តំបន់ ក្រុមបងធំ' },
+    { value: 'DrugArea', label: 'តំបន់ប្រើប្រាស់គ្រឿងញៀន' },
+    { value: 'wealthy', label: 'តំបន់អ្នកមាន' },
+    { value: 'PoorArea', label: 'តំបន់ក្រីក្រ' }
+]);
 
-const cityList = ref(temCity)
+const ClientServeHistory = ref([{ nameCenterorPrison: '', DateTimeServed: '' }]);
+const ClientProgress = ref([{ NoteDateTime: '', Details: '' }]);
 
-const districtBAPick = () => {
-    let index = temCommuteList.value.findIndex((ele: any) => ele.value === formData.districtBA)
-    console.log(index)
-    let ttt = true
-    while (ttt) {
-        index--
-        if (temCommuteList.value[index]?.disabled) {
-            ttt = false
-            formData.commuteBA = temCommuteList.value[index]?.value
-        }
-
-    }
-}
 </script>
 <template>
     <div>
@@ -588,7 +420,7 @@ const districtBAPick = () => {
         <h2 class="text-2xl font-[Moul] text-primary"> {{ prop.id ? `១. សំណុំឯកសារផ្ទាល់ខ្លួនរបស់អតិថិជន` : `១.
             សំណុំឯកសារផ្ទាល់ខ្លួនរបស់អតិថិជន` }} </h2>
         <TwButton variant="danger" class="font-[battambang]" v-if="readOnly" :disabled="true">
-            អ្ននគ្មានសិទ្ធកែប្រែ គណនីនេះទេ
+            អ្នកគ្មានសិទ្ធកែប្រែ គណនីនេះទេ
         </TwButton>
         <hr class="my-2 border dark:border-gray-700" />
 
@@ -596,19 +428,13 @@ const districtBAPick = () => {
             <TwForm :name="formName"
                 class="grid grid-cols-12 gap-2 bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded-lg p-2 shadow"
                 :class="{
-            'tw-shake': isError,
-        }" :rules="formRules" @submit="submit" :custom-field-name="{
-            roleName: 'ឈ្មោះតួនាទី',
-            roleDescription: 'ពិពណ៌នាតួនាទី',
-        }">
+                    'tw-shake': isError,
+                }" :rules="formRules" @submit="submit">
                 <div class="col-span-12 flex justify-start  gap-3 mb-5">
                     <TwFeather type="file-text" />
                     <h1 class="text-lg"> ព័ត៌មានលំអិត </h1>
                 </div>
-                <!-- <div class="col-span-12">
-                    {{
-                        userProfile }}
-                </div> -->
+
                 <div class="col-span-12 lg:col-span-6">
                     <TwInput label="លេខសំគាល់" name="ReadableCode" v-model="formData.ReadableCode"
                         placeholder="លេខសំគាល់" type="text" />
@@ -632,12 +458,11 @@ const districtBAPick = () => {
                     <TwFile v-model="files" label="រូបភាព ៤x៦" />
                 </div>
                 <div class="col-span-12  lg:col-start-4 lg:col-span-5">
-                    <TwInput label="លេខកូដ" disabled name="IdentifyCode" v-model="formData.IdentifyCode" placeholder="លេខកូដ"
-                        type="text" />
+                    <TwInput label="លេខកូដ" disabled name="IdentifyCode" v-model="formData.IdentifyCode"
+                        placeholder="លេខកូដ" type="text" />
                     <CustomErrorMessage name="IdentifyCode" />
                 </div>
                 <div class="col-span-12 flex justify-start gap-3 mt-5 mb-5">
-                    <!-- <TwFeather type="map-pin" /> -->
                     <h1 class="text-lg font-[moul]"> I. ព័ត៌មាន​ អំពីអតិថិជន និងគ្រួសារ</h1>
                 </div>
                 <div class="col-span-12 lg:col-span-6">
@@ -659,17 +484,9 @@ const districtBAPick = () => {
                 <div class="col-span-12 lg:col-span-6">
                     <label for=""> ថ្ងៃខែឆ្នាំកំណើត </label>
                     <ClientOnly>
-                        <Datepicker v-model="formData.DOB" :dayNames="[
-            'Mo',
-            'Tu',
-            'We',
-            'Th',
-            'Fr',
-            'Sa',
-            'Su',
-        ]" position="left" required :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
+                        <Datepicker v-model="formData.DOB" position="left" required :maxDate="new Date()"
+                            :enableTimePicker="false"></Datepicker>
                     </ClientOnly>
-
                     <CustomErrorMessage name="DateofBirth" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
@@ -688,13 +505,19 @@ const districtBAPick = () => {
                     <CustomErrorMessage name="Occupation" />
                 </div>
                 <div class="col-span-12">
-                    <TwInput label="កាលបរិច្ឆេទចូលមជ្ឈមណ្ឌល" name="DateArrested"
-                        v-model="formData.DateArrested" placeholder="កាលបរិច្ឆេទចូលមជ្ឈមណ្ឌល" type="text" />
+                    <TwInput label="កាលបរិច្ឆេទចូលមជ្ឈមណ្ឌល" name="DateArrested" v-model="formData.DateArrested"
+                        placeholder="កាលបរិច្ឆេទចូលមជ្ឈមណ្ឌល" type="text" />
                     <CustomErrorMessage name="DateArrested" />
                 </div>
+
+                <!-- START: Corrected Address Fields -->
+                <div class="col-span-12 mt-4">
+                    <p class="font-bold text-lg">អាសយដ្ឋានបច្ចុប្បន្ន</p>
+                    <hr class="my-2 border dark:border-gray-700" />
+                </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput label="អាសយដ្ឋាន មុនពេលចាប់ខ្លួន ឬចូលមណ្ឌល៖" name="homeBA" v-model="formData.homeBA"
-                        placeholder="ផ្ទះលេខ" type="text" />
+                    <TwInput label="ផ្ទះលេខ" name="homeBA" v-model="formData.homeBA" placeholder="ផ្ទះលេខ"
+                        type="text" />
                     <CustomErrorMessage name="homeBA" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
@@ -703,31 +526,27 @@ const districtBAPick = () => {
                     <CustomErrorMessage name="StreetBA" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput label="ភូមិ-ក្រុម" name="villageBA" v-model="formData.villageBA" placeholder="ភូមិ-ក្រុម"
-                        type="text" />
-                    <CustomErrorMessage name="villageBA" />
-                </div>
-                <div class="col-span-12 lg:col-span-6">
                     <TwSelect :disabled="readOnly" label="រាជធានី/ខេត្ត" name="cityProBA" v-model="formData.cityProBA"
-                        required :items="cityList" placeholder="សូមជ្រើសរើស" />
-                    <CustomErrorMessage name="type" />
+                        :items="provinceList" placeholder="សូមជ្រើសរើស" required />
+                    <CustomErrorMessage name="cityProBA" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <label for="" class=" font-bold">
-                        ឃុំ/សង្កាត់
-                    </label>
-                    <ClientOnly>
-                        <USelect :disabled="readOnly" @change="districtBAPick()" name="districtBA" required
-                            v-model="formData.districtBA" :options="temCommuteList" placeholder="សូមជ្រើសរើស"
-                            size="lg" />
-                    </ClientOnly>
+                    <TwSelect :disabled="readOnly || !formData.cityProBA" label="ស្រុក-ខណ្ឌ" name="communeBA"
+                        v-model="formData.communeBA" :items="districtList" placeholder="សូមជ្រើសរើស" required />
+                    <CustomErrorMessage name="communeBA" />
+                </div>
+                <div class="col-span-12 lg:col-span-6">
+                    <TwSelect :disabled="readOnly || !formData.communeBA" label="ឃុំ/សង្កាត់" name="districtBA"
+                        v-model="formData.districtBA" :items="communeList" placeholder="សូមជ្រើសរើស" required />
                     <CustomErrorMessage name="districtBA" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput label="ស្រុក-ខណ្ឌ" name="commuteBA" v-model="formData.commuteBA" placeholder="ស្រុក-ខណ្ឌ"
-                        type="text" />
-                    <CustomErrorMessage name="commuteBA" />
+                    <TwInput :disabled="readOnly" label="ភូមិ-ក្រុម" name="villageBA" v-model="formData.villageBA"
+                        placeholder="សូមបញ្ចូលភូមិ-ក្រុម" type="text" required />
+                    <CustomErrorMessage name="villageBA" />
                 </div>
+                <!-- END: Corrected Address Fields -->
+
                 <div class="col-span-12 flex justify-start gap-3 mt-5 mb-5">
                     <h1 class="text-lg"> 2. ស្ថានភាពគ្រួសាររបស់អតិថិជន</h1>
                 </div>
@@ -744,15 +563,8 @@ const districtBAPick = () => {
                 <div class="col-span-12 lg:col-span-6">
                     <label for=""> ថ្ងៃខែឆ្នាំកំណើត </label>
                     <ClientOnly>
-                        <Datepicker v-model="formData.FOCDOB" :dayNames="[
-            'Mo',
-            'Tu',
-            'We',
-            'Th',
-            'Fr',
-            'Sa',
-            'Su',
-        ]" position="left" required :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
+                        <Datepicker v-model="formData.FOCDOB" position="left" required :maxDate="new Date()"
+                            :enableTimePicker="false"></Datepicker>
                     </ClientOnly>
 
                     <CustomErrorMessage name="DateofBirth" />
@@ -760,17 +572,9 @@ const districtBAPick = () => {
                 <div class="col-span-12 lg:col-span-6">
                     <label for=""> ថ្ងៃខែឆ្នាំកំណើត </label>
                     <ClientOnly>
-                        <Datepicker v-model="formData.MOCDOB" :dayNames="[
-            'Mo',
-            'Tu',
-            'We',
-            'Th',
-            'Fr',
-            'Sa',
-            'Su',
-        ]" position="left" required :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
+                        <Datepicker v-model="formData.MOCDOB" position="left" required :maxDate="new Date()"
+                            :enableTimePicker="false"></Datepicker>
                     </ClientOnly>
-
                     <CustomErrorMessage name="DateofBirth" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
@@ -789,14 +593,14 @@ const districtBAPick = () => {
                     <CustomErrorMessage name="FOCTel" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput label="លេខទូរស័ព្ទ" name="FOCTelandAddress" v-model="formData.MOCTel"
-                        placeholder="លេខទូរស័ព្ទ" type="text" />
-                    <CustomErrorMessage name="FOCTelandAddress" />
+                    <TwInput label="លេខទូរស័ព្ទ" name="MOCTel" v-model="formData.MOCTel" placeholder="លេខទូរស័ព្ទ"
+                        type="text" />
+                    <CustomErrorMessage name="MOCTel" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput label="អាសយដ្ឋាន" name="FOCTel" v-model="formData.FOCTelandAddress" placeholder="អាសយដ្ឋាន"
-                        type="text" />
-                    <CustomErrorMessage name="FOCTel" />
+                    <TwInput label="អាសយដ្ឋាន" name="FOCTelandAddress" v-model="formData.FOCTelandAddress"
+                        placeholder="អាសយដ្ឋាន" type="text" />
+                    <CustomErrorMessage name="FOCTelandAddress" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
                     <TwInput label="អាសយដ្ឋាន" name="MOCTelandAddress" v-model="formData.MOCTelandAddress"
@@ -837,9 +641,9 @@ const districtBAPick = () => {
                 <div class="col-span-12 lg:col-span-6">
                     <TwSelect label="ហេតុដែលនាំមានការប្រើប្រាស់គ្រឿងញៀន" name="ReasonUseDrug"
                         v-model="formData.ReasonUseDrug" required :items="[{ value: 'Fun', label: 'ដើម្បីសប្បាយ' }, { value: 'followFriend', label: 'ធ្វើតាមមិត្តភក្តិ' },
-        { value: 'forceUse', label: 'មានគេបង្ខំ' }, { value: 'try', label: 'ចង់សាក' }, { value: 'familyBroken', label: 'បែកបាក់គ្រួសារ' },
-        { value: 'other', label: 'មូលហេតុផ្សេង' }
-        ]" placeholder="សូមជ្រើសរើស" />
+                        { value: 'forceUse', label: 'មានគេបង្ខំ' }, { value: 'try', label: 'ចង់សាក' }, { value: 'familyBroken', label: 'បែកបាក់គ្រួសារ' },
+                        { value: 'other', label: 'មូលហេតុផ្សេង' }
+                        ]" placeholder="សូមជ្រើសរើស" />
                     <CustomErrorMessage name="ReasonUseDrug" />
                 </div>
                 <div v-if="formData.ReasonUseDrug == 'other'" class="col-span-12 lg:col-span-6">
@@ -856,9 +660,9 @@ const districtBAPick = () => {
                 <div class="col-span-12 lg:col-span-6">
                     <TwSelect label="ប្រភេទគ្រឿងញៀនធ្លាប់ប្រើប្រាស់" name="typeDrugUsed" v-model="formData.typeDrugUsed"
                         required :items="[{ value: 'SmileGlue', label: 'ហិតកាវ' }, { value: 'yama', label: 'យ៉ាមា-យ៉ាបា' },
-        { value: 'heroin', label: 'ហេរ៉ូអុីន' }, { value: 'cocain', label: 'កូកាអុីន' }, { value: 'smoking', label: 'ជក់បារី' },
-        { value: 'drinking', label: 'ផឹកស្រា' }, { value: 'other', label: 'ផ្សេង' }
-        ]" placeholder="សូមជ្រើសរើស" />
+                        { value: 'heroin', label: 'ហេរ៉ូអុីន' }, { value: 'cocain', label: 'កូកាអុីន' }, { value: 'smoking', label: 'ជក់បារី' },
+                        { value: 'drinking', label: 'ផឹកស្រា' }, { value: 'other', label: 'ផ្សេង' }
+                        ]" placeholder="សូមជ្រើសរើស" />
                     <CustomErrorMessage name="typeDrugUsed" />
                 </div>
                 <div v-if="formData.typeDrugUsed == 'other'" class="col-span-12 lg:col-span-6">
@@ -905,14 +709,14 @@ const districtBAPick = () => {
                             <label for="">ថ្ងៃខែ</label>
                             <ClientOnly>
                                 <Datepicker v-model="child.DateTimeServed" :dayNames="[
-            'Mo',
-            'Tu',
-            'We',
-            'Th',
-            'Fr',
-            'Sa',
-            'Su',
-        ]" position="left" required :maxDate="new Date()" :enableTimePicker="false">
+                                    'Mo',
+                                    'Tu',
+                                    'We',
+                                    'Th',
+                                    'Fr',
+                                    'Sa',
+                                    'Su',
+                                ]" position="left" required :maxDate="new Date()" :enableTimePicker="false">
                                 </Datepicker>
                             </ClientOnly>
                         </div>
@@ -925,9 +729,9 @@ const districtBAPick = () => {
                     </div>
                     <div class="col-span-12 mt-2">
                         <UButton color="primary" icon="i-heroicons-users" size="lg" class="px-4" @click="ClientServeHistory.push({
-            nameCenterorPrison: '',
-            DateTimeServed: '',
-        })"> បន្ថែមព័ត៌មាន </UButton>
+                            nameCenterorPrison: '',
+                            DateTimeServed: '',
+                        })"> បន្ថែមព័ត៌មាន </UButton>
                     </div>
                 </div>
                 <div class="col-span-12 lg:col-span-6">
@@ -997,11 +801,11 @@ const districtBAPick = () => {
                 <div class="col-span-12 lg:col-span-6">
                     <TwSelect label="១១. ផែនការក្នុងអនាគតដែលបានស្នើឡើង៖" name="FuturePlanforClient"
                         v-model="formData.FuturePlanforClient" required :items="[
-            { value: 'sentClientTo', label: 'បញ្ជូនអតិថិជនទៅ' }, { value: 'Educated', label: 'អប់រំ ឬបណ្តុះបណ្តាលវិជ្ជាជីវៈ៖' },
-            { value: 'consultant', label: 'ផ្តល់ការពិគ្រោះបញ្ហា/ពិគ្រោះយោបល់៖' }, { value: 'sentToHospital', label: 'បញ្ចូនទៅសេវាព្យាបាល៖' },
-            { value: 'other', label: 'ផែនការផ្សេងៗទៀត' },
+                            { value: 'sentClientTo', label: 'បញ្ជូនអតិថិជនទៅ' }, { value: 'Educated', label: 'អប់រំ ឬបណ្តុះបណ្តាលវិជ្ជាជីវៈ៖' },
+                            { value: 'consultant', label: 'ផ្តល់ការពិគ្រោះបញ្ហា/ពិគ្រោះយោបល់៖' }, { value: 'sentToHospital', label: 'បញ្ចូនទៅសេវាព្យាបាល៖' },
+                            { value: 'other', label: 'ផែនការផ្សេងៗទៀត' },
 
-        ]" placeholder="សូមជ្រើសរើស" />
+                        ]" placeholder="សូមជ្រើសរើស" />
                     <CustomErrorMessage name="FuturePlanforClient" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
@@ -1045,14 +849,14 @@ const districtBAPick = () => {
                         <label for="">កាលបរិច្ចេទ</label>
                         <ClientOnly>
                             <Datepicker v-model="child.NoteDateTime" :dayNames="[
-            'Mo',
-            'Tu',
-            'We',
-            'Th',
-            'Fr',
-            'Sa',
-            'Su',
-        ]" position="left" required :maxDate="new Date()" :enableTimePicker="false">
+                                'Mo',
+                                'Tu',
+                                'We',
+                                'Th',
+                                'Fr',
+                                'Sa',
+                                'Su',
+                            ]" position="left" required :maxDate="new Date()" :enableTimePicker="false">
                             </Datepicker>
                         </ClientOnly>
                     </div>
@@ -1071,24 +875,24 @@ const districtBAPick = () => {
                 </div>
                 <div class="col-span-12 mt-2">
                     <UButton color="primary" icon="i-heroicons-users" size="lg" class="px-4" @click="ClientProgress.push({
-            NoteDateTime: '',
-            Details: '',
-        })"> បន្ថែមព័ត៌មាន </UButton>
+                        NoteDateTime: '',
+                        Details: '',
+                    })"> បន្ថែមព័ត៌មាន </UButton>
                 </div>
                 <ClientOnly>
                     <TwInput name="interviewID" v-model="formData.InterviewerID" :value="
-            //@ts-ignored
-            formData.InterviewerID ? formData.InterviewerID : token.id
-            " placeholder="ហត្ថលេខា" class="hidden" type="text" />
+                        //@ts-ignored
+                        formData.InterviewerID ? formData.InterviewerID : token.id
+                        " placeholder="ហត្ថលេខា" class="hidden" type="text" />
                 </ClientOnly>
                 <CustomErrorMessage name="interviewID" />
 
                 <div class="col-span-12 grid grid-cols-1 lg:grid-cols-2 gap-1  items-end">
                     <div>
                         ឈ្មោះមន្ត្រីឬបុគ្គលិកសង្គមកិច្ច៖ {{
-            //@ts-ignored
-            token.fullname
-        }}
+                            //@ts-ignored
+                            token.fullname
+                        }}
                     </div>
 
                     <div>
@@ -1105,14 +909,14 @@ const districtBAPick = () => {
                         <label for="">កាលបរិច្ចេទ</label>
                         <ClientOnly>
                             <Datepicker v-model="formData.InterViewDate" :dayNames="[
-            'Mo',
-            'Tu',
-            'We',
-            'Th',
-            'Fr',
-            'Sa',
-            'Su',
-        ]" position="left" required :maxDate="new Date()" :enableTimePicker="false">
+                                'Mo',
+                                'Tu',
+                                'We',
+                                'Th',
+                                'Fr',
+                                'Sa',
+                                'Su',
+                            ]" position="left" required :maxDate="new Date()" :enableTimePicker="false">
                             </Datepicker>
                         </ClientOnly>
                     </div>
