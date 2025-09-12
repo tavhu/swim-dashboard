@@ -347,7 +347,6 @@ const clear = () => {
     formData.InterViewerSignature = null
     formData.InterviewerPosition = null
     formData.serviceCenterID = null
-
     setTimeout(() => {
         validator.value.clearErrors();
     }, 100);
@@ -605,8 +604,6 @@ watch(() => formData.districtBA, (newCommune) => {
 }, { immediate: true });
 
 // --- END: Address Dropdown Logic (Corrected for Villages) ---
-
-
 </script>
 <template>
     <div>
