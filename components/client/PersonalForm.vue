@@ -13,7 +13,7 @@ import {
     TwTextarea,
 } from "vue3-tailwind";
 import orgType from '~~/store/data/orgType'
-import city from '~~/store/data/address'
+import addressData from '~~/store/data/address';
 import { type ServiceCenter } from '@prisma/client'
 import Datepicker from "@vuepic/vue-datepicker"
 import "@vuepic/vue-datepicker/dist/main.css"
@@ -376,30 +376,6 @@ const handleImageUpload = async () => {
     }
 };
 
-const commute = ref()
-const temCommuteList: any = ref([])
-const SelectedCityValue = computed(() => formData.cityProBA)
-
-watch(SelectedCityValue, () => {
-    temCommuteList.value = []
-    commute.value = city.find((element: any) => {
-        // console.log(element.name)
-        return element.name === formData.cityProBA
-    })?.ls.forEach((ele) => {
-        temCommuteList.value.push({
-            label: ele.bn,
-            value: ele.bn,
-            disabled: true,
-        })
-        ele.c.forEach((item => {
-            temCommuteList.value.push({
-                label: " ( " + item.cc + " ) " + item.cn,
-                value: item.cn
-            })
-        }))
-    })
-})
-
 // edit part
 const userProfile = ref()
 const currentUser = ref(false)
@@ -557,30 +533,67 @@ if (prop.id) {
     ClientRegister.value = true
 }
 
-let temCity: any = []
+// --- START: Address Dropdown Logic ---
 
-city.forEach(ele => {
-    temCity.push({
-        label: ele.name,
-        value: ele.name
-    })
-})
+const provinceList = computed(() => {
+    return addressData.map(province => ({
+        label: province.name,
+        value: province.name,
+    }));
+});
 
-const cityList = ref(temCity)
+const districtList = ref<DropdownItem[]>([]);
+const communeList = ref<DropdownItem[]>([]);
 
-const districtBAPick = () => {
-    let index = temCommuteList.value.findIndex((ele: any) => ele.value === formData.districtBA)
-    console.log(index)
-    let ttt = true
-    while (ttt) {
-        index--
-        if (temCommuteList.value[index]?.disabled) {
-            ttt = false
-            formData.commuteBA = temCommuteList.value[index]?.value
-        }
+const findDistrictsByProvince = (provinceName: string) => {
+    const province = addressData.find(p => p.name === provinceName);
+    return province?.ls.map(d => ({ label: d.bn, value: d.bn })) || [];
+};
 
+const findCommunesByDistrict = (provinceName: string, districtName: string) => {
+    const province = addressData.find(p => p.name === provinceName);
+    const district = province?.ls.find(d => d.bn === districtName);
+    return district?.c.map(c => ({ label: c.cn, value: c.cn })) || [];
+};
+
+// Watch for changes in the Province dropdown (cityProBA)
+watch(() => formData.cityProBA, (newProvince) => {
+    // When province changes, clear all downstream fields and lists
+    formData.communeBA = '';
+    formData.districtBA = '';
+    formData.villageBA = '';
+
+    districtList.value = [];
+    communeList.value = [];
+
+    if (newProvince) {
+        // Then, populate the district list
+        districtList.value = findDistrictsByProvince(newProvince);
     }
-}
+}, { immediate: true }); // 'immediate' ensures this runs on component load to handle edit mode
+
+// Watch for changes in the District dropdown (communeBA)
+watch(() => formData.communeBA, (newDistrict) => {
+    // When district changes, clear the commune and village
+    formData.districtBA = '';
+    formData.villageBA = '';
+
+    communeList.value = [];
+
+    if (newDistrict && formData.cityProBA) {
+        // Then, populate the commune list
+        communeList.value = findCommunesByDistrict(formData.cityProBA, newDistrict);
+    }
+}, { immediate: true });
+
+// Watch for changes in the Commune dropdown (districtBA)
+watch(() => formData.districtBA, () => {
+    // When commune changes, just clear the village input.
+    formData.villageBA = '';
+}, { immediate: true });
+
+// --- END: Address Dropdown Logic ---
+
 </script>
 <template>
     <div>
@@ -598,9 +611,9 @@ const districtBAPick = () => {
                 :class="{
                     'tw-shake': isError,
                 }" :rules="formRules" @submit="submit" :custom-field-name="{
-            roleName: 'ឈ្មោះតួនាទី',
-            roleDescription: 'ពិពណ៌នាតួនាទី',
-        }">
+                    roleName: 'ឈ្មោះតួនាទី',
+                    roleDescription: 'ពិពណ៌នាតួនាទី',
+                }">
                 <div class="col-span-12 flex justify-start  gap-3 mb-5">
                     <TwFeather type="file-text" />
                     <h1 class="text-lg"> ព័ត៌មានលំអិត </h1>
@@ -692,9 +705,14 @@ const districtBAPick = () => {
                         placeholder="កាលបរិច្ឆេទចូលមជ្ឈមណ្ឌល" type="text" />
                     <CustomErrorMessage name="DateArrested" />
                 </div>
+                <!-- START: Corrected Address Fields -->
+                <div class="col-span-12">
+                    <p class="font-bold text-lg mt-4">អាសយដ្ឋានបច្ចុប្បន្ន</p>
+                    <hr class="my-2 border dark:border-gray-700" />
+                </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput label="អាសយដ្ឋាន មុនពេលចាប់ខ្លួន ឬចូលមណ្ឌល៖" name="homeBA" v-model="formData.homeBA"
-                        placeholder="ផ្ទះលេខ" type="text" />
+                    <TwInput label="ផ្ទះលេខ" name="homeBA" v-model="formData.homeBA" placeholder="ផ្ទះលេខ"
+                        type="text" />
                     <CustomErrorMessage name="homeBA" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
@@ -703,31 +721,27 @@ const districtBAPick = () => {
                     <CustomErrorMessage name="StreetBA" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput label="ភូមិ-ក្រុម" name="villageBA" v-model="formData.villageBA" placeholder="ភូមិ-ក្រុម"
-                        type="text" />
-                    <CustomErrorMessage name="villageBA" />
-                </div>
-                <div class="col-span-12 lg:col-span-6">
                     <TwSelect :disabled="readOnly" label="រាជធានី/ខេត្ត" name="cityProBA" v-model="formData.cityProBA"
-                        required :items="cityList" placeholder="សូមជ្រើសរើស" />
-                    <CustomErrorMessage name="type" />
+                        :items="provinceList" placeholder="សូមជ្រើសរើស" required />
+                    <CustomErrorMessage name="cityProBA" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <label for="" class=" font-bold">
-                        ឃុំ/សង្កាត់
-                    </label>
-                    <ClientOnly>
-                        <USelect :disabled="readOnly" @change="districtBAPick()" name="districtBA" required
-                            v-model="formData.districtBA" :options="temCommuteList" placeholder="សូមជ្រើសរើស"
-                            size="lg" />
-                    </ClientOnly>
+                    <TwSelect :disabled="readOnly || !formData.cityProBA" label="ស្រុក-ខណ្ឌ" name="communeBA"
+                        v-model="formData.communeBA" :items="districtList" placeholder="សូមជ្រើសរើស" required />
+                    <CustomErrorMessage name="communeBA" />
+                </div>
+                <div class="col-span-12 lg:col-span-6">
+                    <TwSelect :disabled="readOnly || !formData.communeBA" label="ឃុំ/សង្កាត់" name="districtBA"
+                        v-model="formData.districtBA" :items="communeList" placeholder="សូមជ្រើសរើស" required />
                     <CustomErrorMessage name="districtBA" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput label="ស្រុក-ខណ្ឌ" name="commuteBA" v-model="formData.commuteBA" placeholder="ស្រុក-ខណ្ឌ"
-                        type="text" />
-                    <CustomErrorMessage name="commuteBA" />
+                    <TwInput :disabled="readOnly" label="ភូមិ-ក្រុម" name="villageBA" v-model="formData.villageBA"
+                        placeholder="សូមបញ្ចូលភូមិ-ក្រុម" type="text" required />
+                    <CustomErrorMessage name="villageBA" />
                 </div>
+                <!-- END: Corrected Address Fields -->
+
                 <div class="col-span-12 flex justify-start gap-3 mt-5 mb-5">
                     <h1 class="text-lg"> 2. ស្ថានភាពគ្រួសាររបស់អតិថិជន</h1>
                 </div>
@@ -1087,7 +1101,7 @@ const districtBAPick = () => {
                     <div>
                         ឈ្មោះមន្ត្រីឬបុគ្គលិកសង្គមកិច្ច៖ {{
                             //@ts-ignored
-                        token.fullname
+                            token.fullname
                         }}
                     </div>
 
