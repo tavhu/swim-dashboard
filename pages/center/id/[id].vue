@@ -6,7 +6,7 @@
           <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
             {{ serviceCenter.nameEN }}
           </h1>
-          <UAvatar :src="serviceCenter.logo" :alt="serviceCenter.nameEN" size="lg" />
+          <UAvatar :src="config.public.origin + '/' + serviceCenter.logo" :alt="serviceCenter.nameEN" size="lg" />
         </div>
       </template>
 
@@ -14,40 +14,40 @@
         <!-- General Details -->
         <div>
           <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 border-b pb-2 mb-4">
-            Service Center Information
+            ព័ត៌មានមជ្ឈមណ្ឌលសេវាកម្ម
           </h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-gray-700 dark:text-gray-300">
-            <p><strong>Khmer Name:</strong> {{ serviceCenter.nameKH }}</p>
-            <p><strong>Director:</strong> {{ serviceCenter.directorName }}</p>
-            <p><strong>Email:</strong> {{ serviceCenter.email }}</p>
-            <p><strong>Phone:</strong> {{ serviceCenter.phoneNumber }}</p>
-            <p><strong>P.O. Box:</strong> {{ serviceCenter.PoBox }}</p>
-            <p><strong>Website:</strong> <a :href="serviceCenter.website" target="_blank" class="text-primary-500 dark:text-primary-400 hover:underline">{{ serviceCenter.website }}</a></p>
-            <p><strong>Type:</strong> {{ serviceCenter.type }}</p>
-            <p><strong>Status:</strong> {{ serviceCenter.status ? 'Active' : 'Inactive' }}</p>
-            <p><strong>Date Created:</strong> {{ new Date(serviceCenter.createdAt).toLocaleDateString() }}</p>
-            <p class="md:col-span-2"><strong>Address:</strong> {{ serviceCenter.Address }}</p>
-             <p class="md:col-span-2"><strong>Location Map:</strong> <a :href="serviceCenter.locationMap" target="_blank" class="text-primary-500 dark:text-primary-400 hover:underline">{{ serviceCenter.locationMap }}</a></p>
+            <p><strong>ឈ្មោះភាសាខ្មែរ:</strong> {{ serviceCenter.nameKH }}</p>
+            <p><strong>នាយក:</strong> {{ serviceCenter.directorName }}</p>
+            <p><strong>អ៊ីមែល:</strong> {{ serviceCenter.email }}</p>
+            <p><strong>ទូរស័ព្ទ:</strong> {{ serviceCenter.phoneNumber }}</p>
+            <p><strong>ប្រអប់សំបុត្រ:</strong> {{ serviceCenter.PoBox }}</p>
+            <p><strong>គេហទំព័រ:</strong> <a :href="serviceCenter.website" target="_blank" class="text-primary-500 dark:text-primary-400 hover:underline">{{ serviceCenter.website }}</a></p>
+            <p><strong>ប្រភេទ:</strong> {{ serviceCenter.type }}</p>
+            <p><strong>ស្ថានភាព:</strong> {{ serviceCenter.status ? 'ដំណើការ' : 'បិទដំណើការ' }}</p>
+            <p><strong>កាលបរិច្ឆេទបង្កើត:</strong> {{ new Date(serviceCenter.createdAt).toLocaleDateString() }}</p>
+            <p class="md:col-span-2"><strong>អាសយដ្ឋាន:</strong> {{ serviceCenter.Address }}</p>
+             <p class="md:col-span-2"><strong>ផែនទីទីតាំង:</strong> <a :href="serviceCenter.locationMap" target="_blank" class="text-primary-500 dark:text-primary-400 hover:underline">{{ serviceCenter.locationMap }}</a></p>
           </div>
         </div>
         
         <!-- Location Details -->
         <div>
           <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 border-b pb-2 mb-4">
-            Location Details
+            ព័ត៌មានលម្អិតអំពីទីតាំង
           </h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-gray-700 dark:text-gray-300">
-            <p><strong>City:</strong> {{ serviceCenter.City }}</p>
-            <p><strong>District:</strong> {{ serviceCenter.District }}</p>
-            <p><strong>Commune:</strong> {{ serviceCenter.Commute }}</p>
-            <p><strong>Village:</strong> {{ serviceCenter.Village }}</p>
+            <p><strong>ក្រុង/ខេត្ត:</strong> {{ serviceCenter.City }}</p>
+            <p><strong>ស្រុក/ខណ្ឌ:</strong> {{ serviceCenter.District }}</p>
+            <p><strong>ឃុំ/សង្កាត់:</strong> {{ serviceCenter.Commute }}</p>
+            <p><strong>ភូមិ:</strong> {{ serviceCenter.Village }}</p>
           </div>
         </div>
 
         <!-- Overview -->
         <div v-if="serviceCenter.overview">
           <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 border-b pb-2 mb-4">
-            Overview
+            ទិដ្ឋភាពទូទៅ
           </h2>
           <p class="text-gray-700 dark:text-gray-300">{{ serviceCenter.overview }}</p>
         </div>
@@ -55,7 +55,7 @@
         <!-- Background -->
         <div v-if="serviceCenter.background">
           <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 border-b pb-2 mb-4">
-            Background
+            ផ្ទៃរឿង
           </h2>
           <p class="text-gray-700 dark:text-gray-300">{{ serviceCenter.background }}</p>
         </div>
@@ -63,7 +63,7 @@
         <!-- Mission -->
         <div v-if="serviceCenter.mission">
           <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 border-b pb-2 mb-4">
-            Mission
+            បេសកកម្ម
           </h2>
           <p class="text-gray-700 dark:text-gray-300">{{ serviceCenter.mission }}</p>
         </div>
@@ -71,7 +71,7 @@
         <!-- Vision -->
         <div v-if="serviceCenter.vision">
           <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 border-b pb-2 mb-4">
-            Vision
+            ចក្ខុវិស័យ
           </h2>
           <p class="text-gray-700 dark:text-gray-300">{{ serviceCenter.vision }}</p>
         </div>
@@ -79,7 +79,7 @@
         <!-- Goal -->
         <div v-if="serviceCenter.goal">
           <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 border-b pb-2 mb-4">
-            Goal
+            គោលដៅ
           </h2>
           <p class="text-gray-700 dark:text-gray-300">{{ serviceCenter.goal }}</p>
         </div>
@@ -87,7 +87,7 @@
         <!-- Project Summary -->
         <div v-if="serviceCenter.ProjectSummary">
           <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 border-b pb-2 mb-4">
-            Project Summary
+            សេចក្តីសង្ខេបគម្រោង
           </h2>
           <p class="text-gray-700 dark:text-gray-300">{{ serviceCenter.ProjectSummary }}</p>
         </div>
@@ -95,7 +95,7 @@
         <!-- Staff Table -->
         <div v-if="serviceCenter.staff && serviceCenter.staff.length > 0">
           <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 border-b pb-2 mb-4">
-            Staff
+            បុគ្គលិក
           </h2>
           <UTable :rows="staffData" :columns="staffColumns" />
         </div>
@@ -103,7 +103,7 @@
         <!-- Government Staff Table -->
         <div v-if="serviceCenter.governStaff && serviceCenter.governStaff.length > 0">
           <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 border-b pb-2 mb-4">
-            Government Staff
+            បុគ្គលិករដ្ឋ
           </h2>
           <UTable :rows="governStaffData" :columns="governStaffColumns" />
         </div>
@@ -111,7 +111,7 @@
     </UCard>
 
     <div v-else class="flex justify-center items-center p-10">
-      <p class="text-gray-500 dark:text-gray-400">Loading service center details...</p>
+      <p class="text-gray-500 dark:text-gray-400">កំពុងផ្ទុកព័ត៌មានលម្អិតអំពីមជ្ឈមណ្ឌលសេវាកម្ម...</p>
     </div>
   </div>
 </template>
@@ -120,23 +120,24 @@
 import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 
+const config = useRuntimeConfig();
 const route = useRoute();
 const serviceCenter = ref(null);
 
 // Columns definition for UTable
 const staffColumns = [
-  { key: 'fullName', label: 'Name' },
-  { key: 'position', label: 'Position' },
-  { key: 'familyEmail', label: 'Email' },
-  { key: 'telephone', label: 'Phone' }
+  { key: 'fullName', label: 'ឈ្មោះ' },
+  { key: 'position', label: 'តំណែង' },
+  { key: 'familyEmail', label: 'អ៊ីមែល' },
+  { key: 'telephone', label: 'ទូរស័ព្ទ' }
 ];
 
 const governStaffColumns = [
-  { key: 'fullNameKH', label: 'Name (KH)' },
-  { key: 'fullNameEN', label: 'Name (EN)' },
-  { key: 'CurrentRank', label: 'Rank' },
-  { key: 'email', label: 'Email' },
-  { key: 'telephone', label: 'Phone' }
+  { key: 'fullNameKH', label: 'ឈ្មោះ (ខ្មែរ)' },
+  { key: 'fullNameEN', label: 'ឈ្មោះ (អង់គ្លេស)' },
+  { key: 'CurrentRank', label: 'ឋានៈ' },
+  { key: 'email', label: 'អ៊ីមែល' },
+  { key: 'telephone', label: 'ទូរស័ព្ទ' }
 ];
 
 const staffData = computed(() => 
