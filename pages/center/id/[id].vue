@@ -98,7 +98,11 @@
           <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 border-b pb-2 mb-4">
             បុគ្គលិកកិច្ចសន្យា
           </h2>
-          <UTable :rows="staffData" :columns="staffColumns" />
+          <UTable :rows="staffData" :columns="staffColumns">
+            <template #photo-data="{ row }">
+              <UAvatar :src="row.photo" alt="Staff photo" />
+            </template>
+          </UTable>
         </div>
 
         <!-- Government Staff Table -->
@@ -106,7 +110,11 @@
           <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 border-b pb-2 mb-4">
             បុគ្គលិករដ្ឋ
           </h2>
-          <UTable :rows="governStaffData" :columns="governStaffColumns" />
+          <UTable :rows="governStaffData" :columns="governStaffColumns">
+            <template #photo-data="{ row }">
+              <UAvatar :src="row.photo" alt="Government Staff photo" />
+            </template>
+          </UTable>
         </div>
       </div>
     </UCard>
@@ -127,6 +135,8 @@ const serviceCenter = ref(null);
 
 // Columns definition for UTable
 const staffColumns = [
+  { key: 'number', label: 'ល.រ' },
+  { key: 'photo', label: 'រូបថត' },
   { key: 'fullName', label: 'ឈ្មោះ' },
   { key: 'fullNameEN', label: 'ឈ្មោះ (អង់គ្លេស)' },
   { key: 'gender', label: 'ភេទ' },
@@ -135,6 +145,8 @@ const staffColumns = [
 ];
 
 const governStaffColumns = [
+  { key: 'number', label: 'ល.រ' },
+  { key: 'photo', label: 'រូបថត' },
   { key: 'fullNameKH', label: 'ឈ្មោះ (ខ្មែរ)' },
   { key: 'fullNameEN', label: 'ឈ្មោះ (អង់គ្លេស)' },
   { key: 'gender', label: 'ភេទ' },
@@ -143,11 +155,23 @@ const governStaffColumns = [
 ];
 
 const staffData = computed(() =>
-  serviceCenter.value?.staff?.map(s => ({ ...s, fullName: `${s.firstName} ${s.lastName}`, fullNameEN: `${s.fullnameEN}` })) || []
+  serviceCenter.value?.staff?.map((s, index) => ({
+    ...s,
+    number: index + 1,
+    photo: config.public.origin + '/' + s.photo,
+    fullName: `${s.firstName} ${s.lastName}`,
+    fullNameEN: `${s.fullnameEN}`
+  })) || []
 );
 
 const governStaffData = computed(() =>
-  serviceCenter.value?.governStaff?.map(s => ({ ...s, fullNameKH: `${s.firstNameKH} ${s.lastNameKH}`, fullNameEN: `${s.firstNameEN} ${s.lastNameEN}` })) || []
+  serviceCenter.value?.governStaff?.map((s, index) => ({
+    ...s,
+    number: index + 1,
+    photo: config.public.origin + '/' + s.photo,
+    fullNameKH: `${s.firstNameKH} ${s.lastNameKH}`,
+    fullNameEN: `${s.firstNameEN} ${s.lastNameEN}`
+  })) || []
 );
 
 onMounted(async () => {
