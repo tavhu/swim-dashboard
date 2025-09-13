@@ -41,7 +41,7 @@ const form = computed(() => composableForm.getForm(formName));
 const validator = computed(() => form.value.validator);
 
 async function submit() {
-  if(readOnly) return;
+  if (readOnly) return;
   if (!(await confirmDialog())) return;
   validator.value.clearErrors();
   await validator.value.validate();
@@ -102,7 +102,7 @@ const formEdit = computed(() => composableForm.getForm(formNameEdit));
 const validatorEdit = computed(() => formEdit.value.validator);
 
 async function submitEdit() {
-  if(readOnly) return;
+  if (readOnly) return;
   if (!(await confirmDialog())) return;
   validatorEdit.value.clearErrors();
   await validatorEdit.value.validate();
@@ -210,32 +210,32 @@ const globalData: any = ref();
 
 const fetchData = async () => {
   const baseUrl = "/api/role/get";
-  const {data: response} = await useFetch <{
+  const { data: response } = await useFetch<{
     total: number;
     data: DatatableData[];
-}> (
+  }>(
     baseUrl +
-      "?" +
-      new URLSearchParams({
-        limit: data.value.limit.toString(),
-        skip: data.value.offset.toString(),
-        q: data.value.search.toString(),
-        sortType: data.value.sortType,
-        sortBy: data.value.sortBy,
-      }),
-      {
-        method : 'get'
-      }
+    "?" +
+    new URLSearchParams({
+      limit: data.value.limit.toString(),
+      skip: data.value.offset.toString(),
+      q: data.value.search.toString(),
+      sortType: data.value.sortType,
+      sortBy: data.value.sortBy,
+    }),
+    {
+      method: 'get'
+    }
   );
 
 
   // console.log(responseJson)
   globalData.value = {
-    data: response.value?.data  ? response.value?.data : [],
+    data: response.value?.data ? response.value?.data : [],
     totalData: response.value?.total ? response.value?.total : 0,
   };
   return {
-    data: response.value?.data  ? response.value?.data : [],
+    data: response.value?.data ? response.value?.data : [],
     totalData: response.value?.total ? response.value?.total : 0,
   };
 }
@@ -251,7 +251,7 @@ const sortClick = (event: any) => {
 };
 
 const deleteRecord = async (id: string) => {
-  if(readOnly) return;
+  if (readOnly) return;
   if (!(await confirmDialog())) return;
 
   const { error } = await useFetch("/api/role/delete", {
@@ -277,7 +277,7 @@ const deleteRecord = async (id: string) => {
 const openisTrue = ref();
 const editID = ref("");
 const editRecord = async (id: string) => {
-  if(readOnly) return;
+  if (readOnly) return;
   openisTrue.value.openOffCanvas();
   editID.value = id;
   const datRes = globalData.value.data.find((element: any) => element.id == id);
@@ -289,7 +289,7 @@ const editRecord = async (id: string) => {
 const PopUPPermission = ref();
 const refClickRoleID = ref("");
 const AddPermission = (clickPermissionID: string) => {
-  if(readOnly) return;
+  if (readOnly) return;
   PopUPPermission.value.openOffCanvas();
   refClickRoleID.value = clickPermissionID;
   refresh();
@@ -307,8 +307,8 @@ const grantedResourceToRole = async (resourceID: string, granted: boolean, read:
     body: JSON.stringify({
       roleID: refClickRoleID.value,
       resourceID: resourceID,
-      granted: granted,      
-      read : read
+      granted: granted,
+      read: read
     }),
   });
 
@@ -325,7 +325,7 @@ const grantedResourceToRole = async (resourceID: string, granted: boolean, read:
   // }
 }
 
-const { data: readRoleToResource , refresh } = await useFetch(
+const { data: readRoleToResource, refresh } = await useFetch(
   "/api/role/getRoleToResource",
   {
     method: "POST",
@@ -343,53 +343,31 @@ const { data: readRoleToResource , refresh } = await useFetch(
     <h2 class="text-2xl font-[Moul] text-primary">បង្កើតតួនាទី</h2>
     <hr class="my-2 border dark:border-gray-700" />
     <div>
-      <TwForm      
-        :name="formName"
+      <TwForm :name="formName"
         class="grid grid-cols-12 gap-2 bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded-lg p-2 shadow"
         :class="{
           'tw-shake': isError,
-        }"
-        :rules="formRules"
-        @submit="submit()"
-        :custom-field-name="{
+        }" :rules="formRules" @submit="submit()" :custom-field-name="{
           roleName: 'ឈ្មោះតួនាទី',
           roleDescription: 'ពិពណ៌នាតួនាទី',
-        }"
-      >
+        }">
         <div class="col-span-12">
-          <TwInput
-            label="ឈ្មោះតួនាទី"
-            name="roleName"
-            v-model="formData.roleName"
-            placeholder="ប្រអប់បញ្ចូល"
-            type="text"
-          />
+          <TwInput label="ឈ្មោះតួនាទី" name="roleName" v-model="formData.roleName" placeholder="ប្រអប់បញ្ចូល"
+            type="text" />
           <CustomErrorMessage name="roleName" />
         </div>
         <div class="col-span-12">
-          <TwTextarea
-            label="ការពិពណ៌នាតួនាទី"
-            name="roleDescription"
-            v-model="formData.roleDescription"
-            placeholder="ប្រអប់បញ្ចូល"
-            type="text"
-          />
+          <TwTextarea label="ការពិពណ៌នាតួនាទី" name="roleDescription" v-model="formData.roleDescription"
+            placeholder="ប្រអប់បញ្ចូល" type="text" />
           <CustomErrorMessage name="roleDescription" />
         </div>
         <div class="col-span-12 flex justify-end gap-1">
-          <UButton
-            :ripple="true"
-            :disabled ="readOnly"     
-            color="gray"       
-            type="button"
-            size="lg"
-            class="px-4 dark:text-gray-200 dark:!border-gray-800 dark:border"
-            @click="clear()"
-          >
+          <UButton :ripple="true" :disabled="readOnly" color="gray" type="button" size="lg"
+            class="px-4 dark:text-gray-200 dark:!border-gray-800 dark:border" @click="clear()">
             កំណត់ឡើងវិញ
           </UButton>
 
-          <UButton  :disabled ="readOnly" size="lg" type="submit" color="primary" class="px-4"   > រក្សាទុក </UButton>
+          <UButton :disabled="readOnly" size="lg" type="submit" color="primary" class="px-4"> រក្សាទុក </UButton>
         </div>
       </TwForm>
     </div>
@@ -397,18 +375,10 @@ const { data: readRoleToResource , refresh } = await useFetch(
     <div class="mt-5">
       <h2 class="text-2xl font-[Moul] text-primary">បញ្ចីតួនាទី</h2>
       <hr class="my-2 border dark:border-gray-700" />
-      <TwDatatableServer
-        v-bind:fetch-data="fetchData"
-        v-model:search="data.search"
-        v-model:limit="data.limit"
-        v-model:offset="data.offset"
-        v-model:sort-by="data.sortBy"
-        v-model:sort-type="data.sortType"
-        :column="data.column"
-        :setting="data.setting"
-        @on-sort-change="sortClick"
-      >
-        <template  #row="{ column, data }">
+      <TwDatatableServer v-bind:fetch-data="fetchData" v-model:search="data.search" v-model:limit="data.limit"
+        v-model:offset="data.offset" v-model:sort-by="data.sortBy" v-model:sort-type="data.sortType"
+        :column="data.column" :setting="data.setting" @on-sort-change="sortClick">
+        <template #row="{ column, data }">
           <template v-if="column.field === 'category'">
             {{ data.name }}
           </template>
@@ -417,42 +387,20 @@ const { data: readRoleToResource , refresh } = await useFetch(
           </template>
           <template v-if="column.field === 'action'">
             <div class="flex gap-2 justify-center">
-              <UButton 
-                :disabled ="readOnly"
-                :ripple="true"             
-                @click="AddPermission(data.id)"
-                icon="i-heroicons-lock-closed"
-                size="sm"
-                color="primary"
-                square
-                variant="solid"  
-
-              >
+              <UButton :disabled="readOnly" :ripple="true" @click="AddPermission(data.id)"
+                icon="i-heroicons-lock-closed" size="sm" color="primary" square variant="solid">
                 ការអនុញ្ញាត
-              </UButton >
-              <UButton 
-              :disabled ="readOnly"
-              icon="i-heroicons-pencil-square"
-              size="sm"
-              color="gray"
-              square
-              variant="solid"                
-              @click="editRecord(data.id)"
-              >
+              </UButton>
+              <UButton :disabled="readOnly" icon="i-heroicons-pencil-square" size="sm" color="gray" square
+                variant="solid" @click="editRecord(data.id)">
                 កែសម្រួល
-              </UButton >
-             
+              </UButton>
 
-              <UButton 
-              :disabled ="readOnly"
-              icon="i-heroicons-trash"
-              size="sm"
-              color="red"
-              square
-              variant="solid"  
-               @click="deleteRecord(data.id)">
+
+              <UButton :disabled="readOnly" icon="i-heroicons-trash" size="sm" color="red" square variant="solid"
+                @click="deleteRecord(data.id)">
                 លុបចេញ
-              </UButton >
+              </UButton>
             </div>
           </template>
         </template>
@@ -466,53 +414,30 @@ const { data: readRoleToResource , refresh } = await useFetch(
 
     <TwOffcanvas position="right" width="800px" ref="openisTrue">
       <template #headerTitle>
-        <span class="font-[Moul] text-primary"> កែសម្រួលតួនាទី </span></template
-      >
+        <span class="font-[Moul] text-primary"> កែសម្រួលតួនាទី </span></template>
       <div class="p-4 overflow-auto font-[battambang]">
         <div>
-          <TwForm
-            :name="formNameEdit"
+          <TwForm :name="formNameEdit"
             class="grid grid-cols-12 gap-2 bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded-lg p-2 shadow"
             :class="{
               'tw-shake': isErrorEdit,
-            }"
-            :rules="formRulesEdit"
-            @submit="submitEdit()"
-            :custom-field-name="{
+            }" :rules="formRulesEdit" @submit="submitEdit()" :custom-field-name="{
               roleName: 'ឈ្មោះតួនាទី',
               roleDescription: 'ពិពណ៌នាតួនាទី',
-            }"
-          >
+            }">
             <div class="col-span-12">
-              <TwInput
-                label="ឈ្មោះតួនាទី"
-                name="roleName"
-                v-model="formDataEdit.roleName"
-                placeholder="ប្រអប់បញ្ចូល"
-                type="text"
-              />
+              <TwInput label="ឈ្មោះតួនាទី" name="roleName" v-model="formDataEdit.roleName" placeholder="ប្រអប់បញ្ចូល"
+                type="text" />
               <CustomErrorMessage name="roleName" />
             </div>
             <div class="col-span-12">
-              <TwTextarea
-                label="ការពិពណ៌នាតួនាទី"
-                name="roleDescription"
-                v-model="formDataEdit.roleDescription"
-                placeholder="ប្រអប់បញ្ចូល"
-                type="text"
-              />
+              <TwTextarea label="ការពិពណ៌នាតួនាទី" name="roleDescription" v-model="formDataEdit.roleDescription"
+                placeholder="ប្រអប់បញ្ចូល" type="text" />
               <CustomErrorMessage name="roleDescription" />
             </div>
             <div class="col-span-12 flex justify-end gap-1">
-              <UButton
-                :ripple="true"
-                color="gray"
-                square
-                type="button"
-                size="lg"
-                class="px-4 dark:text-gray-200 dark:!border-gray-800 dark:border"
-                @click="clearEdit()"
-              >
+              <UButton :ripple="true" color="gray" square type="button" size="lg"
+                class="px-4 dark:text-gray-200 dark:!border-gray-800 dark:border" @click="clearEdit()">
                 កំណត់ឡើងវិញ
               </UButton>
               <UButton color="primary" size="lg" class="px-4" type="submit"> រក្សាទុក </UButton>
@@ -524,117 +449,84 @@ const { data: readRoleToResource , refresh } = await useFetch(
 
     <TwOffcanvas position="right" width="800px" ref="PopUPPermission">
       <template #headerTitle>
-        <span class="font-[Moul] text-primary"> ការអនុញ្ញាតរបស់ {{ globalData.data?.find((item : any)  => item.id == refClickRoleID)?.name }} </span></template
-      >
+        <span class="font-[Moul] text-primary"> ការអនុញ្ញាតរបស់ {{globalData.data?.find((item: any) => item.id ==
+          refClickRoleID)?.name }} </span></template>
       <div class="p-4 overflow-auto font-[battambang]">
         <div>
           <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-            <table
-              class="w-full text-sm text-left text-gray-500 dark:text-gray-400"
-            >
-              <thead
-                class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
-              >
+            <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+              <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                 <tr>
-                  <th
-                    scope="col"
-                    class="px-6 py-3 text-sm md:text-md lg:text-lg"
-                  >
+                  <th scope="col" class="px-6 py-3 text-sm md:text-md lg:text-lg">
                     ព័ត៌មានលម្អិតអំពីការអនុញ្ញាត
                   </th>
-                  <th
-                    scope="col"
-                    class="px-6 py-3 text-sm md:text-md lg:text-lg text-center"
-                  >
+                  <th scope="col" class="px-6 py-3 text-sm md:text-md lg:text-lg text-center">
                     អនុញ្ញាត
                   </th>
-                  <th
-                    scope="col"
-                    class="px-6 py-3 text-sm md:text-md lg:text-lg text-center"
-                  >
+                  <th scope="col" class="px-6 py-3 text-sm md:text-md lg:text-lg text-center">
                     បានត្រឹមមើល
                   </th>
-                  <th
-                    scope="col"
-                    class="px-6 py-3 text-sm md:text-md lg:text-lg text-center"
-                  >
+                  <th scope="col" class="px-6 py-3 text-sm md:text-md lg:text-lg text-center">
                     មិនអនុញ្ញាត
                   </th>
 
                 </tr>
               </thead>
               <tbody>
-                <tr
-                  v-for="(item, index) in resource"
-                  :key="item?.id"
-                  :class="
-                    index % 2 == 0
-                      ? 'bg-white border-b dark:bg-gray-900 dark:border-gray-700'
-                      : 'border-b bg-gray-50 dark:bg-gray-800 dark:border-gray-700'
-                  "
-                >
-                  <th
-                    scope="row"
-                    class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                  >
+                <tr v-for="(item, index) in resource" :key="item?.id" :class="index % 2 == 0
+                    ? 'bg-white border-b dark:bg-gray-900 dark:border-gray-700'
+                    : 'border-b bg-gray-50 dark:bg-gray-800 dark:border-gray-700'
+                  ">
+                  <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                     {{ item?.name }}
                   </th>
                   <td class="px-6 py-4 text-center">
-                    <URadio                     
-                      :name="'bordered-checkbox' + item?.id"
-                      @click="grantedResourceToRole(item?.id, true, true)"
+                    <URadio :name="'bordered-checkbox' + item?.id" @click="grantedResourceToRole(item?.id, true, true)"
                       :checked="
-                       //@ts-ignore
+                        //@ts-ignore
                         readRoleToResource?.data?.find(
-                          (e : any) =>
+                          (e: any) =>
                             e.resourceID == item?.id &&
-                            refClickRoleID == e.roleID     
-                            //@ts-ignore                        
+                            refClickRoleID == e.roleID
+                          //@ts-ignore                        
                         )?.granted && readRoleToResource?.data?.find(
-                          (e : any) =>
+                          (e: any) =>
                             e.resourceID == item?.id &&
-                            refClickRoleID == e.roleID                             
+                            refClickRoleID == e.roleID
                         )?.read
-                      "                      
-                    />
+                        " />
                   </td>
                   <td class="px-6 py-4 text-center">
-                    <URadio                                  
-                      :name="'bordered-checkbox' + item?.id"
-                      @click="grantedResourceToRole(item?.id, false,true)"
+                    <URadio :name="'bordered-checkbox' + item?.id" @click="grantedResourceToRole(item?.id, false, true)"
                       :checked="
-                      //@ts-ignore
+                        //@ts-ignore
                         !readRoleToResource?.data?.find(
-                          (e : any) =>
+                          (e: any) =>
                             e.resourceID == item?.id &&
-                            refClickRoleID == e.roleID          
-                            //@ts-ignore              
-                        )?.granted &&  readRoleToResource?.data?.find(
-                          (e : any) =>
+                            refClickRoleID == e.roleID
+                          //@ts-ignore              
+                        )?.granted && readRoleToResource?.data?.find(
+                          (e: any) =>
                             e.resourceID == item?.id &&
-                            refClickRoleID == e.roleID                        
+                            refClickRoleID == e.roleID
                         )?.read
-                      "                   
-                    />
+                        " />
                   </td>
                   <td class="text-center ">
-                    <URadio                                    
-                      :name="'bordered-checkbox' + item?.id"
-                      @click="grantedResourceToRole(item?.id, false,false)"
+                    <URadio :name="'bordered-checkbox' + item?.id" @click="grantedResourceToRole(item?.id, false, false)"
                       :checked="
-                      //@ts-ignore
-                        ! readRoleToResource?.data?.find(
-                          (e : any) =>
+                        //@ts-ignore
+                        !readRoleToResource?.data?.find(
+                          (e: any) =>
                             e.resourceID == item?.id &&
-                            refClickRoleID == e.roleID          
-                             //@ts-ignore               
-                        )?.granted &&  ! readRoleToResource?.data?.find(
-                          (e : any) =>
+                            refClickRoleID == e.roleID
+                          //@ts-ignore               
+                        )?.granted && !readRoleToResource?.data?.find(
+                          (e: any) =>
                             e.resourceID == item?.id &&
-                            refClickRoleID == e.roleID                        
+                            refClickRoleID == e.roleID
                         )?.read
-                      "                     
-                    />
+                        " />
                   </td>
                 </tr>
               </tbody>

@@ -323,8 +323,8 @@ const cityList = ref(temCity)
       <TwForm :name="formName"
         class="grid grid-cols-12 gap-2 bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded-lg p-2 shadow"
         :class="{
-      'tw-shake': isError,
-    }" :rules="formRules" @submit="submit" :custom-field-name="{
+          'tw-shake': isError,
+        }" :rules="formRules" @submit="submit" :custom-field-name="{
       roleName: 'ឈ្មោះតួនាទី',
       roleDescription: 'ពិពណ៌នាតួនាទី',
     }">
@@ -499,7 +499,8 @@ const cityList = ref(temCity)
             កំណត់ឡើងវិញ
           </UButton>
           <UButton color="primary" type="submit" size="lg" class="px-4" :disabled="readOnly"> រក្សាទុក </UButton>
-          <UButton v-if="showGoBackButton" color="blue" type="button" size="lg" class="px-4 font-[Battambang]" @click="navigateTo('/center/list')"> ត្រលប់ក្រោយ </UButton>
+          <UButton v-if="showGoBackButton" color="blue" type="button" size="lg" class="px-4 font-[Battambang]"
+            @click="navigateTo('/center/list')"> ត្រលប់ក្រោយ </UButton>
         </div>
       </TwForm>
     </div>

@@ -1,5 +1,6 @@
 export default defineNuxtRouteMiddleware(async (to, from) => {
   // const result = await useFetch('')
+
   const data = await userPermission();
   const { data: currentUser } = useAuth();
 
