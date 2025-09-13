@@ -46,7 +46,7 @@ export default defineNuxtConfig({
     firebaseClientCertUrl: "",
     public: {
       apiBase: "/api",
-      origin: process.env.NUXT_ORIGIN,
+      origin: process.env.NUXT_ORIGIN || "http://localhost:3000",
       reCaptcha_Client_Key: process.env.RECAPTCHA_CLIENT_SECRET_KEY,
     },
   },
