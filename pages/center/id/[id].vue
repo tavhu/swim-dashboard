@@ -4,7 +4,7 @@
       <template #header>
         <div class="flex items-center justify-between">
           <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
-            {{ serviceCenter.nameEN }}
+            {{ serviceCenter.nameKH }} {{ serviceCenter.nameEN }}
           </h1>
           <UAvatar :src="config.public.origin + '/' + serviceCenter.logo" :alt="serviceCenter.nameEN" size="lg" />
         </div>
@@ -17,20 +17,21 @@
             ព័ត៌មានមជ្ឈមណ្ឌលសេវាកម្ម
           </h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-gray-700 dark:text-gray-300">
-            <p><strong>ឈ្មោះភាសាខ្មែរ:</strong> {{ serviceCenter.nameKH }}</p>
             <p><strong>នាយក:</strong> {{ serviceCenter.directorName }}</p>
             <p><strong>អ៊ីមែល:</strong> {{ serviceCenter.email }}</p>
             <p><strong>ទូរស័ព្ទ:</strong> {{ serviceCenter.phoneNumber }}</p>
             <p><strong>ប្រអប់សំបុត្រ:</strong> {{ serviceCenter.PoBox }}</p>
-            <p><strong>គេហទំព័រ:</strong> <a :href="serviceCenter.website" target="_blank" class="text-primary-500 dark:text-primary-400 hover:underline">{{ serviceCenter.website }}</a></p>
+            <p><strong>គេហទំព័រ:</strong> <a :href="serviceCenter.website" target="_blank"
+                class="text-primary-500 dark:text-primary-400 hover:underline">{{ serviceCenter.website }}</a></p>
             <p><strong>ប្រភេទ:</strong> {{ serviceCenter.type }}</p>
             <p><strong>ស្ថានភាព:</strong> {{ serviceCenter.status ? 'ដំណើការ' : 'បិទដំណើការ' }}</p>
             <p><strong>កាលបរិច្ឆេទបង្កើត:</strong> {{ new Date(serviceCenter.createdAt).toLocaleDateString() }}</p>
             <p class="md:col-span-2"><strong>អាសយដ្ឋាន:</strong> {{ serviceCenter.Address }}</p>
-             <p class="md:col-span-2"><strong>ផែនទីទីតាំង:</strong> <a :href="serviceCenter.locationMap" target="_blank" class="text-primary-500 dark:text-primary-400 hover:underline">{{ serviceCenter.locationMap }}</a></p>
+            <p class="md:col-span-2"><strong>ផែនទីទីតាំង:</strong> <a :href="serviceCenter.locationMap" target="_blank"
+                class="text-primary-500 dark:text-primary-400 hover:underline">{{ serviceCenter.locationMap }}</a></p>
           </div>
         </div>
-        
+
         <!-- Location Details -->
         <div>
           <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 border-b pb-2 mb-4">
@@ -51,7 +52,7 @@
           </h2>
           <p class="text-gray-700 dark:text-gray-300">{{ serviceCenter.overview }}</p>
         </div>
-        
+
         <!-- Background -->
         <div v-if="serviceCenter.background">
           <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 border-b pb-2 mb-4">
@@ -75,7 +76,7 @@
           </h2>
           <p class="text-gray-700 dark:text-gray-300">{{ serviceCenter.vision }}</p>
         </div>
-        
+
         <!-- Goal -->
         <div v-if="serviceCenter.goal">
           <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 border-b pb-2 mb-4">
@@ -83,7 +84,7 @@
           </h2>
           <p class="text-gray-700 dark:text-gray-300">{{ serviceCenter.goal }}</p>
         </div>
-        
+
         <!-- Project Summary -->
         <div v-if="serviceCenter.ProjectSummary">
           <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 border-b pb-2 mb-4">
@@ -95,7 +96,7 @@
         <!-- Staff Table -->
         <div v-if="serviceCenter.staff && serviceCenter.staff.length > 0">
           <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 border-b pb-2 mb-4">
-            បុគ្គលិក
+            បុគ្គលិកកិច្ចសន្យា
           </h2>
           <UTable :rows="staffData" :columns="staffColumns" />
         </div>
@@ -127,44 +128,45 @@ const serviceCenter = ref(null);
 // Columns definition for UTable
 const staffColumns = [
   { key: 'fullName', label: 'ឈ្មោះ' },
-  { key: 'position', label: 'តំណែង' },
+  { key: 'fullNameEN', label: 'ឈ្មោះ (អង់គ្លេស)' },
+  { key: 'gender', label: 'ភេទ' },
   { key: 'familyEmail', label: 'អ៊ីមែល' },
-  { key: 'telephone', label: 'ទូរស័ព្ទ' }
+  { key: 'familyPhoneNumber', label: 'ទូរស័ព្ទ' }
 ];
 
 const governStaffColumns = [
   { key: 'fullNameKH', label: 'ឈ្មោះ (ខ្មែរ)' },
   { key: 'fullNameEN', label: 'ឈ្មោះ (អង់គ្លេស)' },
-  { key: 'CurrentRank', label: 'ឋានៈ' },
+  { key: 'gender', label: 'ភេទ' },
   { key: 'email', label: 'អ៊ីមែល' },
   { key: 'telephone', label: 'ទូរស័ព្ទ' }
 ];
 
-const staffData = computed(() => 
-  serviceCenter.value?.staff?.map(s => ({ ...s, fullName: `${s.firstName} ${s.lastName}` })) || []
+const staffData = computed(() =>
+  serviceCenter.value?.staff?.map(s => ({ ...s, fullName: `${s.firstName} ${s.lastName}`, fullNameEN: `${s.fullnameEN}` })) || []
 );
 
-const governStaffData = computed(() => 
+const governStaffData = computed(() =>
   serviceCenter.value?.governStaff?.map(s => ({ ...s, fullNameKH: `${s.firstNameKH} ${s.lastNameKH}`, fullNameEN: `${s.firstNameEN} ${s.lastNameEN}` })) || []
 );
 
 onMounted(async () => {
-    const id = route.params.id;
-    try {
-        const response = await fetch(`/api/center/getSingle`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ id }),
-        });
-        if (response.ok) {
-            serviceCenter.value = await response.json();
-        } else {
-            console.error('Failed to fetch service center data:', response.statusText);
-        }
-    } catch (error) {
-        console.error('An error occurred while fetching service center data:', error);
+  const id = route.params.id;
+  try {
+    const response = await fetch(`/api/center/getSingle`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id }),
+    });
+    if (response.ok) {
+      serviceCenter.value = await response.json();
+    } else {
+      console.error('Failed to fetch service center data:', response.statusText);
     }
+  } catch (error) {
+    console.error('An error occurred while fetching service center data:', error);
+  }
 });
 </script>
