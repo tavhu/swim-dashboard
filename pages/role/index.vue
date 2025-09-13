@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Query, query } from "firebase/firestore";
 import {
   useForm,
   TwInput,
@@ -11,12 +12,17 @@ import {
   TwOffcanvas,
 } from "vue3-tailwind";
 
+const { data: userDataAuth } = useAuth()
+
 // import { useResource } from '~~/store/resource'
 const readOnly = checkIfPageReadOnly()
 // const resource = useResource()
 
 const { data: res } = await useFetch("/api/role/readResource", {
-  method: "POST",
+  method: "POST", query: {
+    //@ts-ignored
+    userID: userDataAuth.value?.sub
+  }
 });
 //@ts-ignore
 const resource: any = res.value?.data;
@@ -222,10 +228,12 @@ const fetchData = async () => {
       q: data.value.search.toString(),
       sortType: data.value.sortType,
       sortBy: data.value.sortBy,
+      //@ts-ignored
+      userID: userDataAuth.value?.sub
     }),
     {
       method: 'get'
-    }
+    },
   );
 
 
@@ -331,7 +339,7 @@ const { data: readRoleToResource, refresh } = await useFetch(
     method: "POST",
     body: JSON.stringify({
       //@ts-ignored
-      userID: token.value?.sub,
+      userID: userDataAuth.value?.sub
     }),
   }
 );
@@ -450,7 +458,7 @@ const { data: readRoleToResource, refresh } = await useFetch(
     <TwOffcanvas position="right" width="800px" ref="PopUPPermission">
       <template #headerTitle>
         <span class="font-[Moul] text-primary"> ការអនុញ្ញាតរបស់ {{globalData.data?.find((item: any) => item.id ==
-          refClickRoleID)?.name }} </span></template>
+          refClickRoleID)?.name}} </span></template>
       <div class="p-4 overflow-auto font-[battambang]">
         <div>
           <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
@@ -474,8 +482,8 @@ const { data: readRoleToResource, refresh } = await useFetch(
               </thead>
               <tbody>
                 <tr v-for="(item, index) in resource" :key="item?.id" :class="index % 2 == 0
-                    ? 'bg-white border-b dark:bg-gray-900 dark:border-gray-700'
-                    : 'border-b bg-gray-50 dark:bg-gray-800 dark:border-gray-700'
+                  ? 'bg-white border-b dark:bg-gray-900 dark:border-gray-700'
+                  : 'border-b bg-gray-50 dark:bg-gray-800 dark:border-gray-700'
                   ">
                   <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                     {{ item?.name }}
@@ -513,8 +521,8 @@ const { data: readRoleToResource, refresh } = await useFetch(
                         " />
                   </td>
                   <td class="text-center ">
-                    <URadio :name="'bordered-checkbox' + item?.id" @click="grantedResourceToRole(item?.id, false, false)"
-                      :checked="
+                    <URadio :name="'bordered-checkbox' + item?.id"
+                      @click="grantedResourceToRole(item?.id, false, false)" :checked="
                         //@ts-ignore
                         !readRoleToResource?.data?.find(
                           (e: any) =>
