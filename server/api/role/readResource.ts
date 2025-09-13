@@ -3,16 +3,23 @@ import { getServerSession } from "#auth";
 export default eventHandler(async (event) => {
   const session = await getServerSession(event);
 
-   console.log(session)
-  if (!session || !session.user) {
+  if (!session) {
     setResponseStatus(event, 401);
     return { status: "unauthenticated" };
+  }
+
+  // Cast the session to access potential properties like id
+  const sessionUser = session as any;
+
+  if (!sessionUser.id) {
+    setResponseStatus(event, 401);
+    return { status: "unauthenticated", error: "User ID not found in session." };
   }
 
   try {
     // First, fetch the user from the database using the session's user ID
     const dbUser = await event.context.prisma.user.findUnique({
-      where: { id: session.user.id },
+      where: { id: sessionUser.id },
     });
 
     if (!dbUser || !dbUser.userRoleID) {
@@ -36,7 +43,6 @@ export default eventHandler(async (event) => {
     const allowedResourceIds = allowedResources.map((r) => r.resourceID);
 
     if (allowedResourceIds.length === 0) {
-      // If no resources are allowed, return an empty array
       return { data: [] };
     }
 
