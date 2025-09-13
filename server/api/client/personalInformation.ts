@@ -29,7 +29,7 @@ export default eventHandler(async (event) => {
           StreetBA: body?.StreetBA,
           villageBA: body?.villageBA,
           districtBA: body?.districtBA,
-          commuteBA: body?.communeBA,
+          communeBA: body?.communeBA,
           cityProBA: body?.cityProBA,
           FatherOrChaperoneName: body?.FatherOrChaperoneName,
           FOCDOB: body?.FOCDOB,

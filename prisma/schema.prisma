@@ -406,7 +406,7 @@ model Client_PersonalInformation {
   StreetBA                   String
   villageBA                  String
   districtBA                 String
-  commuteBA                  String
+  communeBA                  String
   cityProBA                  String
   FatherOrChaperoneName      String?
   FOCDOB                     DateTime?
@@ -498,8 +498,8 @@ model CenterPlan {
 }
 
 model Service {
-  id                   String                       @id @default(cuid())
-  nameKh               String                       @unique // ឈ្មោះសេវា
+  id                   String                     @id @default(cuid())
+  nameKh               String                     @unique // ឈ្មោះសេវា
   providingInstitution String? // ក្រសួង/ស្ថាប័ន ផ្តល់សេវា
   purpose              String? // គោលបំណង នៃការផ្តល់សេវា
   legalBasis           String? // មូលដ្ឋានគតិយុត្ត
@@ -507,9 +507,9 @@ model Service {
   serviceStandard      String? // ស្តង់ដារសេវា
   requiredDocuments    String? // តម្រូវការឯកសារ ដើម្បីទទួលបានសេវា
   feedback             String? // យោបល់
-  isActive             Boolean                      @default(true)
-  createdAt            DateTime                     @default(now())
-  updatedAt            DateTime                     @updatedAt
+  isActive             Boolean                    @default(true)
+  createdAt            DateTime                   @default(now())
+  updatedAt            DateTime                   @updatedAt
   clients              ServicesOnClients[]
   serviceCenters       ServicesOnServiceCenters[]
 

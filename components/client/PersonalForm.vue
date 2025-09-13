@@ -448,92 +448,128 @@ const ClientProgress = ref(Array({
     Details: '',
 }))
 
-if (prop.id) {
-    userProfile.value = await useFetch('/api/client/personalInformationGet', {
-        method: 'post',
-        body: JSON.stringify({
-            id: prop.id
-        })
-    })
+// if (prop.id) {
+//     userProfile.value = await useFetch('/api/client/personalInformationGet', {
+//         method: 'post',
+//         body: JSON.stringify({
+//             id: prop.id
+//         })
+//     })
 
-    formData.id = userProfile.value?.data?.id
-    formData.photo = userProfile.value?.data?.photo
-    formData.IdentifyCode = userProfile.value?.data?.IdentifyCode
-    formData.fullNameKH = userProfile.value?.data?.fullNameKH
-    formData.nickName = userProfile.value?.data?.nickName
-    formData.ReadableCode = userProfile.value?.data?.ReadableCode
-    formData.Gender = userProfile.value?.data?.Gender
-    formData.DOB = userProfile.value?.data?.DOB
-    formData.POB = userProfile.value?.data?.POB
-    formData.EducationLevel = userProfile.value?.data?.EducationLevel
-    formData.Occupation = userProfile.value?.data?.Occupation
-    formData.DateArrested = userProfile.value?.data?.DateArrested
-    formData.homeBA = userProfile.value?.data?.homeBA
-    formData.StreetBA = userProfile.value?.data?.StreetBA
-    formData.villageBA = userProfile.value?.data?.villageBA
-    formData.districtBA = userProfile.value?.data?.districtBA
-    formData.communeBA = userProfile.value?.data?.communeBA
-    formData.cityProBA = userProfile.value?.data?.cityProBA
-    formData.FatherOrChaperoneName = userProfile.value?.data?.FatherOrChaperoneName
-    formData.FOCDOB = userProfile.value?.data?.FOCDOB
-    formData.FOCTel = userProfile.value?.data?.FOCTel
-    formData.FOCMarried = userProfile.value?.data?.FOCMarried
-    formData.FOCTelandAddress = userProfile.value?.data?.FOCTelandAddress
-    formData.MotherOrChaperoneName = userProfile.value?.data?.MotherOrChaperoneName
-    formData.MOCMarried = userProfile.value?.data?.MOCMarried
-    formData.MOCDOB = userProfile.value?.data?.MOCDOB
-    formData.MOCTel = userProfile.value?.data?.MOCTel
-    formData.MOCTelandAddress = userProfile.value?.data?.MOCTelandAddress
-    formData.OtherFamilyMembers = userProfile.value?.data?.OtherFamilyMembers
-    formData.CloseFriend = userProfile.value?.data?.CloseFriend
-    formData.ClientSendBy = userProfile.value?.data?.ClientSendBy
-    formData.ImportantChallenge = userProfile.value?.data?.ImportantChallenge
-    formData.PastActivities = userProfile.value?.data?.PastActivities
-    formData.ReasonUseDrug = userProfile.value?.data?.ReasonUseDrug
-    formData.ReasonUseDrugOther = userProfile.value?.data?.ReasonUseDrugOther
-    formData.KnownLegalConsequence = userProfile.value?.data?.KnownLegalConsequence
-    formData.typeDrugUsed = userProfile.value?.data?.typeDrugUsed
-    formData.typeDrugUsedOther = userProfile.value?.data?.typeDrugUsedOther
-    formData.DrugVolumeUsed = userProfile.value?.data?.DrugVolumeUsed
-    formData.DrugRequecyUse = userProfile.value?.data?.DrugRequecyUse
-    formData.DrugDurationUse = userProfile.value?.data?.DrugDurationUse
-    formData.LivingSituation = userProfile.value?.data?.LivingSituation
-    formData.UsedtoRehab = userProfile.value?.data?.UsedtoRehab
-    formData.HowManyTimeHaveServed = userProfile.value?.data?.HowManyTimeHaveServed
-    formData.ReasonComingtoCenter = userProfile.value?.data?.ReasonComingtoCenter
-    formData.DailyActivitiesInCenter = userProfile.value?.data?.DailyActivitiesInCenter
-    formData.ActivitiesThatClientLike = userProfile.value?.data?.ActivitiesThatClientLike
-    formData.ClientTalent = userProfile.value?.data?.ClientTalent
-    formData.RelationshipWithFriends = userProfile.value?.data?.RelationshipWithFriends
-    formData.RelationshipWithStaff = userProfile.value?.data?.RelationshipWithStaff
-    formData.RelationshipWithTeacher = userProfile.value?.data?.RelationshipWithTeacher
-    formData.RelationshipWithOther = userProfile.value?.data?.RelationshipWithOther
-    formData.ConcernForClientFuture = userProfile.value?.data?.ConcernForClientFuture
-    formData.HopeForClientFuture = userProfile.value?.data?.HopeForClientFuture
-    formData.FuturePlanforClient = userProfile.value?.data?.FuturePlanforClient
-    formData.FuturePlanforClientDetails = userProfile.value?.data?.FuturePlanforClientDetails
-    ClientHopelessMultiple.value = userProfile.value?.data?.ClientHopelessMultiple
-    formData.ClientFeelsHopless = userProfile.value?.data?.ClientFeelsHopless
-    formData.ClientHoplessDetails = userProfile.value?.data?.ClientHoplessDetails
-    formData.InterviewerOpinoin = userProfile.value?.data?.InterviewerOpinoin
-    formData.InterviewerID = userProfile.value?.data?.InterviewerID
-    formData.status = userProfile.value?.data?.status
-    formData.InterViewDate = userProfile.value?.data?.InterViewDate
-    formData.InterViewerSignature = userProfile.value?.data?.InterViewerSignature
-    formData.InterviewerPosition = userProfile.value?.data?.InterviewerPosition
-    formData.serviceCenterID = userProfile.value?.data?.serviceCenterID
-    ClientServeHistory.value = userProfile.value?.data?.ClientServeHistory
-    ClientProgress.value = userProfile?.value?.data?.ClientProgress
+//     formData.id = userProfile.value?.data?.id
+//     formData.photo = userProfile.value?.data?.photo
+//     formData.IdentifyCode = userProfile.value?.data?.IdentifyCode
+//     formData.fullNameKH = userProfile.value?.data?.fullNameKH
+//     formData.nickName = userProfile.value?.data?.nickName
+//     formData.ReadableCode = userProfile.value?.data?.ReadableCode
+//     formData.Gender = userProfile.value?.data?.Gender
+//     formData.DOB = userProfile.value?.data?.DOB
+//     formData.POB = userProfile.value?.data?.POB
+//     formData.EducationLevel = userProfile.value?.data?.EducationLevel
+//     formData.Occupation = userProfile.value?.data?.Occupation
+//     formData.DateArrested = userProfile.value?.data?.DateArrested
+//     formData.homeBA = userProfile.value?.data?.homeBA
+//     formData.StreetBA = userProfile.value?.data?.StreetBA
+//     formData.villageBA = userProfile.value?.data?.villageBA
+//     formData.districtBA = userProfile.value?.data?.districtBA
+//     formData.communeBA = userProfile.value?.data?.communeBA
+//     formData.cityProBA = userProfile.value?.data?.cityProBA
+//     formData.FatherOrChaperoneName = userProfile.value?.data?.FatherOrChaperoneName
+//     formData.FOCDOB = userProfile.value?.data?.FOCDOB
+//     formData.FOCTel = userProfile.value?.data?.FOCTel
+//     formData.FOCMarried = userProfile.value?.data?.FOCMarried
+//     formData.FOCTelandAddress = userProfile.value?.data?.FOCTelandAddress
+//     formData.MotherOrChaperoneName = userProfile.value?.data?.MotherOrChaperoneName
+//     formData.MOCMarried = userProfile.value?.data?.MOCMarried
+//     formData.MOCDOB = userProfile.value?.data?.MOCDOB
+//     formData.MOCTel = userProfile.value?.data?.MOCTel
+//     formData.MOCTelandAddress = userProfile.value?.data?.MOCTelandAddress
+//     formData.OtherFamilyMembers = userProfile.value?.data?.OtherFamilyMembers
+//     formData.CloseFriend = userProfile.value?.data?.CloseFriend
+//     formData.ClientSendBy = userProfile.value?.data?.ClientSendBy
+//     formData.ImportantChallenge = userProfile.value?.data?.ImportantChallenge
+//     formData.PastActivities = userProfile.value?.data?.PastActivities
+//     formData.ReasonUseDrug = userProfile.value?.data?.ReasonUseDrug
+//     formData.ReasonUseDrugOther = userProfile.value?.data?.ReasonUseDrugOther
+//     formData.KnownLegalConsequence = userProfile.value?.data?.KnownLegalConsequence
+//     formData.typeDrugUsed = userProfile.value?.data?.typeDrugUsed
+//     formData.typeDrugUsedOther = userProfile.value?.data?.typeDrugUsedOther
+//     formData.DrugVolumeUsed = userProfile.value?.data?.DrugVolumeUsed
+//     formData.DrugRequecyUse = userProfile.value?.data?.DrugRequecyUse
+//     formData.DrugDurationUse = userProfile.value?.data?.DrugDurationUse
+//     formData.LivingSituation = userProfile.value?.data?.LivingSituation
+//     formData.UsedtoRehab = userProfile.value?.data?.UsedtoRehab
+//     formData.HowManyTimeHaveServed = userProfile.value?.data?.HowManyTimeHaveServed
+//     formData.ReasonComingtoCenter = userProfile.value?.data?.ReasonComingtoCenter
+//     formData.DailyActivitiesInCenter = userProfile.value?.data?.DailyActivitiesInCenter
+//     formData.ActivitiesThatClientLike = userProfile.value?.data?.ActivitiesThatClientLike
+//     formData.ClientTalent = userProfile.value?.data?.ClientTalent
+//     formData.RelationshipWithFriends = userProfile.value?.data?.RelationshipWithFriends
+//     formData.RelationshipWithStaff = userProfile.value?.data?.RelationshipWithStaff
+//     formData.RelationshipWithTeacher = userProfile.value?.data?.RelationshipWithTeacher
+//     formData.RelationshipWithOther = userProfile.value?.data?.RelationshipWithOther
+//     formData.ConcernForClientFuture = userProfile.value?.data?.ConcernForClientFuture
+//     formData.HopeForClientFuture = userProfile.value?.data?.HopeForClientFuture
+//     formData.FuturePlanforClient = userProfile.value?.data?.FuturePlanforClient
+//     formData.FuturePlanforClientDetails = userProfile.value?.data?.FuturePlanforClientDetails
+//     ClientHopelessMultiple.value = userProfile.value?.data?.ClientHopelessMultiple
+//     formData.ClientFeelsHopless = userProfile.value?.data?.ClientFeelsHopless
+//     formData.ClientHoplessDetails = userProfile.value?.data?.ClientHoplessDetails
+//     formData.InterviewerOpinoin = userProfile.value?.data?.InterviewerOpinoin
+//     formData.InterviewerID = userProfile.value?.data?.InterviewerID
+//     formData.status = userProfile.value?.data?.status
+//     formData.InterViewDate = userProfile.value?.data?.InterViewDate
+//     formData.InterViewerSignature = userProfile.value?.data?.InterViewerSignature
+//     formData.InterviewerPosition = userProfile.value?.data?.InterviewerPosition
+//     formData.serviceCenterID = userProfile.value?.data?.serviceCenterID
+//     ClientServeHistory.value = userProfile.value?.data?.ClientServeHistory
+//     ClientProgress.value = userProfile?.value?.data?.ClientProgress
 
-    // //@ts-ignore
-    // if(route?.query?.id === userDataAuth.value?.id){
-    //   // console.log('current User')
-    //   currentUser.value = true
-    // }
-    ClientRegister.value = true
-}
+//     // //@ts-ignore
+//     // if(route?.query?.id === userDataAuth.value?.id){
+//     //   // console.log('current User')
+//     //   currentUser.value = true
+//     // }
+//     ClientRegister.value = true
+// }
 
 // --- START: Address Dropdown Logic (Corrected for Villages) ---
+
+
+// This onMounted hook ensures that the data fetching and processing are handled correctly
+// after the component is mounted.
+onMounted(async () => {
+    isLoading.value = true;
+    if (prop.id) {
+        const { data: userProfile } = await useFetch('/api/client/personalInformationGet', {
+            method: 'post',
+            body: JSON.stringify({
+                id: prop.id
+            })
+        });
+
+        if (userProfile.value) {
+            // Assign all data to formData
+            Object.assign(formData, userProfile.value);
+
+            // Manually populate dropdown lists based on the loaded data
+            if (formData.cityProBA) {
+                districtList.value = findDistrictsByProvince(formData.cityProBA);
+            }
+            if (formData.cityProBA && formData.districtBA) {
+                communeList.value = findCommunesByDistrict(formData.cityProBA, formData.districtBA);
+            }
+            if (formData.cityProBA && formData.districtBA && formData.communeBA) {
+                villageList.value = findVillagesByCommune(formData.cityProBA, formData.districtBA, formData.communeBA);
+            }
+        }
+        ClientRegister.value = true;
+    }
+    // All data is loaded and lists are populated, release the guard.
+    isLoading.value = false;
+});
+
+const isLoading = ref(true); // Guard to prevent watchers firing on initial load
 
 const provinceList = computed(() => {
     return addressData.map(province => ({
@@ -567,6 +603,8 @@ const findVillagesByCommune = (provinceName: string, districtName: string, commu
     // The correct property for the village list is 'd' and for the name is 'vn'
     return commune?.villages.values?.map(village => ({ label: village.name.km, value: village.code })) || [];
 };
+
+
 
 // Watch for changes in the Province dropdown (cityProBA)
 watch(() => formData.cityProBA, (newProvince) => {
@@ -629,10 +667,10 @@ watch(() => formData.districtBA, (newCommune) => {
                     <TwFeather type="file-text" />
                     <h1 class="text-lg"> ព័ត៌មានលំអិត </h1>
                 </div>
-                <!-- <div class="col-span-12">
+                <div class="col-span-12">
                     {{
-                        userProfile }}
-                </div> -->
+                        formData }}
+                </div>
                 <div class="col-span-12 lg:col-span-6">
                     <TwInput label="លេខសំគាល់" name="ReadableCode" v-model="formData.ReadableCode"
                         placeholder="លេខសំគាល់" type="text" />
