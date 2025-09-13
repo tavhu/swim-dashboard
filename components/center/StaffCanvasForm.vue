@@ -958,8 +958,8 @@ watch(SelectedCityValue, () => {
             <TwForm :name="formNameEditOfficial"
               class="grid grid-cols-12 gap-2 bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded-lg p-2 shadow"
               :class="{
-          'tw-shake': isErrorEditOfficial,
-        }" :rules="formRulesEditOfficial" @submit="submitEditOfficial()" :custom-field-name="{
+                'tw-shake': isErrorEditOfficial,
+              }" :rules="formRulesEditOfficial" @submit="submitEditOfficial()" :custom-field-name="{
           roleName: 'ឈ្មោះតួនាទី',
           roleDescription: 'ពិពណ៌នាតួនាទី',
         }">
@@ -1012,14 +1012,14 @@ watch(SelectedCityValue, () => {
               <div class="col-span-12 lg:col-span-6">
                 <label for=""> ថ្ងៃខែឆ្នាំកំណើត </label>
                 <Datepicker v-model="formDataEditOfficial.DateofBirth" :dayNames="[
-          'Mo',
-          'Tu',
-          'We',
-          'Th',
-          'Fr',
-          'Sa',
-          'Su',
-        ]" position="left" required :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
+                  'Mo',
+                  'Tu',
+                  'We',
+                  'Th',
+                  'Fr',
+                  'Sa',
+                  'Su',
+                ]" position="left" required :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
 
                 <CustomErrorMessage name="DateofBirth" />
               </div>
@@ -1104,14 +1104,14 @@ watch(SelectedCityValue, () => {
               /> -->
                 <label for="">សុពលភាព</label>
                 <Datepicker v-model="formDataEditOfficial.sIDValidStart" :dayNames="[
-          'Mo',
-          'Tu',
-          'We',
-          'Th',
-          'Fr',
-          'Sa',
-          'Su',
-        ]" position="left" required :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
+                  'Mo',
+                  'Tu',
+                  'We',
+                  'Th',
+                  'Fr',
+                  'Sa',
+                  'Su',
+                ]" position="left" required :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
                 <CustomErrorMessage name="sIDValidStart" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
@@ -1124,14 +1124,14 @@ watch(SelectedCityValue, () => {
               /> -->
                 <label for="">ដល់ថ្ងៃ</label>
                 <Datepicker v-model="formDataEditOfficial.sIDValidEnd" :dayNames="[
-          'Mo',
-          'Tu',
-          'We',
-          'Th',
-          'Fr',
-          'Sa',
-          'Su',
-        ]" position="left" required :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
+                  'Mo',
+                  'Tu',
+                  'We',
+                  'Th',
+                  'Fr',
+                  'Sa',
+                  'Su',
+                ]" position="left" required :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
                 <CustomErrorMessage name="sIDValidEnd" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
@@ -1169,14 +1169,14 @@ watch(SelectedCityValue, () => {
               /> -->
                 <label for="">ថ្ងៃខែឆ្នាំកំណើត</label>
                 <Datepicker v-model="formDataEditOfficial.spouseDateOfBirth" :dayNames="[
-          'Mo',
-          'Tu',
-          'We',
-          'Th',
-          'Fr',
-          'Sa',
-          'Su',
-        ]" position="left" :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
+                  'Mo',
+                  'Tu',
+                  'We',
+                  'Th',
+                  'Fr',
+                  'Sa',
+                  'Su',
+                ]" position="left" :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
                 <CustomErrorMessage name="spouseDateOfBirth" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
@@ -1221,14 +1221,14 @@ watch(SelectedCityValue, () => {
                 <div>
                   <label for=""> ថ្ងៃខែឆ្នាំកំណើត </label>
                   <Datepicker v-model="child.dateofBirth" :dayNames="[
-          'Mo',
-          'Tu',
-          'We',
-          'Th',
-          'Fr',
-          'Sa',
-          'Su',
-        ]" position="left" required :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
+                    'Mo',
+                    'Tu',
+                    'We',
+                    'Th',
+                    'Fr',
+                    'Sa',
+                    'Su',
+                  ]" position="left" required :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
                 </div>
                 <div>
                   <TwInput label="មុខរបរ" required v-model="child.occupation" placeholder="មុខរបរ" type="text" />
@@ -1236,11 +1236,11 @@ watch(SelectedCityValue, () => {
               </div>
               <div class="col-span-12">
                 <UButton color="primary" icon="i-heroicons-users" size="lg" class="px-4" @click="childrenDetails.push({
-          fullnameKH: '',
-          gender: '',
-          dateofBirth: '',
-          occupation: '',
-        })"> បន្ថែមព័ត៌មានកូន </UButton>
+                  fullnameKH: '',
+                  gender: '',
+                  dateofBirth: '',
+                  occupation: '',
+                })"> បន្ថែមព័ត៌មានកូន </UButton>
                 <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4"
                   @click="childrenDetails.pop()">
                   លុបព័ត៌មានកូន </UButton>
@@ -1351,40 +1351,40 @@ watch(SelectedCityValue, () => {
                 <div>
                   <label for="">ថ្ងៃខែឆ្នាំចូលសិក្សា</label>
                   <Datepicker v-model="item.StartDate" :dayNames="[
-          'Mo',
-          'Tu',
-          'We',
-          'Th',
-          'Fr',
-          'Sa',
-          'Su',
-        ]" position="left" required :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
+                    'Mo',
+                    'Tu',
+                    'We',
+                    'Th',
+                    'Fr',
+                    'Sa',
+                    'Su',
+                  ]" position="left" required :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
                   <CustomErrorMessage name="DateStartOfficialWork" />
                 </div>
                 <div>
                   <label for="">ថ្ងៃខែឆ្នាំបញ្ចប់សិក្សា</label>
                   <Datepicker v-model="item.finishDate" :dayNames="[
-          'Mo',
-          'Tu',
-          'We',
-          'Th',
-          'Fr',
-          'Sa',
-          'Su',
-        ]" position="left" required :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
+                    'Mo',
+                    'Tu',
+                    'We',
+                    'Th',
+                    'Fr',
+                    'Sa',
+                    'Su',
+                  ]" position="left" required :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
                   <CustomErrorMessage name="DateStartOfficialWork" />
                 </div>
               </div>
               <div class="col-span-12">
                 <UButton color="primary" icon="i-heroicons-users" size="lg" class="px-4" @click="EducationDetails.push({
-          couseLevel: '',
-          SchoolName: '',
-          SchoolLocation: '',
-          CertificateLevel: '',
-          majoring: '',
-          StartDate: '',
-          finishDate: '',
-        })"> បន្ថែមព័ត៌មាន </UButton>
+                  couseLevel: '',
+                  SchoolName: '',
+                  SchoolLocation: '',
+                  CertificateLevel: '',
+                  majoring: '',
+                  StartDate: '',
+                  finishDate: '',
+                })"> បន្ថែមព័ត៌មាន </UButton>
                 <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4"
                   @click="EducationDetails.pop()">
                   លុបព័ត៌មានកូន </UButton>
@@ -1416,11 +1416,11 @@ watch(SelectedCityValue, () => {
               </div>
               <div class="col-span-12">
                 <UButton color="primary" icon="i-heroicons-users" size="lg" class="px-4" @click="governStaffLanuage.push({
-          langName: '',
-          read: '',
-          conversation: '',
-          writing: '',
-        })"> បន្ថែមព័ត៌មាន </UButton>
+                  langName: '',
+                  read: '',
+                  conversation: '',
+                  writing: '',
+                })"> បន្ថែមព័ត៌មាន </UButton>
                 <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4"
                   @click="governStaffLanuage.pop()">
                   លុបព័ត៌មានកូន </UButton>
@@ -1431,27 +1431,27 @@ watch(SelectedCityValue, () => {
               <div class="col-span-12 lg:col-span-6 ">
                 <label for="">ថ្ងៃខែឆ្នាំចូលបម្រើក្របខ័ណ្ឌរដ្ឋ</label>
                 <Datepicker v-model="formDataEditOfficial.DateStartOfficialWork" :dayNames="[
-          'Mo',
-          'Tu',
-          'We',
-          'Th',
-          'Fr',
-          'Sa',
-          'Su',
-        ]" position="left" required :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
+                  'Mo',
+                  'Tu',
+                  'We',
+                  'Th',
+                  'Fr',
+                  'Sa',
+                  'Su',
+                ]" position="left" required :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
                 <CustomErrorMessage name="DateStartOfficialWork" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
                 <label for="">ថ្ងៃខែឆ្នាំតាំងស៊ុបក្នុងក្របខ័ណ្ឌរដ្ឋ</label>
                 <Datepicker v-model="formDataEditOfficial.DateWentFullTime" :dayNames="[
-          'Mo',
-          'Tu',
-          'We',
-          'Th',
-          'Fr',
-          'Sa',
-          'Su',
-        ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
+                  'Mo',
+                  'Tu',
+                  'We',
+                  'Th',
+                  'Fr',
+                  'Sa',
+                  'Su',
+                ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
                 <CustomErrorMessage name="DateWentFullTime" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
@@ -1475,27 +1475,27 @@ watch(SelectedCityValue, () => {
                 <div>
                   <label for="">ថ្ងៃខែឆ្នាំចូលបម្រើការងារ</label>
                   <Datepicker v-model="item.DateStartWorking" :dayNames="[
-          'Mo',
-          'Tu',
-          'We',
-          'Th',
-          'Fr',
-          'Sa',
-          'Su',
-        ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
+                    'Mo',
+                    'Tu',
+                    'We',
+                    'Th',
+                    'Fr',
+                    'Sa',
+                    'Su',
+                  ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
                   <CustomErrorMessage name="DateWentFullTime" />
                 </div>
                 <div>
                   <label for="">ថ្ងៃខែបញ្ចប់ការងារ</label>
                   <Datepicker v-model="item.DateStopWorking" :dayNames="[
-          'Mo',
-          'Tu',
-          'We',
-          'Th',
-          'Fr',
-          'Sa',
-          'Su',
-        ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
+                    'Mo',
+                    'Tu',
+                    'We',
+                    'Th',
+                    'Fr',
+                    'Sa',
+                    'Su',
+                  ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
                 </div>
                 <div>
                   <TwInput label="ក្រសួង-ស្ថាប័ន" v-model="item.OgnisationName" placeholder="" type="text" />
@@ -1513,13 +1513,13 @@ watch(SelectedCityValue, () => {
               </div>
               <div class="col-span-12">
                 <UButton color="primary" icon="i-heroicons-users" size="lg" class="px-4" @click="governStaffWorkingHistoryPublic.push({
-          DateStartWorking: '',
-          DateStopWorking: '',
-          OgnisationName: '',
-          Department: '',
-          position: '',
-          SkillInPosition: '',
-        })"> បន្ថែមព័ត៌មាន </UButton>
+                  DateStartWorking: '',
+                  DateStopWorking: '',
+                  OgnisationName: '',
+                  Department: '',
+                  position: '',
+                  SkillInPosition: '',
+                })"> បន្ថែមព័ត៌មាន </UButton>
                 <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4"
                   @click="governStaffWorkingHistoryPublic.pop()"> លុបព័ត៌មាន </UButton>
               </div>
@@ -1531,27 +1531,27 @@ watch(SelectedCityValue, () => {
                 <div>
                   <label for="">ថ្ងៃខែឆ្នាំចូលបម្រើការងារ</label>
                   <Datepicker v-model="item.DateStartWorking" :dayNames="[
-          'Mo',
-          'Tu',
-          'We',
-          'Th',
-          'Fr',
-          'Sa',
-          'Su',
-        ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
+                    'Mo',
+                    'Tu',
+                    'We',
+                    'Th',
+                    'Fr',
+                    'Sa',
+                    'Su',
+                  ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
                   <CustomErrorMessage name="DateWentFullTime" />
                 </div>
                 <div>
                   <label for="">ថ្ងៃខែបញ្ចប់ការងារ</label>
                   <Datepicker v-model="item.DateStopWorking" :dayNames="[
-          'Mo',
-          'Tu',
-          'We',
-          'Th',
-          'Fr',
-          'Sa',
-          'Su',
-        ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
+                    'Mo',
+                    'Tu',
+                    'We',
+                    'Th',
+                    'Fr',
+                    'Sa',
+                    'Su',
+                  ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
                 </div>
                 <div>
                   <TwInput label="គ្រឹះស្ថាន-អង្គភាព" v-model="item.OgnisationName" placeholder="" type="text" />
@@ -1565,12 +1565,12 @@ watch(SelectedCityValue, () => {
               </div>
               <div class="col-span-12">
                 <UButton color="primary" icon="i-heroicons-users" size="lg" class="px-4" @click="governStaffWorkingHistoryPrivate.push({
-          DateStartWorking: '',
-          DateStopWorking: '',
-          OgnisationName: '',
-          position: '',
-          SkillInPosition: '',
-        })"> បន្ថែមព័ត៌មាន </UButton>
+                  DateStartWorking: '',
+                  DateStopWorking: '',
+                  OgnisationName: '',
+                  position: '',
+                  SkillInPosition: '',
+                })"> បន្ថែមព័ត៌មាន </UButton>
                 <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4"
                   @click="governStaffWorkingHistoryPrivate.pop()"> លុបព័ត៌មានកូន </UButton>
               </div>
@@ -1584,14 +1584,14 @@ watch(SelectedCityValue, () => {
                 <div>
                   <label for="">ថ្ងៃខែបញ្ចប់ការងារ</label>
                   <Datepicker v-model="item.ValidDate" :dayNames="[
-          'Mo',
-          'Tu',
-          'We',
-          'Th',
-          'Fr',
-          'Sa',
-          'Su',
-        ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
+                    'Mo',
+                    'Tu',
+                    'We',
+                    'Th',
+                    'Fr',
+                    'Sa',
+                    'Su',
+                  ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
                 </div>
                 <div>
                   <TwInput label="ក្រសួង-ស្ថាប័ន" v-model="item.MinistryName" placeholder="" type="text" />
@@ -1616,14 +1616,14 @@ watch(SelectedCityValue, () => {
               </div>
               <div class="col-span-12">
                 <UButton color="primary" icon="i-heroicons-users" size="lg" class="px-4" @click="governStaffPositionHistory.push({
-          ValidDate: '',
-          MinistryName: '',
-          Department: '',
-          OfficialSection: '',
-          oldOfficialLevel: '',
-          newOffcialLevel: '',
-          changeTo: '',
-        })"> បន្ថែមព័ត៌មាន </UButton>
+                  ValidDate: '',
+                  MinistryName: '',
+                  Department: '',
+                  OfficialSection: '',
+                  oldOfficialLevel: '',
+                  newOffcialLevel: '',
+                  changeTo: '',
+                })"> បន្ថែមព័ត៌មាន </UButton>
                 <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4"
                   @click="governStaffPositionHistory.pop()"> លុបព័ត៌មានកូន </UButton>
               </div>
@@ -1636,14 +1636,14 @@ watch(SelectedCityValue, () => {
                 <div>
                   <label for="">ថ្ងៃខែបញ្ចប់ការងារ</label>
                   <Datepicker v-model="item.validatDate" :dayNames="[
-          'Mo',
-          'Tu',
-          'We',
-          'Th',
-          'Fr',
-          'Sa',
-          'Su',
-        ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
+                    'Mo',
+                    'Tu',
+                    'We',
+                    'Th',
+                    'Fr',
+                    'Sa',
+                    'Su',
+                  ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
                 </div>
                 <div>
                   <TwInput label="គ្រឹះស្ថានបណ្តុះបណ្តាល" v-model="item.SchoolName" placeholder="" type="text" />
@@ -1665,13 +1665,13 @@ watch(SelectedCityValue, () => {
               </div>
               <div class="col-span-12">
                 <UButton color="primary" icon="i-heroicons-users" size="lg" class="px-4" @click="governStaffCertificateLevelup.push({
-          validatDate: '',
-          SchoolName: '',
-          PlaceStudy: '',
-          ReceivedCertificate: '',
-          OldPosition: '',
-          NewPosition: '',
-        })"> បន្ថែមព័ត៌មាន </UButton>
+                  validatDate: '',
+                  SchoolName: '',
+                  PlaceStudy: '',
+                  ReceivedCertificate: '',
+                  OldPosition: '',
+                  NewPosition: '',
+                })"> បន្ថែមព័ត៌មាន </UButton>
                 <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4"
                   @click="governStaffCertificateLevelup.pop()"> លុបព័ត៌មានកូន </UButton>
               </div>
@@ -1684,26 +1684,26 @@ watch(SelectedCityValue, () => {
                 <div>
                   <label for="">ថ្ងៃខែឆ្នាំចាប់ផ្តើម</label>
                   <Datepicker v-model="item.startDate" :dayNames="[
-          'Mo',
-          'Tu',
-          'We',
-          'Th',
-          'Fr',
-          'Sa',
-          'Su',
-        ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
+                    'Mo',
+                    'Tu',
+                    'We',
+                    'Th',
+                    'Fr',
+                    'Sa',
+                    'Su',
+                  ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
                 </div>
                 <div>
                   <label for="">ថ្ងៃខែឆ្នាំបញ្ចប់</label>
                   <Datepicker v-model="item.endDate" :dayNames="[
-          'Mo',
-          'Tu',
-          'We',
-          'Th',
-          'Fr',
-          'Sa',
-          'Su',
-        ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
+                    'Mo',
+                    'Tu',
+                    'We',
+                    'Th',
+                    'Fr',
+                    'Sa',
+                    'Su',
+                  ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
                 </div>
                 <div>
                   <TwInput label="ក្រសួង/ស្ថាប័ន" v-model="item.OginasationName" placeholder="" type="text" />
@@ -1714,11 +1714,11 @@ watch(SelectedCityValue, () => {
               </div>
               <div class="col-span-12">
                 <UButton color="primary" icon="i-heroicons-users" size="lg" class="px-4" @click="governStaffSituationOutsideOriginalOfficial.push({
-          startDate: '',
-          endDate: '',
-          OginasationName: '',
-          Position: '',
-        })"> បន្ថែមព័ត៌មាន </UButton>
+                  startDate: '',
+                  endDate: '',
+                  OginasationName: '',
+                  Position: '',
+                })"> បន្ថែមព័ត៌មាន </UButton>
                 <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4"
                   @click="governStaffSituationOutsideOriginalOfficial.pop()"> លុបព័ត៌មានកូន </UButton>
               </div>
@@ -1731,26 +1731,26 @@ watch(SelectedCityValue, () => {
                 <div>
                   <label for="">ថ្ងៃខែឆ្នាំចាប់ផ្តើម</label>
                   <Datepicker v-model="item.startDate" :dayNames="[
-          'Mo',
-          'Tu',
-          'We',
-          'Th',
-          'Fr',
-          'Sa',
-          'Su',
-        ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
+                    'Mo',
+                    'Tu',
+                    'We',
+                    'Th',
+                    'Fr',
+                    'Sa',
+                    'Su',
+                  ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
                 </div>
                 <div>
                   <label for="">ថ្ងៃខែឆ្នាំបញ្ចប់</label>
                   <Datepicker v-model="item.endDate" :dayNames="[
-          'Mo',
-          'Tu',
-          'We',
-          'Th',
-          'Fr',
-          'Sa',
-          'Su',
-        ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
+                    'Mo',
+                    'Tu',
+                    'We',
+                    'Th',
+                    'Fr',
+                    'Sa',
+                    'Su',
+                  ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
                 </div>
                 <div>
                   <TwInput label="ក្រសួង/ស្ថាប័ន" v-model="item.Oginisationname" placeholder="" type="text" />
@@ -1761,11 +1761,11 @@ watch(SelectedCityValue, () => {
               </div>
               <div class="col-span-12">
                 <UButton color="primary" icon="i-heroicons-users" size="lg" class="px-4" @click="GovernStaffFreeNoSalary.push({
-          startDate: '',
-          endDate: '',
-          Oginisationname: '',
-          NumberofMonthandYear: '',
-        })"> បន្ថែមព័ត៌មាន </UButton>
+                  startDate: '',
+                  endDate: '',
+                  Oginisationname: '',
+                  NumberofMonthandYear: '',
+                })"> បន្ថែមព័ត៌មាន </UButton>
                 <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4"
                   @click="GovernStaffFreeNoSalary.pop()"> លុបព័ត៌មានកូន </UButton>
               </div>
@@ -1783,14 +1783,14 @@ watch(SelectedCityValue, () => {
                 <div>
                   <label for="">កាលបរិច្ចេទ</label>
                   <Datepicker v-model="item.OfficialDate" :dayNames="[
-          'Mo',
-          'Tu',
-          'We',
-          'Th',
-          'Fr',
-          'Sa',
-          'Su',
-        ]" position="left" :maxDate="new Date()" required :enableTimePicker="false">
+                    'Mo',
+                    'Tu',
+                    'We',
+                    'Th',
+                    'Fr',
+                    'Sa',
+                    'Su',
+                  ]" position="left" :maxDate="new Date()" required :enableTimePicker="false">
                   </Datepicker>
                 </div>
                 <div>
@@ -1806,12 +1806,12 @@ watch(SelectedCityValue, () => {
               </div>
               <div class="col-span-12">
                 <UButton color="primary" icon="i-heroicons-users" size="lg" class="px-4" @click="GovernStaffLetterAppreciation.push({
-          letterNumber: '',
-          OfficialDate: '',
-          RequestedOrginsation: '',
-          LetterDetails: '',
-          TypeReceived: '',
-        })"> បន្ថែមព័ត៌មាន </UButton>
+                  letterNumber: '',
+                  OfficialDate: '',
+                  RequestedOrginsation: '',
+                  LetterDetails: '',
+                  TypeReceived: '',
+                })"> បន្ថែមព័ត៌មាន </UButton>
                 <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4"
                   @click="GovernStaffLetterAppreciation.pop()"> លុបព័ត៌មានកូន </UButton>
               </div>
@@ -1826,14 +1826,14 @@ watch(SelectedCityValue, () => {
                 <div>
                   <label for="">កាលបរិច្ចេទ</label>
                   <Datepicker v-model="item.OffialDate" :dayNames="[
-          'Mo',
-          'Tu',
-          'We',
-          'Th',
-          'Fr',
-          'Sa',
-          'Su',
-        ]" position="left" :maxDate="new Date()" required :enableTimePicker="false">
+                    'Mo',
+                    'Tu',
+                    'We',
+                    'Th',
+                    'Fr',
+                    'Sa',
+                    'Su',
+                  ]" position="left" :maxDate="new Date()" required :enableTimePicker="false">
                   </Datepicker>
                 </div>
                 <div>
@@ -1849,12 +1849,12 @@ watch(SelectedCityValue, () => {
               </div>
               <div class="col-span-12">
                 <UButton color="primary" icon="i-heroicons-users" size="lg" class="px-4" @click="governStaffFineHistory.push({
-          letterNumber: '',
-          OffialDate: '',
-          RequestedOrginsation: '',
-          LetterDetails: '',
-          TypeRecieved: '',
-        })"> បន្ថែមព័ត៌មាន </UButton>
+                  letterNumber: '',
+                  OffialDate: '',
+                  RequestedOrginsation: '',
+                  LetterDetails: '',
+                  TypeRecieved: '',
+                })"> បន្ថែមព័ត៌មាន </UButton>
                 <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4"
                   @click="governStaffFineHistory.pop()"> លុបព័ត៌មានកូន </UButton>
               </div>
@@ -1882,8 +1882,8 @@ watch(SelectedCityValue, () => {
           <TwForm :name="formNameEdit"
             class="grid grid-cols-12 gap-2 bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded-lg p-2 shadow"
             :class="{
-          'tw-shake': isErrorEdit,
-        }" :rules="formRulesEdit" @submit="submitEdit()" :custom-field-name="{
+              'tw-shake': isErrorEdit,
+            }" :rules="formRulesEdit" @submit="submitEdit()" :custom-field-name="{
           roleName: 'ឈ្មោះតួនាទី',
           roleDescription: 'ពិពណ៌នាតួនាទី',
         }">
@@ -1935,14 +1935,14 @@ watch(SelectedCityValue, () => {
             <div class="col-span-12 lg:col-span-6">
               <label for="">ខែឆ្នាំកំណើត</label>
               <Datepicker v-model="formDataEdit.dateofbirth" :dayNames="[
-          'Mo',
-          'Tu',
-          'We',
-          'Th',
-          'Fr',
-          'Sa',
-          'Su',
-        ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
+                'Mo',
+                'Tu',
+                'We',
+                'Th',
+                'Fr',
+                'Sa',
+                'Su',
+              ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
             </div>
             <div class="col-span-12 lg:col-span-6">
               <TwInput label="កម្រិតវប្បធម៌" name="lastName" v-model="formDataEdit.currentQualification"
@@ -1952,14 +1952,14 @@ watch(SelectedCityValue, () => {
             <div class="col-span-12 lg:col-span-6">
               <label for="">ខែឆ្នាំកំណើត</label>
               <Datepicker v-model="formDataEdit.workingPeroidStart" :dayNames="[
-          'Mo',
-          'Tu',
-          'We',
-          'Th',
-          'Fr',
-          'Sa',
-          'Su',
-        ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
+                'Mo',
+                'Tu',
+                'We',
+                'Th',
+                'Fr',
+                'Sa',
+                'Su',
+              ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
             </div>
             <div class="col-span-12 ">
               <TwInput label="ទីកន្លែងកំណើត" name="lastName" v-model="formDataEdit.birthAddress"
@@ -2011,7 +2011,7 @@ watch(SelectedCityValue, () => {
                 placeholder="លេខទូរស័ព្ទ" type="text" />
             </div>
             <div class="col-span-12 lg:col-span-6">
-              <TwInput label="អ៊ីម៉ែល" name="lastName" v-model="formDataEdit.familyAddress" placeholder="អ៊ីម៉ែល"
+              <TwInput label="អ៊ីម៉ែល" name="lastName" v-model="formDataEdit.familyEmail" placeholder="អ៊ីម៉ែល"
                 type="text" />
             </div>
 
