@@ -42,13 +42,14 @@ const columns = [
 ];
 
 // --- Data Fetching --- //
-const { data: result, pending, error, refresh } = await useFetch<any>(
+const { data: result, status, error, refresh } = await useFetch<any>(
   '/api/center/plan/get',
   {
     method: 'POST',
     default: () => ({ plans: [] })
   }
 );
+const pending = computed(() => status.value === 'pending');
 
 const allPlans = computed(() => result.value?.plans || []);
 
