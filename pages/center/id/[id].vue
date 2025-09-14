@@ -100,7 +100,14 @@
           </h2>
           <UTable :rows="centerPlanData" :columns="centerPlanColumns">
             <template #filePath-data="{ row }">
-              <a :href="config.public.origin + '/' + row.filePath" target="_blank">ទាញយក</a>
+              <div v-if="row.filePath && row.filePath.length > 0">
+                <div v-for="(path, index) in row.filePath.split(',').filter(p => p.trim())" :key="index">
+                  <a :href="config.public.origin + '/' + path.trim()" target="_blank" class="text-blue-500 hover:underline">
+                    {{ path.trim().split('/').pop() || 'ទាញយក' }}
+                  </a>
+                </div>
+              </div>
+              <span v-else>No file</span>
             </template>
           </UTable>
         </div>
