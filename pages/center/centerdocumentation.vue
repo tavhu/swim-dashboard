@@ -45,7 +45,6 @@ const columns = [
 const { data: result, pending, error, refresh } = await useFetch<any>(
   '/api/center/plan/get',
   {
-    method: 'POST',
     default: () => ({ plans: [] })
   }
 );
