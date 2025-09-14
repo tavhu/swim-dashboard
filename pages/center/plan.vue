@@ -186,6 +186,7 @@ const handleImageUpload = async () => {
       method: "POST",
       body: fd,
     });
+
     return data.value;
   } catch (err) {
     console.error('File upload failed:', err);
@@ -256,7 +257,7 @@ function removeExistingFile(index: number) {
         <ul class="list-disc list-inside space-y-1">
           <li v-for="(file, index) in existingFiles" :key="index" class="flex items-center justify-between">
             <a :href="file" target="_blank" class="text-blue-500 hover:underline truncate">{{ file.split('/').pop()
-              }}</a>
+            }}</a>
             <UButton v-if="canSave" icon="i-heroicons-x-mark-20-solid" color="red" variant="ghost" size="xs"
               @click="removeExistingFile(index)" />
           </li>
@@ -267,7 +268,7 @@ function removeExistingFile(index: number) {
       <div class="col-span-12 flex justify-end gap-2 mt-4">
         <UButton color="gray" type="button" @click="goBack()">ត្រឡប់ក្រោយ</UButton>
         <UButton v-if="canSave" color="gray" type="button" @click="clearForm()">{{ isEditMode ? 'បោះបង់' : 'កំណត់ឡើងវិញ'
-          }}</UButton>
+        }}</UButton>
         <UButton v-if="canSave" color="primary" type="submit">{{ isEditMode ? 'រក្សាទុកការផ្លាស់ប្តូរ' : 'រក្សាទុក' }}
         </UButton>
       </div>
