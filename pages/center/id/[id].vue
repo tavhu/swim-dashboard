@@ -93,6 +93,18 @@
           <p class="text-gray-700 dark:text-gray-300">{{ serviceCenter.ProjectSummary }}</p>
         </div>
 
+        <!-- Center Plan Table -->
+        <div v-if="serviceCenter.CenterPlan && serviceCenter.CenterPlan.length > 0">
+          <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 border-b pb-2 mb-4">
+            ផែនការមជ្ឈមណ្ឌល
+          </h2>
+          <UTable :rows="centerPlanData" :columns="centerPlanColumns">
+            <template #filePath-data="{ row }">
+              <a :href="config.public.origin + '/' + row.filePath" target="_blank">ទាញយក</a>
+            </template>
+          </UTable>
+        </div>
+
         <!-- Staff Table -->
         <div v-if="serviceCenter.staff && serviceCenter.staff.length > 0">
           <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 border-b pb-2 mb-4">
@@ -154,6 +166,14 @@ const governStaffColumns = [
   { key: 'telephone', label: 'ទូរស័ព្ទ' }
 ];
 
+const centerPlanColumns = [
+    { key: 'number', label: 'ល.រ' },
+    { key: 'actvityPlan', label: 'ផែនការសកម្មភាព' },
+    { key: 'note', label: 'កំណត់ចំណាំ' },
+    { key: 'yearPlan', label: 'ផែនការឆ្នាំ' },
+    { key: 'filePath', label: 'ឯកសារ' },
+];
+
 const staffData = computed(() =>
   serviceCenter.value?.staff?.map((s, index) => ({
     ...s,
@@ -171,6 +191,13 @@ const governStaffData = computed(() =>
     photo: config.public.origin + '/' + s.photo,
     fullNameKH: `${s.firstNameKH} ${s.lastNameKH}`,
     fullNameEN: `${s.firstNameEN} ${s.lastNameEN}`
+  })) || []
+);
+
+const centerPlanData = computed(() =>
+  serviceCenter.value?.CenterPlan?.map((p, index) => ({
+    ...p,
+    number: index + 1,
   })) || []
 );
 
