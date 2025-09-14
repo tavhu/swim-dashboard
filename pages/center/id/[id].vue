@@ -94,7 +94,7 @@
         </div>
 
         <!-- Center Plan Table -->
-        <div v-if="serviceCenter.CenterPlan && serviceCenter.CenterPlan.length > 0">
+        <div v-if="serviceCenter.CenterPlan && serviceCenter.CenterPlan.length > 0" class="p-4 rounded-lg bg-gray-50 dark:bg-gray-800/50">
           <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 border-b pb-2 mb-4">
             ផែនការមជ្ឈមណ្ឌល
           </h2>
@@ -113,7 +113,7 @@
         </div>
 
         <!-- Staff Table -->
-        <div v-if="serviceCenter.staff && serviceCenter.staff.length > 0">
+        <div v-if="serviceCenter.staff && serviceCenter.staff.length > 0" class="p-4 rounded-lg bg-gray-50 dark:bg-gray-800/50">
           <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 border-b pb-2 mb-4">
             បុគ្គលិកកិច្ចសន្យា
           </h2>
@@ -125,7 +125,7 @@
         </div>
 
         <!-- Government Staff Table -->
-        <div v-if="serviceCenter.governStaff && serviceCenter.governStaff.length > 0">
+        <div v-if="serviceCenter.governStaff && serviceCenter.governStaff.length > 0" class="p-4 rounded-lg bg-gray-50 dark:bg-gray-800/50">
           <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 border-b pb-2 mb-4">
             បុគ្គលិករដ្ឋ
           </h2>
