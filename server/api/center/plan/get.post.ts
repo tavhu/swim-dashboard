@@ -1,4 +1,5 @@
 import { getServerSession } from "#auth";
+import { URL } from "url";
 
 export default eventHandler(async (event) => {
   console.log("--- [API] Start /api/center/plan/get ---");
@@ -10,17 +11,6 @@ export default eventHandler(async (event) => {
     console.log("--- [API] End /api/center/plan/get ---");
     return { status: "unauthenticated" };
   }
-
-  const body = await readBody(event);
-  const resourceName = body.resource;
-
-  if (!resourceName) {
-    console.error("[API Error] Request is missing the 'resource' in the body.");
-    setResponseStatus(event, 400);
-    console.log("--- [API] End /api/center/plan/get ---");
-    return { error: "Request is missing the 'resource' in the body." };
-  }
-
 
   const sessionUser = session as any;
   console.log("[API Info] Session authenticated for user ID:", sessionUser.id);
@@ -43,7 +33,26 @@ export default eventHandler(async (event) => {
     serviceCenterID: dbUser.serviceCenterID,
   });
 
-  const frontEndURL = resourceName;
+  const referer = event.node.req.headers.referer;
+  console.log(`[API Info] Referer header: ${referer}`);
+  if (!referer) {
+    console.error("[API Error] Request is missing the 'referer' header.");
+    setResponseStatus(event, 400);
+    console.log("--- [API] End /api/center/plan/get ---");
+    return { error: "Request is missing the 'referer' header." };
+  }
+
+  const refererUrl = new URL(referer);
+  const frontEndURL = refererUrl.pathname.substring(1).replace(/\//g, "-");
+  console.log(`[API Info] Derived frontEndURL: '${frontEndURL}'`);
+
+  if (!frontEndURL) {
+    console.error(
+      "[API Error] Could not determine the resource from the referer URL."
+    );
+    setResponseStatus(event, 400);
+    return { error: "Could not determine the resource from the referer URL." };
+  }
 
   try {
     console.log(`[API Info] Querying for resource: '${frontEndURL}'`);
