@@ -46,6 +46,7 @@ const { data: result, status, error, refresh } = await useFetch<any>(
   '/api/center/plan/get',
   {
     method: 'POST',
+    body: { resource: 'center-centerdocumentation' },
     default: () => ({ plans: [] })
   }
 );
