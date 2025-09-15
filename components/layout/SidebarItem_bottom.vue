@@ -77,7 +77,7 @@ onMounted(() => {
   <li v-else>
     <transition name="expand" @enter="animationOpenClose.animateEnter"
       @after-enter="animationOpenClose.animateAfterEnter" @leave="animationOpenClose.animateLeave">
-      <ul class=" overflow-hidden duration-500 " :class="{
+      <ul class=" overflow-hidden duration-500" :class="{
         'mt-0': !isOpen_bottom
       }" v-show="isOpen_bottom">
         <template v-for="sub in item.submenu" :key="item.key">
@@ -101,6 +101,7 @@ onMounted(() => {
       </div>
     </div>
   </li>
+
 </template>
 
 <style>

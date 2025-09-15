@@ -3,6 +3,7 @@ import { useSidebarStore_bottom } from "~/store/sidebar_bottom";
 import SidebarItem_bottom from "./SidebarItem_bottom.vue";
 
 const sidebarStore = useSidebarStore_bottom();
+
 </script>
 <template>
   <ul>
