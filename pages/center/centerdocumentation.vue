@@ -135,6 +135,7 @@ const actionItems = (row: any) => [
 ];
 
 async function deletePlan(id: string) {
+  //@ts-ignore
   if (!(await confirmDialog({ title: 'Confirm Deletion', message: 'Are you sure you want to delete this plan?' }))) return;
 
   const { error } = await useFetch('/api/center/plan/delete', {
