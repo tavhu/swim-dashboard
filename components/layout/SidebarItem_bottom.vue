@@ -89,7 +89,8 @@ onMounted(() => {
       <div
         class="flex  md:justify-center lg:justify-start duration-300 items-center  gap-3 cursor-pointer px-5 py-3 dark:hover:text-primary md:hover:text-gray-600 md:hover:bg-opacity-40 border-transparent">
         <TwFeather v-if="item.icon" :type="item.icon"></TwFeather>
-        <div class="md:hidden lg:block select-none whitespace-nowrap overflow-hidden text-ellipsis">
+        <div class="md:hidden lg:block select-none whitespace-nowrap overflow-hidden text-ellipsis "
+          :class="{ 'text-primary': isOpen_bottom }">
           {{ item.name }} <span v-if="item.name == 'ប្រអប់សារ' && items.length != 0"
             class="rounded-full text-xs bg-red-600 text-white text-center align-middle pl-1 pr-1"> {{ item.name ==
               'ប្រអប់សារ' ? items.length : '' }}</span>
