@@ -983,22 +983,6 @@ watch(SelectedCityValue, () => {
                 roleName: 'ឈ្មោះតួនាទី',
                 roleDescription: 'ពិពណ៌នាតួនាទី',
               }">
-              <div class="col-span-12" v-if="prop.serviceCenterID">
-                <TwSelect label="បុគ្គលិករបស់មណ្ឌល" name="serviceCenterID"
-                  v-model="formDataEditOfficial.serviceCenterID" required :items="serviceCenterList"
-                  placeholder="សូមជ្រើសរើស" />
-                <CustomErrorMessage name="serviceCenterID" />
-              </div>
-              <div class="col-span-12" v-if="prop.serviceCenterID">
-                <TwSelect label="បុគ្គលិករបស់មណ្ឌល" name="serviceCenterID" v-model="formDataEdit.serviceCenterID"
-                  required :items="serviceCenterList" placeholder="សូមជ្រើសរើស" />
-                <CustomErrorMessage name="serviceCenterID" />
-              </div>
-              <div class="col-span-12" v-else-if="prop.organisationID">
-                <TwSelect label="អង្គភាព" name="organisationID" v-model="formDataEdit.organisationID" required
-                  :items="organisationList" placeholder="សូមជ្រើសរើស" />
-                <CustomErrorMessage name="organisationID" />
-              </div>
               <div class="col-span-3">
               </div>
               <div class="col-span-12   lg:col-span-5">
@@ -1013,12 +997,18 @@ watch(SelectedCityValue, () => {
               </div>
               <div class="col-span-4">
               </div>
-              <div class="col-span-12">
-                <TwSelect label="បុគ្គលិករបស់មណ្ឌល" name="serviceCenterID"
-                  v-model="formDataEditOfficial.serviceCenterID" required :items="serviceCenterList"
-                  placeholder="សូមជ្រើសរើស" />
+
+              <div class="col-span-12" v-if="prop.serviceCenterID">
+                <TwSelect label="បុគ្គលិករបស់មណ្ឌល" name="serviceCenterID" v-model="formDataEdit.serviceCenterID"
+                  required :items="serviceCenterList" placeholder="សូមជ្រើសរើស" />
                 <CustomErrorMessage name="serviceCenterID" />
               </div>
+              <div class="col-span-12" v-else-if="prop.organisationID">
+                <TwSelect label="អង្គភាព" name="organisationID" v-model="formDataEdit.organisationID" required
+                  :items="organisationList" placeholder="សូមជ្រើសរើស" />
+                <CustomErrorMessage name="organisationID" />
+              </div>
+
               <div class="col-span-12 lg:col-span-4">
                 <TwInput label="គោត្តនាម" name="lastNameKH" v-model="formDataEditOfficial.lastNameKH"
                   placeholder="គោត្តនាមជាភាសារខ្មែរ" type="text" />
@@ -1923,11 +1913,6 @@ watch(SelectedCityValue, () => {
               roleName: 'ឈ្មោះតួនាទី',
               roleDescription: 'ពិពណ៌នាតួនាទី',
             }">
-            <div class="col-span-12">
-              <TwSelect label="អង្គភាព" name="organisationID" v-model="formDataEdit.organisationID" required
-                :items="organisationList" placeholder="សូមជ្រើសរើស" />
-              <CustomErrorMessage name="organisationID" />
-            </div>
             <div class="col-span-3">
             </div>
             <div class="col-span-12   lg:col-span-5">
@@ -1941,11 +1926,17 @@ watch(SelectedCityValue, () => {
             </div>
             <div class="col-span-4">
             </div>
-            <div class="col-span-12">
+            <div class="col-span-12" v-if="prop.serviceCenterID">
               <TwSelect label="បុគ្គលិករបស់មណ្ឌល" name="serviceCenterID" v-model="formDataEdit.serviceCenterID" required
                 :items="serviceCenterList" placeholder="សូមជ្រើសរើស" />
               <CustomErrorMessage name="serviceCenterID" />
             </div>
+            <div class="col-span-12" v-else-if="prop.organisationID">
+              <TwSelect label="អង្គភាព" name="organisationID" v-model="formDataEdit.organisationID" required
+                :items="organisationList" placeholder="សូមជ្រើសរើស" />
+              <CustomErrorMessage name="organisationID" />
+            </div>
+
 
             <div class="col-span-12 lg:col-span-3 ">
               <TwInput label="នាមខ្លួន" name="firstName" v-model="formDataEdit.firstName" placeholder="បញ្ចូលឈ្មោះ"
