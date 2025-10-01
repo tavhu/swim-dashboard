@@ -46,6 +46,8 @@ const formData: {
   image: null,
   userRoleID: null,
   serviceCenterID: null,
+  organisationID: null,
+  accountType: 'USER',
   status: false,
 })
 
@@ -83,6 +85,20 @@ const formRules = {
 const isError = ref(false);
 const form = computed(() => composableForm.getForm(formName));
 const validator = computed(() => form.value.validator);
+
+const { data: organisations } = await useFetch('/api/organisation/get.get')
+const organisationList = computed(() => {
+  if (!organisations.value) return []
+  return (organisations.value as any[]).map((org: any) => ({
+    label: org.name,
+    value: org.id,
+  }))
+})
+
+const accountTypes = [
+  { label: 'User', value: 'USER' },
+  { label: 'Organisation', value: 'ORGANISATION' },
+]
 
 const submit = async () => {
   if (readOnly) return;
@@ -124,6 +140,8 @@ const submit = async () => {
       status: formData.status,
       userRoleID: formData.userRoleID,
       serviceCenterID: formData.serviceCenterID,
+      organisationID: formData.organisationID,
+      accountType: formData.accountType,
       updatePass: edit && formData.password ? true : false
     }),
   });
@@ -149,6 +167,8 @@ const clear = () => {
   formData.image = null
   formData.conPassword = null
   formData.status = false
+  formData.organisationID = null
+  formData.accountType = 'USER'
   files.value = null
 
   setTimeout(() => {
@@ -257,6 +277,8 @@ if (edit) {
   formData.conPassword = null
   formData.image = userProfile.value?.data?.image
   formData.serviceCenterID = userProfile.value?.data?.serviceCenterID
+  formData.organisationID = userProfile.value?.data?.organisationID
+  formData.accountType = userProfile.value?.data?.accountType
   formData.status = userProfile.value?.data?.status
   formData.userRoleID = userProfile.value?.data?.userRoleID
 
@@ -277,7 +299,7 @@ if (edit) {
   <div>
     <h2 class="text-2xl font-[Moul] text-primary"> {{ edit ? `កែប្រែគណនី` : `បង្កើតគណនី` }} </h2>
     <TwButton variant="danger" class="font-[battambang]" v-if="readOnly" :disabled="true">
-      អ្ននគ្មានសិទ្ធកែប្រែ គណនីនេះទេ
+      អ្នកគ្មានសិទ្ធកែប្រែ គណនីនេះទេ
     </TwButton>
     <hr class="my-2 border dark:border-gray-700" />
     <div class="font-[Battambang]">
@@ -335,6 +357,16 @@ if (edit) {
           <TwSelect label="ជ្រើសរើសស្ថាប័ន្ត" class="mt-5" name="serviceCenterID" v-model="formData.serviceCenterID"
             :items="centerList" placeholder="Choose select" :disabled="readOnly || currentUser" />
           <CustomErrorMessage name="serviceCenterID" />
+        </div>
+        <div class="col-span-12 lg:col-span-6" :class="currentUser ? ' hidden ' : ''">
+          <TwSelect label="ជ្រើសរើសអង្គការ" class="mt-5" name="organisationID" v-model="formData.organisationID"
+            :items="organisationList" placeholder="Choose select" :disabled="readOnly || currentUser" />
+          <CustomErrorMessage name="organisationID" />
+        </div>
+        <div class="col-span-12 lg:col-span-6" :class="currentUser ? ' hidden ' : ''">
+          <TwSelect label="ប្រភេទគណនី" class="mt-5" name="accountType" v-model="formData.accountType"
+            :items="accountTypes" placeholder="Choose select" :disabled="readOnly || currentUser" />
+          <CustomErrorMessage name="accountType" />
         </div>
 
         <div class="col-span-12" :class="currentUser ? ' hidden ' : ''">

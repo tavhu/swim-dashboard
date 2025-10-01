@@ -63,12 +63,22 @@ const formData: {
   goal: '',
   ProjectSummary: '',
   status: true,
+  organisationID: ''
 })
 const formRules = {
 }
 const isError = ref(false);
 const form = computed(() => composableForm.getForm(formName));
 const validator = computed(() => form.value.validator);
+
+const { data: organisations } = await useFetch('/api/organisation/get.get')
+const organisationList = computed(() => {
+  if (!organisations.value) return []
+  return (organisations.value as any[]).map((org: any) => ({
+    label: org.name,
+    value: org.id,
+  }))
+})
 
 const submit = async () => {
   if (readOnly) return;
@@ -120,6 +130,7 @@ const submit = async () => {
       goal: formData.goal,
       ProjectSummary: formData.ProjectSummary,
       status: formData.status,
+      organisationID: formData.organisationID,
     }),
   });
 
@@ -161,6 +172,7 @@ const clear = () => {
   formData.vision = null
   formData.goal = null
   formData.ProjectSummary = null
+  formData.organisationID = null
 
   setTimeout(() => {
     validator.value.clearErrors();
@@ -281,13 +293,14 @@ if (edit) {
   formData.City = userProfile.value?.City
   formData.District = userProfile.value?.District
   formData.Commute = userProfile.value?.Commute
-  formData.Village = userProfile.value?.Village
+  formData.Village =.value?.Village
   formData.overview = userProfile.value?.overview
   formData.background = userProfile.value?.background
   formData.mission = userProfile.value?.mission
   formData.vision = userProfile.value?.vision
   formData.goal = userProfile.value?.goal
   formData.ProjectSummary = userProfile.value?.ProjectSummary
+  formData.organisationID = userProfile.value?.organisationID
 
 
   // //@ts-ignore
@@ -357,6 +370,11 @@ const cityList = ref(temCity)
           <TwSelect :disabled="readOnly" label="ប្រភេទអង្គភាព" name="type" v-model="formData.type" :items="orgType"
             placeholder="សូមជ្រើសរើស" />
           <CustomErrorMessage name="type" />
+        </div>
+        <div class="col-span-12 lg:col-span-6">
+          <TwSelect :disabled="readOnly" label="អង្គការ" name="organisationID" v-model="formData.organisationID"
+            :items="organisationList" placeholder="សូមជ្រើសរើស" />
+          <CustomErrorMessage name="organisationID" />
         </div>
         <div class="col-span-12 flex justify-start gap-3 mt-5 mb-5">
           <TwFeather type="user" />
@@ -457,7 +475,8 @@ const cityList = ref(temCity)
           <TwFeather type="send" />
           <h1 class="text-lg font-bold"> បេសកកម្ម </h1>
         </div>
-        <div class="col-span-12">
+        <div class="col-s
+pan-12">
           <TwTextarea name="mission" v-model="formData.mission" placeholder="បញ្ចូលបេសកកម្ម" class="h-[5rem]"
             type="text" />
           <CustomErrorMessage name="mission" />

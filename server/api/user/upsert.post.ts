@@ -21,7 +21,9 @@ export default eventHandler(async  event => {
                 image : body?.image,          
                 status : body?.status,      
                 userRoleID : body?.userRoleID,      
-                serviceCenterID : body?.serviceCenterID,                
+                serviceCenterID : body?.serviceCenterID, 
+                organisationID: body?.organisationID,
+                accountType: body?.accountType,               
                 password: body?.updatePass ?  await hash(body?.password,12): body?.password 
             },
             create : {
@@ -32,7 +34,9 @@ export default eventHandler(async  event => {
                 image : body?.image,          
                 status : body?.status,   
                 userRoleID : body?.userRoleID,
-                serviceCenterID : body?.serviceCenterID,               
+                serviceCenterID : body?.serviceCenterID, 
+                organisationID: body?.organisationID, 
+                accountType: body?.accountType,              
             }
         })
         console.log(a)

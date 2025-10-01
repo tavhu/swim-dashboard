@@ -38,6 +38,7 @@ export default eventHandler(async (event) => {
         goal: body?.goal,
         ProjectSummary: body?.ProjectSummary,
         status: body?.status,
+        organisationID: body?.organisationID,
       },
       create: {
         nameKH: body?.nameKH,
@@ -62,6 +63,7 @@ export default eventHandler(async (event) => {
         goal: body?.goal,
         ProjectSummary: body?.ProjectSummary,
         status: body?.status,
+        organisationID: body?.organisationID,
       },
     });
     // console.log(res)

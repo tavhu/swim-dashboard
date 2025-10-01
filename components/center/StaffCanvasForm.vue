@@ -86,6 +86,7 @@ const formDataEdit: {
   familyPhoneNumber: '',
   familyEmail: '',
   serviceCenterID: prop.serviceCenterID ? prop.serviceCenterID : '',
+  organisationID: null,
 });
 
 const toast = useToast()
@@ -134,6 +135,7 @@ const clearEdit = () => {
   formDataEdit.familyPhoneNumber = null
   formDataEdit.familyEmail = null
   formDataEdit.serviceCenterID = null
+  formDataEdit.organisationID = null
   setTimeout(() => {
     validatorEdit.value.clearErrors();
   }, 100)
@@ -207,6 +209,7 @@ async function submitEdit() {
       familyPhoneNumber: formDataEdit.familyPhoneNumber,
       familyEmail: formDataEdit.familyEmail,
       serviceCenterID: formDataEdit.serviceCenterID,
+      organisationID: formDataEdit.organisationID,
     }),
   });
 
@@ -255,6 +258,8 @@ const WorkEXP = [{
 },
 ]
 
+
+
 if (prop.id && prop.typeEmployee === 'Contract') {
   const { data } = await useFetch<{ data: Staff, error: '', status: '' }>('/api/center/staff/getSingleStaff', {
     method: 'POST', body: JSON.stringify({
@@ -302,6 +307,15 @@ if (prop.id && prop.typeEmployee === 'Contract') {
   formDataEdit.familyEmail = data?.value?.data.familyEmail
   formDataEdit.serviceCenterID = data?.value?.data.serviceCenterID
 }
+
+const { data: organisations } = await useFetch('/api/organisation/get.get')
+const organisationList = computed(() => {
+  if (!organisations.value) return []
+  return (organisations.value as any[]).map((org: any) => ({
+    label: org.name,
+    value: org.id,
+  }))
+})
 
 const optionsss = [{
   value: 'Official',
@@ -530,6 +544,7 @@ const formDataEditOfficial: {
   CurrentRank: '',
   OfficialLevelKH: '',
   serviceCenterID: prop.serviceCenterID ? prop.serviceCenterID : '',
+  organisationID: null,
 });
 
 const isErrorEditOfficial = ref(false);
@@ -726,6 +741,7 @@ const clearEditOfficial = () => {
   formDataEditOfficial.DateWentFullTime = null
   formDataEditOfficial.CurrentRank = null
   formDataEditOfficial.OfficialLevelKH = null
+  formDataEditOfficial.organisationID = null
   setTimeout(() => {
     validatorEditOfficial.value.clearErrors();
   }, 100)
@@ -832,6 +848,7 @@ async function submitEditOfficial() {
     CurrentRank: formDataEditOfficial.CurrentRank,
     OfficialLevelKH: formDataEditOfficial.OfficialLevelKH,
     serviceCenterID: formDataEditOfficial.serviceCenterID,
+    organisationID: formDataEditOfficial.organisationID,
     governStaffChildren: prop.id ? childrenDetails.value.map(item => ({ ...item, governStaffID: prop.id })) : childrenDetails.value,
     governStaffQualifitcation: prop.id ? EducationDetails.value.map(item => ({ ...item, governStaffID: prop.id })) : EducationDetails.value,
     governStaffLanuage: prop.id ? governStaffLanuage.value.map(item => ({ ...item, governStaffID: prop.id })) : governStaffLanuage.value,
@@ -963,6 +980,12 @@ watch(SelectedCityValue, () => {
           roleName: 'ឈ្មោះតួនាទី',
           roleDescription: 'ពិពណ៌នាតួនាទី',
         }">
+              <div class="col-span-12">
+                  <TwSelect label="អង្គភាព" name="organisationID"
+                  v-model="formDataEditOfficial.organisationID" required :items="organisationList"
+                  placeholder="សូមជ្រើសរើស" />
+                  <CustomErrorMessage name="organisationID" />
+              </div>
               <div class="col-span-3">
               </div>
               <div class="col-span-12   lg:col-span-5">
@@ -1887,6 +1910,12 @@ watch(SelectedCityValue, () => {
           roleName: 'ឈ្មោះតួនាទី',
           roleDescription: 'ពិពណ៌នាតួនាទី',
         }">
+           <div class="col-span-12">
+                <TwSelect label="អង្គភាព" name="organisationID"
+                v-model="formDataEdit.organisationID" required :items="organisationList"
+                placeholder="សូមជ្រើសរើស" />
+                <CustomErrorMessage name="organisationID" />
+            </div> 
             <div class="col-span-3">
             </div>
             <div class="col-span-12   lg:col-span-5">
