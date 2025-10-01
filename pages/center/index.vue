@@ -293,7 +293,7 @@ if (edit) {
   formData.City = userProfile.value?.City
   formData.District = userProfile.value?.District
   formData.Commute = userProfile.value?.Commute
-  formData.Village =.value?.Village
+  formData.Village = userProfile.value?.Village
   formData.overview = userProfile.value?.overview
   formData.background = userProfile.value?.background
   formData.mission = userProfile.value?.mission
@@ -338,9 +338,9 @@ const cityList = ref(temCity)
         :class="{
           'tw-shake': isError,
         }" :rules="formRules" @submit="submit" :custom-field-name="{
-      roleName: 'ឈ្មោះតួនាទី',
-      roleDescription: 'ពិពណ៌នាតួនាទី',
-    }">
+          roleName: 'ឈ្មោះតួនាទី',
+          roleDescription: 'ពិពណ៌នាតួនាទី',
+        }">
         <div class="col-span-12 flex justify-start  gap-3 mb-5">
           <TwFeather type="file-text" />
           <h1 class="text-lg"> ព័ត៌មានលំអិត </h1>
