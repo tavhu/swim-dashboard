@@ -42,6 +42,9 @@ model User {
   status          Boolean          @default(true)
   userRoleID      String?
   serviceCenterID String?
+  organisationID  String?
+  accountType     AccountType      @default(USER)
+  Organisation    Organisation?    @relation(fields: [organisationID], references: [id])
   ServiceCenter   ServiceCenter?   @relation(fields: [serviceCenterID], references: [id])
   Role            Role?            @relation(fields: [userRoleID], references: [id])
   contactMessage  contactMessage[]
@@ -97,6 +100,21 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+model Organisation {
+  id           String          @id @default(cuid())
+  name         String
+  logo         String?
+  website      String?
+  email        String?
+  phoneNumber  String?
+  address      String?
+  users        User[]
+  service      ServiceCenter[]
+  parent       Organisation?   @relation("OrganisationToOrganisation", fields: [parentId], references: [id])
+  children     Organisation[]  @relation("OrganisationToOrganisation")
+  parentId     String?
+}
+
 model ServiceCenter {
   id                         String                       @id @default(cuid())
   nameKH                     String
@@ -122,12 +140,19 @@ model ServiceCenter {
   District                   String?
   Commute                    String?
   Village                    String?
+  organisationID             String?
+  Organisation               Organisation?                @relation(fields: [organisationID], references: [id])
   Client_PersonalInformation Client_PersonalInformation[]
   staff                      Staff[]
   governStaff                governStaff[]
   systemUser                 User[]
   CenterPlan                 CenterPlan[]
   services                   ServicesOnServiceCenters[]
+}
+
+enum AccountType {
+  USER
+  ORGANISATION
 }
 
 model Staff {
