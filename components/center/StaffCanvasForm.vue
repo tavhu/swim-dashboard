@@ -21,7 +21,8 @@ const prop = defineProps<{
   openisTrue: boolean,
   readOnly: boolean,
   id: string | undefined | null,
-  serviceCenterID: string | null
+  serviceCenterID?: string | null // Changed to optional
+  organisationID?: string | null // Added new optional prop
   typeEmployee: string
 }>()
 
@@ -85,9 +86,10 @@ const formDataEdit: {
   familyAddressVillage: '',
   familyPhoneNumber: '',
   familyEmail: '',
-  serviceCenterID: prop.serviceCenterID ? prop.serviceCenterID : '',
-  organisationID: null,
+  serviceCenterID: prop.serviceCenterID ?? null,
+  organisationID: prop.organisationID ?? null,
 });
+
 
 const toast = useToast()
 const { toasts: useToat } = useToast()
@@ -543,9 +545,10 @@ const formDataEditOfficial: {
   DateWentFullTime: '',
   CurrentRank: '',
   OfficialLevelKH: '',
-  serviceCenterID: prop.serviceCenterID ? prop.serviceCenterID : '',
-  organisationID: null,
+  serviceCenterID: prop.serviceCenterID ?? null,
+  organisationID: prop.organisationID ?? null,
 });
+
 
 const isErrorEditOfficial = ref(false);
 const formEditOfficial = computed(() => composableForm.getForm(formNameEditOfficial));
@@ -977,14 +980,24 @@ watch(SelectedCityValue, () => {
               :class="{
                 'tw-shake': isErrorEditOfficial,
               }" :rules="formRulesEditOfficial" @submit="submitEditOfficial()" :custom-field-name="{
-          roleName: 'ឈ្មោះតួនាទី',
-          roleDescription: 'ពិពណ៌នាតួនាទី',
-        }">
-              <div class="col-span-12">
-                  <TwSelect label="អង្គភាព" name="organisationID"
-                  v-model="formDataEditOfficial.organisationID" required :items="organisationList"
+                roleName: 'ឈ្មោះតួនាទី',
+                roleDescription: 'ពិពណ៌នាតួនាទី',
+              }">
+              <div class="col-span-12" v-if="prop.serviceCenterID">
+                <TwSelect label="បុគ្គលិករបស់មណ្ឌល" name="serviceCenterID"
+                  v-model="formDataEditOfficial.serviceCenterID" required :items="serviceCenterList"
                   placeholder="សូមជ្រើសរើស" />
-                  <CustomErrorMessage name="organisationID" />
+                <CustomErrorMessage name="serviceCenterID" />
+              </div>
+              <div class="col-span-12" v-if="prop.serviceCenterID">
+                <TwSelect label="បុគ្គលិករបស់មណ្ឌល" name="serviceCenterID" v-model="formDataEdit.serviceCenterID"
+                  required :items="serviceCenterList" placeholder="សូមជ្រើសរើស" />
+                <CustomErrorMessage name="serviceCenterID" />
+              </div>
+              <div class="col-span-12" v-else-if="prop.organisationID">
+                <TwSelect label="អង្គភាព" name="organisationID" v-model="formDataEdit.organisationID" required
+                  :items="organisationList" placeholder="សូមជ្រើសរើស" />
+                <CustomErrorMessage name="organisationID" />
               </div>
               <div class="col-span-3">
               </div>
@@ -1907,15 +1920,14 @@ watch(SelectedCityValue, () => {
             :class="{
               'tw-shake': isErrorEdit,
             }" :rules="formRulesEdit" @submit="submitEdit()" :custom-field-name="{
-          roleName: 'ឈ្មោះតួនាទី',
-          roleDescription: 'ពិពណ៌នាតួនាទី',
-        }">
-           <div class="col-span-12">
-                <TwSelect label="អង្គភាព" name="organisationID"
-                v-model="formDataEdit.organisationID" required :items="organisationList"
-                placeholder="សូមជ្រើសរើស" />
-                <CustomErrorMessage name="organisationID" />
-            </div> 
+              roleName: 'ឈ្មោះតួនាទី',
+              roleDescription: 'ពិពណ៌នាតួនាទី',
+            }">
+            <div class="col-span-12">
+              <TwSelect label="អង្គភាព" name="organisationID" v-model="formDataEdit.organisationID" required
+                :items="organisationList" placeholder="សូមជ្រើសរើស" />
+              <CustomErrorMessage name="organisationID" />
+            </div>
             <div class="col-span-3">
             </div>
             <div class="col-span-12   lg:col-span-5">
