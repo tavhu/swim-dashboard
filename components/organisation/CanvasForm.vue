@@ -64,35 +64,50 @@ watch(() => props.item, (newItem) => {
 
 
 const submit = async () => {
-  const validation = await composableForm.getForm(formName).validator.validate();
-  if (validation.fail()) {
-    toast.error({ message: validation.getErrorMessage() });
-    return;
-  }
-
-  let logo = formData.logo;
-  if (files.value && files.value.length > 0) {
-    const fd = new FormData();
-    Array.from(files.value).forEach((file, index) => {
-      fd.append(String(index), file as Blob);
-    });
-    const { data: uploadedFiles } = await useFetch("/api/user/upload", {
-      method: "POST",
-      body: fd,
-    });
-    if (uploadedFiles.value) {
-      logo = (uploadedFiles.value as string[])[0];
+  try {
+    const validation = await composableForm.getForm(formName).validator.validate();
+    if (validation.fail()) {
+      toast.error({ message: validation.getErrorMessage() });
+      return;
     }
+
+    let logo = formData.logo;
+    if (files.value && files.value.length > 0) {
+      const fd = new FormData();
+      Array.from(files.value).forEach((file, index) => {
+        fd.append(String(index), file as Blob);
+      });
+      const { data: uploadedFiles, error: uploadError } = await useFetch("/api/user/upload", {
+        method: "POST",
+        body: fd,
+      });
+
+      if (uploadError.value) {
+        toast.error({ message: "មិនជោគជ័យ" });
+        return;
+      }
+
+      if (uploadedFiles.value) {
+        logo = (uploadedFiles.value as string[])[0];
+      }
+    }
+
+    const { error: upsertError } = await useFetch("/api/organisation/upsert.post", {
+      method: "POST",
+      body: { ...formData, logo },
+    });
+
+    if (upsertError.value) {
+      toast.error({ message: "មិនជោគជ័យ" });
+      return;
+    }
+
+    toast.success({ message: "ជោគជ័យ" });
+    emit("update:open", false);
+    files.value = null;
+  } catch (e) {
+    toast.error({ message: "មានបញ្ហាអ្វីមួយកើតឡើង" });
   }
-
-  await useFetch("/api/organisation/upsert.post", {
-    method: "POST",
-    body: { ...formData, logo },
-  });
-
-  toast.success({ message: "Organisation saved successfully" });
-  emit("update:open", false);
-  files.value = null;
 };
 
 const close = () => {
