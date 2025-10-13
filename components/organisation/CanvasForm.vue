@@ -39,6 +39,8 @@ const formData = reactive({
   address: "",
 });
 
+const files = ref();
+
 watch(() => props.item, (newItem) => {
   if (newItem) {
     formData.id = newItem.id;
@@ -56,10 +58,10 @@ watch(() => props.item, (newItem) => {
     formData.email = "";
     formData.phoneNumber = "";
     formData.address = "";
+    files.value = null;
   }
 });
 
-const files = ref();
 
 const submit = async () => {
   const validation = await composableForm.getForm(formName).validator.validate();
@@ -90,6 +92,7 @@ const submit = async () => {
 
   toast.success({ message: "Organisation saved successfully" });
   emit("update:open", false);
+  files.value = null;
 };
 
 const close = () => {
@@ -98,7 +101,7 @@ const close = () => {
 </script>
 
 <template>
-  <div v-if="open" class="fixed   inset-0 z-50 bg-gray-500 bg-opacity-50 flex items-center justify-center">
+  <div v-show="open" class="fixed   inset-0 z-50 bg-gray-500 bg-opacity-50 flex items-center justify-center">
     <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-5xl">
       <div class="flex justify-between items-center mb- ">
         <h2 class="text-xl font-[Moul] text-primary">{{ item ? "កែប្រែ" : "ចុះឈ្មោះ" }} អង្គភាព</h2>
