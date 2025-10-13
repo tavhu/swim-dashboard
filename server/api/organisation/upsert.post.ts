@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
   try {
     const organisation = await prisma.organisation.upsert({
       where: {
-        id: body?.id || ''
+        id: body?.id || "",
       },
       create: {
         name: body.name,
@@ -30,6 +30,6 @@ export default defineEventHandler(async (event) => {
     return { organisation };
   } catch (error) {
     console.error(error);
-    return { error: 'Failed to upsert organisation' };
+    return { error: "Failed to upsert organisation" };
   }
 });

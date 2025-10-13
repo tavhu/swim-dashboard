@@ -18,7 +18,7 @@ const dialog = useDialog();
 const isCanvasOpen = ref(false)
 const selectedItem = ref(null)
 
-const { data: organisations, refresh } = await useFetch('/api/organisation/get.get')
+const { data: organisations, refresh } = await useFetch('/api/organisation/get')
 
 const headers: Header[] = [
   {
@@ -54,7 +54,7 @@ const onAction = async (action: string, item: any) => {
         text: "Delete",
         class: "bg-red-500 text-white",
         action: async () => {
-          await useFetch("/api/organisation/delete.post", {
+          await useFetch("/api/organisation/delete", {
             method: "POST",
             body: { id: item.id },
           });

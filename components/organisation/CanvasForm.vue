@@ -62,11 +62,20 @@ watch(() => props.item, (newItem) => {
   }
 });
 
+const formRules = {
+}
+
+const isError = ref(false);
+const form = computed(() => composableForm.getForm(formName));
+const validator = computed(() => form.value.validator);
+
 const submit = async () => {
   try {
-    const validation = await composableForm.getForm(formName).validator.validate();
-    if (validation.fail()) {
-      toast.error({ message: validation.getErrorMessage() });
+
+    // const validation = await composableForm.getForm(formName).validator.validate();
+
+    if (validator.value.fail()) {
+      toast.error({ message: validator.value.getErrorMessage() });
       return;
     }
 
@@ -93,7 +102,7 @@ const submit = async () => {
 
     const { error: upsertError } = await useFetch("/api/organisation/upsert", {
       method: "POST",
-      body: { ...formData, logo },
+      body: JSON.stringify({ ...formData, logo }),
     });
 
     if (upsertError.value) {
@@ -105,6 +114,7 @@ const submit = async () => {
     emit("update:open", false);
     files.value = null;
   } catch (e) {
+    console.log(e)
     toast.error({ message: "មានបញ្ហាអ្វីមួយកើតឡើង" });
   }
 };
@@ -123,7 +133,12 @@ const close = () => {
           <TwFeather type="x" />
         </UButton>
       </div>
-      <TwForm :name="formName" @submit="submit" :get-on-watch-item="false">
+      <TwForm :name="formName" :class="{
+        'tw-shake': isError,
+      }" :rules="formRules" @submit="submit" :custom-field-name="{
+        roleName: 'ឈ្មោះតួនាទី',
+        roleDescription: 'ពិពណ៌នាតួនាទី',
+      }" :get-on-watch-item="false">
         <div class="grid grid-cols-12 gap-4">
           <div class="col-span-12">
             <TwFile v-model="files" label="និមិត្តសញ្ញា" />

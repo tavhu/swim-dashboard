@@ -69,8 +69,8 @@ function showDetails(title: string, content: string) {
 
 // Debounce search
 const onSearch = useDebounceFn((value) => {
-    search.value = value;
-    page.value = 1;
+  search.value = value;
+  page.value = 1;
 }, 300)
 
 // Sorting
@@ -127,77 +127,71 @@ async function deleteService(id: string) {
     </div>
 
     <div class="flex justify-end mb-4">
-        <UInput :model-value="search" @update:model-value="onSearch" placeholder="Search..." icon="i-heroicons-magnifying-glass-20-solid" />
+      <UInput :model-value="search" @update:model-value="onSearch" placeholder="Search..."
+        icon="i-heroicons-magnifying-glass-20-solid" />
     </div>
 
     <UCard :ui="{ body: { padding: 'px-0 sm:p-0' } }">
-        <UTable
-            :loading="status === 'pending'"
-            :columns="columns"
-            :rows="services"
-            :sort="sort"
-            @sort="onSort"
-            :ui="{ base: 'table-fixed w-full' }"
-        >
-          <template #nameKh-data="{ row }">
-            <p class="truncate cursor-pointer" @click="showDetails('ឈ្មោះសេវា', row.nameKh)">{{ truncate(row.nameKh) }}</p>
-          </template>
+      <UTable :loading="status === 'pending'" :columns="columns" :rows="services" :sort="sort" @sort="onSort"
+        :ui="{ base: 'table-fixed w-full' }">
+        <template #nameKh-data="{ row }">
+          <p class="truncate cursor-pointer" @click="showDetails('ឈ្មោះសេវា', row.nameKh)">{{ truncate(row.nameKh) }}
+          </p>
+        </template>
 
-          <template #providingInstitution-data="{ row }">
-            <p class="truncate cursor-pointer" @click="showDetails('ក្រសួង/ស្ថាប័ន', row.providingInstitution)">{{ truncate(row.providingInstitution) }}</p>
-          </template>
+        <template #providingInstitution-data="{ row }">
+          <p class="truncate cursor-pointer" @click="showDetails('ក្រសួង/ស្ថាប័ន', row.providingInstitution)">{{
+            truncate(row.providingInstitution) }}</p>
+        </template>
 
-          <template #purpose-data="{ row }">
-            <p class="truncate cursor-pointer" @click="showDetails('គោលបំណង', row.purpose)">{{ truncate(row.purpose) }}</p>
-          </template>
+        <template #purpose-data="{ row }">
+          <p class="truncate cursor-pointer" @click="showDetails('គោលបំណង', row.purpose)">{{ truncate(row.purpose) }}
+          </p>
+        </template>
 
-          <template #legalBasis-data="{ row }">
-            <p class="truncate cursor-pointer" @click="showDetails('គតិយុត្ត', row.legalBasis)">{{ truncate(row.legalBasis) }}</p>
-          </template>
+        <template #legalBasis-data="{ row }">
+          <p class="truncate cursor-pointer" @click="showDetails('គតិយុត្ត', row.legalBasis)">{{
+            truncate(row.legalBasis) }}</p>
+        </template>
 
-          <template #eligibleClients-data="{ row }">
-            <p class="truncate cursor-pointer" @click="showDetails('អតិថិជន', row.eligibleClients)">{{ truncate(row.eligibleClients) }}</p>
-          </template>
+        <template #eligibleClients-data="{ row }">
+          <p class="truncate cursor-pointer" @click="showDetails('អតិថិជន', row.eligibleClients)">{{
+            truncate(row.eligibleClients) }}</p>
+        </template>
 
-          <template #serviceStandard-data="{ row }">
-            <p class="truncate cursor-pointer" @click="showDetails('ស្តង់ដារ', row.serviceStandard)">{{ truncate(row.serviceStandard) }}</p>
-          </template>
+        <template #serviceStandard-data="{ row }">
+          <p class="truncate cursor-pointer" @click="showDetails('ស្តង់ដារ', row.serviceStandard)">{{
+            truncate(row.serviceStandard) }}</p>
+        </template>
 
-          <template #requiredDocuments-data="{ row }">
-            <p class="truncate cursor-pointer" @click="showDetails('ឯកសារ', row.requiredDocuments)">{{ truncate(row.requiredDocuments) }}</p>
-          </template>
+        <template #requiredDocuments-data="{ row }">
+          <p class="truncate cursor-pointer" @click="showDetails('ឯកសារ', row.requiredDocuments)">{{
+            truncate(row.requiredDocuments) }}</p>
+        </template>
 
-          <template #feedback-data="{ row }">
-            <p class="truncate cursor-pointer" @click="showDetails('យោបល់', row.feedback)">{{ truncate(row.feedback) }}</p>
-          </template>
+        <template #feedback-data="{ row }">
+          <p class="truncate cursor-pointer" @click="showDetails('យោបល់', row.feedback)">{{ truncate(row.feedback) }}
+          </p>
+        </template>
 
-            <template #actions-data="{ row }">
-                <UDropdown :items="actionItems(row)">
-                    <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />
-                </UDropdown>
-            </template>
-        </UTable>
+        <template #actions-data="{ row }">
+          <UDropdown :items="actionItems(row)">
+            <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />
+          </UDropdown>
+        </template>
+      </UTable>
     </UCard>
 
     <div v-if="status !== 'pending' && total > limit" class="flex flex-wrap justify-between items-center mt-4">
       <div class="text-sm text-gray-500 dark:text-gray-400">
         Showing {{ (page - 1) * limit + 1 }} to {{ Math.min(page * limit, total) }} of {{ total }} entries
       </div>
-      <UPagination
-        v-model="page"
-        :page-count="limit"
-        :total="total"
-      />
+      <UPagination v-model="page" :page-count="limit" :total="total" />
     </div>
 
     <ClientOnly>
-      <ServiceDetailsCanvas 
-        v-if="showCanvas"
-        :openisTrue="showCanvas" 
-        :title="canvasTitle" 
-        :content="canvasContent" 
-        :key="canvasKey" 
-      />
+      <ServiceDetailsCanvas v-if="showCanvas" :openisTrue="showCanvas" :title="canvasTitle" :content="canvasContent"
+        :key="canvasKey" />
     </ClientOnly>
 
   </div>
