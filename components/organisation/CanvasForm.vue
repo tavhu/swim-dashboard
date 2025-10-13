@@ -48,14 +48,6 @@ watch(() => props.item, (newItem) => {
     formData.email = newItem.email;
     formData.phoneNumber = newItem.phoneNumber;
     formData.address = newItem.address;
-  } else {
-    formData.id = "";
-    formData.name = "";
-    formData.logo = "";
-    formData.website = "";
-    formData.email = "";
-    formData.phoneNumber = "";
-    formData.address = "";
   }
 });
 
@@ -98,22 +90,14 @@ const close = () => {
 </script>
 
 <template>
-  <div
-    class="fixed inset-0 z-40 bg-gray-900/50 transition-opacity"
-    v-if="open"
-    @click.self="close"
-  ></div>
-  <div
-    class="fixed top-0 right-0 z-50 h-full w-full max-w-2xl transform bg-white p-6 shadow-xl transition-transform duration-300 ease-in-out dark:bg-gray-800"
-    :class="open ? 'translate-x-0' : 'translate-x-full'"
-  >
-    <div class="flex justify-between items-center mb-4">
-      <h2 class="text-xl font-bold">{{ item ? "Edit" : "Create" }} Organisation</h2>
-      <button @click="close">
-        <TwFeather type="x" />
-      </button>
-    </div>
-    <div class="overflow-y-auto h-full pb-20">
+  <div v-if="open" class="fixed inset-0 z-50 bg-gray-900 bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-2xl">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold">{{ item ? "Edit" : "Create" }} Organisation</h2>
+        <button @click="close">
+          <TwFeather type="x" />
+        </button>
+      </div>
       <TwForm :name="formName" @submit="submit">
         <div class="grid grid-cols-12 gap-4">
           <div class="col-span-12">
@@ -129,21 +113,15 @@ const close = () => {
             <TwInput name="email" label="Email" v-model="formData.email" />
           </div>
           <div class="col-span-12 md:col-span-6">
-            <TwInput
-              name="phoneNumber"
-              label="Phone Number"
-              v-model="formData.phoneNumber"
-            />
+            <TwInput name="phoneNumber" label="Phone Number" v-model="formData.phoneNumber" />
           </div>
           <div class="col-span-12">
             <TwTextarea name="address" label="Address" v-model="formData.address" />
           </div>
         </div>
-        <div class="absolute bottom-0 left-0 w-full bg-white dark:bg-gray-800 p-4 border-t dark:border-gray-700">
-            <div class="flex justify-end gap-2">
-                <TwButton @click="close" variant="secondary" type="button">Cancel</TwButton>
-                <TwButton type="submit">Save</TwButton>
-            </div>
+        <div class="flex justify-end gap-2 mt-4">
+          <TwButton @click="close" variant="secondary">Cancel</TwButton>
+          <TwButton type="submit">Save</TwButton>
         </div>
       </TwForm>
     </div>
