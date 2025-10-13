@@ -123,7 +123,7 @@ const close = () => {
           <TwFeather type="x" />
         </UButton>
       </div>
-      <TwForm :name="formName" @submit="submit" :get-on-watch-item="false">
+      <TwForm :name="formName" @submit="submit" use-submit>
         <div class="grid grid-cols-12 gap-4">
           <div class="col-span-12">
             <TwFile v-model="files" label="និមិត្តសញ្ញា" />
