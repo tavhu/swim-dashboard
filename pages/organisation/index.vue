@@ -82,9 +82,9 @@ const handleCanvasState = (state: boolean) => {
   <div>
     <div class="flex justify-between items-center">
       <h1 class="text-2xl font-[Moul] text-primary">អង្គភាព</h1>
-      <UButton color="primary" size="xl" @click="isCanvasOpen = true">
+      <TwButton color="primary" size="xl" @click="isCanvasOpen = true">
         <h2 class="font-[Moul] text-xl">បង្កើតថ្មី</h2>
-      </UButton>
+      </TwButton>
     </div>
     <hr class="my-4" />
     <TwDatatable :headers="headers" :rows="organisations" :actions="['edit', 'delete']" @action="onAction">
