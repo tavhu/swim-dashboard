@@ -28,6 +28,7 @@ const emit = defineEmits(["update:open"]);
 
 const toast = useToast();
 const composableForm = useForm();
+const config = useRuntimeConfig();
 const formName = "organisation";
 const formData = reactive({
   id: "",
@@ -39,6 +40,8 @@ const formData = reactive({
   address: "",
 });
 
+const logoPreview = ref<string | null>(null);
+
 watch(() => props.item, (newItem) => {
   if (newItem) {
     formData.id = newItem.id;
@@ -48,10 +51,36 @@ watch(() => props.item, (newItem) => {
     formData.email = newItem.email;
     formData.phoneNumber = newItem.phoneNumber;
     formData.address = newItem.address;
+    if (newItem.logo) {
+      logoPreview.value = config.public.origin + '/' + newItem.logo;
+    } else {
+      logoPreview.value = null;
+    }
+  } else {
+    formData.id = "";
+    formData.name = "";
+    formData.logo = "";
+    formData.website = "";
+    formData.email = "";
+    formData.phoneNumber = "";
+    formData.address = "";
+    logoPreview.value = null;
   }
 });
 
 const files = ref();
+
+watch(files, (newFiles) => {
+  if (newFiles && newFiles.length > 0) {
+    logoPreview.value = URL.createObjectURL(newFiles[0]);
+  } else {
+    if(props.item && props.item.logo) {
+      logoPreview.value = config.public.origin + '/' + props.item.logo;
+    } else {
+      logoPreview.value = null;
+    }
+  }
+});
 
 const submit = async () => {
   const validation = await composableForm.getForm(formName).validator.validate();
@@ -102,6 +131,9 @@ const close = () => {
         <div class="grid grid-cols-12 gap-4">
           <div class="col-span-12">
             <TwFile v-model="files" label="និមិត្តសញ្ញា" />
+            <div v-if="logoPreview" class="mt-4 flex justify-center">
+              <img :src="logoPreview" alt="Logo Preview" class="w-32 h-32 rounded-full border object-cover">
+            </div>
           </div>
           <div class="col-span-12 md:col-span-6">
             <TwInput name="name" label="ឈ្មោះ" v-model="formData.name" required />
