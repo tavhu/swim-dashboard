@@ -62,12 +62,12 @@ watch(() => props.item, (newItem) => {
   }
 });
 
-
 const submit = async () => {
+  toast.info({ message: "Starting submission..." }); // Diagnostic message
   try {
     const validation = await composableForm.getForm(formName).validator.validate();
     if (validation.fail()) {
-      toast.error({ message: validation.getErrorMessage() });
+      toast.error({ message: "សូមពិនិត្យមើលព័ត៌មានដែលអ្នកបានបញ្ចូល។" }); // "Please check the information you entered."
       return;
     }
 
@@ -83,7 +83,8 @@ const submit = async () => {
       });
 
       if (uploadError.value) {
-        toast.error({ message: "មិនជោគជ័យ" });
+        console.error('Upload error:', uploadError.value);
+        toast.error({ message: "ការបង្ហោះនិមិត្តសញ្ញាបរាជ័យ។" }); // Logo upload failed.
         return;
       }
 
@@ -92,21 +93,23 @@ const submit = async () => {
       }
     }
 
-    const { error: upsertError } = await useFetch("/api/organisation/upsert.post", {
+    const { data, error: upsertError } = await useFetch("/api/organisation/upsert.post", {
       method: "POST",
       body: { ...formData, logo },
     });
 
     if (upsertError.value) {
-      toast.error({ message: "មិនជោគជ័យ" });
+      console.error('Upsert error:', upsertError.value);
+      toast.error({ message: "ការរក្សាទុកអង្គភាពបានបរាជ័យ។" }); // Saving organisation failed.
       return;
     }
 
-    toast.success({ message: "ជោគជ័យ" });
+    toast.success({ message: "បានរក្សាទុកអង្គភាពដោយជោគជ័យ!" }); // Organisation saved successfully!
     emit("update:open", false);
     files.value = null;
   } catch (e) {
-    toast.error({ message: "មានបញ្ហាអ្វីមួយកើតឡើង" });
+    console.error('An unexpected error occurred:', e);
+    toast.error({ message: "មានបញ្ហាដែលមិនបានរំពឹងទុកកើតឡើង។" }); // An unexpected error occurred.
   }
 };
 
