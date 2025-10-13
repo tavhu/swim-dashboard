@@ -475,8 +475,7 @@ const cityList = ref(temCity)
           <TwFeather type="send" />
           <h1 class="text-lg font-bold"> បេសកកម្ម </h1>
         </div>
-        <div class="col-s
-pan-12">
+        <div class="col-span-12">
           <TwTextarea name="mission" v-model="formData.mission" placeholder="បញ្ចូលបេសកកម្ម" class="h-[5rem]"
             type="text" />
           <CustomErrorMessage name="mission" />
