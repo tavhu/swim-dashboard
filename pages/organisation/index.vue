@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { useToast } from 'vue3-tailwind';
-import type { Header } from "vue3-tailwind/dist/types/TwDatatable/types"; // This can be changed to a more generic type if you remove vue3-tailwind completely
 import CanvasForm from '~/components/organisation/CanvasForm.vue'
 
 useHead({
@@ -21,15 +20,17 @@ const isCanvasOpen = ref(false)
 const selectedItem = ref(null)
 
 // Data fetching
-const { data: result, pending, error, refresh } = useLazyFetch<any>('/api/organisation/get', {
-  query: {
+const { data: result, status, error, refresh } = useLazyFetch<any>('/api/organisation/list', {
+  method: 'POST',
+  body: {
     search: search,
-    offset: computed(() => (page.value - 1) * limit.value),
+    skip: computed(() => (page.value - 1) * limit.value),
     limit: limit,
     sortBy: computed(() => sort.value.column),
     sortType: computed(() => sort.value.direction),
   },
-  default: () => ({ data: [], total: 0 })
+  default: () => ({ data: [], total: 0 }),
+  watch: [page, search, sort, limit]
 });
 
 const organisations = computed(() => result.value?.data || []);
@@ -77,11 +78,10 @@ const actionItems = (row: any) => [
 
 // Delete logic
 async function deleteOrganisation(id: string) {
-  // Assuming a global confirmDialog composable or a simple browser confirm
   if (!confirm('Are you sure you want to delete this item?')) return;
 
   const { error } = await useFetch(`/api/organisation/delete`, {
-    method: 'POST', // Your API uses POST for deletes
+    method: 'POST',
     body: { id },
   });
 
@@ -119,13 +119,13 @@ const openNewCanvas = () => {
     </div>
 
     <div class="flex justify-end mb-4">
-      <UInput :model-value="search" @update:model-value="onSearch" placeholder="Search..."
+      <UInput v-model="search" placeholder="Search..."
         icon="i-heroicons-magnifying-glass-20-solid" />
     </div>
 
     <UCard :ui="{ body: { padding: 'px-0 sm:p-0' } }">
       <UTable 
-        :loading="pending"
+        :loading="status === 'pending'"
         :columns="columns" 
         :rows="organisations" 
         :sort="sort" 
@@ -146,7 +146,7 @@ const openNewCanvas = () => {
       </UTable>
     </UCard>
 
-    <div v-if="!pending && total > limit" class="flex flex-wrap justify-between items-center mt-4">
+    <div v-if="status !== 'pending' && total > limit" class="flex flex-wrap justify-between items-center mt-4">
       <div class="text-sm text-gray-500 dark:text-gray-400">
         Showing {{ (page - 1) * limit + 1 }} to {{ Math.min(page * limit, total) }} of {{ total }} entries
       </div>
