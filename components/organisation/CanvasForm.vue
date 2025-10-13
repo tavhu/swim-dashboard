@@ -63,11 +63,10 @@ watch(() => props.item, (newItem) => {
 });
 
 const submit = async () => {
-  toast.info({ message: "Starting submission..." }); // Diagnostic message
   try {
     const validation = await composableForm.getForm(formName).validator.validate();
     if (validation.fail()) {
-      toast.error({ message: "សូមពិនិត្យមើលព័ត៌មានដែលអ្នកបានបញ្ចូល។" }); // "Please check the information you entered."
+      toast.error({ message: validation.getErrorMessage() });
       return;
     }
 
@@ -83,8 +82,7 @@ const submit = async () => {
       });
 
       if (uploadError.value) {
-        console.error('Upload error:', uploadError.value);
-        toast.error({ message: "ការបង្ហោះនិមិត្តសញ្ញាបរាជ័យ។" }); // Logo upload failed.
+        toast.error({ message: "មិនជោគជ័យ" });
         return;
       }
 
@@ -93,23 +91,21 @@ const submit = async () => {
       }
     }
 
-    const { data, error: upsertError } = await useFetch("/api/organisation/upsert.post", {
+    const { error: upsertError } = await useFetch("/api/organisation/upsert.post", {
       method: "POST",
       body: { ...formData, logo },
     });
 
     if (upsertError.value) {
-      console.error('Upsert error:', upsertError.value);
-      toast.error({ message: "ការរក្សាទុកអង្គភាពបានបរាជ័យ។" }); // Saving organisation failed.
+      toast.error({ message: "មិនជោគជ័យ" });
       return;
     }
 
-    toast.success({ message: "បានរក្សាទុកអង្គភាពដោយជោគជ័យ!" }); // Organisation saved successfully!
+    toast.success({ message: "ជោគជ័យ" });
     emit("update:open", false);
     files.value = null;
   } catch (e) {
-    console.error('An unexpected error occurred:', e);
-    toast.error({ message: "មានបញ្ហាដែលមិនបានរំពឹងទុកកើតឡើង។" }); // An unexpected error occurred.
+    toast.error({ message: "មានបញ្ហាអ្វីមួយកើតឡើង" });
   }
 };
 
@@ -127,7 +123,7 @@ const close = () => {
           <TwFeather type="x" />
         </UButton>
       </div>
-      <TwForm :name="formName" @submit="submit">
+      <TwForm :name="formName" @submit="submit" :get-on-watch-item="false">
         <div class="grid grid-cols-12 gap-4">
           <div class="col-span-12">
             <TwFile v-model="files" label="និមិត្តសញ្ញា" />
