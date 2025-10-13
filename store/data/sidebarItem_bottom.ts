@@ -194,6 +194,21 @@ export default [
       },
       {
         isTitle: false,
+        name: "អង្គភាព",
+        url: "",
+        icon: "home",
+        submenu: [
+          {
+            isTitle: false,
+            name: "ចុះឈ្មោះ",
+            url: "/organisation",
+            icon: "",
+            submenu: [],
+          },
+        ],
+      },
+      {
+        isTitle: false,
         name: "មណ្ឌល",
         url: "",
         icon: "home",
