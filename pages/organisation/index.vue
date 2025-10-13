@@ -81,16 +81,13 @@ const handleCanvasState = (state: boolean) => {
 <template>
   <div>
     <div class="flex justify-between items-center">
-      <h1 class="text-2xl font-bold">អង្គភាព</h1>
-      <TwButton @click="isCanvasOpen = true">បង្កើតថ្មី</TwButton>
+      <h1 class="text-2xl font-[Moul] text-primary">អង្គភាព</h1>
+      <UButton color="primary" size="xl" @click="isCanvasOpen = true">
+        <h2 class="font-[Moul] text-xl">បង្កើតថ្មី</h2>
+      </UButton>
     </div>
     <hr class="my-4" />
-    <TwDatatable
-      :headers="headers"
-      :rows="organisations"
-      :actions="['edit', 'delete']"
-      @action="onAction"
-    >
+    <TwDatatable :headers="headers" :rows="organisations" :actions="['edit', 'delete']" @action="onAction">
       <template #name="{ row }">
         <div class="flex items-center gap-2">
           <img :src="row.logo || '/placeholder.png'" class="w-10 h-10 rounded-full" />
@@ -98,10 +95,6 @@ const handleCanvasState = (state: boolean) => {
         </div>
       </template>
     </TwDatatable>
-    <CanvasForm
-      :open="isCanvasOpen"
-      :item="selectedItem"
-      @update:open="handleCanvasState"
-    />
+    <CanvasForm :open="isCanvasOpen" :item="selectedItem" @update:open="handleCanvasState" />
   </div>
 </template>

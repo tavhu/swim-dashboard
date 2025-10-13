@@ -90,38 +90,38 @@ const close = () => {
 </script>
 
 <template>
-  <div v-if="open" class="fixed inset-0 z-50 bg-gray-900 bg-opacity-50 flex items-center justify-center">
-    <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-2xl">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-bold">{{ item ? "Edit" : "Create" }} Organisation</h2>
-        <button @click="close">
+  <div v-if="open" class="fixed   inset-0 z-50 bg-gray-500 bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-5xl">
+      <div class="flex justify-between items-center mb- ">
+        <h2 class="text-xl font-[Moul] text-primary">{{ item ? "កែប្រែ" : "ចុះឈ្មោះ" }} អង្គភាព</h2>
+        <UButton @click="close" color="red">
           <TwFeather type="x" />
-        </button>
+        </UButton>
       </div>
       <TwForm :name="formName" @submit="submit">
         <div class="grid grid-cols-12 gap-4">
           <div class="col-span-12">
-            <TwFile v-model="files" label="Logo" />
+            <TwFile v-model="files" label="និមិត្តសញ្ញា" />
           </div>
           <div class="col-span-12 md:col-span-6">
-            <TwInput name="name" label="Name" v-model="formData.name" required />
+            <TwInput name="name" label="ឈ្មោះ" v-model="formData.name" required />
           </div>
           <div class="col-span-12 md:col-span-6">
-            <TwInput name="website" label="Website" v-model="formData.website" />
+            <TwInput name="website" label="គេហទំព័រ" v-model="formData.website" />
           </div>
           <div class="col-span-12 md:col-span-6">
-            <TwInput name="email" label="Email" v-model="formData.email" />
+            <TwInput name="email" label="អ៊ីមែល" v-model="formData.email" />
           </div>
           <div class="col-span-12 md:col-span-6">
-            <TwInput name="phoneNumber" label="Phone Number" v-model="formData.phoneNumber" />
+            <TwInput name="phoneNumber" label="លេខទូរស័ព្ទ" v-model="formData.phoneNumber" />
           </div>
           <div class="col-span-12">
-            <TwTextarea name="address" label="Address" v-model="formData.address" />
+            <TwTextarea name="address" label="អាសយដ្ឋាន" v-model="formData.address" />
           </div>
         </div>
         <div class="flex justify-end gap-2 mt-4">
-          <TwButton @click="close" variant="secondary">Cancel</TwButton>
-          <TwButton type="submit">Save</TwButton>
+          <UButton @click="close" color="gray" size="xl">បោះបង់</UButton>
+          <UButton type="submit" color="primary" size="xl">រក្សាទុក</UButton>
         </div>
       </TwForm>
     </div>

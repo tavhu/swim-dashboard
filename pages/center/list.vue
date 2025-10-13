@@ -16,7 +16,7 @@ useHead({
 
 
 const data = ref({
-  column: [
+  _column: [
     // {
     //     label: "ល.រ",
     //     field: "number",
@@ -54,6 +54,12 @@ const data = ref({
       sortable: false,
     },
   ] as Array<DatatableColumn>,
+  get column() {
+    return this._column;
+  },
+  set column(value) {
+    this._column = value;
+  },
   data: [] as Array<DatatableData>,
   limit: 5,
   offset: 0,
