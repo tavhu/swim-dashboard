@@ -119,18 +119,11 @@ const openNewCanvas = () => {
     </div>
 
     <div class="flex justify-end mb-4">
-      <UInput v-model="search" placeholder="Search..."
-        icon="i-heroicons-magnifying-glass-20-solid" />
+      <UInput v-model="search" placeholder="Search..." icon="i-heroicons-magnifying-glass-20-solid" />
     </div>
 
     <UCard :ui="{ body: { padding: 'px-0 sm:p-0' } }">
-      <UTable 
-        :loading="status === 'pending'"
-        :columns="columns" 
-        :rows="organisations" 
-        :sort="sort" 
-        @sort="onSort"
-      >
+      <UTable :loading="status === 'pending'" :columns="columns" :rows="organisations" :sort="sort" @sort="onSort">
         <template #name-data="{ row }">
           <div class="flex items-center gap-2">
             <img :src="row.logo || '/placeholder.png'" class="w-10 h-10 rounded-full object-cover" />
