@@ -4,7 +4,7 @@ import { useToast } from 'vue3-tailwind';
 import CanvasForm from '~/components/organisation/CanvasForm.vue'
 
 useHead({
-  title: "អង្គភាព",
+  title: "ស្ថាប័ន",
 });
 
 const toast = useToast();
@@ -112,7 +112,7 @@ const openNewCanvas = () => {
 <template>
   <div>
     <div class="flex justify-between items-center mb-4">
-      <h1 class="text-2xl font-[Moul] text-primary">បញ្ជីអង្គភាព</h1>
+      <h1 class="text-2xl font-[Moul] text-primary">បញ្ជីស្ថាប័ន</h1>
       <UButton icon="i-heroicons-plus-circle-20-solid" @click="openNewCanvas">
         បង្កើតថ្មី
       </UButton>

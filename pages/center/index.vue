@@ -328,7 +328,7 @@ const cityList = ref(temCity)
   <div>
     <h2 class="text-2xl font-[Moul] text-primary"> {{ edit ? `កែព័ត៌មានមណ្ឌល` : `ចុះឈ្មោះមណ្ឌល` }} </h2>
     <TwButton variant="danger" class="font-[battambang]" v-if="readOnly" :disabled="true">
-      អ្ននគ្មានសិទ្ធកែប្រែ គណនីនេះទេ
+      អ្នកគ្មានសិទ្ធកែប្រែ គណនីនេះទេ
     </TwButton>
     <hr class="my-2 border dark:border-gray-700" />
 
@@ -367,12 +367,12 @@ const cityList = ref(temCity)
           <CustomErrorMessage name="nameEN" />
         </div>
         <div class="col-span-12 lg:col-span-6">
-          <TwSelect :disabled="readOnly" label="ប្រភេទអង្គភាព" name="type" v-model="formData.type" :items="orgType"
+          <TwSelect :disabled="readOnly" label="ប្រភេទស្ថាប័ន" name="type" v-model="formData.type" :items="orgType"
             placeholder="សូមជ្រើសរើស" />
           <CustomErrorMessage name="type" />
         </div>
         <div class="col-span-12 lg:col-span-6">
-          <TwSelect :disabled="readOnly" label="អង្គការភាព" name="organisationID" v-model="formData.organisationID"
+          <TwSelect :disabled="readOnly" label="ស្ថាប័ន" name="organisationID" v-model="formData.organisationID"
             :items="organisationList" placeholder="សូមជ្រើសរើស" />
           <CustomErrorMessage name="organisationID" />
         </div>
