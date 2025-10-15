@@ -354,12 +354,12 @@ if (edit) {
           <CustomErrorMessage name="role" />
         </div>
         <div class="col-span-12 lg:col-span-6" :class="currentUser ? ' hidden ' : ''">
-          <TwSelect label="ជ្រើសរើសស្ថាប័ន្ត" class="mt-5" name="serviceCenterID" v-model="formData.serviceCenterID"
+          <TwSelect label="ជ្រើសរើសមណ្ឌល" class="mt-5" name="serviceCenterID" v-model="formData.serviceCenterID"
             :items="centerList" placeholder="Choose select" :disabled="readOnly || currentUser" />
           <CustomErrorMessage name="serviceCenterID" />
         </div>
         <div class="col-span-12 lg:col-span-6" :class="currentUser ? ' hidden ' : ''">
-          <TwSelect label="ជ្រើសរើសអង្គការភាព" class="mt-5" name="organisationID" v-model="formData.organisationID"
+          <TwSelect label="ជ្រើសរើសស្ថាប័ន" class="mt-5" name="organisationID" v-model="formData.organisationID"
             :items="organisationList" placeholder="Choose select" :disabled="readOnly || currentUser" />
           <CustomErrorMessage name="organisationID" />
         </div>

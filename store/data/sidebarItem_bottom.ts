@@ -194,7 +194,7 @@ export default [
       },
       {
         isTitle: false,
-        name: "អង្គភាព",
+        name: "ស្ថាប័ន",
         url: "",
         icon: "home",
         submenu: [
