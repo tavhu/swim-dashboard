@@ -71,7 +71,7 @@ const isError = ref(false);
 const form = computed(() => composableForm.getForm(formName));
 const validator = computed(() => form.value.validator);
 
-const { data: organisations } = await useFetch('/api/organisation/get.get')
+const { data: organisations } = await useFetch('/api/organisation/get')
 const organisationList = computed(() => {
   if (!organisations.value) return []
   return (organisations.value as any[]).map((org: any) => ({
@@ -372,7 +372,7 @@ const cityList = ref(temCity)
           <CustomErrorMessage name="type" />
         </div>
         <div class="col-span-12 lg:col-span-6">
-          <TwSelect :disabled="readOnly" label="អង្គការ" name="organisationID" v-model="formData.organisationID"
+          <TwSelect :disabled="readOnly" label="អង្គការភាព" name="organisationID" v-model="formData.organisationID"
             :items="organisationList" placeholder="សូមជ្រើសរើស" />
           <CustomErrorMessage name="organisationID" />
         </div>

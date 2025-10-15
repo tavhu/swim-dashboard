@@ -86,7 +86,7 @@ const isError = ref(false);
 const form = computed(() => composableForm.getForm(formName));
 const validator = computed(() => form.value.validator);
 
-const { data: organisations } = await useFetch('/api/organisation/get.get')
+const { data: organisations } = await useFetch('/api/organisation/get')
 const organisationList = computed(() => {
   if (!organisations.value) return []
   return (organisations.value as any[]).map((org: any) => ({
@@ -359,7 +359,7 @@ if (edit) {
           <CustomErrorMessage name="serviceCenterID" />
         </div>
         <div class="col-span-12 lg:col-span-6" :class="currentUser ? ' hidden ' : ''">
-          <TwSelect label="ជ្រើសរើសអង្គការ" class="mt-5" name="organisationID" v-model="formData.organisationID"
+          <TwSelect label="ជ្រើសរើសអង្គការភាព" class="mt-5" name="organisationID" v-model="formData.organisationID"
             :items="organisationList" placeholder="Choose select" :disabled="readOnly || currentUser" />
           <CustomErrorMessage name="organisationID" />
         </div>
