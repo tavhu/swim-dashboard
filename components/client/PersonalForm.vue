@@ -465,7 +465,7 @@ const files = ref();
 // aborts the save rather than storing a record whose image silently went
 // missing.
 const handleImageUpload = async () => {
-    if (readOnly) return;
+    if (prop.readOnly) return;
     return await uploadImage(files.value);
 }
 
