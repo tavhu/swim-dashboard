@@ -172,7 +172,7 @@ const FIELD_LABELS: Record<string, string> = {
 const formRules = {
     fullNameKH: ['required'],
     nickName: ['required'],
-        Gender: ['required'],
+    Gender: ['required'],
     POB: ['required'],
     homeBA: ['required'],
     StreetBA: ['required'],
@@ -645,16 +645,22 @@ const ClientProgress = ref(Array({
 onMounted(async () => {
     isLoading.value = true;
     if (prop.id) {
-        const { data: userProfile } = await useFetch('/api/client/personalInformationGet', {
-            method: 'post',
-            body: JSON.stringify({
-                id: prop.id
-            })
-        });
+        // $fetch, not useFetch: useFetch is a setup-time composable and silently
+        // did nothing here — no request for the record was ever made, so the
+        // edit form opened blank.
+        let userProfile: any = null;
+        try {
+            userProfile = await $fetch('/api/client/personalInformationGet', {
+                method: 'POST',
+                body: { id: prop.id },
+            });
+        } catch (e: any) {
+            toast.error({ message: 'មិនអាចទាញយកព័ត៌មានអតិថិជនបានទេ' });
+        }
 
-        if (userProfile.value) {
+        if (userProfile?.id) {
             // Assign all data to formData
-            Object.assign(formData, userProfile.value);
+            Object.assign(formData, userProfile);
 
             // Manually populate dropdown lists based on the loaded data
             if (formData.cityProBA) {
@@ -669,7 +675,11 @@ onMounted(async () => {
         }
         ClientRegister.value = true;
     }
-    // All data is loaded and lists are populated, release the guard.
+    // Vue watchers flush on the next tick, not during Object.assign. Releasing
+    // the guard synchronously here would let the cascade callbacks run with it
+    // already false, and they would clear the district, commune and village
+    // that were just loaded. Wait for them to flush first.
+    await nextTick();
     isLoading.value = false;
 });
 
@@ -712,6 +722,10 @@ const findVillagesByCommune = (provinceName: string, districtName: string, commu
 
 // Watch for changes in the Province dropdown (cityProBA)
 watch(() => formData.cityProBA, (newProvince) => {
+    // Assigning a loaded record must not look like the user changing the
+    // parent dropdown, which clears everything below it.
+    if (isLoading.value) return;
+
     formData.districtBA = '';
     formData.communeBA = '';
     formData.villageBA = '';
@@ -729,6 +743,10 @@ watch(() => formData.cityProBA, (newProvince) => {
 // round while the edit-loading code above used this one, so reopening a saved
 // client built its dropdowns from the wrong columns.
 watch(() => formData.districtBA, (newDistrict) => {
+    // Assigning a loaded record must not look like the user changing the
+    // parent dropdown, which clears everything below it.
+    if (isLoading.value) return;
+
     formData.communeBA = '';
     formData.villageBA = '';
     communeList.value = [];
@@ -740,6 +758,10 @@ watch(() => formData.districtBA, (newDistrict) => {
 }, { immediate: true });
 
 watch(() => formData.communeBA, (newCommune) => {
+    // Assigning a loaded record must not look like the user changing the
+    // parent dropdown, which clears everything below it.
+    if (isLoading.value) return;
+
     formData.villageBA = '';
     villageList.value = []; // Clear village list
 
@@ -830,7 +852,8 @@ watch(() => formData.communeBA, (newCommune) => {
                             'Fr',
                             'Sa',
                             'Su',
-                        ]" position="left" required :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
+                        ]" position="left" required :maxDate="new Date()" :enableTimePicker="false" autoApply>
+                        </Datepicker>
                     </ClientOnly>
 
                     <CustomErrorMessage name="DateofBirth" />
@@ -918,7 +941,8 @@ watch(() => formData.communeBA, (newCommune) => {
                             'Fr',
                             'Sa',
                             'Su',
-                        ]" position="left" required :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
+                        ]" position="left" required :maxDate="new Date()" :enableTimePicker="false" autoApply>
+                        </Datepicker>
                     </ClientOnly>
 
                     <CustomErrorMessage name="DateofBirth" />
@@ -934,7 +958,8 @@ watch(() => formData.communeBA, (newCommune) => {
                             'Fr',
                             'Sa',
                             'Su',
-                        ]" position="left" required :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
+                        ]" position="left" required :maxDate="new Date()" :enableTimePicker="false" autoApply>
+                        </Datepicker>
                     </ClientOnly>
 
                     <CustomErrorMessage name="DateofBirth" />
@@ -1078,7 +1103,7 @@ watch(() => formData.communeBA, (newCommune) => {
                                     'Fr',
                                     'Sa',
                                     'Su',
-                                ]" position="left" required :maxDate="new Date()" :enableTimePicker="false">
+                                ]" position="left" required :maxDate="new Date()" :enableTimePicker="false" autoApply>
                                 </Datepicker>
                             </ClientOnly>
                         </div>
@@ -1224,7 +1249,7 @@ watch(() => formData.communeBA, (newCommune) => {
                                 'Fr',
                                 'Sa',
                                 'Su',
-                            ]" position="left" required :maxDate="new Date()" :enableTimePicker="false">
+                            ]" position="left" required :maxDate="new Date()" :enableTimePicker="false" autoApply>
                             </Datepicker>
                         </ClientOnly>
                     </div>
@@ -1277,7 +1302,7 @@ watch(() => formData.communeBA, (newCommune) => {
                                 'Fr',
                                 'Sa',
                                 'Su',
-                            ]" position="left" required :maxDate="new Date()" :enableTimePicker="false">
+                            ]" position="left" required :maxDate="new Date()" :enableTimePicker="false" autoApply>
                             </Datepicker>
                         </ClientOnly>
                     </div>
