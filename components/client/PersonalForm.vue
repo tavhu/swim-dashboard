@@ -135,6 +135,40 @@ const formData: {
 // Datepicker (@vuepic/vue-datepicker), which never register, so a rule on them
 // reports "required" no matter what the user picks. They are checked against
 // formData directly in submit() instead.
+// The interviewer is whoever is signed in. This used to be attempted with a
+// hidden input whose :value read token.id while its v-model wrote formData —
+// so the id was rendered but never stored, and every record saved with an empty
+// InterviewerID. Set it directly instead.
+watchEffect(() => {
+    const id = (token.value as any)?.id
+    if (id && !formData.InterviewerID) formData.InterviewerID = id
+})
+
+// Field names as they read on screen. The validator's own message is just
+// "1 error occured", which tells the interviewer nothing about which of the
+// seventy-odd fields to look at.
+const FIELD_LABELS: Record<string, string> = {
+    fullNameKH: '១.នាមត្រកូលនិងនាមខ្លួន',
+    nickName: 'ឈ្មោះហៅក្រៅ',
+    Gender: 'ភេទ',
+    POB: 'ទីកន្លែងកំណើត',
+    homeBA: 'ផ្ទះលេខ',
+    StreetBA: 'ផ្លូវលេខ',
+    villageBA: 'ភូមិ-ក្រុម',
+    districtBA: 'ស្រុក-ខណ្ឌ',
+    communeBA: 'ឃុំ/សង្កាត់',
+    cityProBA: 'រាជធានី/ខេត្ត',
+    ClientSendBy: '១.អតិថិជនត្រូវបានបញ្ជូនដោយ',
+    ImportantChallenge: '២.បញ្ហាប្រឈមដោយសំខាន់ៗ',
+    PastActivities: '៣.សកម្មភាពធ្លាប់បានប្រព្រឹត្ត',
+    ReasonUseDrug: 'ហេតុដែលនាំមានការប្រើប្រាស់គ្រឿងញៀន',
+    typeDrugUsed: 'ប្រភេទគ្រឿងញៀនធ្លាប់ប្រើប្រាស់',
+    DrugVolumeUsed: 'បរិមាណប្រើប្រាស់',
+    DrugRequecyUse: 'ភាពញឹកញាប់',
+    DrugDurationUse: 'រយៈពេលប្រើប្រាស់',
+    serviceCenterID: 'មជ្ឈមណ្ឌលព្យាបាលនិងស្តារនីតិសម្បទា',
+}
+
 const formRules = {
     fullNameKH: ['required'],
     nickName: ['required'],
@@ -154,7 +188,6 @@ const formRules = {
     DrugVolumeUsed: ['required'],
     DrugRequecyUse: ['required'],
     DrugDurationUse: ['required'],
-    InterviewerID: ['required'],
     serviceCenterID: ['required'],
 }
 
@@ -210,6 +243,7 @@ const submit = async () => {
         LivingSituation: 'បរិស្ថាននៃការរស់នៅ',
         UsedtoRehab: 'ធ្លាប់ចូលមជ្ឈមណ្ឌល ឬទទួលសេវាប្រហាក់ប្រហែលពីមុន',
         InterViewDate: 'កាលបរិច្ឆេទសម្ភាសន៍',
+        InterviewerID: 'មន្ត្រីសម្ភាសន៍ (ចូលប្រើប្រាស់ម្តងទៀត)',
     }
     // `false` is a valid answer on the radios, so only null/undefined/'' count
     // as unanswered.
@@ -230,8 +264,11 @@ const submit = async () => {
     validator.value.clearErrors();
     await validator.value.validate();
     if (validator.value.fail()) {
+        const failed: string[] = validator.value.getFailedFields?.() ?? [];
         toast.error({
-            message: validator.value.getErrorMessage(),
+            message: failed.length
+                ? 'សូមបំពេញ៖ ' + failed.map((f) => FIELD_LABELS[f] ?? f).join(' / ')
+                : validator.value.getErrorMessage(),
         });
         isError.value = true;
         setTimeout(() => {
@@ -1210,13 +1247,6 @@ watch(() => formData.communeBA, (newCommune) => {
                         Details: '',
                     })"> បន្ថែមព័ត៌មាន </UButton>
                 </div>
-                <ClientOnly>
-                    <TwInput name="interviewID" v-model="formData.InterviewerID" :value="
-                        //@ts-ignored
-                        formData.InterviewerID ? formData.InterviewerID : token.id
-                        " placeholder="ហត្ថលេខា" class="hidden" type="text" />
-                </ClientOnly>
-                <CustomErrorMessage name="interviewID" />
 
                 <div class="col-span-12 grid grid-cols-1 lg:grid-cols-2 gap-1  items-end">
                     <div>
