@@ -39,3 +39,75 @@ label {
     @apply block mb-1
 }
 
+
+/* ---------------------------------------------------------------------------
+   Print
+   ---------------------------------------------------------------------------
+   Shared by any page offering a print / save-as-PDF button. Two things matter:
+
+   1. Colour. Dark mode is a class on #dark-mode, and Tailwind's `dark:`
+      utilities compile to descendant rules under it, so a printed page in dark
+      mode would be white text on a background browsers do not print — i.e.
+      blank. Everything is forced to black on white here rather than trying to
+      unset the class, which also means Ctrl+P behaves like the button.
+
+   2. Chrome. The sidebar, header and any control marked `.no-print` are not
+      part of the document being printed.
+
+   Mark a block `.print-block` to ask the browser not to split it across pages.
+--------------------------------------------------------------------------- */
+@media print {
+  @page {
+    margin: 14mm;
+  }
+
+  /* Anything that is interface rather than content. */
+  header,
+  nav,
+  .no-print {
+    display: none !important;
+  }
+
+  #dark-mode,
+  #dark-mode * {
+    background: transparent !important;
+    color: #000 !important;
+    box-shadow: none !important;
+    border-color: #cbd5e1 !important;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+  }
+
+  /* The app frame constrains width and scrolls; a printed page should not. */
+  #dark-mode .min-h-screen {
+    min-height: 0 !important;
+  }
+  #dark-mode [class*="overflow-"] {
+    overflow: visible !important;
+  }
+
+  a {
+    text-decoration: none !important;
+  }
+
+  /* Keep a section, and any single row, from being split across a page break. */
+  .print-block {
+    break-inside: avoid;
+  }
+  table {
+    break-inside: auto;
+  }
+  tr {
+    break-inside: avoid;
+  }
+  thead {
+    display: table-header-group;
+  }
+
+  img {
+    max-width: 100% !important;
+  }
+}
