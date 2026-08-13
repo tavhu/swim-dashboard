@@ -435,7 +435,7 @@ model Client_PersonalInformation {
   POB                        String
   EducationLevel             String?
   Occupation                 String?
-  DateArrested               String? //កាលបរិចេ្ឆទចូលមជ្ឈមណ្ឌលឬឃាត់ខ្លួន
+  DateArrested               DateTime? //កាលបរិចេ្ឆទចូលមជ្ឈមណ្ឌលឬឃាត់ខ្លួន
   homeBA                     String
   StreetBA                   String
   villageBA                  String

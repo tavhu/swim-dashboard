@@ -27,7 +27,7 @@ export interface FieldSpec {
 
 /** Client_PersonalInformation */
 export const CLIENT_FIELDS: FieldSpec = {
-  optionalDates: ["DOB", "FOCDOB", "MOCDOB"],
+  optionalDates: ["DOB", "FOCDOB", "MOCDOB", "DateArrested"],
   requiredDates: ["InterViewDate"],
   requiredBooleans: ["KnownLegalConsequence", "UsedtoRehab"],
   defaultedBooleans: ["ClientFeelsHopless", "status"],

@@ -790,8 +790,9 @@ watch(() => formData.districtBA, (newCommune) => {
                     <CustomErrorMessage name="Occupation" />
                 </div>
                 <div class="col-span-12">
-                    <TwInput label="កាលបរិច្ឆេទចូលមជ្ឈមណ្ឌល" name="DateArrested" v-model="formData.DateArrested"
-                        placeholder="កាលបរិច្ឆេទចូលមជ្ឈមណ្ឌល" type="text" />
+                    <label class="">កាលបរិច្ឆេទចូលមជ្ឈមណ្ឌល</label>
+                    <Datepicker v-model="formData.DateArrested" name="DateArrested" :enableTimePicker="false"
+                        format="dd/MM/yyyy" placeholder="កាលបរិច្ឆេទចូលមជ្ឈមណ្ឌល" autoApply />
                     <CustomErrorMessage name="DateArrested" />
                 </div>
                 <!-- START: Corrected Address Fields -->
