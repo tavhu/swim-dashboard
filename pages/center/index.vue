@@ -66,7 +66,26 @@ const formData: {
   status: true,
   organisationID: ''
 })
+// One entry per non-nullable column on ServiceCenter, so the form refuses to
+// submit what the database would reject. This was `{}`, which meant
+// validator.validate() passed everything and the `required` attributes on
+// the inputs were decorative.
+//
+// `logo` is deliberately absent even though the column is non-nullable: the
+// upload runs after validation and assigns formData.logo from its result, so
+// requiring it here would make creating a centre impossible — the field is
+// still empty at the moment the validator looks at it.
 const formRules = {
+  nameKH: ['required'],
+  nameEN: ['required'],
+  type: ['required'],
+  directorName: ['required'],
+  phoneNumber: ['required'],
+  PoBox: ['required'],
+  email: ['required'],
+  website: ['required'],
+  locationMap: ['required'],
+  status: ['required'],
 }
 const isError = ref(false);
 const form = computed(() => composableForm.getForm(formName));

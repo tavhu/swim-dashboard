@@ -121,7 +121,40 @@ const formData: {
     InterviewerPosition: '',
     serviceCenterID: '',
 })
+// One entry per non-nullable column on Client_PersonalInformation, so the form
+// refuses to submit what the database would reject. This was `{}`, which meant
+// validator.validate() passed everything and the `required` attributes on the
+// inputs were decorative — the first sign of a missing field was a failed save.
+//
+// `required` here treats false as present and only rejects undefined, '' and
+// null, so the boolean radios validate correctly once answered.
 const formRules = {
+    fullNameKH: ['required'],
+    nickName: ['required'],
+    ReadableCode: ['required'],
+    IdentifyCode: ['required'],
+    Gender: ['required'],
+    POB: ['required'],
+    homeBA: ['required'],
+    StreetBA: ['required'],
+    villageBA: ['required'],
+    districtBA: ['required'],
+    communeBA: ['required'],
+    cityProBA: ['required'],
+    ClientSendBy: ['required'],
+    ImportantChallenge: ['required'],
+    PastActivities: ['required'],
+    ReasonUseDrug: ['required'],
+    KnownLegalConsequence: ['required'],
+    typeDrugUsed: ['required'],
+    DrugVolumeUsed: ['required'],
+    DrugRequecyUse: ['required'],
+    DrugDurationUse: ['required'],
+    LivingSituation: ['required'],
+    UsedtoRehab: ['required'],
+    InterviewerID: ['required'],
+    InterViewDate: ['required'],
+    serviceCenterID: ['required'],
 }
 
 const isError = ref(false);

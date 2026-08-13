@@ -62,7 +62,12 @@ watch(() => props.item, (newItem) => {
   }
 });
 
+// One entry per non-nullable column on Organisation, so the form refuses to
+// submit what the database would reject. This was `{}`, which meant
+// validator.validate() passed everything and the `required` attributes on
+// the inputs were decorative.
 const formRules = {
+  name: ['required'],
 }
 
 const isError = ref(false);

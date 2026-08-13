@@ -136,7 +136,9 @@ const deleteRecord = async (id: string) => {
     if (readOnly) return;
     if (!(await confirmDialog())) return;
 
-    const { error } = await useFetch("/api/center/delete", {
+    // Was "/api/center/delete", which calls prisma.serviceCenter.delete() — it
+    // looked a client id up in the service-centre table and always failed.
+    const { error } = await useFetch("/api/client/delete", {
         method: "POST",
         body: JSON.stringify({
             id: id,

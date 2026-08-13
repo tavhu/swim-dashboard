@@ -100,6 +100,14 @@ export const RULES: Rule[] = [
     resource: RESOURCE.client,
     action: "write",
   },
+  {
+    // /api/client/ is in ENFORCED, so this endpoint would fail closed for
+    // everyone without a rule here.
+    mode: "permission",
+    pattern: /^\/api\/client\/delete\/?$/,
+    resource: RESOURCE.client,
+    action: "write",
+  },
 
   // --- roles & permissions --------------------------------------------------
   {
