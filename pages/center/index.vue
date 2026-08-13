@@ -35,6 +35,7 @@ watch(compute, async () => {
 
 const config = useRuntimeConfig()
 const toast = useToast()
+const { uploadImage } = useImageUpload()
 const composableForm = useForm()
 const formName = "center"
 const formData: {
@@ -97,7 +98,14 @@ const submit = async () => {
   }
   const oldImageURL = formData.logo
   let image: any
-  image = await handleImageUpload()
+  try {
+    image = await handleImageUpload()
+  } catch (e) {
+    // Saving here would store the record with the previous logo, or none, while
+    // telling the user it worked.
+    toast.error({ message: "មិនអាចផ្ទុករូបភាពបានទេ" })
+    return
+  }
   if (image) {
     formData.logo = image[0]
     //delete old profile from server storage
@@ -180,26 +188,12 @@ const clear = () => {
 };
 
 const files = ref();
+// Errors deliberately propagate — see composables/useImageUpload.ts. The caller
+// aborts the save rather than storing a record whose image silently went
+// missing.
 const handleImageUpload = async () => {
   if (readOnly) return;
-  if (!files.value || files.value?.length == 0) return false;
-  try {
-    const fd = new FormData();
-    Array.from(files.value).forEach((file, index) => {
-      //@ts-ignore
-      fd.append(index, file);
-    });
-
-    const { data } = await useFetch("/api/user/upload", {
-      method: "POST",
-      body: fd,
-    });
-
-    console.log("data from backend is ", data.value);
-    return data.value
-  } catch (error) {
-    console.log(error);
-  }
+  return await uploadImage(files.value);
 };
 
 
