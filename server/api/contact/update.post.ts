@@ -33,10 +33,8 @@ export default eventHandler(async (event) => {
 
     setResponseStatus(event, 201);
     return { message: "delete success" };
-  } catch (e) {
+  } catch (e: any) {
     setResponseStatus(event, 502);
-    return {
-      error: "e",
-    };
+    return { error: e?.message ?? "Request failed" };
   }
 });

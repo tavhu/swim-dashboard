@@ -25,11 +25,9 @@ export default eventHandler(async (event) => {
     //@ts-ignore
     setResponseStatus(event, 201);
     return { message: "delete success" };
-  } catch (e) {
+  } catch (e: any) {
     //@ts-ignore
     setResponseStatus(event, 502);
-    return {
-      error: "e",
-    };
+    return { error: e?.message ?? "Request failed" };
   }
 });

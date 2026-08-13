@@ -2,12 +2,19 @@ import { getServerSession } from "#auth";
 
 export default eventHandler(async (event) => {
   const session = await getServerSession(event);
-  const body = await readBody(event);
-
-  // console.log(body)
   if (!session) {
     return { status: "unauthenticated" };
   }
+
+  const rawBody = await readBody(event);
+  // Prisma rejects '' for DateTime and Boolean columns, and the form
+  // initialises every field to ''. See server/utils/clientPayload.ts.
+  const { data: body, missing } = normaliseClientPayload(rawBody);
+  if (missing.length) {
+    setResponseStatus(event, 400);
+    return { error: `Missing or invalid: ${missing.join(', ')}`, fields: missing };
+  }
+
   console.log(body);
 
   try {
@@ -101,12 +108,11 @@ export default eventHandler(async (event) => {
     //@ts-ignored
     setResponseStatus(event, 201);
     return { message: "User Update or Created", id: result.id };
-  } catch (e) {
-    console.log(e);
-    //@ts-ignored
+  } catch (e: any) {
+    // Was `error: "e"` — the literal string — so the form could only say
+    // "unsuccessful" with no indication of which field was at fault.
+    console.error("[client/create]", e);
     setResponseStatus(event, 412);
-    return {
-      error: "e",
-    };
+    return { error: e?.message ?? "Could not save the client record" };
   }
 });

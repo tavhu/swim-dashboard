@@ -81,12 +81,10 @@ export default eventHandler(async (event) => {
     //@ts-ignored
     setResponseStatus(event, 201);
     return { message: "Update or Created" };
-  } catch (e) {
+  } catch (e: any) {
     console.log(e);
     //@ts-ignore
     setResponseStatus(event, 412);
-    return {
-      error: "e",
-    };
+    return { error: e?.message ?? "Request failed" };
   }
 });

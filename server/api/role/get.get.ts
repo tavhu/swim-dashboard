@@ -62,13 +62,13 @@ export default eventHandler(async (event) => {
       error: "",
       status: "authenticated",
     };
-  } catch (e) {
+  } catch (e: any) {
     //@ts-ignore
     setResponseStatus(event, 412);
     return {
       data: [],
       total: 0,
-      error: "e",
+      error: e?.message ?? "Request failed",
       status: "authenticated",
     };
   }

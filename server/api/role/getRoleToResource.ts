@@ -17,11 +17,9 @@ export default eventHandler(async (event) => {
     //@ts-ignored
     setResponseStatus(event, 201);
     return { data: data };
-  } catch (e) {
+  } catch (e: any) {
     //@ts-ignored
     setResponseStatus(event, 412);
-    return {
-      error: "e",
-    };
+    return { error: e?.message ?? "Request failed" };
   }
 });

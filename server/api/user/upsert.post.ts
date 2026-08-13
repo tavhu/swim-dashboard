@@ -99,6 +99,6 @@ export default eventHandler(async (event) => {
     }
     console.error("[user/upsert]", e);
     setResponseStatus(event, 412);
-    return { error: "e" };
+    return { error: e?.message ?? "Request failed" };
   }
 });

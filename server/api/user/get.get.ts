@@ -12,7 +12,7 @@ export default eventHandler(async (event) => {
       status: "unauthenticated",
       data: [],
       total: 0,
-      error: "e",
+      error: "Not signed in",
     };
   }
   try {
@@ -50,12 +50,12 @@ export default eventHandler(async (event) => {
       error: "",
       status: "authenticated",
     };
-  } catch (e) {
+  } catch (e: any) {
     setResponseStatus(event, 412);
     return {
       data: [],
       total: 0,
-      error: "e",
+      error: e?.message ?? "Request failed",
       status: "authenticated",
     };
   }

@@ -50,7 +50,7 @@ const config = useRuntimeConfig()
 const toast = useToast()
 const { uploadImage } = useImageUpload()
 const composableForm = useForm()
-const formName = "center"
+const formName = "clientPersonalInformation"
 const formData: {
     [key: string]: any;
 } = reactive({
@@ -91,14 +91,14 @@ const formData: {
     PastActivities: '',
     ReasonUseDrug: '',
     ReasonUseDrugOther: '',
-    KnownLegalConsequence: '',
+    KnownLegalConsequence: null,
     typeDrugUsed: '',
     typeDrugUsedOther: '',
     DrugVolumeUsed: '',
     DrugRequecyUse: '',
     DrugDurationUse: '',
     LivingSituation: '',
-    UsedtoRehab: false,
+    UsedtoRehab: null,
     HowManyTimeHaveServed: '',
     ReasonComingtoCenter: '',
     DailyActivitiesInCenter: '',
@@ -382,6 +382,18 @@ const LegalConsequence = [{
 {
     value: true,
     label: 'ដឹង',
+},
+]
+// UsedtoRehab is a required Boolean in the schema but had no control anywhere
+// in the template, so every record saved with whatever the initial value was.
+// The manual asks for it explicitly: ធ្លាប់ចូលមជ្ឈមណ្ឌល ឬទទួលសេវាប្រហាក់ប្រហែលពីមុន.
+const UsedtoRehabOption = [{
+    value: false,
+    label: 'មិនធ្លាប់',
+},
+{
+    value: true,
+    label: 'ធ្លាប់',
 },
 ]
 const ClientFeelsHopless = [{
@@ -988,6 +1000,12 @@ watch(() => formData.districtBA, (newCommune) => {
                             DateTimeServed: '',
                         })"> បន្ថែមព័ត៌មាន </UButton>
                     </div>
+                </div>
+                <div class="col-span-12">
+                    <label class="">ធ្លាប់ចូលមជ្ឈមណ្ឌល ឬទទួលសេវាប្រហាក់ប្រហែលពីមុន</label>
+                    <URadio class="font-[battambang] inline-flex ml-5 font-medium"
+                        v-for="(methods, index) of UsedtoRehabOption" :key="index"
+                        v-model="formData.UsedtoRehab" v-bind="methods" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
                     <TwInput label="តើអ្នកចូលមករស់នៅក្នុងមជ្ឈមណ្ឌលនេះលើកទីប៉ុន្មាន?" name="HowManyTimeHaveServed"
