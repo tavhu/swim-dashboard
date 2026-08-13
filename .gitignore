@@ -8,3 +8,10 @@ node_modules
 dist
 package-lock.json
 pnpm-lock.yaml
+
+# Database dumps. These contain named clients' case records — including
+# minors' substance-use, family and criminal-justice data. They must never
+# be committed, and shouldn't be left lying around longer than needed.
+backups/
+*.dump
+*.sql.gz

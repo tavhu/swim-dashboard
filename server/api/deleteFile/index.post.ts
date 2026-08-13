@@ -1,26 +1,44 @@
 import { getServerSession } from "#auth";
-import fs from "fs";
+import fs from "fs/promises";
+import { resolveUploadPath } from "../../utils/uploads";
 
-// import path from "path";
-
+/**
+ * Deletes a previously uploaded file.
+ *
+ * This used to be:
+ *
+ *   let newPath = body?.imgURL;
+ *   fs.unlink("public/" + newPath, () => { … });
+ *
+ * with no validation at all, so `{ imgURL: "../nuxt.config.ts" }` deleted
+ * arbitrary files the server process could reach. `resolveUploadPath` now
+ * confirms the target sits inside `public/uploads` before anything is removed.
+ */
 export default eventHandler(async (event) => {
   const session = await getServerSession(event);
-  const body = await readBody(event);
-
   if (!session) {
-    return { status: "unauthenticated" };
+    throw createError({ statusCode: 401, statusMessage: "Unauthenticated" });
   }
+
+  const body = await readBody(event);
+  const target = resolveUploadPath(body?.imgURL);
+
+  if (!target) {
+    console.warn(`[deleteFile] rejected path: ${String(body?.imgURL)}`);
+    throw createError({ statusCode: 400, statusMessage: "Invalid path" });
+  }
+
   try {
-    let newPath = body?.imgURL; //`${path.join("public", "uploads", '671d1852a3454254b5a470f00.jpeg')}`;
-    fs.unlink("public/" + newPath, () => {
-      setResponseStatus(event, 412);
-    });
-    setResponseStatus(event, 201);
-  } catch (e) {
-    console.log(e);
-    setResponseStatus(event, 412);
-    return {
-      error: e,
-    };
+    await fs.unlink(target);
+    setResponseStatus(event, 204);
+    return null;
+  } catch (e: any) {
+    if (e?.code === "ENOENT") {
+      // Already gone — the caller's intent is satisfied.
+      setResponseStatus(event, 204);
+      return null;
+    }
+    console.error("[deleteFile]", e);
+    throw createError({ statusCode: 500, statusMessage: "Delete failed" });
   }
 });
