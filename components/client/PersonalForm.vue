@@ -61,7 +61,6 @@ const formData: {
     ClientHopelessMultiple: [],
     nickName: '',
     ReadableCode: '',
-    IdentifyCode: '',
     Gender: '',
     DOB: '',
     POB: '',
@@ -132,8 +131,7 @@ const formRules = {
     fullNameKH: ['required'],
     nickName: ['required'],
     ReadableCode: ['required'],
-    IdentifyCode: ['required'],
-    Gender: ['required'],
+      Gender: ['required'],
     POB: ['required'],
     homeBA: ['required'],
     StreetBA: ['required'],
@@ -235,7 +233,6 @@ const submit = async () => {
     const form_data = {
         id: formData.id,
         fullNameKH: formData.fullNameKH,
-        IdentifyCode: formData.IdentifyCode,
         photo: formData.photo,
         nickName: formData.nickName,
         ReadableCode: formData.ReadableCode,
@@ -323,7 +320,6 @@ const submit = async () => {
 const clear = () => {
     if (prop.readOnly) return;
     formData.status = false
-    formData.IdentifyCode = null
     formData.photo = null
     files.value = null
     formData.id = null
@@ -498,7 +494,6 @@ const ClientProgress = ref(Array({
 
 //     formData.id = userProfile.value?.data?.id
 //     formData.photo = userProfile.value?.data?.photo
-//     formData.IdentifyCode = userProfile.value?.data?.IdentifyCode
 //     formData.fullNameKH = userProfile.value?.data?.fullNameKH
 //     formData.nickName = userProfile.value?.data?.nickName
 //     formData.ReadableCode = userProfile.value?.data?.ReadableCode
@@ -707,10 +702,10 @@ watch(() => formData.districtBA, (newCommune) => {
                     <TwFeather type="file-text" />
                     <h1 class="text-lg"> ព័ត៌មានលំអិត </h1>
                 </div>
-                <div class="col-span-12">
+                <!-- <div class="col-span-12">
                     {{
                         formData }}
-                </div>
+                </div> -->
                 <div class="col-span-12 lg:col-span-6">
                     <TwInput label="លេខសំគាល់" name="ReadableCode" v-model="formData.ReadableCode"
                         placeholder="លេខសំគាល់" type="text" />
@@ -732,11 +727,6 @@ watch(() => formData.districtBA, (newCommune) => {
                         </div>
                     </div>
                     <TwFile v-model="files" label="រូបភាព ៤x៦" />
-                </div>
-                <div class="col-span-12  lg:col-start-4 lg:col-span-5">
-                    <TwInput label="លេខកូដ" disabled name="IdentifyCode" v-model="formData.IdentifyCode"
-                        placeholder="លេខកូដ" type="text" />
-                    <CustomErrorMessage name="IdentifyCode" />
                 </div>
                 <div class="col-span-12 flex justify-start gap-3 mt-5 mb-5">
                     <!-- <TwFeather type="map-pin" /> -->
@@ -789,7 +779,7 @@ watch(() => formData.districtBA, (newCommune) => {
                         placeholder="មុខរបរ (បើមាន)" type="text" />
                     <CustomErrorMessage name="Occupation" />
                 </div>
-                <div class="col-span-12">
+                <div class="col-span-12 lg:col-span-6">
                     <label class="">កាលបរិច្ឆេទចូលមជ្ឈមណ្ឌល</label>
                     <Datepicker v-model="formData.DateArrested" name="DateArrested" :enableTimePicker="false"
                         format="dd/MM/yyyy" placeholder="កាលបរិច្ឆេទចូលមជ្ឈមណ្ឌល" autoApply />
@@ -1038,8 +1028,8 @@ watch(() => formData.districtBA, (newCommune) => {
                 <div class="col-span-12">
                     <label class="">ធ្លាប់ចូលមជ្ឈមណ្ឌល ឬទទួលសេវាប្រហាក់ប្រហែលពីមុន</label>
                     <URadio class="font-[battambang] inline-flex ml-5 font-medium"
-                        v-for="(methods, index) of UsedtoRehabOption" :key="index"
-                        v-model="formData.UsedtoRehab" v-bind="methods" />
+                        v-for="(methods, index) of UsedtoRehabOption" :key="index" v-model="formData.UsedtoRehab"
+                        v-bind="methods" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
                     <TwInput label="តើអ្នកចូលមករស់នៅក្នុងមជ្ឈមណ្ឌលនេះលើកទីប៉ុន្មាន?" name="HowManyTimeHaveServed"

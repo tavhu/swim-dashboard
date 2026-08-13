@@ -429,7 +429,6 @@ model Client_PersonalInformation {
   photo                      String?
   nickName                   String
   ReadableCode               String
-  IdentifyCode               String
   Gender                     String
   DOB                        DateTime?
   POB                        String

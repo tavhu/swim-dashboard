@@ -25,7 +25,6 @@ export default eventHandler(async (event) => {
           nickName: body?.nickName,
           photo: body?.photo,
           ReadableCode: body?.ReadableCode,
-          IdentifyCode: body?.IdentifyCode,
           Gender: body?.Gender,
           DOB: body?.DOB,
           POB: body?.POB,
