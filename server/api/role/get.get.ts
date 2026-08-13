@@ -1,18 +1,11 @@
-import { getServerSession } from "#auth";
-
 export default eventHandler(async (event) => {
-  const session = await getServerSession(event);
-  // const body =  await readBody(event)
+  const caller = await requireAuth(event);
   const body = getQuery(event);
 
-  if (!session) {
-    return {
-      status: "unauthenticated",
-      data: [],
-      total: 0,
-      error: "e",
-    };
-  }
+  // Whether to filter the list down to the roles this caller may assign. The
+  // *which user* is no longer taken from `?userID=` — that let anyone read
+  // anyone else's assignable roles — only whether to filter at all.
+  const scopeToCaller = !!body?.userID;
 
   try {
     const totalCount = await event.context.prisma.role.count();
@@ -26,16 +19,9 @@ export default eventHandler(async (event) => {
       skip: body?.skip ? parseInt(body?.skip) : 0,
     });
 
-    let userID: any = body?.userID;
-    const user = await event.context.prisma.user.findUnique({
-      where: {
-        id: userID ? userID : "",
-      },
-    });
-
     const roleResource = await event.context.prisma.roleToResource.findMany({
       where: {
-        roleID: user?.userRoleID ? user?.userRoleID : "",
+        roleID: caller.roleId ?? "",
         granted: false,
       },
       select: {
@@ -71,7 +57,7 @@ export default eventHandler(async (event) => {
     //@ts-ignore
     setResponseStatus(event, 201);
     return {
-      data: body?.userID ? temData : data,
+      data: scopeToCaller ? temData : data,
       total: totalCount,
       error: "",
       status: "authenticated",

@@ -1,25 +1,14 @@
-import { getServerSession } from "#auth";
-
 export default eventHandler(async (event) => {
-  const session = (await getServerSession(event)) as any;
-
-  if (!session) {
-    setResponseStatus(event, 401);
-    return { status: "unauthenticated" };
-  }
+  const user = await requireAuth(event);
 
   try {
-    const dbUser = await event.context.prisma.user.findUnique({
-      where: { id: session.id },
-    });
-
-    if (!dbUser || !dbUser.userRoleID) {
+    if (!user.roleId) {
       return { permissions: [] };
     }
 
     const rolePermissions = await event.context.prisma.roleToResource.findMany({
       where: {
-        roleID: dbUser.userRoleID,
+        roleID: user.roleId,
       },
       select: {
         Resource: {
@@ -33,7 +22,9 @@ export default eventHandler(async (event) => {
     });
 
     const permissions = rolePermissions.map((p) => {
-      const canWrite = p.read;
+      // `granted` is the write column. This previously read `p.read`, which
+      // handed write/update/delete to anyone with read-only access.
+      const canWrite = p.granted;
 
       return {
         frontEndURL: p.Resource?.frontEndURL,

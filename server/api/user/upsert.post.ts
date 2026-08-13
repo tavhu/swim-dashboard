@@ -1,55 +1,104 @@
-import { getServerSession } from "#auth";
-import { hash } from 'bcrypt'
+import { hash } from "bcrypt";
+import { RESOURCE } from "../../utils/policy";
 
-export default eventHandler(async  event => {
-    const session = await getServerSession(event)
-    const body =  await readBody(event)
+/**
+ * Create or update a user account.
+ *
+ * Previously this checked only that *a* session existed, then passed the body
+ * straight into `prisma.user.upsert`. Two consequences:
+ *
+ *   1. `userRoleID` came from the client, so any signed-in account could POST
+ *      its own id with the Super Admin role id and promote itself. The role
+ *      dropdown in `pages/register/index.vue` was the only thing limiting it,
+ *      and a dropdown is not a permission check.
+ *   2. `id` came from the client too, so any signed-in account could edit any
+ *      other user — including sending `updatePass: true` to reset the
+ *      ministry admin's password and take the account.
+ *
+ * Now: editing anyone other than yourself requires write on `register`, and
+ * assigning a gated role requires write on that role's resource row — the same
+ * rule `/api/role/get` already uses to build the dropdown.
+ */
+export default eventHandler(async (event) => {
+  const caller = await requireAuth(event);
+  const body = await readBody(event);
 
-    // console.log(body)        
-    if(!session){
-        return { status: 'unauthenticated'}
-    }    
-    try {
-        const a = await event.context.prisma.user.upsert({
-            where :{
-                id : body?.id
-            },
-            update: {
-                firstname : body?.firstname,      
-                lastname : body?.lastname,    
-                username: body?.username,
-                image : body?.image,          
-                status : body?.status,      
-                userRoleID : body?.userRoleID,      
-                serviceCenterID : body?.serviceCenterID, 
-                organisationID: body?.organisationID,
-                accountType: body?.accountType,               
-                password: body?.updatePass ?  await hash(body?.password,12): body?.password 
-            },
-            create : {
-                firstname : body?.firstname,      
-                lastname : body?.lastname,       
-                username : body?.username,          
-                password : await hash(body?.password,12),
-                image : body?.image,          
-                status : body?.status,   
-                userRoleID : body?.userRoleID,
-                serviceCenterID : body?.serviceCenterID, 
-                organisationID: body?.organisationID, 
-                accountType: body?.accountType,              
-            }
-        })
-        console.log(a)
-        //@ts-ignored console.log(res)
-        setResponseStatus(event, 201)    
-        return { message: "User Update or Created" }
-    }catch(e){  
-        //@ts-ignored console.log(e)
-        setResponseStatus(event, 412)    
-        return {
-            error  : 'e',
-        }
-    }   
-})
+  const targetId: string | undefined = body?.id || undefined;
+  const isSelf = !!targetId && targetId === caller.id;
 
+  // Creating a user, or editing someone else, is an administrative act.
+  if (!isSelf) {
+    if (!userCan(caller, RESOURCE.userCreate, "write")) {
+      throw createError({
+        statusCode: 403,
+        statusMessage: encodeURI("អ្នកមិនមានសិទ្ធិគ្រប់គ្រងគណនីអ្នកប្រើប្រាស់ទេ"),
+      });
+    }
+  }
 
+  // Editing your own profile must not be a route to a better role. The form
+  // hides these fields when you edit yourself; enforce that on the server.
+  let userRoleID = body?.userRoleID;
+  let status = body?.status;
+  if (isSelf) {
+    const current = await event.context.prisma.user.findUnique({
+      where: { id: caller.id },
+      select: { userRoleID: true, status: true },
+    });
+    userRoleID = current?.userRoleID ?? null;
+    status = current?.status ?? true;
+  }
+
+  await assertCanAssignRole(event, caller, userRoleID);
+
+  try {
+    const data = {
+      firstname: body?.firstname,
+      lastname: body?.lastname,
+      username: body?.username,
+      image: body?.image,
+      status,
+      userRoleID,
+      serviceCenterID: body?.serviceCenterID,
+      organisationID: body?.organisationID,
+      accountType: body?.accountType,
+    };
+
+    if (targetId) {
+      await event.context.prisma.user.update({
+        where: { id: targetId },
+        data: {
+          ...data,
+          // An empty password field means "leave it alone", not "set it to
+          // undefined" — only hash and write when a new one was supplied.
+          ...(body?.updatePass && body?.password
+            ? { password: await hash(body.password, 12) }
+            : {}),
+        },
+      });
+    } else {
+      if (!body?.password) {
+        throw createError({
+          statusCode: 400,
+          statusMessage: encodeURI("សូមបញ្ចូលលេខសំងាត់"),
+        });
+      }
+      await event.context.prisma.user.create({
+        data: { ...data, password: await hash(body.password, 12) },
+      });
+    }
+
+    setResponseStatus(event, 201);
+    return { message: "User Update or Created" };
+  } catch (e: any) {
+    if (e?.statusCode) throw e;
+    // P2002 = unique constraint; the only one on User is `username`.
+    if (e?.code === "P2002") {
+      setResponseStatus(event, 409);
+      return { error: encodeURI("ឈ្មោះអ្នកប្រើប្រាស់នេះមានរួចហើយ") };
+    }
+    console.error("[user/upsert]", e);
+    setResponseStatus(event, 412);
+    return { error: "e" };
+  }
+});

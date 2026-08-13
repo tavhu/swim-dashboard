@@ -1,20 +1,15 @@
-import { PrismaClient } from "@prisma/client";
+import type { PrismaClient } from "@prisma/client";
+import { usePrisma } from "../utils/db";
 
-let prisma: PrismaClient
-
-declare module 'h3' {
-    interface H3EventContext{
-        prisma: PrismaClient
-    }
+declare module "h3" {
+  interface H3EventContext {
+    prisma: PrismaClient;
+  }
 }
 
-export default eventHandler(event =>{
-    if(!prisma){
-        prisma = new PrismaClient()
-    }
-    event.context.prisma = prisma
-    
-// console.log('test')
-})
-
-
+// The client itself now lives in server/utils/db.ts so that middleware which
+// runs before this one (Nitro orders by filename) can reach the same instance
+// instead of opening a second connection pool.
+export default eventHandler((event) => {
+  usePrisma(event);
+});
