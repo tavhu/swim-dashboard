@@ -253,9 +253,15 @@ const addStaff = (CenterID: string) => {
                               are disabled rather than pointed at a route that cannot serve
                               them — these used to link to /center pages with a client id.
                             -->
+                            <NuxtLink :to="config.public.origin + '/client/id/' + data.id">
+                                <UButton color="gray" icon="i-heroicons-eye" class="border"
+                                    :title="CASE_FORMS[0].title + ' — មើល និងបោះពុម្ព'">
+                                    មើល
+                                </UButton>
+                            </NuxtLink>
                             <NuxtLink :to="config.public.origin + '/client/register/' + data.id" target="_BLANK">
                                 <UButton color="primary" icon="i-heroicons-pencil-square" class="border"
-                                    :disabled="readOnly" :title="CASE_FORMS[0].title">
+                                    :disabled="readOnly" :title="CASE_FORMS[0].title + ' — កែសម្រួល'">
                                     {{ CASE_FORMS[0].label }}
                                 </UButton>
                             </NuxtLink>
