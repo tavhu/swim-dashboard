@@ -672,6 +672,37 @@ onMounted(async () => {
             if (formData.cityProBA && formData.districtBA && formData.communeBA) {
                 villageList.value = findVillagesByCommune(formData.cityProBA, formData.districtBA, formData.communeBA);
             }
+
+            // The repeatable sections and the difficulties checklist are their own
+            // refs, not part of formData, so the Object.assign above never reached
+            // them and they opened blank on every edit.
+            //
+            // `id` is deliberately dropped: the update endpoint deletes these rows
+            // and recreates them from the body, so the stored ids are stale by the
+            // time they would be written back.
+            if (userProfile.ClientServeHistory?.length) {
+                ClientServeHistory.value = userProfile.ClientServeHistory.map((h: any) => ({
+                    nameCenterorPrison: h.nameCenterorPrison ?? '',
+                    DateTimeServed: h.DateTimeServed ?? '',
+                }));
+            }
+            if (userProfile.ClientProgress?.length) {
+                ClientProgress.value = userProfile.ClientProgress.map((c: any) => ({
+                    NoteDateTime: c.NoteDateTime ?? '',
+                    Details: c.Details ?? '',
+                }));
+            }
+            if (userProfile.ClientHopelessMultiple?.length) {
+                // Keep the component's own option list — it carries the labels and
+                // the full set of choices — and only restore which were ticked.
+                const ticked = new Set(
+                    userProfile.ClientHopelessMultiple.filter((h: any) => h.check).map((h: any) => h.value)
+                );
+                ClientHopelessMultiple.value = ClientHopelessMultiple.value.map((o: any) => ({
+                    ...o,
+                    check: ticked.has(o.value),
+                }));
+            }
         }
         ClientRegister.value = true;
     }
