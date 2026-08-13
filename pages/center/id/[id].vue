@@ -18,9 +18,10 @@ const asset = (p?: string | null) =>
 const formatDate = (d?: string | null) =>
   d ? new Date(d).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : "—";
 
-// Field lists rather than a run of near-identical <p> blocks: the old markup
-// repeated `<strong>label:</strong> {{ value }}` seventeen times, which made
-// the labels impossible to align and every empty value render as a bare colon.
+// Field and section lists rather than a run of near-identical blocks: the old
+// markup repeated `<strong>label:</strong> {{ value }}` seventeen times, which
+// made the labels impossible to align and rendered every empty value as a bare
+// trailing colon.
 const generalFields = computed(() => {
   const c = serviceCenter.value;
   if (!c) return [];
@@ -48,7 +49,6 @@ const locationFields = computed(() => {
   ];
 });
 
-// Six prose sections that were previously six copy-pasted blocks.
 const proseSections = computed(() => {
   const c = serviceCenter.value;
   if (!c) return [];
@@ -66,36 +66,36 @@ const centerPlans = computed(() =>
   (serviceCenter.value?.CenterPlan ?? []).map((p: any, i: number) => ({
     ...p,
     number: i + 1,
-    files: String(p.filePath ?? "")
-      .split(",")
-      .map((f: string) => f.trim())
-      .filter(Boolean),
+    files: String(p.filePath ?? "").split(",").map((f: string) => f.trim()).filter(Boolean),
   }))
 );
 
-const staff = computed(() =>
-  (serviceCenter.value?.staff ?? []).map((s: any, i: number) => ({
-    number: i + 1,
-    photo: asset(s.photo),
-    nameKH: [s.firstName, s.lastName].filter(Boolean).join(" "),
-    nameEN: s.fullnameEN,
-    gender: s.gender,
-    email: s.familyEmail,
-    phone: s.familyPhoneNumber,
-  }))
-);
+const staffGroups = computed(() => {
+  const c = serviceCenter.value;
+  if (!c) return [];
+  const map = (rows: any[], kh: (s: any) => string, en: (s: any) => string, mail: string, tel: string) =>
+    (rows ?? []).map((s: any, i: number) => ({
+      number: i + 1,
+      photo: asset(s.photo),
+      nameKH: kh(s),
+      nameEN: en(s),
+      gender: s.gender,
+      email: s[mail],
+      phone: s[tel],
+    }));
+  return [
+    {
+      title: "បុគ្គលិកកិច្ចសន្យា",
+      rows: map(c.staff, (s) => [s.firstName, s.lastName].filter(Boolean).join(" "), (s) => s.fullnameEN, "familyEmail", "familyPhoneNumber"),
+    },
+    {
+      title: "បុគ្គលិករដ្ឋ",
+      rows: map(c.governStaff, (s) => [s.firstNameKH, s.lastNameKH].filter(Boolean).join(" "), (s) => [s.firstNameEN, s.lastNameEN].filter(Boolean).join(" "), "email", "telephone"),
+    },
+  ].filter((g) => g.rows.length);
+});
 
-const governStaff = computed(() =>
-  (serviceCenter.value?.governStaff ?? []).map((s: any, i: number) => ({
-    number: i + 1,
-    photo: asset(s.photo),
-    nameKH: [s.firstNameKH, s.lastNameKH].filter(Boolean).join(" "),
-    nameEN: [s.firstNameEN, s.lastNameEN].filter(Boolean).join(" "),
-    gender: s.gender,
-    email: s.email,
-    phone: s.telephone,
-  }))
-);
+useHead(() => ({ title: serviceCenter.value?.nameKH || "មជ្ឈមណ្ឌល" }));
 
 onMounted(async () => {
   try {
@@ -114,160 +114,173 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="mx-auto max-w-5xl px-4 py-6">
-    <!-- Loading -->
-    <div v-if="pending" class="space-y-4">
-      <div class="h-20 animate-pulse rounded-xl bg-gray-200 dark:bg-gray-800" />
-      <div class="h-56 animate-pulse rounded-xl bg-gray-200 dark:bg-gray-800" />
-    </div>
+  <!--
+    Card-on-grey, Moul headings in primary, Battambang body — the same shell the
+    dashboard and the centre list use. Full width rather than a centred column,
+    so a wide screen shows more than whitespace.
 
-    <!-- Error -->
-    <div v-else-if="error"
-      class="rounded-xl border border-red-200 bg-red-50 p-6 text-center dark:border-red-900 dark:bg-red-950/40">
-      <p class="text-sm font-medium text-red-700 dark:text-red-300">{{ error }}</p>
-      <button type="button" class="mt-3 text-sm text-primary hover:underline" @click="$router.go(0)">
-        ព្យាយាមម្តងទៀត
-      </button>
-    </div>
-
-    <article v-else-if="serviceCenter" class="space-y-8">
-      <!-- Header -->
-      <header class="print-block flex items-start gap-4 border-b border-gray-200 pb-6 dark:border-gray-800">
-        <img v-if="serviceCenter.logo" :src="asset(serviceCenter.logo)" :alt="serviceCenter.nameEN"
-          class="h-16 w-16 shrink-0 rounded-full object-cover ring-1 ring-gray-200 dark:ring-gray-700" />
-        <div class="min-w-0 flex-1">
-          <h1 class="text-xl font-semibold leading-snug text-gray-900 dark:text-white">
-            {{ serviceCenter.nameKH }}
-          </h1>
-          <p v-if="serviceCenter.nameEN" class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            {{ serviceCenter.nameEN }}
-          </p>
-          <span class="mt-2 inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium" :class="serviceCenter.status
-            ? 'bg-primary/10 text-primary'
-            : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'">
-            <span class="h-1.5 w-1.5 rounded-full bg-current" />
-            {{ serviceCenter.status ? 'ដំណើការ' : 'បិទដំណើការ' }}
-          </span>
-        </div>
-        <button type="button" @click="printPage"
-          class="no-print inline-flex shrink-0 items-center gap-2 rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800">
-          <TwFeather type="printer" :size="16" />
-          <span class="hidden sm:inline">បោះពុម្ព</span>
-        </button>
-      </header>
-
-      <!-- General -->
-      <section class="print-block">
-        <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-          ព័ត៌មានមជ្ឈមណ្ឌលសេវាកម្ម
+    Body text is `text-base` with generous leading. Battambang is loaded at
+    weights 100 and 300 only, so bold Khmer would be synthesised by the browser
+    and smear the stacked diacritics; hierarchy comes from size and colour here
+    instead of weight.
+  -->
+  <div class="font-[Battambang]">
+    <div class="mt-5">
+      <!-- Title -->
+      <div class="flex items-start justify-between gap-4">
+        <h2 class="text-2xl font-[Moul] text-primary">
+          {{ serviceCenter?.nameKH || 'មជ្ឈមណ្ឌល' }}
         </h2>
-        <dl class="grid grid-cols-1 gap-x-8 gap-y-3 sm:grid-cols-2">
-          <div v-for="f in generalFields" :key="f.label" :class="f.wide ? 'sm:col-span-2' : ''">
-            <dt class="text-xs text-gray-500 dark:text-gray-400">{{ f.label }}</dt>
-            <dd class="mt-0.5 break-words text-sm text-gray-900 dark:text-gray-100">
-              <a v-if="f.href && f.value" :href="f.href" target="_blank" rel="noopener"
-                class="text-primary hover:underline">{{ f.value }}</a>
-              <span v-else>{{ f.value || '—' }}</span>
-            </dd>
+        <UButton v-if="serviceCenter" color="primary" size="xl" class="no-print shrink-0" @click="printPage">
+          <TwFeather type="printer" :size="18" class="mr-1" />
+          <span class="hidden font-[Moul] text-lg sm:inline">បោះពុម្ព</span>
+        </UButton>
+      </div>
+      <hr class="my-2 border dark:border-gray-700" />
+
+      <!-- Loading -->
+      <div v-if="pending" class="grid grid-cols-12 gap-4">
+        <div v-for="n in 4" :key="n" class="col-span-12 h-40 animate-pulse rounded-lg bg-white shadow dark:bg-gray-800"
+          :class="n === 1 ? 'xl:col-span-4' : 'xl:col-span-8'" />
+      </div>
+
+      <!-- Error -->
+      <div v-else-if="error" class="rounded-lg bg-white p-8 text-center shadow dark:bg-gray-800">
+        <p class="text-lg text-red-600 dark:text-red-400">{{ error }}</p>
+        <UButton color="primary" class="mt-4" @click="$router.go(0)">
+          <span class="font-[Moul]">ព្យាយាមម្តងទៀត</span>
+        </UButton>
+      </div>
+
+      <div v-else-if="serviceCenter" class="grid grid-cols-12 items-start gap-4">
+        <!-- Identity -->
+        <section class="print-block col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800 xl:col-span-4">
+          <div class="flex flex-col items-center gap-3 text-center">
+            <img v-if="serviceCenter.logo" :src="asset(serviceCenter.logo)" :alt="serviceCenter.nameEN"
+              class="h-24 w-24 rounded-full border border-[#1d152a7a] object-cover" />
+            <div>
+              <h3 class="text-lg leading-loose text-gray-800 dark:text-gray-100">{{ serviceCenter.nameKH }}</h3>
+              <p v-if="serviceCenter.nameEN" class="mt-1 text-base leading-relaxed text-gray-500 dark:text-gray-400">
+                {{ serviceCenter.nameEN }}
+              </p>
+            </div>
+            <span class="inline-flex items-center gap-2 rounded-full px-3 py-1 text-base" :class="serviceCenter.status
+              ? 'bg-primary/10 text-primary'
+              : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'">
+              <span class="h-2 w-2 rounded-full bg-current" />
+              {{ serviceCenter.status ? 'ដំណើការ' : 'បិទដំណើការ' }}
+            </span>
           </div>
-        </dl>
-      </section>
+        </section>
 
-      <!-- Location -->
-      <section class="print-block">
-        <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-          ព័ត៌មានលម្អិតអំពីទីតាំង
-        </h2>
-        <dl class="grid grid-cols-2 gap-x-8 gap-y-3 sm:grid-cols-4">
-          <div v-for="f in locationFields" :key="f.label">
-            <dt class="text-xs text-gray-500 dark:text-gray-400">{{ f.label }}</dt>
-            <dd class="mt-0.5 text-sm text-gray-900 dark:text-gray-100">{{ f.value || '—' }}</dd>
+        <!-- General -->
+        <section class="print-block col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800 xl:col-span-8">
+          <h3 class="text-xl font-[Moul] text-primary">ព័ត៌មានមជ្ឈមណ្ឌលសេវាកម្ម</h3>
+          <hr class="my-2 border dark:border-gray-700" />
+          <dl class="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2 2xl:grid-cols-3">
+            <div v-for="f in generalFields" :key="f.label" :class="f.wide ? 'sm:col-span-2 2xl:col-span-3' : ''">
+              <dt class="text-sm text-gray-500 dark:text-gray-400">{{ f.label }}</dt>
+              <dd class="mt-1 break-words text-base leading-relaxed text-gray-800 dark:text-gray-100">
+                <a v-if="f.href && f.value" :href="f.href" target="_blank" rel="noopener"
+                  class="text-primary hover:underline">{{ f.value }}</a>
+                <span v-else>{{ f.value || '—' }}</span>
+              </dd>
+            </div>
+          </dl>
+        </section>
+
+        <!-- Location -->
+        <section class="print-block col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800">
+          <h3 class="text-xl font-[Moul] text-primary">ព័ត៌មានលម្អិតអំពីទីតាំង</h3>
+          <hr class="my-2 border dark:border-gray-700" />
+          <dl class="grid grid-cols-2 gap-x-8 gap-y-4 lg:grid-cols-4">
+            <div v-for="f in locationFields" :key="f.label">
+              <dt class="text-sm text-gray-500 dark:text-gray-400">{{ f.label }}</dt>
+              <dd class="mt-1 text-base leading-relaxed text-gray-800 dark:text-gray-100">{{ f.value || '—' }}</dd>
+            </div>
+          </dl>
+        </section>
+
+        <!-- Narrative -->
+        <section v-for="s in proseSections" :key="s.title"
+          class="print-block col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800 md:col-span-6 2xl:col-span-4">
+          <h3 class="text-xl font-[Moul] text-primary">{{ s.title }}</h3>
+          <hr class="my-2 border dark:border-gray-700" />
+          <p class="whitespace-pre-line text-base leading-loose text-gray-700 dark:text-gray-300">{{ s.body }}</p>
+        </section>
+
+        <!-- Plans -->
+        <section v-if="centerPlans.length"
+          class="print-block col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800">
+          <h3 class="text-xl font-[Moul] text-primary">ផែនការមជ្ឈមណ្ឌល</h3>
+          <hr class="my-2 border dark:border-gray-700" />
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-base">
+              <thead class="border-b text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400">
+                <tr>
+                  <th class="py-3 pr-4 font-normal">ល.រ</th>
+                  <th class="py-3 pr-4 font-normal">ផែនការសកម្មភាព</th>
+                  <th class="py-3 pr-4 font-normal">កំណត់ចំណាំ</th>
+                  <th class="py-3 pr-4 font-normal">ផែនការឆ្នាំ</th>
+                  <th class="py-3 font-normal">ឯកសារ</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                <tr v-for="p in centerPlans" :key="p.id ?? p.number">
+                  <td class="py-3 pr-4 align-top text-gray-500">{{ p.number }}</td>
+                  <td class="py-3 pr-4 align-top text-gray-800 dark:text-gray-100">{{ p.actvityPlan || '—' }}</td>
+                  <td class="py-3 pr-4 align-top leading-relaxed text-gray-800 dark:text-gray-100">{{ p.note || '—' }}</td>
+                  <td class="py-3 pr-4 align-top text-gray-800 dark:text-gray-100">{{ p.yearPlan || '—' }}</td>
+                  <td class="py-3 align-top">
+                    <template v-if="p.files.length">
+                      <a v-for="(f, i) in p.files" :key="i" :href="asset(f)" target="_blank" rel="noopener"
+                        class="block break-all text-primary hover:underline">{{ f.split('/').pop() }}</a>
+                    </template>
+                    <span v-else class="text-gray-400">—</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-        </dl>
-      </section>
+        </section>
 
-      <!-- Narrative sections -->
-      <section v-for="s in proseSections" :key="s.title" class="print-block">
-        <h2 class="mb-2 text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-          {{ s.title }}
-        </h2>
-        <p class="whitespace-pre-line text-sm leading-relaxed text-gray-800 dark:text-gray-200">{{ s.body }}</p>
-      </section>
-
-      <!-- Plans -->
-      <section v-if="centerPlans.length" class="print-block">
-        <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-          ផែនការមជ្ឈមណ្ឌល
-        </h2>
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-sm">
-            <thead class="border-b border-gray-200 text-xs text-gray-500 dark:border-gray-800 dark:text-gray-400">
-              <tr>
-                <th class="py-2 pr-4 font-medium">ល.រ</th>
-                <th class="py-2 pr-4 font-medium">ផែនការសកម្មភាព</th>
-                <th class="py-2 pr-4 font-medium">កំណត់ចំណាំ</th>
-                <th class="py-2 pr-4 font-medium">ផែនការឆ្នាំ</th>
-                <th class="py-2 font-medium">ឯកសារ</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
-              <tr v-for="p in centerPlans" :key="p.id ?? p.number">
-                <td class="py-2 pr-4 align-top text-gray-500">{{ p.number }}</td>
-                <td class="py-2 pr-4 align-top">{{ p.actvityPlan || '—' }}</td>
-                <td class="py-2 pr-4 align-top">{{ p.note || '—' }}</td>
-                <td class="py-2 pr-4 align-top">{{ p.yearPlan || '—' }}</td>
-                <td class="py-2 align-top">
-                  <template v-if="p.files.length">
-                    <a v-for="(f, i) in p.files" :key="i" :href="asset(f)" target="_blank" rel="noopener"
-                      class="block text-primary hover:underline">{{ f.split('/').pop() }}</a>
-                  </template>
-                  <span v-else class="text-gray-400">—</span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- Staff tables: same shape, so one markup block drives both. -->
-      <section v-for="group in [
-        { title: 'បុគ្គលិកកិច្ចសន្យា', rows: staff },
-        { title: 'បុគ្គលិករដ្ឋ', rows: governStaff },
-      ].filter(g => g.rows.length)" :key="group.title" class="print-block">
-        <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-          {{ group.title }}
-        </h2>
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-sm">
-            <thead class="border-b border-gray-200 text-xs text-gray-500 dark:border-gray-800 dark:text-gray-400">
-              <tr>
-                <th class="py-2 pr-4 font-medium">ល.រ</th>
-                <th class="py-2 pr-4 font-medium">រូបថត</th>
-                <th class="py-2 pr-4 font-medium">ឈ្មោះ (ខ្មែរ)</th>
-                <th class="py-2 pr-4 font-medium">ឈ្មោះ (អង់គ្លេស)</th>
-                <th class="py-2 pr-4 font-medium">ភេទ</th>
-                <th class="py-2 pr-4 font-medium">អ៊ីមែល</th>
-                <th class="py-2 font-medium">ទូរស័ព្ទ</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
-              <tr v-for="r in group.rows" :key="r.number">
-                <td class="py-2 pr-4 text-gray-500">{{ r.number }}</td>
-                <td class="py-2 pr-4">
-                  <img v-if="r.photo" :src="r.photo" alt=""
-                    class="h-8 w-8 rounded-full object-cover ring-1 ring-gray-200 dark:ring-gray-700" />
-                  <span v-else class="text-gray-400">—</span>
-                </td>
-                <td class="py-2 pr-4">{{ r.nameKH || '—' }}</td>
-                <td class="py-2 pr-4">{{ r.nameEN || '—' }}</td>
-                <td class="py-2 pr-4">{{ r.gender || '—' }}</td>
-                <td class="py-2 pr-4 break-all">{{ r.email || '—' }}</td>
-                <td class="py-2">{{ r.phone || '—' }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-    </article>
+        <!-- Staff -->
+        <section v-for="group in staffGroups" :key="group.title"
+          class="print-block col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800 2xl:col-span-6">
+          <h3 class="text-xl font-[Moul] text-primary">{{ group.title }}</h3>
+          <hr class="my-2 border dark:border-gray-700" />
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-base">
+              <thead class="border-b text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400">
+                <tr>
+                  <th class="py-3 pr-4 font-normal">ល.រ</th>
+                  <th class="py-3 pr-4 font-normal">រូបថត</th>
+                  <th class="py-3 pr-4 font-normal">ឈ្មោះ (ខ្មែរ)</th>
+                  <th class="py-3 pr-4 font-normal">ឈ្មោះ (អង់គ្លេស)</th>
+                  <th class="py-3 pr-4 font-normal">ភេទ</th>
+                  <th class="py-3 pr-4 font-normal">អ៊ីមែល</th>
+                  <th class="py-3 font-normal">ទូរស័ព្ទ</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                <tr v-for="r in group.rows" :key="r.number">
+                  <td class="py-3 pr-4 text-gray-500">{{ r.number }}</td>
+                  <td class="py-3 pr-4">
+                    <img v-if="r.photo" :src="r.photo" alt=""
+                      class="h-10 w-10 rounded-full border border-[#1d152a7a] object-cover" />
+                    <span v-else class="text-gray-400">—</span>
+                  </td>
+                  <td class="py-3 pr-4 text-gray-800 dark:text-gray-100">{{ r.nameKH || '—' }}</td>
+                  <td class="py-3 pr-4 text-gray-800 dark:text-gray-100">{{ r.nameEN || '—' }}</td>
+                  <td class="py-3 pr-4 text-gray-800 dark:text-gray-100">{{ r.gender || '—' }}</td>
+                  <td class="py-3 pr-4 break-all text-gray-800 dark:text-gray-100">{{ r.email || '—' }}</td>
+                  <td class="py-3 text-gray-800 dark:text-gray-100">{{ r.phone || '—' }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </div>
   </div>
 </template>
