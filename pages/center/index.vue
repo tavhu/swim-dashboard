@@ -122,7 +122,7 @@ const submit = async () => {
   } catch (e) {
     // Saving here would store the record with the previous logo, or none, while
     // telling the user it worked.
-    toast.error({ message: "មិនអាចផ្ទុករូបភាពបានទេ" })
+    toast.error({ message: "មិនអាចផ្ទុករូបភាពបានទេ៖ " + (e as any)?.message })
     return
   }
   if (image) {

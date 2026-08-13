@@ -28,10 +28,24 @@ export function useImageUpload() {
     const fd = new FormData();
     Array.from(files).forEach((file, index) => fd.append(String(index), file as File));
 
-    return await $fetch<Record<number, string>>("/api/user/upload", {
-      method: "POST",
-      body: fd,
-    });
+    try {
+      return await $fetch<Record<number, string>>("/api/user/upload", {
+        method: "POST",
+        body: fd,
+      });
+    } catch (e: any) {
+      // Say why. "Could not upload the image" sends the interviewer back to try
+      // the same file again; the endpoint already knows whether it was too big
+      // or the wrong type, so carry that through.
+      const status = e?.response?.status ?? e?.statusCode;
+      const detail =
+        status === 413
+          ? "រូបភាពធំពេក (អតិបរមា 10MB)"
+          : status === 400 || status === 415
+            ? "ប្រភេទឯកសារមិនត្រូវបានអនុញ្ញាត (JPG, PNG, WEBP, GIF)"
+            : e?.data?.statusMessage ?? e?.statusMessage ?? e?.message;
+      throw new Error(detail || "Upload failed");
+    }
   };
 
   return { uploadImage };

@@ -169,7 +169,7 @@ async function submitEdit() {
   } catch (e) {
     // Saving here would store the record with the previous photo, or none,
     // while telling the user it worked.
-    toast.error({ message: "មិនអាចផ្ទុករូបភាពបានទេ" })
+    toast.error({ message: "មិនអាចផ្ទុករូបភាពបានទេ៖ " + (e as any)?.message })
     return
   }
   if (image) {
@@ -781,7 +781,7 @@ async function submitEditOfficial() {
   } catch (e) {
     // Saving here would store the record with the previous photo, or none,
     // while telling the user it worked.
-    toast.error({ message: "មិនអាចផ្ទុករូបភាពបានទេ" })
+    toast.error({ message: "មិនអាចផ្ទុករូបភាពបានទេ៖ " + (e as any)?.message })
     return
   }
   if (image) {

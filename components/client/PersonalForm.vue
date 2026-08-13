@@ -285,7 +285,7 @@ const submit = async () => {
         // Saving here would store the record with the previous photo, or
         // none, while telling the user it worked.
         saving.value = false
-        toast.error({ message: "មិនអាចផ្ទុករូបភាពបានទេ" })
+        toast.error({ message: "មិនអាចផ្ទុករូបភាពបានទេ៖ " + (e as any)?.message })
         return
     }
     if (image) {
