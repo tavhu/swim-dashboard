@@ -1,0 +1,30 @@
+# This project is developed on both macOS and Windows. Without a policy here,
+# Git for Windows' default `core.autocrlf=true` can commit CRLF endings, and the
+# two machines then see whole files as modified when nothing has changed.
+#
+# Normalise everything to LF in the repository. Editors on Windows handle LF
+# fine; this only controls what is stored.
+* text=auto eol=lf
+
+# Files that must keep LF even if a tool would rather not.
+*.sh text eol=lf
+*.mjs text eol=lf
+
+# Binary: never touch these, and never try to diff them as text.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.docx binary
+*.db binary
+*.dump binary
+
+# SQL dumps are text but large and machine-generated; keeping them out of diffs
+# makes reviews readable.
+*.sql -diff
+
+# Lockfiles are generated. Marking them keeps them out of diff noise if one is
+# ever committed.
+package-lock.json -diff linguist-generated
