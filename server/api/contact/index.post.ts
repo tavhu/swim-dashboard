@@ -9,8 +9,8 @@ const transporter = nodemailer.createTransport({
   port: 587,
   secure: false,
   auth: {
-    user: process.env.EMAIL_USER, //'noreply.cbid@dac.gov.kh', // your domain email address
-    pass: process.env.EMAIL_PASSWORD, //'0ygojytQT1' // your password
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD,
   },
   tls: {
     rejectUnauthorized: false,

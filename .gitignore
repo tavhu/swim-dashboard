@@ -4,7 +4,14 @@ node_modules
 .nitro
 .cache
 .output
+# Every env file except the placeholder template. The old tracked "example env"
+# held live production credentials — database, Firebase service account, SMTP
+# and reCAPTCHA — in plaintext; all were rotated. Only .env.example belongs in
+# git, and it must contain placeholders only.
 .env
+.env.*
+!.env.example
+example env
 dist
 package-lock.json
 pnpm-lock.yaml
