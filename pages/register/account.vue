@@ -99,7 +99,7 @@ const config = useRuntimeConfig()
 // const datareturn :any = ref()
 const fetchData = async () => {
   const baseUrl = "/api/user/get";
-  const { data: response } = await useFetch<{
+  const response = await $fetch<{
     total: number;
     data: DatatableData[];
   }>(
@@ -118,12 +118,12 @@ const fetchData = async () => {
   )
 
   globalData.value = {
-    totalData: response.value?.total, // response["total"],
-    data: response.value?.data, // response["data"],   
+    totalData: response?.total, // response["total"],
+    data: response?.data, // response["data"],   
   };
   return {
-    totalData: response?.value?.total ? response?.value?.total : 0, // response["total"],
-    data: response?.value?.data ? response?.value?.data : [], // response["data"],  
+    totalData: response?.total ? response?.total : 0, // response["total"],
+    data: response?.data ? response?.data : [], // response["data"],  
   }
 }
 

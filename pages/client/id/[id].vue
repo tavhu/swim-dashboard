@@ -126,6 +126,7 @@ const interview = computed(() => {
   const c = client.value; if (!c) return [];
   return [
     { label: "កាលបរិច្ឆេទសម្ភាសន៍", value: fmtDate(c.InterViewDate) },
+    { label: "ឈ្មោះមន្ត្រីឬបុគ្គលិកសង្គមកិច្ច", value: val(c.interviewerName) },
     { label: "តួនាទី", value: val(c.InterviewerPosition) },
     { label: "យោបល់អ្នកសម្ភាសន៍", value: val(c.InterviewerOpinoin), wide: true },
   ];
@@ -157,10 +158,11 @@ onMounted(async () => {
 </script>
 
 <template>
+  <div class="font-[Battambang]">
   <!-- Same shell as the centre detail page: Moul headings in primary over an
        <hr>, Battambang body, white cards on the grey page, 12-column grid, and
        the shared print stylesheet in assets/css/main.css. -->
-  <div class="font-[Battambang]">
+
     <div class="mt-5">
       <div class="flex items-start justify-between gap-4">
         <h2 class="text-2xl font-[Moul] text-primary">

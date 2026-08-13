@@ -129,7 +129,7 @@ const dataOfficial = ref({
 });
 
 const fetchData = async () => {
-  const {data: response} = await useFetch <{
+  const response = await $fetch <{
     total: number;
     data: DatatableData[];
 }> (

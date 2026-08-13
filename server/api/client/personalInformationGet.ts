@@ -53,7 +53,19 @@ export default eventHandler(async (event) => {
           //@ts-ignore
           skip: body?.skip ? parseInt(body?.skip) : 0,
         });
-    // console.log(data)
+    // InterviewerID is a plain column rather than a relation, so the officer's
+    // name needs its own lookup. Only the name is selected — /api/user/checkUsername
+    // once returned whole User rows including the bcrypt hash (see SECURITY.md).
+    if (body?.id && data && (data as any).InterviewerID) {
+      const interviewer = await event.context.prisma.user.findUnique({
+        where: { id: (data as any).InterviewerID },
+        select: { firstname: true, lastname: true },
+      });
+      (data as any).interviewerName = interviewer
+        ? [interviewer.firstname, interviewer.lastname].filter(Boolean).join(" ")
+        : null;
+    }
+
     //@ts-ignored
     setResponseStatus(event, 201);
     return body?.id

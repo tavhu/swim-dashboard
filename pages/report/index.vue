@@ -211,7 +211,7 @@ const globalData: any = ref();
 
 const fetchData = async () => {
   const baseUrl = "/api/role/get";
-  const {data: response} = await useFetch <{
+  const response = await $fetch <{
     total: number;
     data: DatatableData[];
 }> (

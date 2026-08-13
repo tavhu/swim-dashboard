@@ -216,7 +216,7 @@ const globalData: any = ref();
 
 const fetchData = async () => {
   const baseUrl = "/api/role/get";
-  const { data: response } = await useFetch<{
+  const response = await $fetch<{
     total: number;
     data: DatatableData[];
   }>(
@@ -239,12 +239,12 @@ const fetchData = async () => {
 
   // console.log(responseJson)
   globalData.value = {
-    data: response.value?.data ? response.value?.data : [],
-    totalData: response.value?.total ? response.value?.total : 0,
+    data: response?.data ? response?.data : [],
+    totalData: response?.total ? response?.total : 0,
   };
   return {
-    data: response.value?.data ? response.value?.data : [],
-    totalData: response.value?.total ? response.value?.total : 0,
+    data: response?.data ? response?.data : [],
+    totalData: response?.total ? response?.total : 0,
   };
 }
 fetchData()

@@ -114,6 +114,7 @@ onMounted(async () => {
 </script>
 
 <template>
+  <div class="font-[Battambang]">
   <!--
     Card-on-grey, Moul headings in primary, Battambang body — the same shell the
     dashboard and the centre list use. Full width rather than a centred column,
@@ -124,7 +125,7 @@ onMounted(async () => {
     and smear the stacked diacritics; hierarchy comes from size and colour here
     instead of weight.
   -->
-  <div class="font-[Battambang]">
+
     <div class="mt-5">
       <!-- Title -->
       <div class="flex items-start justify-between gap-4">
