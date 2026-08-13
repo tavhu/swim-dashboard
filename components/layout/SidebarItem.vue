@@ -91,7 +91,7 @@ onBeforeUnmount(() => unSub?.())
         :class="indent"
         exact-active-class="!bg-primary/10 !text-primary font-semibold"
         @click="sidebarStore.mobileOpen = false">
-        <TwFeather v-if="item.icon" :type="item.icon" class="h-4 w-4 shrink-0" />
+        <TwFeather v-if="item.icon" :type="item.icon" :size="18" class="shrink-0" />
         <span v-else class="h-1.5 w-1.5 shrink-0 rounded-full bg-current opacity-40" />
         <span class="select-none truncate">{{ item.name }}</span>
       </NuxtLink>
@@ -102,14 +102,17 @@ onBeforeUnmount(() => unSub?.())
     <button type="button" :aria-label="item.name" :aria-expanded="isOpen"
       class="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors duration-150 hover:bg-gray-100 dark:hover:bg-gray-800"
       :class="[indent, isOpen ? 'text-primary' : 'text-gray-600 dark:text-gray-400']" @click="toggleOpen">
-      <TwFeather v-if="item.icon" :type="item.icon" class="h-4 w-4 shrink-0" />
+      <TwFeather v-if="item.icon" :type="item.icon" :size="18" class="shrink-0" />
       <span v-else class="h-1.5 w-1.5 shrink-0 rounded-full bg-current opacity-40" />
       <span class="select-none truncate">{{ item.name }}</span>
       <span v-if="item.name == 'ប្រអប់សារ' && items.length != 0"
         class="rounded-full bg-red-600 px-1.5 text-[10px] leading-4 text-white">
         {{ items.length }}
       </span>
-      <TwFeather type="chevron-down" class="ml-auto h-4 w-4 shrink-0 transition-transform duration-200"
+      <!-- Sized with TwFeather's own `size` prop: the component renders a
+           fixed 24px SVG inside an `overflow: hidden` wrapper, so setting the
+           box with Tailwind h-/w- classes crops the icon instead of scaling it. -->
+      <TwFeather type="chevron-down" :size="16" class="ml-auto shrink-0 transition-transform duration-200"
         :class="{ 'rotate-180': isOpen }" />
     </button>
 
