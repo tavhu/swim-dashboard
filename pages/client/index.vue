@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import {
+    TwDropdownMenu,
     useToast,
     type DatatableColumn,
     type DatatableData,
@@ -17,40 +18,34 @@ useHead({
 
 const data = ref({
     column: [
-        // {
-        //     label: "ល.រ",
-        //     field: "number",
-        //     width: "50px",
-        //     sortable: false,
-        //   },
+        {
+            label: "លេខសំគាល់",
+            field: "readableCode",
+            width: "140px",
+            sortable: false,
+        },
         {
             label: "រូបថត",
             field: "logo",
-            width: "150px",
+            width: "110px",
             sortable: false,
         },
         {
             label: "ឈ្មោះជាភាសារខ្មែរ",
             field: "nameKH",
-            width: "450px",
-            sortable: false,
-        },
-        {
-            label: "ឈ្មោះហៅក្រៅ",
-            field: "nameEN",
-            width: "300px",
+            width: "400px",
             sortable: false,
         },
         {
             label: "ស្ថានភាព",
             field: "status",
-            width: "150px",
+            width: "140px",
             sortable: false,
         },
         {
             label: "សកម្មភាព",
             field: "action",
-            width: "650px",
+            width: "260px",
             sortable: false,
         },
     ] as Array<DatatableColumn>,
@@ -222,6 +217,11 @@ const addStaff = (CenterID: string) => {
                   {{ index }}           
             </div> 
           </template> -->
+                    <template v-if="column.field === 'readableCode'">
+                        <div class="flex justify-center font-medium">
+                            {{ data.ReadableCode || '—' }}
+                        </div>
+                    </template>
                     <template v-if="column.field === 'logo'">
                         <div class="flex justify-center">
                             <img :src="config.public.origin + '/' + data.photo" alt=""
@@ -233,11 +233,6 @@ const addStaff = (CenterID: string) => {
                             {{ data.fullNameKH }}
                         </div>
                     </template>
-                    <template v-if="column.field === 'nameEN'">
-                        <div class="flex justify-center">
-                            {{ data.nickName }}
-                        </div>
-                    </template>
                     <template v-if="column.field === 'status'">
                         <div class="flex justify-center">
                             <span v-if="data.status" class="text-blue-700 dark:text-white"> ដំណើការ </span>
@@ -245,35 +240,42 @@ const addStaff = (CenterID: string) => {
                         </div>
                     </template>
                     <template v-if="column.field === 'action'">
+                        <!--
+                          One menu rather than a row of buttons. Six forms with a view
+                          and an edit each, plus delete, is thirteen controls per row —
+                          unreadable at any width. The menu lists the six ទម្រង់ of the
+                          manual and opens each one's view; editing is reached from
+                          there, which is the same path form 1 already takes.
+                        -->
                         <div class="flex gap-2 justify-center">
-                            <!--
-                              The six ទម្រង់ of the SWIMS manual, in workflow order. They are
-                              the same six the ApprovalRecordType enum already carries. Only
-                              form 1 exists; forms 2-6 have no page and no table yet, so they
-                              are disabled rather than pointed at a route that cannot serve
-                              them — these used to link to /center pages with a client id.
-                            -->
-                            <NuxtLink :to="config.public.origin + '/client/id/' + data.id">
-                                <UButton color="gray" icon="i-heroicons-eye" class="border"
-                                    :title="CASE_FORMS[0].title + ' — មើល និងបោះពុម្ព'">
-                                    មើល
-                                </UButton>
-                            </NuxtLink>
-                            <NuxtLink :to="config.public.origin + '/client/register/' + data.id" target="_BLANK">
-                                <UButton color="primary" icon="i-heroicons-pencil-square" class="border"
-                                    :disabled="readOnly" :title="CASE_FORMS[0].title + ' — កែសម្រួល'">
-                                    {{ CASE_FORMS[0].label }}
-                                </UButton>
-                            </NuxtLink>
-                            <UButton v-for="form in CASE_FORMS.slice(1)" :key="form.label" color="gray"
-                                icon="i-heroicons-pencil-square" class="border" disabled
-                                :title="form.title + ' — មិនទាន់មាន'">
-                                {{ form.label }}
-                            </UButton>
+                            <TwDropdownMenu align="right" width="72">
+                                <template #trigger>
+                                    <UButton color="primary" icon="i-heroicons-document-text" class="border">
+                                        ទម្រង់
+                                    </UButton>
+                                </template>
+                                <template #content>
+                                    <div class="py-1">
+                                        <NuxtLink v-for="(form, i) in CASE_FORMS" :key="form.label"
+                                            :to="i === 0 ? config.public.origin + '/client/id/' + data.id : ''"
+                                            :class="i === 0 ? '' : 'pointer-events-none'">
+                                            <div class="flex items-center justify-between gap-3 px-4 py-2 text-sm transition"
+                                                :class="i === 0
+                                                    ? 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-900 cursor-pointer'
+                                                    : 'text-gray-400 dark:text-gray-600'">
+                                                <span class="font-[battambang]">
+                                                    {{ form.label }} {{ form.title }}
+                                                </span>
+                                                <span v-if="i !== 0" class="whitespace-nowrap text-xs">
+                                                    មិនទាន់មាន
+                                                </span>
+                                            </div>
+                                        </NuxtLink>
+                                    </div>
+                                </template>
+                            </TwDropdownMenu>
                             <UButton color="red" icon="i-heroicons-trash" @click="deleteRecord(data.id)"
-                                :disabled="readOnly">
-                                លុបចេញ
-                            </UButton>
+                                :disabled="readOnly" :title="'លុបចេញ'" />
                         </div>
                     </template>
                 </template>
