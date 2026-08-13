@@ -497,12 +497,12 @@ model Client_PersonalInformation {
 
   // Propose → approve (ស្នើឡើង / អនុម័ត / បដិសេធ). Intake staff at a centre
   // submit a record; a ប្រធានមជ្ឈមណ្ឌល or ministry user approves or rejects it.
-  approvalStatus             ApprovalStatus           @default(DRAFT)
-  submittedAt                DateTime?
-  submittedByID              String?
-  decidedAt                  DateTime?
-  decidedByID                String?
-  rejectionReason            String?
+  approvalStatus  ApprovalStatus @default(DRAFT)
+  submittedAt     DateTime?
+  submittedByID   String?
+  decidedAt       DateTime?
+  decidedByID     String?
+  rejectionReason String?
 }
 
 /// One row per transition, so a record's history survives the record being
@@ -616,4 +616,155 @@ model ServicesOnServiceCenters {
   serviceId       String
 
   @@id([serviceCenterId, serviceId])
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// Reference taxonomies
+//
+// The manual's ការកំណត់* screens. Forms 2–6 (service use, case plan,
+// reintegration, follow-up, closure) all select from these lists rather than
+// storing free text, so they are the dependency for the rest of the
+// case-management build. Client records currently keep this sort of thing as
+// loose String columns, which is what these replace.
+//
+// Every entity carries Khmer and English names because the spec requires a
+// language switcher; `code` is the ministry's លេខកូដ and is the stable handle
+// for a row, so it is unique.
+// ───────────────────────────────────────────────────────────────────────────
+
+/// ប្រភេទអតិថិជន — the kind of person a case is about (orphan, juvenile in
+/// conflict with the law, trafficking victim, and so on).
+model ClientType {
+  id          String   @id @default(cuid())
+  code        String   @unique // លេខកូដ
+  nameKh      String // ឈ្មោះ (ខ្មែរ)
+  nameEn      String? // ឈ្មោះ (អង់គ្លេស)
+  description String? // បរិយាយ
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("clientTypes")
+}
+
+/// ប្រភេទសេវាកម្ម — the category a service falls under. Distinct from
+/// `Service`, which is a specific catalogued programme with its legal basis.
+model ServiceType {
+  id          String   @id @default(cuid())
+  code        String   @unique // លេខកូដ
+  nameKh      String // ឈ្មោះសេវា (ខ្មែរ)
+  nameEn      String? // ឈ្មោះសេវា (អង់គ្លេស)
+  description String? // បរិយាយ
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("serviceTypes")
+}
+
+/// ក្រុមស្តារនីតិសម្បទា — the seven rehabilitation categories the manual sets
+/// out: basic needs, economic, legal, drug and alcohol, mental health,
+/// physical, medical. The spec gives groups no code, unlike the levels below.
+model RehabGroup {
+  id          String      @id @default(cuid())
+  nameKh      String // ឈ្មោះ (ខ្មែរ)
+  nameEn      String? // ឈ្មោះ (អង់គ្លេស)
+  description String? // បរិយាយ
+  isActive    Boolean     @default(true)
+  types       RehabType[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@map("rehabGroups")
+}
+
+/// ប្រភេទស្តារនីតិសម្បទា — a subdivision of a group.
+model RehabType {
+  id          String           @id @default(cuid())
+  code        String           @unique // លេខកូដ
+  groupId     String // ក្រុម
+  group       RehabGroup       @relation(fields: [groupId], references: [id])
+  nameKh      String // ឈ្មោះ (ខ្មែរ)
+  nameEn      String? // ឈ្មោះ (អង់គ្លេស)
+  description String? // បរិយាយ
+  isActive    Boolean          @default(true)
+  items       Rehabilitation[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  // Postgres does not index a foreign key for you, and every listing filters
+  // by group.
+  @@index([groupId])
+  @@map("rehabTypes")
+}
+
+/// ការស្តារនីតិសម្បទា — the individual rehabilitation activity assigned to a
+/// client. The manual marks name (both languages) and មូលហេតុ as required.
+model Rehabilitation {
+  id          String    @id @default(cuid())
+  code        String    @unique // លេខកូដ
+  typeId      String // ប្រភេទការស្តារនីតិសម្បទា
+  type        RehabType @relation(fields: [typeId], references: [id])
+  nameKh      String // ឈ្មោះ (ខ្មែរ)
+  nameEn      String // ឈ្មោះ (អង់គ្លេស)
+  reason      String // មូលហេតុ
+  description String? // បរិយាយ
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([typeId])
+  @@map("rehabilitations")
+}
+
+/// ក្រុមសម្ភារៈ ឬឧបករណ៍ជំនួយ — assistive material and device groups.
+model AssistiveGroup {
+  id          String          @id @default(cuid())
+  nameKh      String // ឈ្មោះសម្ភារៈ (ខ្មែរ)
+  nameEn      String? // ឈ្មោះសម្ភារៈ (អង់គ្លេស)
+  description String? // បរិយាយ
+  isActive    Boolean         @default(true)
+  types       AssistiveType[]
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@map("assistiveGroups")
+}
+
+/// ប្រភេទសម្ភារៈ ឬឧបករណ៍ជំនួយ
+model AssistiveType {
+  id          String            @id @default(cuid())
+  code        String            @unique // លេខកូដ
+  groupId     String // ក្រុម
+  group       AssistiveGroup    @relation(fields: [groupId], references: [id])
+  nameKh      String // ឈ្មោះ (ខ្មែរ)
+  nameEn      String? // ឈ្មោះ (អង់គ្លេស)
+  description String? // បរិយាយ
+  isActive    Boolean           @default(true)
+  items       AssistiveDevice[]
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@index([groupId])
+  @@map("assistiveTypes")
+}
+
+/// សម្ភារៈ ឬឧបករណ៍ជំនួយ — the individual item that can be issued or repaired
+/// for a client. Photo is stored the same way as elsewhere: a path under
+/// `public/uploads`, written by server/utils/uploads.ts.
+model AssistiveDevice {
+  id          String        @id @default(cuid())
+  code        String        @unique // លេខកូដ
+  typeId      String // ប្រភេទសម្ភារៈ ឬឧបករណ៍ជំនួយ
+  type        AssistiveType @relation(fields: [typeId], references: [id])
+  photo       String? // រូបភាព
+  nameKh      String // ឈ្មោះ (ខ្មែរ)
+  nameEn      String? // ឈ្មោះ (អង់គ្លេស)
+  description String? // បរិយាយ
+  isActive    Boolean       @default(true)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([typeId])
+  @@map("assistiveDevices")
 }
