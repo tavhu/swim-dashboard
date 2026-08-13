@@ -11,7 +11,7 @@ const readOnly = checkIfPageReadOnly()
 const { data: userDataAuth } = useAuth()
 const toast = useToast();
 useHead({
-    title: "បញ្ចីមណ្ឌល",
+    title: "បញ្ចីអតិថិជន",
 });
 
 
@@ -42,7 +42,7 @@ const data = ref({
             sortable: false,
         },
         {
-            label: "ស្ថានភាពមណ្ឌល",
+            label: "ស្ថានភាព",
             field: "status",
             width: "150px",
             sortable: false,
@@ -164,6 +164,19 @@ const { data: roleData } = await useFetch("/api/role/get", {
         userID: userDataAuth.value?.sub
     }
 })
+// The six national forms from the SWIMS manual (ទម្រង់ទី១-៦), matching the
+// ApprovalRecordType enum. The action column previously offered eight from an
+// older set — needs assessment, family tracing, family assessment, referral —
+// and all but the first linked to service-centre pages with a client id.
+const CASE_FORMS = [
+    { label: 'ទម្រង់(១)', title: 'បញ្ជីអតិថិជន' },
+    { label: 'ទម្រង់(២)', title: 'ការប្រើសេវាកម្មរបស់អតិថិជន' },
+    { label: 'ទម្រង់(៣)', title: 'ផែនការករណីរបស់អតិថិជន' },
+    { label: 'ទម្រង់(៤)', title: 'សមាហរណកម្ម' },
+    { label: 'ទម្រង់(៥)', title: 'តាមដាន និងវាយតម្លៃស្ថានភាពអតិថិជន' },
+    { label: 'ទម្រង់(៦)', title: 'បិទករណី' },
+]
+
 const roleDataFormat: DropdownItem[] = new Array({ label: '', value: '' })
 roleDataFormat.pop()
 //@ts-ignored
@@ -233,62 +246,24 @@ const addStaff = (CenterID: string) => {
                     </template>
                     <template v-if="column.field === 'action'">
                         <div class="flex gap-2 justify-center">
+                            <!--
+                              The six ទម្រង់ of the SWIMS manual, in workflow order. They are
+                              the same six the ApprovalRecordType enum already carries. Only
+                              form 1 exists; forms 2-6 have no page and no table yet, so they
+                              are disabled rather than pointed at a route that cannot serve
+                              them — these used to link to /center pages with a client id.
+                            -->
                             <NuxtLink :to="config.public.origin + '/client/register/' + data.id" target="_BLANK">
                                 <UButton color="primary" icon="i-heroicons-pencil-square" class="border"
-                                    :disabled="readOnly">
-                                    ទម្រង់(១)
-                                    <!-- ការប៉ាន់ប្រមាណាណតម្រូការសម្រាប់អតិថិជនក្នុងមជ្ឈមណ្ឌលព្យាបាល និងស្តារនីតិសម្បទា -->
+                                    :disabled="readOnly" :title="CASE_FORMS[0].title">
+                                    {{ CASE_FORMS[0].label }}
                                 </UButton>
                             </NuxtLink>
-                            <NuxtLink :to="config.public.origin + '/center/id/' + data.id">
-                                <UButton color="primary" icon="i-heroicons-pencil-square" class="border"
-                                    :disabled="readOnly">
-                                    ទម្រង់(២)
-                                    <!-- ការប៉ាន់ប្រមាណាណតម្រូការសម្រាប់អតិថិជនក្នុងមជ្ឈមណ្ឌលព្យាបាល និងស្តារនីតិសម្បទា -->
-                                </UButton>
-                            </NuxtLink>
-                            <NuxtLink :to="config.public.origin + '/center?id=' + data.id" :disabled="readOnly">
-                                <UButton color="primary" icon="i-heroicons-pencil-square" class="border"
-                                    :disabled="readOnly">
-                                    ទម្រង់(៣)
-                                    <!-- ទម្រង់ស្វែងរកគ្រួសារ -->
-                                </UButton>
-                            </NuxtLink>
-                            <NuxtLink :to="config.public.origin + '/center?id=' + data.id" :disabled="readOnly">
-                                <UButton color="primary" icon="i-heroicons-pencil-square" class="border"
-                                    :disabled="readOnly">
-                                    ទម្រង់(៤)
-                                    <!-- ទម្រង់ប៉ាន់ប្រមាណគ្រួសារ -->
-                                </UButton>
-                            </NuxtLink>
-                            <NuxtLink :to="config.public.origin + '/center?id=' + data.id" :disabled="readOnly">
-                                <UButton color="primary" icon="i-heroicons-pencil-square" class="border"
-                                    :disabled="readOnly">
-                                    ទម្រង់(៥)
-                                    <!-- ទម្រង់ផែនការករណី និងសេវាគាំទ្រសង្គម -->
-                                </UButton>
-                            </NuxtLink>
-                            <NuxtLink :to="config.public.origin + '/center?id=' + data.id" :disabled="readOnly">
-                                <UButton color="primary" icon="i-heroicons-pencil-square" class="border"
-                                    :disabled="readOnly">
-                                    ទម្រង់(៦)
-                                    <!-- ទម្រង់សម្រាប់បញ្ជូនទៅកាន់សេវាផ្សេងៗ -->
-                                </UButton>
-                            </NuxtLink>
-                            <NuxtLink :to="config.public.origin + '/center?id=' + data.id" :disabled="readOnly">
-                                <UButton color="primary" icon="i-heroicons-pencil-square" class="border"
-                                    :disabled="readOnly">
-                                    ទម្រង់(៧)
-                                    <!-- ទម្រង់សមាហរកម្ម -->
-                                </UButton>
-                            </NuxtLink>
-                            <NuxtLink :to="config.public.origin + '/center?id=' + data.id" :disabled="readOnly">
-                                <UButton color="primary" icon="i-heroicons-pencil-square" class="border"
-                                    :disabled="readOnly">
-                                    ទម្រង់(៨)
-                                    <!-- ទម្រង់លទ្ធផលនៃការចុះសួរសុខទុក្ខ និងតាមដានដោយមន្ត្រីឬភ្នាក់ងារសង្គមកិច្ច -->
-                                </UButton>
-                            </NuxtLink>
+                            <UButton v-for="form in CASE_FORMS.slice(1)" :key="form.label" color="gray"
+                                icon="i-heroicons-pencil-square" class="border" disabled
+                                :title="form.title + ' — មិនទាន់មាន'">
+                                {{ form.label }}
+                            </UButton>
                             <UButton color="red" icon="i-heroicons-trash" @click="deleteRecord(data.id)"
                                 :disabled="readOnly">
                                 លុបចេញ
