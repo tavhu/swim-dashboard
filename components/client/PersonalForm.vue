@@ -126,7 +126,15 @@ const formData: {
 // inputs were decorative — the first sign of a missing field was a failed save.
 //
 // `required` here treats false as present and only rejects undefined, '' and
-// null, so the boolean radios validate correctly once answered.
+// null.
+//
+// Four required columns are deliberately absent: KnownLegalConsequence,
+// LivingSituation, UsedtoRehab and InterViewDate. TwForm has no :data binding,
+// so the validator only sees fields from components that register themselves
+// with it — the vue3-tailwind ones. Those four use URadio (@nuxt/ui) and
+// Datepicker (@vuepic/vue-datepicker), which never register, so a rule on them
+// reports "required" no matter what the user picks. They are checked against
+// formData directly in submit() instead.
 const formRules = {
     fullNameKH: ['required'],
     nickName: ['required'],
@@ -142,15 +150,11 @@ const formRules = {
     ImportantChallenge: ['required'],
     PastActivities: ['required'],
     ReasonUseDrug: ['required'],
-    KnownLegalConsequence: ['required'],
     typeDrugUsed: ['required'],
     DrugVolumeUsed: ['required'],
     DrugRequecyUse: ['required'],
     DrugDurationUse: ['required'],
-    LivingSituation: ['required'],
-    UsedtoRehab: ['required'],
     InterviewerID: ['required'],
-    InterViewDate: ['required'],
     serviceCenterID: ['required'],
 }
 
@@ -199,6 +203,30 @@ const submit = async () => {
     // if (readOnly) return;
     // console.log('123')
     if (!(await confirmDialog())) return;
+    // Fields the validator cannot see — see the note on formRules. Checked
+    // against formData directly so the message names what is actually missing.
+    const unregisteredRequired: Record<string, string> = {
+        KnownLegalConsequence: 'តើអ្នកដឹងទេថា អំពើដែលអ្នកធ្វើជាអំពើដែលនាំមកនូវគ្រោះថ្នាក់និងខុសច្បាប់',
+        LivingSituation: 'បរិស្ថាននៃការរស់នៅ',
+        UsedtoRehab: 'ធ្លាប់ចូលមជ្ឈមណ្ឌល ឬទទួលសេវាប្រហាក់ប្រហែលពីមុន',
+        InterViewDate: 'កាលបរិច្ឆេទសម្ភាសន៍',
+    }
+    // `false` is a valid answer on the radios, so only null/undefined/'' count
+    // as unanswered.
+    const unanswered = Object.entries(unregisteredRequired)
+        .filter(([field]) => {
+            const v = formData[field]
+            return v === null || v === undefined || v === ''
+        })
+        .map(([, label]) => label)
+
+    if (unanswered.length) {
+        toast.error({ message: 'សូមបំពេញ៖ ' + unanswered.join(' / ') });
+        isError.value = true;
+        setTimeout(() => { isError.value = false; }, 1000);
+        return;
+    }
+
     validator.value.clearErrors();
     await validator.value.validate();
     if (validator.value.fail()) {
