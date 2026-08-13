@@ -33,6 +33,12 @@ export const CLIENT_FIELDS: FieldSpec = {
   defaultedBooleans: ["ClientFeelsHopless", "status"],
 };
 
+/** ClientService (ទម្រង់ទី២). */
+export const CLIENT_SERVICE_FIELDS: FieldSpec = {
+  optionalDates: ["serviceDate"],
+  defaultedBooleans: ["usedServiceBefore"],
+};
+
 /**
  * governStaff — the same defect. spouseDateOfBirth is optional in the schema
  * but StaffCanvasForm initialises it to '', so an unmarried staff member

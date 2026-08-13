@@ -151,6 +151,7 @@ model ServiceCenter {
   systemUser                 User[]
   CenterPlan                 CenterPlan[]
   services                   ServicesOnServiceCenters[]
+  clientServicesPrevious     ClientService[]              @relation("ClientServicePreviousCentre")
 }
 
 enum AccountType {
@@ -497,6 +498,7 @@ model Client_PersonalInformation {
   ClientServeHistory         ClientServeHistory[]
   ClientHopelessMultiple     ClientHopelessMultiple[]
   services                   ServicesOnClients[]
+  clientServices             ClientService[]
 
   // Propose → approve (ស្នើឡើង / អនុម័ត / បដិសេធ). Intake staff at a centre
   // submit a record; a ប្រធានមជ្ឈមណ្ឌល or ministry user approves or rejects it.
@@ -638,14 +640,15 @@ model ServicesOnServiceCenters {
 /// ប្រភេទអតិថិជន — the kind of person a case is about (orphan, juvenile in
 /// conflict with the law, trafficking victim, and so on).
 model ClientType {
-  id          String   @id @default(cuid())
-  code        String   @unique // លេខកូដ
-  nameKh      String // ឈ្មោះ (ខ្មែរ)
-  nameEn      String? // ឈ្មោះ (អង់គ្លេស)
-  description String? // បរិយាយ
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id             String          @id @default(cuid())
+  code           String          @unique // លេខកូដ
+  nameKh         String // ឈ្មោះ (ខ្មែរ)
+  nameEn         String? // ឈ្មោះ (អង់គ្លេស)
+  description    String? // បរិយាយ
+  isActive       Boolean         @default(true)
+  clientServices ClientService[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
 
   @@map("clientTypes")
 }
@@ -669,31 +672,33 @@ model ServiceType {
 /// out: basic needs, economic, legal, drug and alcohol, mental health,
 /// physical, medical. The spec gives groups no code, unlike the levels below.
 model RehabGroup {
-  id          String      @id @default(cuid())
-  nameKh      String // ឈ្មោះ (ខ្មែរ)
-  nameEn      String? // ឈ្មោះ (អង់គ្លេស)
-  description String? // បរិយាយ
-  isActive    Boolean     @default(true)
-  types       RehabType[]
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id             String          @id @default(cuid())
+  nameKh         String // ឈ្មោះ (ខ្មែរ)
+  nameEn         String? // ឈ្មោះ (អង់គ្លេស)
+  description    String? // បរិយាយ
+  isActive       Boolean         @default(true)
+  types          RehabType[]
+  clientServices ClientService[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
 
   @@map("rehabGroups")
 }
 
 /// ប្រភេទស្តារនីតិសម្បទា — a subdivision of a group.
 model RehabType {
-  id          String           @id @default(cuid())
-  code        String           @unique // លេខកូដ
-  groupId     String // ក្រុម
-  group       RehabGroup       @relation(fields: [groupId], references: [id])
-  nameKh      String // ឈ្មោះ (ខ្មែរ)
-  nameEn      String? // ឈ្មោះ (អង់គ្លេស)
-  description String? // បរិយាយ
-  isActive    Boolean          @default(true)
-  items       Rehabilitation[]
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
+  id             String           @id @default(cuid())
+  code           String           @unique // លេខកូដ
+  groupId        String // ក្រុម
+  group          RehabGroup       @relation(fields: [groupId], references: [id])
+  nameKh         String // ឈ្មោះ (ខ្មែរ)
+  nameEn         String? // ឈ្មោះ (អង់គ្លេស)
+  description    String? // បរិយាយ
+  isActive       Boolean          @default(true)
+  items          Rehabilitation[]
+  clientServices ClientService[]
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
 
   // Postgres does not index a foreign key for you, and every listing filters
   // by group.
@@ -704,17 +709,19 @@ model RehabType {
 /// ការស្តារនីតិសម្បទា — the individual rehabilitation activity assigned to a
 /// client. The manual marks name (both languages) and មូលហេតុ as required.
 model Rehabilitation {
-  id          String    @id @default(cuid())
-  code        String    @unique // លេខកូដ
-  typeId      String // ប្រភេទការស្តារនីតិសម្បទា
-  type        RehabType @relation(fields: [typeId], references: [id])
-  nameKh      String // ឈ្មោះ (ខ្មែរ)
-  nameEn      String // ឈ្មោះ (អង់គ្លេស)
-  reason      String // មូលហេតុ
-  description String? // បរិយាយ
-  isActive    Boolean   @default(true)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id               String          @id @default(cuid())
+  code             String          @unique // លេខកូដ
+  typeId           String // ប្រភេទការស្តារនីតិសម្បទា
+  type             RehabType       @relation(fields: [typeId], references: [id])
+  nameKh           String // ឈ្មោះ (ខ្មែរ)
+  nameEn           String // ឈ្មោះ (អង់គ្លេស)
+  reason           String // មូលហេតុ
+  description      String? // បរិយាយ
+  isActive         Boolean         @default(true)
+  clientServices   ClientService[] @relation("ClientServiceRehabilitation")
+  followUpServices ClientService[] @relation("ClientServiceFollowUp")
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
 
   @@index([typeId])
   @@map("rehabilitations")
@@ -770,4 +777,62 @@ model AssistiveDevice {
 
   @@index([typeId])
   @@map("assistiveDevices")
+}
+
+/// ទម្រង់ទី២ — ការប្រើសេវាកម្មរបស់អតិថិជន.
+///
+/// Section 1 of the paper form (client code, name, family phone) is not stored
+/// again: it is read from the linked Client_PersonalInformation. A client can
+/// have many of these, one per episode of service.
+model ClientService {
+  id       String                     @id @default(cuid())
+  clientId String
+  client   Client_PersonalInformation @relation(fields: [clientId], references: [id])
+
+  // ២. ព័ត៌មានរោគឬសញ្ញាណវិនិច្ឆ័យ
+  clientTypeId        String? // ប្រភេទអតិថិជន
+  clientType          ClientType?    @relation(fields: [clientTypeId], references: [id])
+  reason              String? // មូលហេតុ
+  usedServiceBefore   Boolean        @default(false) // ធ្លាប់ទទួលសេវាពីមុន
+  previousCenterId    String? // បើធ្លាប់ តើមជ្ឈមណ្ឌលណា
+  previousCenter      ServiceCenter? @relation("ClientServicePreviousCentre", fields: [previousCenterId], references: [id])
+  totalTimes          String? // ចំនួនលើករួមទាំងលើកនេះ
+  attachments         String? // ឯកសារពាក់ព័ន្ធ — comma separated, as CenterPlan.filePath
+  diagnosisApprovedBy String? // អនុម័តរោគវិនិច្ឆ័យដោយ
+  conclusion          String? // សន្និដ្ឋាន
+
+  // ៣. ព័ត៌មានសេវាកម្មដែលត្រូវការប្រើ — the three levels of the rehabilitation
+  // taxonomy, narrowing group → type → activity.
+  serviceDate      DateTime? // ថ្ងៃខែឆ្នាំមកទទួលសេវាកម្ម
+  rehabGroupId     String?
+  rehabGroup       RehabGroup?     @relation(fields: [rehabGroupId], references: [id])
+  rehabTypeId      String?
+  rehabType        RehabType?      @relation(fields: [rehabTypeId], references: [id])
+  rehabilitationId String?
+  rehabilitation   Rehabilitation? @relation("ClientServiceRehabilitation", fields: [rehabilitationId], references: [id])
+
+  // ៤. អ្នកផ្តល់សេវា និងស្ថានភាពអតិថិជនបច្ចុប្បន្ន
+  providerName             String? // ឈ្មោះស្ថាប័នផ្តល់សេវា
+  providerLocation         String? // ទីតាំងផ្តល់សេវា
+  providerAgent            String? // ឈ្មោះភ្នាក់ងារផ្តល់សេវា
+  providerPhone            String? // លេខទំនាក់ទំនង
+  currentStatus            String? // មិនល្អ / ប្រសើរ / ប្រក្រតីភាព
+  followUpRehabilitationId String? // តម្រូវការសេវាបន្ត
+  followUpRehabilitation   Rehabilitation? @relation("ClientServiceFollowUp", fields: [followUpRehabilitationId], references: [id])
+
+  // ៥. សិទ្ធិអនុម័ត — officer proposes, centre director approves or rejects.
+  // Same shape as Client_PersonalInformation so one approval UI serves both.
+  approvalStatus  ApprovalStatus @default(DRAFT)
+  submittedAt     DateTime?
+  submittedByID   String?
+  decidedAt       DateTime?
+  decidedByID     String?
+  rejectionReason String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([clientId])
+  @@index([approvalStatus])
+  @@map("clientServices")
 }
