@@ -130,8 +130,7 @@ const formData: {
 const formRules = {
     fullNameKH: ['required'],
     nickName: ['required'],
-    ReadableCode: ['required'],
-      Gender: ['required'],
+        Gender: ['required'],
     POB: ['required'],
     homeBA: ['required'],
     StreetBA: ['required'],
@@ -235,7 +234,6 @@ const submit = async () => {
         fullNameKH: formData.fullNameKH,
         photo: formData.photo,
         nickName: formData.nickName,
-        ReadableCode: formData.ReadableCode,
         Gender: formData.Gender,
         DOB: formData.DOB,
         POB: formData.POB,
@@ -299,10 +297,16 @@ const submit = async () => {
         ClientServeHistory: prop?.id ? ClientServeHistory.value.map(item => ({ ...item, Client_PersonalInformationID: prop.id })) : ClientServeHistory.value,
         ClientHopelessMultiple: prop?.id ? ClientHopelessMultiple.value.map(item => ({ ...item, client_PersonalInformationId: prop.id })) : ClientHopelessMultiple.value,
     }
-    const { error } = await useFetch(prop.id ? "/api/client/personalInformationUpdate" : "/api/client/personalInformation", {
+    const { data: saved, error } = await useFetch<any>(prop.id ? "/api/client/personalInformationUpdate" : "/api/client/personalInformation", {
         method: "POST",
         body: JSON.stringify(form_data),
     });
+
+    // The client number is issued by the database on insert, so show the one it
+    // actually assigned rather than leaving the field blank.
+    if (!prop.id && saved.value?.ReadableCode) {
+        formData.ReadableCode = saved.value.ReadableCode
+    }
 
     if (error.value?.statusCode) {
         ClientRegister.value = false
@@ -707,8 +711,8 @@ watch(() => formData.districtBA, (newCommune) => {
                         formData }}
                 </div> -->
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput label="លេខសំគាល់" name="ReadableCode" v-model="formData.ReadableCode"
-                        placeholder="លេខសំគាល់" type="text" />
+                    <TwInput label="លេខសំគាល់" name="ReadableCode" v-model="formData.ReadableCode" disabled
+                        :placeholder="prop.id ? '' : 'បង្កើតដោយប្រព័ន្ធ'" type="text" />
                     <CustomErrorMessage name="ReadableCode" />
                 </div>
                 <div class="col-span-12">

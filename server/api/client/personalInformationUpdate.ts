@@ -24,7 +24,8 @@ export default eventHandler(async (event) => {
         data: {
           fullNameKH: body?.fullNameKH,
           nickName: body?.nickName,
-          ReadableCode: body?.ReadableCode,
+          // ReadableCode is issued once and is not editable, so it is never
+          // taken from the body — a crafted request cannot change it either.
           photo: body?.photo,
           Gender: body?.Gender,
           DOB: body?.DOB,

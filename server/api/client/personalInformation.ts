@@ -24,7 +24,9 @@ export default eventHandler(async (event) => {
           fullNameKH: body?.fullNameKH,
           nickName: body?.nickName,
           photo: body?.photo,
-          ReadableCode: body?.ReadableCode,
+          // ReadableCode is omitted on purpose: the column default issues the
+          // next C##### from a sequence. Accepting it from the body would let a
+          // caller choose or collide with someone else's client number.
           Gender: body?.Gender,
           DOB: body?.DOB,
           POB: body?.POB,
@@ -106,7 +108,7 @@ export default eventHandler(async (event) => {
 
     //@ts-ignored
     setResponseStatus(event, 201);
-    return { message: "User Update or Created", id: result.id };
+    return { message: "User Update or Created", id: result.id, ReadableCode: result.ReadableCode };
   } catch (e: any) {
     // Was `error: "e"` — the literal string — so the form could only say
     // "unsuccessful" with no indication of which field was at fault.
