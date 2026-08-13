@@ -19,13 +19,10 @@ const isDark = computed(() => theme.isDark)
     <div>
       <LayoutFloating />
       <LayoutHeader />
-      <div class="py-4 px-0 md:px-1  text-slate-900 dark:text-white  dark:bg-gray-900 bg-gray-100 ">
+      <div class="text-slate-900 dark:text-white  dark:bg-gray-900 bg-gray-100 ">
         <div class="flex min-h-screen text-slate-900 dark:text-white  dark:bg-gray-900 bg-gray-100  ">
-          <div class="h-screen border-r-2 flex flex-col justify-between">
-            <LayoutSidebar />
-            <LayoutSidebar_bottom />
-          </div>
-          <div class="w-full md:w-[calc(100%-8rem)] lg:w-[calc(100%-16rem)] sm:rounded-l-none">
+          <LayoutSidebar />
+          <div class="flex-1 min-w-0">
             <div class="p-4 bg-gray-100 dark:bg-gray-900 h-full  font-[battambang]">
               <slot />
             </div>

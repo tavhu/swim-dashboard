@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { TwFeather } from "vue3-tailwind";
-import { isOpen as currentOpen } from "~/store/isOpen";
+import { useSidebarOpenStore } from "~/store/sidebarOpen";
 import { useSidebarStore } from "~~/store/sidebar";
 import { collection, query, where, onSnapshot, type Unsubscribe } from "firebase/firestore";
 import { firebaseDB } from "~/composables/firebase";
-// import { isOpen as currentOpen } from '~~/store/isOpen'
 
 const messNOtificationNumber = useState<number>('readMessages')
 
@@ -20,24 +19,52 @@ interface Item {
 interface Props {
   level: number,
   item: Item
+  // Path of the parent group, "" at the top level. See store/sidebarOpen.ts.
+  parentKey?: string
 }
 
-defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), { parentKey: "" });
 
-const { type } = useBreakpoints()
 const animationOpenClose = useAnimationOpenClose()
 const sidebarStore = useSidebarStore()
+const route = useRoute()
 
-const is = currentOpen()
-const isOpen = ref(is.isOpen)
-const toggleOpen = () => {
-  is.toggleOpens()
-  isOpen.value = is.isOpen
-}
+const sidebarOpen = useSidebarOpenStore()
+const nodeKey = computed(() => `${props.parentKey}/${props.item.name}`)
+const isOpen = computed(() => sidebarOpen.isOpen(nodeKey.value))
+const toggleOpen = () => sidebarOpen.toggle(nodeKey.value)
+
+// Keep the group you are actually inside expanded, so a reload on a child page
+// doesn't hide the link that is currently active.
+const containsRoute = (node: Item): boolean =>
+  node.url === route.path || (node.submenu ?? []).some(containsRoute)
+
+watch(
+  () => route.path,
+  () => {
+    if (props.item.submenu.length > 0 && containsRoute(props.item)) {
+      sidebarOpen.revealPath(nodeKey.value)
+    }
+  },
+  { immediate: true }
+)
+
 const permission = <any>useState('userPermission')
 
+// Nested levels are set in by padding rather than by a stack of left borders,
+// which is what made the expanded menu look cluttered. Spelled out rather than
+// built from `level` because Tailwind only keeps classes it can find as literal
+// text in the source.
+// Spelled out rather than built from `level` because Tailwind only keeps
+// classes it can find as literal text in the source.
+const INDENT: Record<number, string> = {
+  2: 'pl-8',
+  3: 'pl-12',
+  4: 'pl-16',
+}
+const indent = computed(() => INDENT[props.level] ?? '')
+
 let unSub: Unsubscribe
-let unreadItem: number
 const items: any = ref([]);
 onMounted(() => {
   const q = query(collection(firebaseDB, "message"), where("read", "==", false));
@@ -46,60 +73,51 @@ onMounted(() => {
     querySnapshot.forEach((doc) => {
       items.value.push(doc.data().name);
     });
-    // console.log("Current cities in CA: ", cities.join(", "));
     messNOtificationNumber.value++ //trigger global changes vallue
   });
 })
+onBeforeUnmount(() => unSub?.())
 </script>
 
 <template>
-  <li v-if="item.isTitle" :item="item">
-    <div class="font-bold my-2 text-lg text-[#ffffff] hidden lg:block ">
-      <!-- {{ item.name }} -->
-    </div>
-  </li>
+  <li v-if="item.isTitle" :item="item" />
+
   <li v-else-if="item.submenu.length === 0">
-    <div :data-tooltip-show="type === 'md'" data-tooltip-pos="right" :aria-label="item.name">
+    <div :aria-label="item.name">
       <NuxtLink :to="item.url" v-if="
         permission?.find((element: any) => { return element?.Resource?.frontEndURL == item.url?.replace('/', '').replaceAll('/', '-') && element?.granted || (element?.Resource?.frontEndURL == item.url?.replace('/', '').replaceAll('/', '-') && element?.read) || item.url === '/' })
       "
-        class="border-l-2 ml-4 border-gray-300 flex md:justify-center lg:justify-start duration-300 items-center gap-3 cursor-pointer px-3 py-2  dark:hover:text-primary md:hover:text-gray-600 md:hover:bg-opacity-40 "
-        :class="{
-          'ml-[0.3rem] rounded-lg border-transparent ': level === 1
-        }"
-        :exact-active-class="level === 1 ? 'bg-primary bg-opacity-40 !md:hover:text-opacity-60 border-b-4 !border-gray-50 !border-opacity-50  font-bold' : ' border-l-2 border-primary font-bold  text-primary'"
+        class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-gray-600 transition-colors duration-150 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white"
+        :class="indent"
+        exact-active-class="!bg-primary/10 !text-primary font-semibold"
         @click="sidebarStore.mobileOpen = false">
-        <TwFeather v-if="item.icon" :type="item.icon"></TwFeather>
-        <div class=" md:hidden lg:block select-none whitespace-nowrap overflow-hidden text-ellipsis">
-          {{ item.name }}
-        </div>
+        <TwFeather v-if="item.icon" :type="item.icon" class="h-4 w-4 shrink-0" />
+        <span v-else class="h-1.5 w-1.5 shrink-0 rounded-full bg-current opacity-40" />
+        <span class="select-none truncate">{{ item.name }}</span>
       </NuxtLink>
     </div>
   </li>
+
   <li v-else>
-    <div :data-tooltip-show="type === 'md'" data-tooltip-pos="right" :aria-label="item.name" @click="toggleOpen">
-      <div
-        class="flex  md:justify-center lg:justify-start duration-300 items-center  gap-3 cursor-pointer px-5 py-3 dark:hover:text-primary md:hover:text-gray-600 md:hover:bg-opacity-40 border-transparent">
-        <TwFeather v-if="item.icon" :type="item.icon"></TwFeather>
-        <div class="md:hidden lg:block select-none whitespace-nowrap overflow-hidden text-ellipsis"
-          :class="{ 'text-primary': isOpen }">
-          {{ item.name }} <span v-if="item.name == 'ប្រអប់សារ' && items.length != 0"
-            class="rounded-full text-xs bg-red-600 text-white text-center align-middle pl-1 pr-1"> {{ item.name ==
-              'ប្រអប់សារ' ? items.length : '' }}</span>
-        </div>
-        <div class="md:hidden lg:flex ml-auto items-center">
-          <TwFeather type="chevron-down" class="duration-300" :class="{ 'rotate-180 text-primary': isOpen }">
-          </TwFeather>
-        </div>
-      </div>
-    </div>
+    <button type="button" :aria-label="item.name" :aria-expanded="isOpen"
+      class="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors duration-150 hover:bg-gray-100 dark:hover:bg-gray-800"
+      :class="[indent, isOpen ? 'text-primary' : 'text-gray-600 dark:text-gray-400']" @click="toggleOpen">
+      <TwFeather v-if="item.icon" :type="item.icon" class="h-4 w-4 shrink-0" />
+      <span v-else class="h-1.5 w-1.5 shrink-0 rounded-full bg-current opacity-40" />
+      <span class="select-none truncate">{{ item.name }}</span>
+      <span v-if="item.name == 'ប្រអប់សារ' && items.length != 0"
+        class="rounded-full bg-red-600 px-1.5 text-[10px] leading-4 text-white">
+        {{ items.length }}
+      </span>
+      <TwFeather type="chevron-down" class="ml-auto h-4 w-4 shrink-0 transition-transform duration-200"
+        :class="{ 'rotate-180': isOpen }" />
+    </button>
+
     <transition name="expand" @enter="animationOpenClose.animateEnter"
       @after-enter="animationOpenClose.animateAfterEnter" @leave="animationOpenClose.animateLeave">
-      <ul class=" overflow-hidden duration-500 " :class="{
-        'mt-0': !isOpen
-      }" v-show="isOpen">
-        <template v-for="sub in item.submenu" :key="item.key">
-          <SidebarItem class="ml-5 text-opacity-90 " :item="sub" :level="level + 1" />
+      <ul class="overflow-hidden" v-show="isOpen">
+        <template v-for="sub in item.submenu" :key="sub.name">
+          <SidebarItem :item="sub" :level="level + 1" :parent-key="nodeKey" />
         </template>
       </ul>
     </transition>
@@ -109,7 +127,7 @@ onMounted(() => {
 <style>
 .expand-enter-active,
 .expand-leave-active {
-  transition: all .4s ease-in-out;
+  transition: all .3s ease-in-out;
   overflow: hidden;
 }
 </style>
