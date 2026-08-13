@@ -675,8 +675,8 @@ const findVillagesByCommune = (provinceName: string, districtName: string, commu
 
 // Watch for changes in the Province dropdown (cityProBA)
 watch(() => formData.cityProBA, (newProvince) => {
-    formData.communeBA = '';
     formData.districtBA = '';
+    formData.communeBA = '';
     formData.villageBA = '';
     districtList.value = [];
     communeList.value = [];
@@ -687,9 +687,12 @@ watch(() => formData.cityProBA, (newProvince) => {
     }
 }, { immediate: true });
 
-// Watch for changes in the District dropdown (communeBA)
-watch(() => formData.communeBA, (newDistrict) => {
-    formData.districtBA = '';
+// districtBA holds the district (ស្រុក-ខណ្ឌ), communeBA the commune
+// (ឃុំ/សង្កាត់). The template and these watchers used to hold them the other way
+// round while the edit-loading code above used this one, so reopening a saved
+// client built its dropdowns from the wrong columns.
+watch(() => formData.districtBA, (newDistrict) => {
+    formData.communeBA = '';
     formData.villageBA = '';
     communeList.value = [];
     villageList.value = []; // Clear village list
@@ -699,13 +702,12 @@ watch(() => formData.communeBA, (newDistrict) => {
     }
 }, { immediate: true });
 
-// Watch for changes in the Commune dropdown (districtBA)
-watch(() => formData.districtBA, (newCommune) => {
+watch(() => formData.communeBA, (newCommune) => {
     formData.villageBA = '';
     villageList.value = []; // Clear village list
 
-    if (newCommune && formData.cityProBA && formData.communeBA) {
-        villageList.value = findVillagesByCommune(formData.cityProBA, formData.communeBA, newCommune);
+    if (newCommune && formData.cityProBA && formData.districtBA) {
+        villageList.value = findVillagesByCommune(formData.cityProBA, formData.districtBA, newCommune);
     }
 }, { immediate: true });
 
@@ -838,17 +840,17 @@ watch(() => formData.districtBA, (newCommune) => {
                     <CustomErrorMessage name="cityProBA" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwSelect :disabled="readOnly || !formData.cityProBA" label="ស្រុក-ខណ្ឌ" name="communeBA"
-                        v-model="formData.communeBA" :items="districtList" placeholder="សូមជ្រើសរើស" required />
-                    <CustomErrorMessage name="communeBA" />
-                </div>
-                <div class="col-span-12 lg:col-span-6">
-                    <TwSelect :disabled="readOnly || !formData.communeBA" label="ឃុំ/សង្កាត់" name="districtBA"
-                        v-model="formData.districtBA" :items="communeList" placeholder="សូមជ្រើសរើស" required />
+                    <TwSelect :disabled="readOnly || !formData.cityProBA" label="ស្រុក-ខណ្ឌ" name="districtBA"
+                        v-model="formData.districtBA" :items="districtList" placeholder="សូមជ្រើសរើស" required />
                     <CustomErrorMessage name="districtBA" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwSelect :disabled="readOnly || !formData.districtBA" label="ភូមិ-ក្រុម" name="villageBA"
+                    <TwSelect :disabled="readOnly || !formData.districtBA" label="ឃុំ/សង្កាត់" name="communeBA"
+                        v-model="formData.communeBA" :items="communeList" placeholder="សូមជ្រើសរើស" required />
+                    <CustomErrorMessage name="communeBA" />
+                </div>
+                <div class="col-span-12 lg:col-span-6">
+                    <TwSelect :disabled="readOnly || !formData.communeBA" label="ភូមិ-ក្រុម" name="villageBA"
                         v-model="formData.villageBA" :items="villageList" placeholder="សូមជ្រើសរើស" required />
                     <CustomErrorMessage name="villageBA" />
                 </div>
