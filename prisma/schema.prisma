@@ -48,6 +48,7 @@ model User {
   ServiceCenter   ServiceCenter?   @relation(fields: [serviceCenterID], references: [id])
   Role            Role?            @relation(fields: [userRoleID], references: [id])
   contactMessage  contactMessage[]
+  approvalEvents  ApprovalEvent[]
 }
 
 model contactMessage {
@@ -493,6 +494,54 @@ model Client_PersonalInformation {
   ClientServeHistory         ClientServeHistory[]
   ClientHopelessMultiple     ClientHopelessMultiple[]
   services                   ServicesOnClients[]
+
+  // Propose → approve (ស្នើឡើង / អនុម័ត / បដិសេធ). Intake staff at a centre
+  // submit a record; a ប្រធានមជ្ឈមណ្ឌល or ministry user approves or rejects it.
+  approvalStatus             ApprovalStatus           @default(DRAFT)
+  submittedAt                DateTime?
+  submittedByID              String?
+  decidedAt                  DateTime?
+  decidedByID                String?
+  rejectionReason            String?
+}
+
+/// One row per transition, so a record's history survives the record being
+/// edited. Deliberately not a relation to each record type — `recordId` is
+/// matched with `recordType` instead, so one table covers all six forms.
+model ApprovalEvent {
+  id         String             @id @default(cuid())
+  recordType ApprovalRecordType
+  recordId   String
+  fromStatus ApprovalStatus?
+  toStatus   ApprovalStatus
+  actorID    String
+  actor      User               @relation(fields: [actorID], references: [id])
+  reason     String?
+  note       String?
+  createdAt  DateTime           @default(now())
+
+  // Reading a record's history: filter by record, order by time. Covers plain
+  // [recordType, recordId] lookups too, since those are a prefix of this.
+  @@index([recordType, recordId, createdAt])
+  // "What has this user approved?" — Postgres doesn't index a foreign key for
+  // you, and RESTRICT means every user delete scans this table.
+  @@index([actorID])
+}
+
+enum ApprovalStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  REJECTED
+}
+
+enum ApprovalRecordType {
+  CLIENT
+  CLIENT_SERVICE
+  CASE_PLAN
+  REINTEGRATION
+  FOLLOW_UP
+  CASE_CLOSURE
 }
 
 model ClientHopelessMultiple {
