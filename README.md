@@ -52,20 +52,33 @@ exactly as it appears in the service-account JSON.
 ### Database
 
 Create a database and a shadow database (Prisma uses the second as scratch
-space for `migrate dev`), then load the schema:
+space for `migrate dev`), build the schema from the migrations, then load the
+reference data:
 
 ```bash
 createdb swim_dashboard_dev
 createdb swim_dashboard_shadow
-psql -d swim_dashboard_dev -f pg_dump.sql
 npx prisma migrate deploy
 npx prisma generate
+psql -d swim_dashboard_dev -f prisma/seed-reference-data.sql
 ```
+
+The migrations alone produce the full schema — verified against
+`schema.prisma` with `prisma migrate diff`. The seed adds roles, resources,
+the role/resource grant matrix and the service catalogue. It contains no
+personal data.
+
+That leaves no account to sign in with, so create one:
+
+```bash
+node scripts/create-admin.mjs --username admin --role "Super Admin"
+```
+
+It asks for the password on stdin, so it stays out of shell history. Minimum
+12 characters, and it will not overwrite an existing username.
 
 On Windows, `psql` and `createdb` are usually not on `PATH`. Either add
 `C:\Program Files\PostgreSQL\16\bin` to it, or call them by full path.
-
-`pg_dump.sql` is schema plus a small seed — it holds no client records.
 
 ### Run
 

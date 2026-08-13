@@ -22,3 +22,6 @@ pnpm-lock.yaml
 backups/
 *.dump
 *.sql.gz
+# Root-level .sql only — anchored so it cannot swallow
+# prisma/migrations/*/migration.sql, which must stay tracked.
+/*.sql
