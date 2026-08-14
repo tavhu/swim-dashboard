@@ -163,11 +163,19 @@ const { data: roleData } = await useFetch("/api/role/get", {
 // ApprovalRecordType enum. The action column previously offered eight from an
 // older set — needs assessment, family tracing, family assessment, referral —
 // and all but the first linked to service-centre pages with a client id.
-// `to` builds the destination from the row id. A form without one is not built
-// yet and shows greyed as មិនទាន់មាន.
+// `to` opens what already exists; `create` starts a new one. A form with
+// neither is not built yet and shows greyed as មិនទាន់មាន.
+//
+// Forms 2-6 record an episode rather than a single record, so they offer both:
+// the list of what has been recorded, and a direct ចុះឈ្មោះ. Form 1 has only
+// `to` — a client cannot be registered twice.
 const CASE_FORMS = [
     { label: 'ទម្រង់(១)', title: 'បញ្ជីអតិថិជន', to: (id: string) => `/client/id/${id}` },
-    { label: 'ទម្រង់(២)', title: 'ការប្រើសេវាកម្មរបស់អតិថិជន', to: (id: string) => `/client/service/${id}` },
+    {
+        label: 'ទម្រង់(២)', title: 'ការប្រើសេវាកម្មរបស់អតិថិជន',
+        to: (id: string) => `/client/service/${id}`,
+        create: (id: string) => `/client/service/form?client=${id}`,
+    },
     { label: 'ទម្រង់(៣)', title: 'ផែនការករណីរបស់អតិថិជន' },
     { label: 'ទម្រង់(៤)', title: 'សមាហរណកម្ម' },
     { label: 'ទម្រង់(៥)', title: 'តាមដាន និងវាយតម្លៃស្ថានភាពអតិថិជន' },
@@ -258,21 +266,28 @@ const addStaff = (CenterID: string) => {
                                 </template>
                                 <template #content>
                                     <div class="py-1">
-                                        <NuxtLink v-for="form in CASE_FORMS" :key="form.label"
-                                            :to="form.to ? form.to(data.id) : ''"
-                                            :class="form.to ? '' : 'pointer-events-none'">
-                                            <div class="flex items-center justify-between gap-3 px-4 py-2 text-sm transition"
-                                                :class="form.to
-                                                    ? 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-900 cursor-pointer'
-                                                    : 'text-gray-400 dark:text-gray-600'">
-                                                <span class="font-[battambang]">
-                                                    {{ form.label }} {{ form.title }}
-                                                </span>
-                                                <span v-if="!form.to" class="whitespace-nowrap text-xs">
-                                                    មិនទាន់មាន
-                                                </span>
-                                            </div>
-                                        </NuxtLink>
+                                        <div v-for="form in CASE_FORMS" :key="form.label"
+                                            class="flex items-center justify-between gap-2 px-4 py-2 text-sm">
+                                            <!-- The row only reaches here because ទម្រង់ទី១ is
+                                                 registered; ReadableCode is issued on that save,
+                                                 so it is the thing to check before offering the
+                                                 forms that hang off it. -->
+                                            <NuxtLink :to="form.to && data.ReadableCode ? form.to(data.id) : ''"
+                                                class="font-[battambang]"
+                                                :class="form.to && data.ReadableCode
+                                                    ? 'text-gray-700 dark:text-gray-200 hover:text-primary cursor-pointer'
+                                                    : 'pointer-events-none text-gray-400 dark:text-gray-600'">
+                                                {{ form.label }} {{ form.title }}
+                                            </NuxtLink>
+                                            <NuxtLink v-if="form.create && data.ReadableCode && !readOnly"
+                                                :to="form.create(data.id)" :title="'ចុះឈ្មោះ ' + form.title"
+                                                class="shrink-0 rounded px-2 py-0.5 text-xs text-primary hover:bg-primary/10">
+                                                + ចុះឈ្មោះ
+                                            </NuxtLink>
+                                            <span v-else-if="!form.to" class="shrink-0 whitespace-nowrap text-xs text-gray-400">
+                                                មិនទាន់មាន
+                                            </span>
+                                        </div>
                                     </div>
                                 </template>
                             </TwDropdownMenu>
