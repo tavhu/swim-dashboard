@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import {
-    TwDropdownMenu,
     useToast,
     type DatatableColumn,
     type DatatableData,
@@ -21,19 +20,19 @@ const data = ref({
         {
             label: "លេខសំគាល់",
             field: "readableCode",
-            width: "140px",
+            width: "120px",
             sortable: false,
         },
         {
             label: "រូបថត",
             field: "logo",
-            width: "110px",
+            width: "90px",
             sortable: false,
         },
         {
             label: "ឈ្មោះជាភាសារខ្មែរ",
             field: "nameKH",
-            width: "400px",
+            width: "auto",
             sortable: false,
         },
         {
@@ -45,7 +44,7 @@ const data = ref({
         {
             label: "សកម្មភាព",
             field: "action",
-            width: "260px",
+            width: "150px",
             sortable: false,
         },
     ] as Array<DatatableColumn>,
@@ -182,6 +181,36 @@ const CASE_FORMS = [
     { label: 'ទម្រង់(៦)', title: 'បិទករណី' },
 ]
 
+/**
+ * Row actions for UDropdown.
+ *
+ * UDropdown rather than TwDropdownMenu because the datatable wraps its table in
+ * a `vt-overflow-auto` container that clips on both axes: an inline menu was cut
+ * off and pushed the table into scrolling, so the forms could not be seen
+ * without scrolling sideways. UDropdown teleports out of that container, and it
+ * is already how the organisation and centre-document tables do row actions.
+ *
+ * A row only reaches this list because ទម្រង់ទី១ is registered, and that save is
+ * what issues ReadableCode, so the code is what gates the forms hanging off it.
+ */
+const actionItems = (row: any) => {
+    const registered = !!row?.ReadableCode;
+    const groups: any[] = CASE_FORMS.map((form) => {
+        const entries: any[] = [];
+        if (form.to && registered) {
+            entries.push({ label: `${form.label} ${form.title}`, icon: 'i-heroicons-document-text', to: form.to(row.id) });
+        } else {
+            entries.push({ label: `${form.label} ${form.title}`, icon: 'i-heroicons-document-text', disabled: true });
+        }
+        if (form.create && registered && !readOnly) {
+            entries.push({ label: `ចុះឈ្មោះ ${form.label}`, icon: 'i-heroicons-plus', to: form.create(row.id) });
+        }
+        return entries;
+    });
+    groups.push([{ label: 'លុបចេញ', icon: 'i-heroicons-trash', click: () => deleteRecord(row.id), disabled: readOnly }]);
+    return groups;
+};
+
 const roleDataFormat: DropdownItem[] = new Array({ label: '', value: '' })
 roleDataFormat.pop()
 //@ts-ignored
@@ -250,49 +279,12 @@ const addStaff = (CenterID: string) => {
                         </div>
                     </template>
                     <template v-if="column.field === 'action'">
-                        <!--
-                          One menu rather than a row of buttons. Six forms with a view
-                          and an edit each, plus delete, is thirteen controls per row —
-                          unreadable at any width. The menu lists the six ទម្រង់ of the
-                          manual and opens each one's view; editing is reached from
-                          there, which is the same path form 1 already takes.
-                        -->
-                        <div class="flex gap-2 justify-center">
-                            <TwDropdownMenu align="right" width="72">
-                                <template #trigger>
-                                    <UButton color="primary" icon="i-heroicons-document-text" class="border">
-                                        ទម្រង់
-                                    </UButton>
-                                </template>
-                                <template #content>
-                                    <div class="py-1">
-                                        <div v-for="form in CASE_FORMS" :key="form.label"
-                                            class="flex items-center justify-between gap-2 px-4 py-2 text-sm">
-                                            <!-- The row only reaches here because ទម្រង់ទី១ is
-                                                 registered; ReadableCode is issued on that save,
-                                                 so it is the thing to check before offering the
-                                                 forms that hang off it. -->
-                                            <NuxtLink :to="form.to && data.ReadableCode ? form.to(data.id) : ''"
-                                                class="font-[battambang]"
-                                                :class="form.to && data.ReadableCode
-                                                    ? 'text-gray-700 dark:text-gray-200 hover:text-primary cursor-pointer'
-                                                    : 'pointer-events-none text-gray-400 dark:text-gray-600'">
-                                                {{ form.label }} {{ form.title }}
-                                            </NuxtLink>
-                                            <NuxtLink v-if="form.create && data.ReadableCode && !readOnly"
-                                                :to="form.create(data.id)" :title="'ចុះឈ្មោះ ' + form.title"
-                                                class="shrink-0 rounded px-2 py-0.5 text-xs text-primary hover:bg-primary/10">
-                                                + ចុះឈ្មោះ
-                                            </NuxtLink>
-                                            <span v-else-if="!form.to" class="shrink-0 whitespace-nowrap text-xs text-gray-400">
-                                                មិនទាន់មាន
-                                            </span>
-                                        </div>
-                                    </div>
-                                </template>
-                            </TwDropdownMenu>
-                            <UButton color="red" icon="i-heroicons-trash" @click="deleteRecord(data.id)"
-                                :disabled="readOnly" :title="'លុបចេញ'" />
+                        <div class="flex justify-center">
+                            <UDropdown :items="actionItems(data)" :popper="{ placement: 'bottom-end' }">
+                                <UButton color="primary" icon="i-heroicons-document-text" trailing-icon="i-heroicons-chevron-down-20-solid">
+                                    ទម្រង់
+                                </UButton>
+                            </UDropdown>
                         </div>
                     </template>
                 </template>
