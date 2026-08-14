@@ -30,11 +30,11 @@ export default eventHandler(async (event) => {
       },
     },
     clientType: { select: { nameKh: true, nameEn: true } },
-    previousCenter: { select: { nameKH: true, nameEN: true } },
     rehabGroup: { select: { nameKh: true, nameEn: true } },
     rehabType: { select: { nameKh: true, nameEn: true } },
     rehabilitation: { select: { nameKh: true, nameEn: true } },
-    followUpRehabilitation: { select: { nameKh: true, nameEn: true } },
+    service: { select: { nameKh: true } },
+    followUpService: { select: { nameKh: true } },
   };
 
   try {

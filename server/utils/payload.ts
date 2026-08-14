@@ -36,7 +36,6 @@ export const CLIENT_FIELDS: FieldSpec = {
 /** ClientService (ទម្រង់ទី២). */
 export const CLIENT_SERVICE_FIELDS: FieldSpec = {
   optionalDates: ["serviceDate"],
-  defaultedBooleans: ["usedServiceBefore"],
 };
 
 /**

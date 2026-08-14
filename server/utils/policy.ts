@@ -120,6 +120,12 @@ export const RULES: Rule[] = [
     resource: RESOURCE.client,
     action: "write",
   },
+  {
+    mode: "permission",
+    pattern: /^\/api\/client\/service\/approve\/?$/,
+    resource: RESOURCE.client,
+    action: "write",
+  },
 
   // --- roles & permissions --------------------------------------------------
   {

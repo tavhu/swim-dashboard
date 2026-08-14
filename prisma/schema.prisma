@@ -151,7 +151,6 @@ model ServiceCenter {
   systemUser                 User[]
   CenterPlan                 CenterPlan[]
   services                   ServicesOnServiceCenters[]
-  clientServicesPrevious     ClientService[]              @relation("ClientServicePreviousCentre")
 }
 
 enum AccountType {
@@ -598,6 +597,8 @@ model Service {
   createdAt            DateTime                   @default(now())
   updatedAt            DateTime                   @updatedAt
   clients              ServicesOnClients[]
+  clientServices       ClientService[]            @relation("ClientServiceCatalogue")
+  followUpFor          ClientService[]            @relation("ClientServiceFollowUp")
   serviceCenters       ServicesOnServiceCenters[]
 
   @@map("services")
@@ -709,19 +710,18 @@ model RehabType {
 /// ការស្តារនីតិសម្បទា — the individual rehabilitation activity assigned to a
 /// client. The manual marks name (both languages) and មូលហេតុ as required.
 model Rehabilitation {
-  id               String          @id @default(cuid())
-  code             String          @unique // លេខកូដ
-  typeId           String // ប្រភេទការស្តារនីតិសម្បទា
-  type             RehabType       @relation(fields: [typeId], references: [id])
-  nameKh           String // ឈ្មោះ (ខ្មែរ)
-  nameEn           String // ឈ្មោះ (អង់គ្លេស)
-  reason           String // មូលហេតុ
-  description      String? // បរិយាយ
-  isActive         Boolean         @default(true)
-  clientServices   ClientService[] @relation("ClientServiceRehabilitation")
-  followUpServices ClientService[] @relation("ClientServiceFollowUp")
-  createdAt        DateTime        @default(now())
-  updatedAt        DateTime        @updatedAt
+  id             String          @id @default(cuid())
+  code           String          @unique // លេខកូដ
+  typeId         String // ប្រភេទការស្តារនីតិសម្បទា
+  type           RehabType       @relation(fields: [typeId], references: [id])
+  nameKh         String // ឈ្មោះ (ខ្មែរ)
+  nameEn         String // ឈ្មោះ (អង់គ្លេស)
+  reason         String // មូលហេតុ
+  description    String? // បរិយាយ
+  isActive       Boolean         @default(true)
+  clientServices ClientService[] @relation("ClientServiceRehabilitation")
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
 
   @@index([typeId])
   @@map("rehabilitations")
@@ -790,20 +790,27 @@ model ClientService {
   client   Client_PersonalInformation @relation(fields: [clientId], references: [id])
 
   // ២. ព័ត៌មានរោគឬសញ្ញាណវិនិច្ឆ័យ
+  //
+  // The manual repeats three questions from ទម្រង់ទី១ here — whether the client
+  // has been in a centre before, which ones, and how many times. They are not
+  // stored again: Client_PersonalInformation already holds UsedtoRehab,
+  // HowManyTimeHaveServed and the ClientServeHistory rows, and a second copy
+  // would only be able to disagree with the first.
   clientTypeId        String? // ប្រភេទអតិថិជន
-  clientType          ClientType?    @relation(fields: [clientTypeId], references: [id])
+  clientType          ClientType? @relation(fields: [clientTypeId], references: [id])
   reason              String? // មូលហេតុ
-  usedServiceBefore   Boolean        @default(false) // ធ្លាប់ទទួលសេវាពីមុន
-  previousCenterId    String? // បើធ្លាប់ តើមជ្ឈមណ្ឌលណា
-  previousCenter      ServiceCenter? @relation("ClientServicePreviousCentre", fields: [previousCenterId], references: [id])
-  totalTimes          String? // ចំនួនលើករួមទាំងលើកនេះ
   attachments         String? // ឯកសារពាក់ព័ន្ធ — comma separated, as CenterPlan.filePath
   diagnosisApprovedBy String? // អនុម័តរោគវិនិច្ឆ័យដោយ
   conclusion          String? // សន្និដ្ឋាន
 
-  // ៣. ព័ត៌មានសេវាកម្មដែលត្រូវការប្រើ — the three levels of the rehabilitation
-  // taxonomy, narrowing group → type → activity.
+  // ៣. ព័ត៌មានសេវាកម្មដែលត្រូវការប្រើ
+  //
+  // The service itself comes from the catalogue maintained at /service — the
+  // one carrying each programme's legal basis and eligibility. The three
+  // rehabilitation levels below narrow to the specific activity delivered.
   serviceDate      DateTime? // ថ្ងៃខែឆ្នាំមកទទួលសេវាកម្ម
+  serviceId        String? // សេវាកម្ម
+  service          Service?        @relation("ClientServiceCatalogue", fields: [serviceId], references: [id])
   rehabGroupId     String?
   rehabGroup       RehabGroup?     @relation(fields: [rehabGroupId], references: [id])
   rehabTypeId      String?
@@ -812,16 +819,16 @@ model ClientService {
   rehabilitation   Rehabilitation? @relation("ClientServiceRehabilitation", fields: [rehabilitationId], references: [id])
 
   // ៤. អ្នកផ្តល់សេវា និងស្ថានភាពអតិថិជនបច្ចុប្បន្ន
-  providerName             String? // ឈ្មោះស្ថាប័នផ្តល់សេវា
-  providerLocation         String? // ទីតាំងផ្តល់សេវា
-  providerAgent            String? // ឈ្មោះភ្នាក់ងារផ្តល់សេវា
-  providerPhone            String? // លេខទំនាក់ទំនង
-  currentStatus            String? // មិនល្អ / ប្រសើរ / ប្រក្រតីភាព
-  followUpRehabilitationId String? // តម្រូវការសេវាបន្ត
-  followUpRehabilitation   Rehabilitation? @relation("ClientServiceFollowUp", fields: [followUpRehabilitationId], references: [id])
+  providerName      String? // ឈ្មោះស្ថាប័នផ្តល់សេវា
+  providerLocation  String? // ទីតាំងផ្តល់សេវា
+  providerAgent     String? // ឈ្មោះភ្នាក់ងារផ្តល់សេវា
+  providerPhone     String? // លេខទំនាក់ទំនង
+  currentStatus     String? // មិនល្អ / ប្រសើរ / ប្រក្រតីភាព
+  followUpServiceId String? // តម្រូវការសេវាបន្ត
+  followUpService   Service? @relation("ClientServiceFollowUp", fields: [followUpServiceId], references: [id])
 
-  // ៥. សិទ្ធិអនុម័ត — officer proposes, centre director approves or rejects.
-  // Same shape as Client_PersonalInformation so one approval UI serves both.
+  // ៥. សិទ្ធិអនុម័ត — same fields as Client_PersonalInformation so one approval
+  // component serves every form.
   approvalStatus  ApprovalStatus @default(DRAFT)
   submittedAt     DateTime?
   submittedByID   String?

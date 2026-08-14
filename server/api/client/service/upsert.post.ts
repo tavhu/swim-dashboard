@@ -30,9 +30,6 @@ export default eventHandler(async (event) => {
     clientId: body.clientId,
     clientTypeId: body.clientTypeId || null,
     reason: body.reason || null,
-    usedServiceBefore: body.usedServiceBefore ?? false,
-    previousCenterId: body.previousCenterId || null,
-    totalTimes: body.totalTimes || null,
     attachments: body.attachments || null,
     diagnosisApprovedBy: body.diagnosisApprovedBy || null,
     conclusion: body.conclusion || null,
@@ -45,7 +42,8 @@ export default eventHandler(async (event) => {
     providerAgent: body.providerAgent || null,
     providerPhone: body.providerPhone || null,
     currentStatus: body.currentStatus || null,
-    followUpRehabilitationId: body.followUpRehabilitationId || null,
+    serviceId: body.serviceId || null,
+    followUpServiceId: body.followUpServiceId || null,
   };
 
   try {
