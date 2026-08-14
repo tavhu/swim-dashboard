@@ -386,79 +386,6 @@ const submit = async () => {
     }
     saving.value = false
 };
-const clear = () => {
-    if (prop.readOnly) return;
-    formData.status = false
-    formData.photo = null
-    files.value = null
-    formData.id = null
-    formData.fullNameKH = null
-    formData.nickName = null
-    formData.ReadableCode = null
-    formData.Gender = null
-    formData.DOB = null
-    formData.POB = null
-    formData.EducationLevel = null
-    formData.Occupation = null
-    formData.DateArrested = null
-    formData.homeBA = null
-    formData.StreetBA = null
-    formData.villageBA = null
-    formData.districtBA = null
-    formData.communeBA = null
-    formData.cityProBA = null
-    formData.FatherOrChaperoneName = null
-    formData.FOCDOB = null
-    formData.FOCTel = null
-    formData.FOCMarried = null
-    formData.FOCTelandAddress = null
-    formData.MotherOrChaperoneName = null
-    formData.MOCMarried = null
-    formData.MOCDOB = null
-    formData.MOCTel = null
-    formData.MOCTelandAddress = null
-    formData.OtherFamilyMembers = null
-    formData.CloseFriend = null
-    formData.ClientSendBy = null
-    formData.ImportantChallenge = null
-    formData.PastActivities = null
-    formData.ReasonUseDrug = null
-    formData.ReasonUseDrugOther = null
-    formData.KnownLegalConsequence = null
-    formData.typeDrugUsed = null
-    formData.typeDrugUsedOther = null
-    formData.DrugVolumeUsed = null
-    formData.DrugRequecyUse = null
-    formData.DrugDurationUse = null
-    formData.LivingSituation = null
-    formData.UsedtoRehab = null
-    formData.HowManyTimeHaveServed = null
-    formData.ReasonComingtoCenter = null
-    formData.DailyActivitiesInCenter = null
-    formData.ActivitiesThatClientLike = null
-    formData.ClientTalent = null
-    formData.RelationshipWithFriends = null
-    formData.RelationshipWithStaff = null
-    formData.RelationshipWithTeacher = null
-    formData.RelationshipWithOther = null
-    formData.ConcernForClientFuture = null
-    formData.HopeForClientFuture = null
-    formData.FuturePlanforClient = null
-    formData.FuturePlanforClientDetails = null
-    formData.ClientFeelsHopless = null
-    formData.ClientHoplessDetails = null
-    formData.InterviewerOpinoin = null
-    formData.InterviewerID = null
-    formData.status = null
-    formData.InterViewDate = null
-    formData.InterViewerSignature = null
-    formData.InterviewerPosition = null
-    formData.serviceCenterID = null
-
-    setTimeout(() => {
-        validator.value.clearErrors();
-    }, 100);
-};
 
 const files = ref();
 // Errors deliberately propagate — see composables/useImageUpload.ts. The caller
@@ -1338,13 +1265,16 @@ watch(() => formData.communeBA, (newCommune) => {
                         </ClientOnly>
                     </div>
                 </div>
-                <div class="col-span-12 flex justify-end gap-1 ">
-                    <UButton :disabled="readOnly" color="gray" type="button" square size="lg"
-                        class="px-4 dark:text-gray-200 dark:!border-gray-800 dark:border" @click="clear()">
-                        កំណត់ឡើងវិញ
-                    </UButton>
-                    <UButton color="primary" type="submit" size="lg" class="px-4" :disabled="readOnly || saving">
-                        រក្សាទុក
+                <!-- Same pair as ទម្រង់ទី២: back beside save, no reset. -->
+                <div class="col-span-12 flex justify-end gap-2">
+                    <NuxtLink :to="prop.id ? `/client/id/${prop.id}` : '/client'">
+                        <UButton color="gray" size="xl" type="button">
+                            <span class="font-[Moul] text-lg">ត្រឡប់ក្រោយ</span>
+                        </UButton>
+                    </NuxtLink>
+                    <UButton color="primary" type="submit" size="xl" :loading="saving" :disabled="readOnly">
+                        <TwFeather type="save" :size="18" class="mr-1" />
+                        <span class="font-[Moul] text-lg">រក្សាទុក</span>
                     </UButton>
                 </div>
             </TwForm>
