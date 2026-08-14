@@ -163,9 +163,11 @@ const { data: roleData } = await useFetch("/api/role/get", {
 // ApprovalRecordType enum. The action column previously offered eight from an
 // older set — needs assessment, family tracing, family assessment, referral —
 // and all but the first linked to service-centre pages with a client id.
+// `to` builds the destination from the row id. A form without one is not built
+// yet and shows greyed as មិនទាន់មាន.
 const CASE_FORMS = [
-    { label: 'ទម្រង់(១)', title: 'បញ្ជីអតិថិជន' },
-    { label: 'ទម្រង់(២)', title: 'ការប្រើសេវាកម្មរបស់អតិថិជន' },
+    { label: 'ទម្រង់(១)', title: 'បញ្ជីអតិថិជន', to: (id: string) => `/client/id/${id}` },
+    { label: 'ទម្រង់(២)', title: 'ការប្រើសេវាកម្មរបស់អតិថិជន', to: (id: string) => `/client/service/${id}` },
     { label: 'ទម្រង់(៣)', title: 'ផែនការករណីរបស់អតិថិជន' },
     { label: 'ទម្រង់(៤)', title: 'សមាហរណកម្ម' },
     { label: 'ទម្រង់(៥)', title: 'តាមដាន និងវាយតម្លៃស្ថានភាពអតិថិជន' },
@@ -256,17 +258,17 @@ const addStaff = (CenterID: string) => {
                                 </template>
                                 <template #content>
                                     <div class="py-1">
-                                        <NuxtLink v-for="(form, i) in CASE_FORMS" :key="form.label"
-                                            :to="i === 0 ? config.public.origin + '/client/id/' + data.id : ''"
-                                            :class="i === 0 ? '' : 'pointer-events-none'">
+                                        <NuxtLink v-for="form in CASE_FORMS" :key="form.label"
+                                            :to="form.to ? form.to(data.id) : ''"
+                                            :class="form.to ? '' : 'pointer-events-none'">
                                             <div class="flex items-center justify-between gap-3 px-4 py-2 text-sm transition"
-                                                :class="i === 0
+                                                :class="form.to
                                                     ? 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-900 cursor-pointer'
                                                     : 'text-gray-400 dark:text-gray-600'">
                                                 <span class="font-[battambang]">
                                                     {{ form.label }} {{ form.title }}
                                                 </span>
-                                                <span v-if="i !== 0" class="whitespace-nowrap text-xs">
+                                                <span v-if="!form.to" class="whitespace-nowrap text-xs">
                                                     មិនទាន់មាន
                                                 </span>
                                             </div>

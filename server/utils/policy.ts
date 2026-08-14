@@ -110,7 +110,7 @@ export const RULES: Rule[] = [
   },
   {
     mode: "permission",
-    pattern: /^\/api\/client\/service\/get\/?$/,
+    pattern: /^\/api\/client\/service\/(get|options)\/?$/,
     resource: RESOURCE.client,
     action: "read",
   },
