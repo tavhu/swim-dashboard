@@ -45,9 +45,6 @@ const service = computed(() => {
   return [
     { label: "ថ្ងៃខែឆ្នាំមកទទួលសេវាកម្ម", value: fmt(r.serviceDate) },
     { label: "សេវាកម្ម", value: val(r.service?.nameKh) },
-    { label: "ក្រុមស្តារនីតិសម្បទា", value: val(r.rehabGroup?.nameKh) },
-    { label: "ប្រភេទស្តារនីតិសម្បទា", value: val(r.rehabType?.nameKh) },
-    { label: "សេវាកម្មស្តារនីតិសម្បទាលម្អិត", value: val(r.rehabilitation?.nameKh), wide: true },
   ];
 });
 

@@ -36,10 +36,7 @@ const removeAttachment = (path: string) => {
   form.attachments = attachmentList.value.filter((f) => f !== path).join(",");
 };
 
-const options = ref<{
-  clientTypes: any[]; services: any[];
-  rehabGroups: any[]; rehabTypes: any[]; rehabilitations: any[];
-}>({ clientTypes: [], services: [], rehabGroups: [], rehabTypes: [], rehabilitations: [] });
+const options = ref<{ clientTypes: any[]; services: any[] }>({ clientTypes: [], services: [] });
 
 const form = reactive<Record<string, any>>({
   id: "",
@@ -51,36 +48,12 @@ const form = reactive<Record<string, any>>({
   conclusion: "",
   serviceDate: "",
   serviceId: "",
-  rehabGroupId: "",
-  rehabTypeId: "",
-  rehabilitationId: "",
   providerName: "",
   providerLocation: "",
   providerAgent: "",
   providerPhone: "",
   currentStatus: "",
   followUpServiceId: "",
-});
-
-// The two lower rehabilitation levels only make sense under a chosen parent.
-const typesForGroup = computed(() =>
-  options.value.rehabTypes.filter((t) => t.groupId === form.rehabGroupId)
-);
-const rehabsForType = computed(() =>
-  options.value.rehabilitations.filter((r) => r.typeId === form.rehabTypeId)
-);
-
-// Guard the same way the client form does: assigning a loaded record must not
-// look like the user changing a parent select, which clears what is below it.
-const loading = ref(true);
-watch(() => form.rehabGroupId, () => {
-  if (loading.value) return;
-  form.rehabTypeId = "";
-  form.rehabilitationId = "";
-});
-watch(() => form.rehabTypeId, () => {
-  if (loading.value) return;
-  form.rehabilitationId = "";
 });
 
 const CURRENT_STATUS = [
@@ -92,7 +65,6 @@ const CURRENT_STATUS = [
 useHead(() => ({ title: serviceId.value ? "កែសម្រួលការប្រើសេវាកម្ម" : "ចុះឈ្មោះការប្រើសេវាកម្ម" }));
 
 onMounted(async () => {
-  loading.value = true;
   try {
     options.value = await $fetch("/api/client/service/options", { method: "POST" });
 
@@ -112,9 +84,6 @@ onMounted(async () => {
         conclusion: rec.conclusion ?? "",
         serviceDate: rec.serviceDate ?? "",
         serviceId: rec.serviceId ?? "",
-        rehabGroupId: rec.rehabGroupId ?? "",
-        rehabTypeId: rec.rehabTypeId ?? "",
-        rehabilitationId: rec.rehabilitationId ?? "",
         providerName: rec.providerName ?? "",
         providerLocation: rec.providerLocation ?? "",
         providerAgent: rec.providerAgent ?? "",
@@ -146,8 +115,6 @@ onMounted(async () => {
     error.value = e?.message || "មិនអាចទាញយកព័ត៌មានបានទេ";
   } finally {
     pending.value = false;
-    await nextTick();
-    loading.value = false;
   }
 });
 
@@ -298,30 +265,6 @@ async function submit() {
                 class="mt-1 h-10 w-full rounded border px-2 text-base dark:border-gray-700 dark:bg-gray-900">
                 <option value="">សូមជ្រើសរើស</option>
                 <option v-for="s in options.services" :key="s.id" :value="s.id">{{ s.nameKh }}</option>
-              </select>
-            </label>
-            <label class="block">
-              <span class="text-sm text-gray-500 dark:text-gray-400">ក្រុមស្តារនីតិសម្បទា</span>
-              <select v-model="form.rehabGroupId" :disabled="readOnly"
-                class="mt-1 h-10 w-full rounded border px-2 text-base dark:border-gray-700 dark:bg-gray-900">
-                <option value="">សូមជ្រើសរើស</option>
-                <option v-for="g in options.rehabGroups" :key="g.id" :value="g.id">{{ g.nameKh }}</option>
-              </select>
-            </label>
-            <label class="block">
-              <span class="text-sm text-gray-500 dark:text-gray-400">ប្រភេទស្តារនីតិសម្បទា</span>
-              <select v-model="form.rehabTypeId" :disabled="readOnly || !form.rehabGroupId"
-                class="mt-1 h-10 w-full rounded border px-2 text-base disabled:opacity-50 dark:border-gray-700 dark:bg-gray-900">
-                <option value="">សូមជ្រើសរើស</option>
-                <option v-for="t in typesForGroup" :key="t.id" :value="t.id">{{ t.nameKh }}</option>
-              </select>
-            </label>
-            <label class="block sm:col-span-2">
-              <span class="text-sm text-gray-500 dark:text-gray-400">សេវាកម្មស្តារនីតិសម្បទាលម្អិត</span>
-              <select v-model="form.rehabilitationId" :disabled="readOnly || !form.rehabTypeId"
-                class="mt-1 h-10 w-full rounded border px-2 text-base disabled:opacity-50 dark:border-gray-700 dark:bg-gray-900">
-                <option value="">សូមជ្រើសរើស</option>
-                <option v-for="r in rehabsForType" :key="r.id" :value="r.id">{{ r.nameKh }}</option>
               </select>
             </label>
           </div>

@@ -39,9 +39,6 @@ export default eventHandler(async (event) => {
       },
     },
     clientType: { select: { nameKh: true, nameEn: true } },
-    rehabGroup: { select: { nameKh: true, nameEn: true } },
-    rehabType: { select: { nameKh: true, nameEn: true } },
-    rehabilitation: { select: { nameKh: true, nameEn: true } },
     service: { select: { nameKh: true } },
     followUpService: { select: { nameKh: true } },
   };

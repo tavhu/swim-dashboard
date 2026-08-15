@@ -1,11 +1,9 @@
 import { getServerSession } from "#auth";
 
 /**
- * The dropdown lists ទម្រង់ទី២ needs, in one request rather than five.
+ * The dropdown lists ទម្រង់ទី២ needs, in one request rather than two.
  *
- * Only active rows, and only the fields a `<select>` needs — id and names. The
- * rehabilitation levels come back whole because the form narrows them client
- * side as the user picks group then type, which avoids a round trip per step.
+ * Only active rows, and only the fields a `<select>` needs — id and names.
  */
 export default eventHandler(async (event) => {
   const session = await getServerSession(event);
@@ -16,7 +14,7 @@ export default eventHandler(async (event) => {
   const prisma = event.context.prisma;
 
   try {
-    const [clientTypes, services, rehabGroups, rehabTypes, rehabilitations] = await Promise.all([
+    const [clientTypes, services] = await Promise.all([
       prisma.clientType.findMany({
         where: { isActive: true },
         select: { id: true, nameKh: true },
@@ -27,25 +25,10 @@ export default eventHandler(async (event) => {
         select: { id: true, nameKh: true },
         orderBy: { nameKh: "asc" },
       }),
-      prisma.rehabGroup.findMany({
-        where: { isActive: true },
-        select: { id: true, nameKh: true },
-        orderBy: { createdAt: "asc" },
-      }),
-      prisma.rehabType.findMany({
-        where: { isActive: true },
-        select: { id: true, nameKh: true, groupId: true },
-        orderBy: { code: "asc" },
-      }),
-      prisma.rehabilitation.findMany({
-        where: { isActive: true },
-        select: { id: true, nameKh: true, typeId: true },
-        orderBy: { code: "asc" },
-      }),
     ]);
 
     setResponseStatus(event, 200);
-    return { clientTypes, services, rehabGroups, rehabTypes, rehabilitations };
+    return { clientTypes, services };
   } catch (e: any) {
     console.error("[client/service/options]", e);
     setResponseStatus(event, 412);

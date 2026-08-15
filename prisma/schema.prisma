@@ -674,64 +674,6 @@ model ServiceType {
   @@map("serviceTypes")
 }
 
-/// ក្រុមស្តារនីតិសម្បទា — the seven rehabilitation categories the manual sets
-/// out: basic needs, economic, legal, drug and alcohol, mental health,
-/// physical, medical. The spec gives groups no code, unlike the levels below.
-model RehabGroup {
-  id             String          @id @default(cuid())
-  nameKh         String // ឈ្មោះ (ខ្មែរ)
-  nameEn         String? // ឈ្មោះ (អង់គ្លេស)
-  description    String? // បរិយាយ
-  isActive       Boolean         @default(true)
-  types          RehabType[]
-  clientServices ClientService[]
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
-
-  @@map("rehabGroups")
-}
-
-/// ប្រភេទស្តារនីតិសម្បទា — a subdivision of a group.
-model RehabType {
-  id             String           @id @default(cuid())
-  code           String           @unique // លេខកូដ
-  groupId        String // ក្រុម
-  group          RehabGroup       @relation(fields: [groupId], references: [id])
-  nameKh         String // ឈ្មោះ (ខ្មែរ)
-  nameEn         String? // ឈ្មោះ (អង់គ្លេស)
-  description    String? // បរិយាយ
-  isActive       Boolean          @default(true)
-  items          Rehabilitation[]
-  clientServices ClientService[]
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
-
-  // Postgres does not index a foreign key for you, and every listing filters
-  // by group.
-  @@index([groupId])
-  @@map("rehabTypes")
-}
-
-/// ការស្តារនីតិសម្បទា — the individual rehabilitation activity assigned to a
-/// client. The manual marks name (both languages) and មូលហេតុ as required.
-model Rehabilitation {
-  id             String          @id @default(cuid())
-  code           String          @unique // លេខកូដ
-  typeId         String // ប្រភេទការស្តារនីតិសម្បទា
-  type           RehabType       @relation(fields: [typeId], references: [id])
-  nameKh         String // ឈ្មោះ (ខ្មែរ)
-  nameEn         String // ឈ្មោះ (អង់គ្លេស)
-  reason         String // មូលហេតុ
-  description    String? // បរិយាយ
-  isActive       Boolean         @default(true)
-  clientServices ClientService[] @relation("ClientServiceRehabilitation")
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
-
-  @@index([typeId])
-  @@map("rehabilitations")
-}
-
 /// ក្រុមសម្ភារៈ ឬឧបករណ៍ជំនួយ — assistive material and device groups.
 model AssistiveGroup {
   id          String          @id @default(cuid())
@@ -810,18 +752,18 @@ model ClientService {
 
   // ៣. ព័ត៌មានសេវាកម្មដែលត្រូវការប្រើ
   //
-  // The service itself comes from the catalogue maintained at /service — the
-  // one carrying each programme's legal basis and eligibility. The three
-  // rehabilitation levels below narrow to the specific activity delivered.
-  serviceDate      DateTime? // ថ្ងៃខែឆ្នាំមកទទួលសេវាកម្ម
-  serviceId        String? // សេវាកម្ម
-  service          Service?        @relation("ClientServiceCatalogue", fields: [serviceId], references: [id])
-  rehabGroupId     String?
-  rehabGroup       RehabGroup?     @relation(fields: [rehabGroupId], references: [id])
-  rehabTypeId      String?
-  rehabType        RehabType?      @relation(fields: [rehabTypeId], references: [id])
-  rehabilitationId String?
-  rehabilitation   Rehabilitation? @relation("ClientServiceRehabilitation", fields: [rehabilitationId], references: [id])
+  // The service comes from the catalogue maintained at /service — the one
+  // carrying each programme's legal basis and eligibility.
+  //
+  // This section also used to carry three narrowing levels, ក្រុមស្តារនីតិសម្បទា
+  // -> ប្រភេទស្តារនីតិសម្បទា -> សេវាកម្មស្តារនីតិសម្បទាលម្អិត. They were dropped
+  // deliberately: the manual names only the first two levels and only for four
+  // of the seven groups, so three groups dead-ended with an empty second
+  // dropdown and the third level had no source of values at all. Bringing them
+  // back means answering where the ministry's list and its codes come from.
+  serviceDate DateTime? // ថ្ងៃខែឆ្នាំមកទទួលសេវាកម្ម
+  serviceId   String? // សេវាកម្ម
+  service     Service?  @relation("ClientServiceCatalogue", fields: [serviceId], references: [id])
 
   // ៤. អ្នកផ្តល់សេវា និងស្ថានភាពអតិថិជនបច្ចុប្បន្ន
   providerName      String? // ឈ្មោះស្ថាប័នផ្តល់សេវា
