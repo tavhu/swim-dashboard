@@ -57,6 +57,8 @@ export const RESOURCE = {
   organisation: "organisation",
   service: "service",
   centerPlan: "center-plan",
+  clientType: "client-type",
+  clientTypeRegister: "client-type-register",
 } as const;
 
 export const RULES: Rule[] = [
@@ -252,6 +254,31 @@ export const RULES: Rule[] = [
     action: "write",
   },
 
+  // --- client types (ប្រភេទអតិថិជន) -----------------------------------------
+  // Ordered before the `[id]` patterns so /api/client-type/upsert is matched as
+  // the upsert route rather than as an id.
+  {
+    mode: "permission",
+    pattern: /^\/api\/client-type\/upsert\/?$/,
+    resource: RESOURCE.clientTypeRegister,
+    action: "write",
+  },
+  { mode: "permission", pattern: /^\/api\/client-type\/?$/, resource: RESOURCE.clientType, action: "read" },
+  {
+    mode: "permission",
+    method: "GET",
+    pattern: /^\/api\/client-type\/[^/]+\/?$/,
+    resource: RESOURCE.clientType,
+    action: "read",
+  },
+  {
+    mode: "permission",
+    method: "DELETE",
+    pattern: /^\/api\/client-type\/[^/]+\/?$/,
+    resource: RESOURCE.clientType,
+    action: "write",
+  },
+
   // --- contact messages -----------------------------------------------------
   {
     mode: "permission",
@@ -290,6 +317,12 @@ export const RULES: Rule[] = [
 export const ENFORCED: RegExp[] = [
   // Start with the most sensitive data in the system.
   /^\/api\/client\//,
+  // New in this release, so there is no existing user to lock out of it — the
+  // reason the rest of the policy is still log-only. `(\/|$)` because the list
+  // route normalises to `/api/client-type` with no trailing slash. Note this
+  // does not overlap the rule above: that one requires `client/`, this one
+  // `client-type`.
+  /^\/api\/client-type(\/|$)/,
   // Always enforce the disabled endpoint.
   /^\/api\/me\/?$/,
 ];

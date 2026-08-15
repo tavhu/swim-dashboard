@@ -10,9 +10,14 @@ const toast = useToast();
 const permissionStore = usePermissionStore();
 
 // Security
-const canCreate = computed(() => permissionStore.getPermission('service')?.create ?? true);
-const canEdit = computed(() => permissionStore.getPermission('service')?.update ?? true);
-const canDelete = computed(() => permissionStore.getPermission('service')?.delete ?? true);
+// A grant is {read, granted}. `?.create` and `?.delete` are not fields on it,
+// so both read undefined and fell through to `?? true` — every role could
+// create and delete services regardless of what the permission grid said.
+// `granted` is the write column, which is what all three actions need.
+const canWrite = computed(() => permissionStore.hasWritePermission('service'));
+const canCreate = canWrite;
+const canEdit = canWrite;
+const canDelete = canWrite;
 
 // Table state
 const page = ref(1);

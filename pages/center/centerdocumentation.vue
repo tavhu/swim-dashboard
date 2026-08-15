@@ -14,9 +14,16 @@ useHead({
 
 
 // --- Security --- //
-const canCreate = computed(() => permissionStore.getPermission('center-documentation')?.create ?? true);
-const canEdit = computed(() => permissionStore.getPermission('center-documentation')?.update ?? true);
-const canDelete = computed(() => permissionStore.getPermission('center-documentation')?.delete ?? true);
+// A grant is {read, granted} — there are no create/update/delete fields on it,
+// so `?.create ?? true` read undefined and allowed everyone through, whatever
+// the role said. The resource key was wrong too: the row is
+// `center-centerdocumentation`, matching this page's route name, not
+// `center-documentation`. Write actions need `granted`; `read` alone is
+// view-only.
+const canWrite = computed(() => permissionStore.hasWritePermission('center-centerdocumentation'));
+const canCreate = canWrite;
+const canEdit = canWrite;
+const canDelete = canWrite;
 
 // --- Table state --- //
 const page = ref(1);

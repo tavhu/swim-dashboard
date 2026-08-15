@@ -192,6 +192,31 @@ export default [
           },
         ],
       },
+      // The reference list behind the ប្រភេទអតិថិជន dropdown on ទម្រង់ទី២, kept
+      // next to សេវា because they are the same kind of thing: catalogues an
+      // admin maintains so the case forms have something to offer.
+      {
+        isTitle: false,
+        name: "ប្រភេទអតិថិជន",
+        url: "",
+        icon: "tag",
+        submenu: [
+          {
+            isTitle: false,
+            name: "បញ្ចី",
+            url: "/client-type",
+            icon: "",
+            submenu: [],
+          },
+          {
+            isTitle: false,
+            name: "បង្កើត",
+            url: "/client-type/register",
+            icon: "",
+            submenu: [],
+          },
+        ],
+      },
       {
         isTitle: false,
         name: "ស្ថាប័ន",

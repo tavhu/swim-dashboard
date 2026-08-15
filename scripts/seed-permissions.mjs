@@ -89,6 +89,24 @@ const REQUIRED = [
     // shape: Super Admin, Admin and ប្រធានមជ្ឈមណ្ឌល write, បុគ្គលិកមណ្ឌល read.
     mirror: "center-staff",
   },
+  // ប្រភេទអតិថិជន is a reference list of the same kind as សេវា, maintained by the
+  // same people and feeding the same ទម្រង់ទី២ dropdowns, so `service` is the
+  // right shape to start from. Two rows because the permission grid, the route
+  // guard and the sidebar all key on the page's route name: `/client-type` is
+  // `client-type` and `/client-type/register` is `client-type-register` — which
+  // is exactly how សេវា already has both `service` and `service-register`.
+  {
+    frontEndURL: "client-type",
+    name: "បញ្ចី ប្រភេទអតិថិជន",
+    backEndURL: "/api/client-type",
+    mirror: "service",
+  },
+  {
+    frontEndURL: "client-type-register",
+    name: "បង្កើត ប្រភេទអតិថិជន",
+    backEndURL: "/api/client-type/upsert",
+    mirror: "service-register",
+  },
 ];
 
 /** Every resource key the policy expects to find, for the coverage report. */
@@ -107,6 +125,8 @@ const POLICY_KEYS = [
   "organisation",
   "service",
   "center-plan",
+  "client-type",
+  "client-type-register",
 ];
 
 const plan = [];

@@ -641,8 +641,13 @@ model ServicesOnServiceCenters {
 /// ប្រភេទអតិថិជន — the kind of person a case is about (orphan, juvenile in
 /// conflict with the law, trafficking victim, and so on).
 model ClientType {
-  id             String          @id @default(cuid())
-  code           String          @unique // លេខកូដ
+  id String @id @default(cuid())
+  /// លេខកូដ. Entered by hand when the ministry has an official code for the
+  /// category; otherwise left out and the database fills it from a sequence,
+  /// the same way Client_PersonalInformation.ReadableCode works. Doing it in
+  /// the default rather than in the handler keeps it race-free without a
+  /// read-then-write.
+  code String @unique @default(dbgenerated("('CT'::text || lpad((nextval('client_type_code_seq'::regclass))::text, 3, '0'::text))"))
   nameKh         String // ឈ្មោះ (ខ្មែរ)
   nameEn         String? // ឈ្មោះ (អង់គ្លេស)
   description    String? // បរិយាយ
