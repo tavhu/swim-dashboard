@@ -12,7 +12,6 @@ import {
 import { type ServiceCenter, type Staff, type governStaff } from '@prisma/client'
 import title from '~/store/data/title'
 import Datepicker from "@vuepic/vue-datepicker"
-import "@vuepic/vue-datepicker/dist/main.css"
 import { string } from 'zod'
 import gazetteers from "~/store/data/gazetteers"
 

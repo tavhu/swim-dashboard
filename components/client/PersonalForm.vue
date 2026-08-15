@@ -16,7 +16,6 @@ import orgType from '~~/store/data/orgType'
 import addressData from '~~/store/data/gazetteers';
 import { type ServiceCenter } from '@prisma/client'
 import Datepicker from "@vuepic/vue-datepicker"
-import "@vuepic/vue-datepicker/dist/main.css"
 
 useHead({
     title: "សំណុំឯកសារផ្ទាល់ខ្លួនរបស់អតិថិជន",

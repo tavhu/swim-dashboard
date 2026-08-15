@@ -10,7 +10,13 @@ export default defineNuxtConfig({
     pageTransition: { name: "page", mode: "out-in" },
   },
 
-  css: ["~/assets/css/main.css"],
+  // The datepicker's stylesheet is registered here rather than imported by each
+  // page that uses one. Imported per file it only reaches the browser when a
+  // page that happens to import it has been loaded: ទម្រង់ទី២ imported the
+  // component but not the CSS, so arriving there from its own view page —
+  // rather than by way of ទម្រង់ទី១, which does import it — rendered the
+  // calendar and clear icons as unstyled full-size SVGs.
+  css: ["~/assets/css/main.css", "@vuepic/vue-datepicker/dist/main.css"],
 
   postcss: {
     plugins: {
