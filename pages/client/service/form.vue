@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { TwFeather, useToast } from "vue3-tailwind";
+import { TwFeather, TwFile, useToast } from "vue3-tailwind";
+import Datepicker from "@vuepic/vue-datepicker";
 
 /**
  * ទម្រង់ទី២ — ការប្រើសេវាកម្មរបស់អតិថិជន, create and edit.
@@ -23,6 +24,17 @@ const pending = ref(true);
 const saving = ref(false);
 const error = ref<string | null>(null);
 const client = ref<any>(null);
+
+const { uploadImage } = useImageUpload();
+const files = ref();
+
+/** Paths already stored, comma separated as CenterPlan.filePath does it. */
+const attachmentList = computed(() =>
+  String(form.attachments ?? "").split(",").map((f) => f.trim()).filter(Boolean)
+);
+const removeAttachment = (path: string) => {
+  form.attachments = attachmentList.value.filter((f) => f !== path).join(",");
+};
 
 const options = ref<{
   clientTypes: any[]; services: any[];
@@ -119,6 +131,16 @@ onMounted(async () => {
       });
       if (!c?.id) throw new Error("រកមិនឃើញអតិថិជននេះទេ");
       client.value = c;
+      // These three are already on record from ទម្រង់ទី១ — the centre the client
+      // was registered under and the officer who interviewed them. Prefilled
+      // rather than asked again, but left editable: a service can be delivered
+      // somewhere other than the registering centre.
+      const centre = c.ServiceCenter;
+      form.providerName = centre?.nameKH ?? "";
+      form.providerLocation = [centre?.Address, centre?.Village, centre?.Commute, centre?.District, centre?.City]
+        .filter(Boolean).join(", ");
+      form.providerAgent = c.interviewerName ?? "";
+      form.providerPhone = centre?.phoneNumber ?? "";
     }
   } catch (e: any) {
     error.value = e?.message || "មិនអាចទាញយកព័ត៌មានបានទេ";
@@ -138,6 +160,16 @@ async function submit() {
   }
   saving.value = true;
   try {
+    // Upload first: a failure here must stop the save, not store a record whose
+    // documents silently went missing.
+    if (files.value?.length) {
+      const uploaded = await uploadImage(files.value);
+      if (uploaded) {
+        const paths = Object.values(uploaded) as string[];
+        form.attachments = [...attachmentList.value, ...paths].join(",");
+      }
+      files.value = null;
+    }
     const saved: any = await $fetch("/api/client/service/upsert", { method: "POST", body: { ...form } });
     toast.success({ message: "ជោគជ័យ" });
     router.push(`/client/service/view/${saved.id}`);
@@ -228,6 +260,22 @@ async function submit() {
               <textarea v-model="form.conclusion" :disabled="readOnly" rows="3"
                 class="mt-1 w-full rounded border px-2 py-1 text-base dark:border-gray-700 dark:bg-gray-900" />
             </label>
+
+            <!-- Documents are uploaded on save, so a failed upload aborts the
+                 whole save rather than leaving a record referring to nothing. -->
+            <div class="sm:col-span-2">
+              <span class="text-sm text-gray-500 dark:text-gray-400">ឯកសារពាក់ព័ន្ធ</span>
+              <ul v-if="attachmentList.length" class="mt-1 mb-2 space-y-1">
+                <li v-for="path in attachmentList" :key="path"
+                  class="flex items-center justify-between gap-2 rounded bg-gray-50 px-2 py-1 dark:bg-gray-900">
+                  <a :href="`/${path}`" target="_blank" rel="noopener"
+                    class="truncate text-base text-primary hover:underline">{{ path.split('/').pop() }}</a>
+                  <button v-if="!readOnly" type="button" class="shrink-0 text-sm text-red-600 hover:underline"
+                    @click="removeAttachment(path)">លុប</button>
+                </li>
+              </ul>
+              <TwFile v-if="!readOnly" v-model="files" label="" />
+            </div>
           </div>
           <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">
             ប្រវត្តិចូលមជ្ឈមណ្ឌល និងចំនួនលើក មាននៅក្នុងទម្រង់ទី១រួចហើយ។

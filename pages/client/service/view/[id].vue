@@ -40,6 +40,11 @@ const service = computed(() => {
   ];
 });
 
+/** Stored as comma-separated paths, as CenterPlan.filePath does. */
+const attachments = computed(() =>
+  String(rec.value?.attachments ?? "").split(",").map((f: string) => f.trim()).filter(Boolean)
+);
+
 const provider = computed(() => {
   const r = rec.value; if (!r) return [];
   return [
@@ -123,6 +128,18 @@ onMounted(load);
               </dd>
             </div>
           </dl>
+        </section>
+
+        <section v-if="attachments.length"
+          class="print-block col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800">
+          <h3 class="text-xl font-[Moul] text-primary">ឯកសារពាក់ព័ន្ធ</h3>
+          <hr class="my-2 border dark:border-gray-700" />
+          <ul class="space-y-1">
+            <li v-for="path in attachments" :key="path">
+              <a :href="`/${path}`" target="_blank" rel="noopener"
+                class="break-all text-base text-primary hover:underline">{{ path.split('/').pop() }}</a>
+            </li>
+          </ul>
         </section>
 
         <section v-for="group in [

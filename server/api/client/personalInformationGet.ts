@@ -20,6 +20,14 @@ export default eventHandler(async (event) => {
             id: body?.id,
           },
           include: {
+            // ទម្រង់ទី២ fills its provider fields from the centre the client was
+            // registered under, rather than asking for them a second time.
+            ServiceCenter: {
+              select: {
+                id: true, nameKH: true, directorName: true, phoneNumber: true,
+                Address: true, City: true, District: true, Commute: true, Village: true,
+              },
+            },
             ClientProgress: {
               where: {
                 Client_PersonalInformationID: body?.id,
