@@ -19,15 +19,26 @@ const fmt = (d?: string | null) =>
   d ? new Date(d).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : "—";
 const val = (v: any) => (v === null || v === undefined || v === "" ? "—" : v);
 
+const yesNo = (v: boolean | null | undefined, yes: string, no: string) =>
+  v === true ? yes : v === false ? no : "—";
+
 const diagnosis = computed(() => {
   const r = rec.value; if (!r) return [];
   return [
     { label: "ប្រភេទអតិថិជន", value: val(r.clientType?.nameKh) },
     { label: "មូលហេតុ", value: val(r.reason) },
+    // The manual asks these two here. They are answered on ទម្រង់ទី១, so they
+    // are shown from there rather than asked again — marked so a reader knows
+    // where the answer came from.
+    { label: "ធ្លាប់ទទួលសេវាពីមុន", value: yesNo(r.client?.UsedtoRehab, "ធ្លាប់", "មិនធ្លាប់"), fromForm1: true },
+    { label: "ចំនួនលើករួមទាំងលើកនេះ", value: val(r.client?.HowManyTimeHaveServed), fromForm1: true },
     { label: "អនុម័តរោគវិនិច្ឆ័យដោយ", value: val(r.diagnosisApprovedBy) },
     { label: "សន្និដ្ឋាន", value: val(r.conclusion), wide: true },
   ];
 });
+
+/** បើធ្លាប់ តើមជ្ឈមណ្ឌលណាខ្លះ — the centres recorded on ទម្រង់ទី១. */
+const previousCentres = computed(() => rec.value?.client?.ClientServeHistory ?? []);
 
 const service = computed(() => {
   const r = rec.value; if (!r) return [];
@@ -130,16 +141,42 @@ onMounted(load);
           </dl>
         </section>
 
-        <section v-if="attachments.length"
+        <section v-if="previousCentres.length || attachments.length"
           class="print-block col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800">
-          <h3 class="text-xl font-[Moul] text-primary">ឯកសារពាក់ព័ន្ធ</h3>
+          <h3 class="text-xl font-[Moul] text-primary">មជ្ឈមណ្ឌលពីមុន និងឯកសារពាក់ព័ន្ធ</h3>
           <hr class="my-2 border dark:border-gray-700" />
-          <ul class="space-y-1">
-            <li v-for="path in attachments" :key="path">
-              <a :href="`/${path}`" target="_blank" rel="noopener"
-                class="break-all text-base text-primary hover:underline">{{ path.split('/').pop() }}</a>
-            </li>
-          </ul>
+
+          <div v-if="previousCentres.length" class="mb-4">
+            <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
+              បើធ្លាប់ តើមជ្ឈមណ្ឌលណាខ្លះ <span class="text-xs text-gray-400">(ទម្រង់ទី១)</span>
+            </p>
+            <table class="w-full text-left text-base">
+              <thead class="border-b text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400">
+                <tr>
+                  <th class="py-2 pr-4 font-normal">ល.រ</th>
+                  <th class="py-2 pr-4 font-normal">មជ្ឈមណ្ឌល ឬពន្ធនាគារ</th>
+                  <th class="py-2 font-normal">កាលបរិច្ឆេទ</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                <tr v-for="(h, i) in previousCentres" :key="h.id">
+                  <td class="py-2 pr-4 text-gray-500">{{ i + 1 }}</td>
+                  <td class="py-2 pr-4 text-gray-800 dark:text-gray-100">{{ val(h.nameCenterorPrison) }}</td>
+                  <td class="py-2 text-gray-800 dark:text-gray-100">{{ fmt(h.DateTimeServed) }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div v-if="attachments.length">
+            <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">ឯកសារពាក់ព័ន្ធ</p>
+            <ul class="space-y-1">
+              <li v-for="path in attachments" :key="path">
+                <a :href="`/${path}`" target="_blank" rel="noopener"
+                  class="break-all text-base text-primary hover:underline">{{ path.split('/').pop() }}</a>
+              </li>
+            </ul>
+          </div>
         </section>
 
         <section v-for="group in [
@@ -152,7 +189,10 @@ onMounted(load);
           <hr class="my-2 border dark:border-gray-700" />
           <dl class="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2">
             <div v-for="f in group.fields" :key="f.label" :class="(f as any).wide ? 'sm:col-span-2' : ''">
-              <dt class="text-sm text-gray-500 dark:text-gray-400">{{ f.label }}</dt>
+              <dt class="text-sm text-gray-500 dark:text-gray-400">
+                {{ f.label }}
+                <span v-if="(f as any).fromForm1" class="ml-1 text-xs text-gray-400">(ទម្រង់ទី១)</span>
+              </dt>
               <dd class="mt-1 whitespace-pre-line break-words text-base leading-relaxed text-gray-800 dark:text-gray-100">
                 {{ f.value }}
               </dd>

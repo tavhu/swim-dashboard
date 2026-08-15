@@ -27,6 +27,15 @@ export default eventHandler(async (event) => {
         photo: true,
         FOCTel: true,
         MOCTel: true,
+        // The manual's section ២ asks these three, and ទម្រង់ទី១ already holds
+        // them. Returned so the printed form can carry the full question set
+        // without storing a second copy that could disagree.
+        UsedtoRehab: true,
+        HowManyTimeHaveServed: true,
+        ClientServeHistory: {
+          select: { id: true, nameCenterorPrison: true, DateTimeServed: true },
+          orderBy: { DateTimeServed: "desc" },
+        },
       },
     },
     clientType: { select: { nameKh: true, nameEn: true } },
