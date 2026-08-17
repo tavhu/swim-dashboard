@@ -1,33 +1,57 @@
-import { PrismaClient } from '@prisma/client';
+import { readListQuery, searchFilter, orderByFor } from "../../utils/listQuery";
 
-const prisma = new PrismaClient();
+/**
+ * The service-centre list.
+ *
+ * `sortBy` went straight into Prisma's `orderBy`, so any unknown column was a
+ * 500 rather than a fallback; it is checked against SORTABLE now. The count was
+ * also unfiltered, which only became visible once there was a search to filter
+ * by.
+ */
+const SORTABLE = ["nameKH", "nameEN", "type", "directorName", "status", "createdAt"] as const;
+const SEARCHABLE = [
+  "nameKH",
+  "nameEN",
+  "type",
+  "directorName",
+  "phoneNumber",
+  "email",
+  "Address",
+  "City",
+] as const;
 
 export default defineEventHandler(async (event) => {
-    const body = await readBody(event);
+  const body = await readBody(event);
+  const prisma = event.context.prisma;
 
-    // Default values and parsing to integer
-    const page = body?.page ? parseInt(body.page) : 1;
-    const limit = body?.limit ? parseInt(body.limit) : 10;
-    const sortBy = body?.sortBy || 'nameEN';
-    const sortType = body?.sortType || 'asc';
+  const q = readListQuery(body, {
+    sortable: SORTABLE,
+    searchable: SEARCHABLE,
+    defaultSort: "nameKH",
+    defaultSortType: "asc",
+  });
 
-    const skip = (page - 1) * limit;
+  // This endpoint was called with `page`, the newer tables send `skip`. Accept
+  // either, so the caller can move without the list silently starting at row 0.
+  const skip = body?.page ? (parseInt(String(body.page), 10) - 1) * q.take : q.skip;
 
-    try {
-        const [data, total] = await prisma.$transaction([
-            prisma.serviceCenter.findMany({
-                skip,
-                take: limit,
-                orderBy: {
-                    [sortBy]: sortType,
-                },
-            }),
-            prisma.serviceCenter.count(),
-        ]);
+  const where = searchFilter(q.search, SEARCHABLE) ?? {};
 
-        return { data, total };
-    } catch (error) {
-        console.error(error);
-        return { error: 'Failed to fetch service centers' };
-    }
+  try {
+    const [data, total] = await Promise.all([
+      prisma.serviceCenter.findMany({
+        where,
+        skip: Number.isFinite(skip) && skip > 0 ? skip : 0,
+        take: q.take,
+        orderBy: orderByFor(q.sortBy, q.sortType),
+      }),
+      prisma.serviceCenter.count({ where }),
+    ]);
+
+    return { data, total };
+  } catch (e: any) {
+    console.error("[center/get]", e);
+    setResponseStatus(event, 502);
+    return { data: [], total: 0, error: e?.message ?? "Failed to fetch service centers" };
+  }
 });

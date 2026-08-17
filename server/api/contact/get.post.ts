@@ -1,4 +1,8 @@
 import { getServerSession } from "#auth";
+import { readListQuery, searchFilter, orderByFor } from "../../utils/listQuery";
+
+const SORTABLE = ["createdAt", "name", "email", "reason", "read"] as const;
+const SEARCHABLE = ["name", "email", "phone", "reason", "details", "serviceCenterName"] as const;
 
 export default eventHandler(async event => {
     const session = await getServerSession(event)
@@ -26,16 +30,23 @@ export default eventHandler(async event => {
             return SingleuserData
         }
 
-        const totalCount = await event.context.prisma.contactMessage.count()
-        const data = await event.context.prisma.contactMessage.findMany({
-            orderBy: {
-                id: 'desc'
-            },
-            //@ts-ignore
-            take: (body?.limit ? parseInt(body?.limit) : 1000),
-            //@ts-ignore
-            skip: (body?.skip ? parseInt(body?.skip) : 0),
+        const q = readListQuery(body, {
+            sortable: SORTABLE,
+            searchable: SEARCHABLE,
+            defaultSort: 'createdAt',
+            defaultSortType: 'desc',
         })
+        const where = searchFilter(q.search, SEARCHABLE) ?? {}
+
+        const [data, totalCount] = await Promise.all([
+            event.context.prisma.contactMessage.findMany({
+                where,
+                orderBy: orderByFor(q.sortBy, q.sortType),
+                take: q.take,
+                skip: q.skip,
+            }),
+            event.context.prisma.contactMessage.count({ where }),
+        ])
 
         //@ts-ignored // console.log(data) 
         setResponseStatus(event, 201)

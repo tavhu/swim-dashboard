@@ -1,273 +1,159 @@
 <script setup lang="ts">
-import {
-  useToast,
-  type DatatableColumn,
-  type DatatableData,
-  type DropdownItem,
-  TwDatatableServer,
-} from "vue3-tailwind";
+import { useToast } from "vue3-tailwind";
 
-const readOnly = checkIfPageReadOnly()
+/**
+ * បញ្ចីមណ្ឌល.
+ *
+ * The endpoint took a sort but never a search, so the box did nothing; and its
+ * count was of the whole table, so the footer disagreed with the rows as soon as
+ * anything filtered them. Both are DataTableServer's job now.
+ *
+ * Four buttons in a row also pushed the table sideways on anything but a wide
+ * screen, so the row actions are a dropdown, as the client list does it.
+ */
+const readOnly = checkIfPageReadOnly();
 const { t } = useI18n();
-const { data: userDataAuth } = useAuth()
 const toast = useToast();
-useHead({
-  title: "បញ្ចីមណ្ឌល",
-});
+const config = useRuntimeConfig();
+const table = ref<any>(null);
 
+useHead({ title: "បញ្ចីមណ្ឌល" });
 
-const data = ref({
-  _column: [
-    // {
-    //     label: "ល.រ",
-    //     field: "number",
-    //     width: "50px",
-    //     sortable: false,
-    //   },
-    {
-      label: "រូបថត",
-      field: "logo",
-      width: "150px",
-      sortable: false,
+const columns = [
+  { key: "center", label: "មណ្ឌល", sortable: false },
+  { key: "nameEN", label: "ឈ្មោះជាភាសាអង់គ្លេស", sortable: true },
+  { key: "type", label: "ប្រភេទ", sortable: true, class: "w-[150px]" },
+  { key: "directorName", label: "ប្រធានមណ្ឌល", sortable: true, class: "w-[180px]" },
+  { key: "status", label: "ស្ថានភាព", sortable: true, class: "w-[130px]" },
+  { key: "actions", label: "សកម្មភាព", class: "w-[120px]" },
+];
+
+const fetcher = (q: any) =>
+  $fetch<{ data: any[]; total: number }>("/api/center/get", {
+    method: "post",
+    body: {
+      limit: String(q.limit),
+      skip: String(q.skip),
+      q: q.search,
+      sortBy: q.sortBy,
+      sortType: q.sortType,
     },
-    {
-      label: "ឈ្មោះជាភាសារខ្មែរ",
-      field: "nameKH",
-      width: "450px",
-      sortable: false,
-    },
-    {
-      label: "ឈ្មោះជាភាសារអង់គ្លេស",
-      field: "nameEN",
-      width: "300px",
-      sortable: false,
-    },
-    {
-      label: "ស្ថានភាពមណ្ឌល",
-      field: "status",
-      width: "150px",
-      sortable: false,
-    },
-    {
-      label: "សកម្មភាព",
-      field: "action",
-      width: "650px",
-      sortable: false,
-    },
-  ] as Array<DatatableColumn>,
-  get column() {
-    return this._column;
-  },
-  set column(value) {
-    this._column = value;
-  },
-  data: [] as Array<DatatableData>,
-  limit: 5,
-  offset: 0,
-  search: "",
-  sortBy: "id",
-  sortType: "desc",
-  setting: {
-    checkbox: true,
-    limitOption: [
-      {
-        label: "5",
-        value: 5,
-      },
-      {
-        label: "10",
-        value: 10,
-      },
-      {
-        label: "50",
-        value: 50,
-      },
-      {
-        label: "100",
-        value: 100,
-      },
-      {
-        label: "200",
-        value: 200,
-      },
-    ],
-  },
-});
+  });
 
-const globalData: any = ref();
-const config = useRuntimeConfig()
-// const datareturn :any = ref()
-const fetchData = async () => {
+const logoUrl = (row: any) =>
+  row.logo ? `${config.public.origin}/${row.logo}` : `${config.public.origin}/placeholder.png`;
 
-  const response = await $fetch<{
-    total: number;
-    data: DatatableData[];
-  }>(
-    '/api/center/get'
-    ,
-    {
-      body: {
-        limit: data.value.limit.toString(),
-        skip: data.value.offset.toString(),
-        q: data.value.search.toString(),
-        sortType: data.value.sortType,
-        sortBy: data.value.sortBy,
-      }
-      ,
-      method: 'post'
-    },
-  )
-
-  globalData.value = {
-    totalData: response?.total, // response["total"],
-    data: response?.data, // response["data"],   
-  };
-  return {
-    totalData: response?.total ? response?.total : 0, // response["total"],
-    data: response?.data ? response?.data : [], // response["data"],  
-  }
-}
-
-fetchData()
-
-
-const sortClick = (event: any) => {
-  const sortBy = data.value.sortBy;
-  const sortType = data.value.sortType;
-  const sortByNew = event;
-  const sortTypeNew =
-    event === sortBy ? (sortType === "asc" ? "desc" : "asc") : "asc";
-  data.value = { ...data.value, sortBy: sortByNew, sortType: sortTypeNew };
-};
-
-const deleteRecord = async (id: string) => {
+const deleteRecord = async (row: any) => {
   if (readOnly) return;
-  if (!(await confirmDialog())) return;
+  if (!(await confirmDelete(`លុបមណ្ឌល ${row?.nameKH ?? ""}។`))) return;
 
-  const { error } = await useFetch("/api/center/delete", {
-    method: "POST",
-    body: JSON.stringify({
-      id: id,
-    }),
-  })
-
-  if (error.value?.statusCode) {
-    toast.error({
-      message: t('message.notSaved'),
-    });
-  } else {
-    toast.success({
-      message: t('message.saved'),
-    });
+  try {
+    await $fetch("/api/center/delete", { method: "POST", body: { id: row.id } });
+    toast.success({ message: t("message.saved") });
+  } catch (e: any) {
+    toast.error({ message: e?.data?.error ?? e?.message ?? t("message.notSaved") });
   }
-  //update change limit ref in order to refetch data
-  data.value.limit === 10 ? (data.value.limit = 5) : (data.value.limit = 10);
+  table.value?.refresh();
 };
 
-const { data: roleData } = await useFetch("/api/role/get", {
-  method: 'get', query: {
-    //@ts-ignore
-    userID: userDataAuth.value?.sub
-  }
-})
-const roleDataFormat: DropdownItem[] = new Array({ label: '', value: '' })
-roleDataFormat.pop()
-//@ts-ignored
-roleData.value?.data?.forEach((ele: any) => {
-  roleDataFormat.push(
-    {
-      label: ele?.name,
-      value: ele?.id
-    }
-  )
-});
-
-const openisTrue = ref(false)
-const openisKey = ref(0)
-const editID = ref(null)
-const serviceCenterID = ref('')
+const openisTrue = ref(false);
+const openisKey = ref(0);
+const serviceCenterID = ref("");
 
 const addStaff = (CenterID: string) => {
-  serviceCenterID.value = CenterID
-  openisTrue.value = true
-  openisKey.value++
+  serviceCenterID.value = CenterID;
+  openisTrue.value = true;
+  openisKey.value++;
+};
 
-}
-
+const actionItems = (row: any) => [
+  [
+    {
+      label: "មើលព័ត៌មានលំអិត",
+      icon: "i-heroicons-eye",
+      to: `${config.public.origin}/center/id/${row.id}`,
+    },
+    {
+      label: "កែសម្រួល",
+      icon: "i-heroicons-pencil-square",
+      to: `${config.public.origin}/center?id=${row.id}`,
+      disabled: readOnly,
+    },
+    {
+      label: "ចុះឈ្មោះបុគ្គលិកមណ្ឌល",
+      icon: "i-heroicons-users",
+      click: () => addStaff(row.id),
+      disabled: readOnly,
+    },
+  ],
+  [
+    {
+      label: "លុបចេញ",
+      icon: "i-heroicons-trash",
+      class: "text-red-600 dark:text-red-400",
+      iconClass: "text-red-600 dark:text-red-400",
+      click: () => deleteRecord(row),
+      disabled: readOnly,
+    },
+  ],
+];
 </script>
+
 <template>
   <div class="font-[Battambang]">
     <div class="mt-5">
-      <div class="flex justify-between">
+      <div class="flex items-center justify-between gap-4">
         <h2 class="text-2xl font-[Moul] text-primary">បញ្ចីមណ្ឌល</h2>
-        <NuxtLink :to="config.public.origin + '/center'" :disabled="readOnly">
+        <NuxtLink :to="config.public.origin + '/center'">
           <UButton color="primary" size="xl" :disabled="readOnly">
-            <h2 class="text-xl font-[Moul]"> ចុះឈ្មោះមណ្ឌល </h2>
+            <span class="font-[Moul] text-xl">ចុះឈ្មោះមណ្ឌល</span>
           </UButton>
         </NuxtLink>
       </div>
       <hr class="my-2 border dark:border-gray-700" />
-      <TwDatatableServer v-bind:fetch-data="fetchData" v-model:search="data.search" v-model:limit="data.limit"
-        v-model:offset="data.offset" v-model:sort-by="data.sortBy" v-model:sort-type="data.sortType"
-        :column="data.column" @on-sort-change="sortClick">
-        <template #row="{ index, column, data }">
-          <!-- <template v-if="column.field === 'number'">
-            <div class="flex justify-center">       
-                  {{ index }}           
-            </div> 
-          </template> -->
-          <template v-if="column.field === 'logo'">
-            <div class="flex justify-center">
-              <img :src="config.public.origin + '/' + data.logo" alt=""
-                class="w-12 h-12 rounded-full border border-[#1d152a7a]">
-            </div>
-          </template>
-          <template v-if="column.field === 'nameKH'">
-            <div class="flex justify-center">
-              {{ data.nameKH }}
-            </div>
-          </template>
-          <template v-if="column.field === 'nameEN'">
-            <div class="flex justify-center">
-              {{ data.nameEN }}
-            </div>
-          </template>
-          <template v-if="column.field === 'status'">
-            <div class="flex justify-center">
-              <span v-if="data.status" class="text-blue-700 dark:text-white"> ដំណើការ </span>
-              <span v-else class="text-red-700"> បិទដំណើការ </span>
-            </div>
-          </template>
-          <template v-if="column.field === 'action'">
-            <div class="flex gap-2 justify-center">
-              <UButton color="blue" icon="i-heroicons-users" @click="addStaff(data.id)" :disabled="readOnly">
-                ចុះឈ្មោះបុគ្គលិកមណ្ឌល
-              </UButton>
-              <NuxtLink :to="config.public.origin + '/center/id/' + data.id">
-                <UButton color="primary" icon="i-heroicons-pencil-square" class="border" :disabled="readOnly">
-                  មើលព័ត៌មានលំអិត
-                </UButton>
-              </NuxtLink>
-              <NuxtLink :to="config.public.origin + '/center?id=' + data.id" :disabled="readOnly">
-                <UButton color="primary" icon="i-heroicons-pencil-square" class="border" :disabled="readOnly">
-                  កែសម្រួល
-                </UButton>
-              </NuxtLink>
 
-              <UButton color="red" icon="i-heroicons-trash" @click="deleteRecord(data.id)" :disabled="readOnly">
-                លុបចេញ
-              </UButton>
-            </div>
-          </template>
-        </template>
-        <template #empty>
-          <div class="bg-white dark:bg-gray-800 text-center w-full">
-            គ្មាន​ទិន្នន័យ
+      <DataTableServer
+        ref="table"
+        :columns="columns"
+        :fetcher="fetcher"
+        sort-by="nameKH"
+        sort-type="asc"
+        search-placeholder="ស្វែងរកតាមឈ្មោះ, ប្រភេទ, ប្រធានមណ្ឌល..."
+        empty-text="មិនទាន់មានមណ្ឌលនៅឡើយទេ។"
+      >
+        <template #center-data="{ row }">
+          <div class="flex items-center gap-3">
+            <img :src="logoUrl(row)" alt=""
+              class="h-10 w-10 shrink-0 rounded-full border border-gray-200 object-cover dark:border-gray-600" />
+            <span class="truncate text-gray-800 dark:text-gray-100">{{ row.nameKH }}</span>
           </div>
         </template>
-      </TwDatatableServer>
+
+        <template #nameEN-data="{ row }">
+          <span class="text-gray-800 dark:text-gray-100">{{ row.nameEN || '—' }}</span>
+        </template>
+
+        <template #type-data="{ row }">
+          <span class="text-gray-800 dark:text-gray-100">{{ row.type || '—' }}</span>
+        </template>
+
+        <template #directorName-data="{ row }">
+          <span class="text-gray-800 dark:text-gray-100">{{ row.directorName || '—' }}</span>
+        </template>
+
+        <template #status-data="{ row }">
+          <span v-if="row.status" class="text-primary">ដំណើការ</span>
+          <span v-else class="text-red-600 dark:text-red-400">បិទដំណើការ</span>
+        </template>
+
+        <template #actions-data="{ row }">
+          <UDropdown :items="actionItems(row)" :popper="{ placement: 'bottom-end' }">
+            <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />
+          </UDropdown>
+        </template>
+      </DataTableServer>
     </div>
-    <CenterStaffCanvasForm typeEmployee='Official' :readOnly="readOnly" :id="null" :openisTrue="openisTrue"
+    <CenterStaffCanvasForm typeEmployee="Official" :readOnly="readOnly" :id="null" :openisTrue="openisTrue"
       :serviceCenterID="serviceCenterID" :key="openisKey" />
   </div>
 </template>

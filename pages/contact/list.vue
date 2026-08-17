@@ -1,254 +1,127 @@
 <script setup lang="ts">
-import {
-  useToast,
-  type DatatableColumn,
-  type DatatableData,
-  type DropdownItem,
-  TwDatatableServer,
-} from "vue3-tailwind";
-import { useTimeAgo } from '@vueuse/core'
+import { useToast } from "vue3-tailwind";
+import { useTimeAgo } from "@vueuse/core";
 
-const messNOtificationNumber = useState<number>('readMessages', () => 0)
+/**
+ * បញ្ចីប្រអប់សារ.
+ *
+ * The search box and the sort headers were inert — the endpoint took neither —
+ * and the list refetched by toggling its own page size between 5 and 10, which
+ * changed how many rows were on screen as a side effect of saving. Both are now
+ * DataTableServer's job, and refreshing is an explicit call.
+ */
+const messNOtificationNumber = useState<number>("readMessages", () => 0);
 
-
-const readOnly = checkIfPageReadOnly()
+const readOnly = checkIfPageReadOnly();
 const { t } = useI18n();
-const { data: userDataAuth } = useAuth()
 const toast = useToast();
-useHead({
-  title: "បញ្ចីប្រអប់សារ",
-});
+const table = ref<any>(null);
 
-const data = ref({
-  column: [
-    // {
-    //     label: "ល.រ",
-    //     field: "number",
-    //     width: "50px",
-    //     sortable: false,
-    //   },
-    {
-      label: "កាលបរិច្ឆេទ",
-      field: "dateTime",
-      width: "100px",
-      sortable: false,
+useHead({ title: "បញ្ចីប្រអប់សារ" });
+
+const columns = [
+  { key: "createdAt", label: "កាលបរិច្ឆេទ", sortable: true, class: "w-[150px]" },
+  { key: "name", label: "ឈ្មោះមន្ត្រីស្នើសុំ", sortable: true },
+  { key: "email", label: "អុីមែល", sortable: true },
+  { key: "reason", label: "គោលបំណង", sortable: true },
+  { key: "actions", label: "សកម្មភាព", class: "w-[280px]" },
+];
+
+const fetcher = (q: any) =>
+  $fetch<{ data: any[]; total: number }>("/api/contact/get", {
+    method: "post",
+    body: {
+      limit: String(q.limit),
+      skip: String(q.skip),
+      q: q.search,
+      sortBy: q.sortBy,
+      sortType: q.sortType,
     },
-    {
-      label: "ឈ្មោះមន្ត្រីស្នើសុំ",
-      field: "category",
-      width: "450px",
-      sortable: false,
-    },
-    {
-      label: "អុីមែល",
-      field: "email",
-      width: "300px",
-      sortable: false,
-    },
-    {
-      label: "គោលបំណង",
-      field: "reason",
-      width: "350px",
-      sortable: false,
-    },
-    {
-      label: "សកម្មភាព",
-      field: "action",
-      width: "650px",
-      sortable: false,
-    },
-  ] as Array<DatatableColumn>,
-  data: [] as Array<DatatableData>,
-  limit: 5,
-  offset: 0,
-  search: "",
-  sortBy: "id",
-  sortType: "desc",
-  setting: {
-    checkbox: true,
-    limitOption: [
-      {
-        label: "5",
-        value: 5,
-      },
-      {
-        label: "10",
-        value: 10,
-      },
-      {
-        label: "50",
-        value: 50,
-      },
-      {
-        label: "100",
-        value: 100,
-      },
-      {
-        label: "200",
-        value: 200,
-      },
-    ],
-  },
-});
+  });
 
-const globalData: any = ref();
-const config = useRuntimeConfig()
-// const datareturn :any = ref()
-const fetchData = async () => {
-
-  const response = await $fetch<{
-    total: number;
-    data: DatatableData[];
-  }>('/api/contact/get', {
-    method: 'post', body: {
-      limit: data.value.limit.toString(),
-      skip: data.value.offset.toString(),
-      q: data.value.search.toString(),
-      sortType: data.value.sortType,
-      sortBy: data.value.sortBy,
-    },
-  },
-  
-  )
-
-  globalData.value = {
-    totalData: response?.total, // response["total"],
-    data: response?.data, // response["data"],   
-  };
-  return {
-    totalData: response?.total ? response?.total : 0, // response["total"],
-    data: response?.data ? response?.data : [], // response["data"],  
-  }
-}
-
-fetchData()
-
-const sortClick = (event: any) => {
-  const sortBy = data.value.sortBy;
-  const sortType = data.value.sortType;
-  const sortByNew = event;
-  const sortTypeNew =
-    event === sortBy ? (sortType === "asc" ? "desc" : "asc") : "asc";
-  data.value = { ...data.value, sortBy: sortByNew, sortType: sortTypeNew };
-};
-
-const deleteRecord = async (id: string) => {
+const deleteRecord = async (row: any) => {
   if (readOnly) return;
-  if (!(await confirmDialog())) return;
+  const who = [row?.name, row?.email].filter(Boolean).join(" · ");
+  if (!(await confirmDelete(`លុបសាររបស់ ${who}។`))) return;
 
-  const { error } = await useFetch('/api/contact/delete', {
-    method: "POST",
-    body: JSON.stringify({
-      id: id,
-    }),
-  })
-
-  if (error.value?.statusCode) {
-    toast.error({
-      message: t('message.notSaved'),
-    });
-  } else {
-    toast.success({
-      message: t('message.saved'),
-    });
+  try {
+    await $fetch("/api/contact/delete", { method: "POST", body: { id: row.id } });
+    toast.success({ message: t("message.saved") });
+  } catch (e: any) {
+    toast.error({ message: e?.data?.error ?? e?.message ?? t("message.notSaved") });
   }
-  //update change limit ref in order to refetch data
-  data.value.limit === 10 ? (data.value.limit = 5) : (data.value.limit = 10);
+  table.value?.refresh();
 };
 
-
-const { data: roleData } = await useFetch("/api/role/get", {
-  method: 'get', query: {
-    //@ts-ignore
-    userID: userDataAuth.value?.sub
-  }
-})
-const roleDataFormat: DropdownItem[] = new Array({ label: '', value: '' })
-roleDataFormat.pop()
-//@ts-ignored
-roleData.value?.data?.forEach((ele: any) => {
-  roleDataFormat.push(
-    {
-      label: ele?.name,
-      value: ele?.id
-    }
-  )
-});
-
-const selectedID = ref("")
-const keyIncrement = ref(0)
-const openCanvasBoolean = ref(false)
+const selectedID = ref("");
+const keyIncrement = ref(0);
+const openCanvasBoolean = ref(false);
 const OpenCanvas = (id: string) => {
-  selectedID.value = id
-  openCanvasBoolean.value = true
-  keyIncrement.value++
-}
-const Boo = ref(false)
+  selectedID.value = id;
+  openCanvasBoolean.value = true;
+  keyIncrement.value++;
+};
 
-onMounted(()=>{
-  watch(messNOtificationNumber, () => {
-    if (messNOtificationNumber.value != 0) {
-      console.log('canvasClosed')
-      data.value.limit === 10 ? (data.value.limit = 5) : (data.value.limit = 10);
-      
-    }
-  })
-})
+// Reading a message marks it read, so the list has to reload to lose its
+// unread highlight.
+watch(messNOtificationNumber, () => {
+  if (messNOtificationNumber.value !== 0) table.value?.refresh();
+});
 </script>
+
 <template>
-  <div class="font-[Battambang]"> 
+  <div class="font-[Battambang]">
     <div class="mt-5">
-      <div class="flex justify-between">
-        <h2 class="text-sm lg:text-xl font-[Moul] text-primary">បញ្ចីប្រអប់សារ</h2>
+      <div class="flex items-center justify-between gap-4">
+        <h2 class="text-sm font-[Moul] text-primary lg:text-xl">បញ្ចីប្រអប់សារ</h2>
       </div>
       <hr class="my-2 border dark:border-gray-700" />
-      <TwDatatableServer v-bind:fetch-data="fetchData" v-model:search="data.search" v-model:limit="data.limit"
-        v-model:offset="data.offset" v-model:sort-by="data.sortBy" v-model:sort-type="data.sortType" :column="data.column"
-        @on-sort-change="sortClick">
-        <template #row="{ index, column, data }" :class="'bg-red-400'"  >
-          <!-- <template v-if="column.field === 'number'">
-            <div class="flex justify-center">       
-                  {{ index }}           
-            </div> 
-          </template> -->
-          <template v-if="column.field === 'dateTime'">
-            <div class="flex justify-center">
-              {{ timeagoInKhmer(useTimeAgo(data.createdAt).value) }}
-            </div>
-          </template>
-          <template v-if="column.field === 'category'">
-            <div class="flex justify-center">
-              {{ data?.name }}
-            </div>
-          </template>
-          <template v-if="column.field === 'email'">
-            <div class="flex justify-center">
-              {{ data.email }}
-            </div>
-          </template>
-          <template v-if="column.field === 'reason'">
-            {{ data.reason }}
-          </template>
-          <template v-if="column.field === 'action'">
-            <div class="flex gap-2 justify-center">
 
-              <UButton  icon="i-heroicons-eye" class="border" :class="!data.read ? ' bg-primary ' : 'bg-gray-500 '" @click="OpenCanvas(data.id)"
-                :disabled="readOnly">
-                មើលព័ត៌មានលំអិត
-              </UButton>
-              <UButton color="red" icon="i-heroicons-trash" @click="deleteRecord(data.id)" :disabled="readOnly">
-                លុបចេញ
-              </UButton>
-            </div>
-          </template>
+      <DataTableServer
+        ref="table"
+        :columns="columns"
+        :fetcher="fetcher"
+        sort-by="createdAt"
+        sort-type="desc"
+        search-placeholder="ស្វែងរកតាមឈ្មោះ, អុីមែល, គោលបំណង..."
+        empty-text="មិនទាន់មានសារនៅឡើយទេ។"
+      >
+        <template #createdAt-data="{ row }">
+          <span class="text-gray-800 dark:text-gray-100">
+            {{ timeagoInKhmer(useTimeAgo(row.createdAt).value) }}
+          </span>
         </template>
-        <template #empty>
-          <div class="bg-white dark:bg-gray-800 text-center w-full">
-            គ្មាន​ទិន្នន័យ
+
+        <template #name-data="{ row }">
+          <span class="flex items-center gap-2 text-gray-800 dark:text-gray-100">
+            <!-- An unread message is the only thing on this row worth flagging. -->
+            <span v-if="!row.read" class="h-2 w-2 shrink-0 rounded-full bg-primary" />
+            {{ row.name ?? '—' }}
+          </span>
+        </template>
+
+        <template #email-data="{ row }">
+          <span class="text-gray-800 dark:text-gray-100">{{ row.email ?? '—' }}</span>
+        </template>
+
+        <template #reason-data="{ row }">
+          <span class="text-gray-800 dark:text-gray-100">{{ row.reason ?? '—' }}</span>
+        </template>
+
+        <template #actions-data="{ row }">
+          <div class="flex gap-2">
+            <UButton icon="i-heroicons-eye" size="sm" :color="row.read ? 'gray' : 'primary'"
+              :disabled="readOnly" @click="OpenCanvas(row.id)">
+              មើលព័ត៌មានលំអិត
+            </UButton>
+            <UButton color="red" icon="i-heroicons-trash" size="sm" :disabled="readOnly"
+              @click="deleteRecord(row)">
+              លុបចេញ
+            </UButton>
           </div>
         </template>
-      </TwDatatableServer>
+      </DataTableServer>
     </div>
-    <ContactMessageContactDetailsCanvas :openisTrue="openCanvasBoolean"  :id="selectedID" :key="keyIncrement" />
+    <ContactMessageContactDetailsCanvas :openisTrue="openCanvasBoolean" :id="selectedID" :key="keyIncrement" />
   </div>
 </template>

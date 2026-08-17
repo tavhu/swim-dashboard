@@ -1,257 +1,139 @@
 <script setup lang="ts">
-import {
-  useToast,
-  type DatatableColumn,
-  type DatatableData,
-  type DropdownItem,
-  TwDatatableServer,
-} from "vue3-tailwind";
+import { useToast, type DropdownItem } from "vue3-tailwind";
 
-const readOnly = checkIfPageReadOnly()
+/**
+ * បញ្ចីគណនី.
+ *
+ * Was a TwDatatableServer with every column marked `sortable: false` and a
+ * search box that was sent to an endpoint which ignored it — so neither control
+ * did anything. On DataTableServer now, with the search and the sort resolved in
+ * the database.
+ */
+const readOnly = checkIfPageReadOnly();
 const { t } = useI18n();
-const { data: userDataAuth } = useAuth()
+const { data: userDataAuth } = useAuth();
 const toast = useToast();
-useHead({
-  title: "បញ្ចីគណនី",
-});
+const config = useRuntimeConfig();
+const table = ref<any>(null);
 
+useHead({ title: "បញ្ចីគណនី" });
 
+const columns = [
+  { key: "account", label: "គណនី", sortable: false },
+  { key: "username", label: "ឈ្មោះគណនី", sortable: true, class: "w-[200px]" },
+  { key: "permission", label: "សិទ្ធិប្រើប្រាស់", sortable: false, class: "w-[180px]" },
+  { key: "status", label: "ស្ថានភាពគណនី", sortable: true, class: "w-[150px]" },
+  { key: "actions", label: "សកម្មភាព", class: "w-[220px]" },
+];
 
-const data = ref({
-  column: [
-    // {
-    //     label: "ល.រ",
-    //     field: "number",
-    //     width: "50px",
-    //     sortable: false,
-    //   },
-    {
-      label: "រូបថត",
-      field: "Profile",
-      width: "150px",
-      sortable: false,
-    },
-    {
-      label: "ឈ្មោះពេញ",
-      field: "category",
-      width: "450px",
-      sortable: false,
-    },
-    {
-      label: "ឈ្មោះគណនី",
-      field: "username",
-      width: "300px",
-      sortable: false,
-    },
-    {
-      label: "សិទ្ធិប្រើប្រាស់",
-      field: "permission",
-      width: "150px",
-      sortable: false,
-    },
-    {
-      label: "ស្ថានភាពគណនី",
-      field: "status",
-      width: "150px",
-      sortable: false,
-    },
-    {
-      label: "សកម្មភាព",
-      field: "action",
-      width: "650px",
-      sortable: false,
-    },
-  ] as Array<DatatableColumn>,
-  data: [] as Array<DatatableData>,
-  limit: 5,
-  offset: 0,
-  search: "",
-  sortBy: "id",
-  sortType: "desc",
-  setting: {
-    checkbox: true,
-    limitOption: [
-      {
-        label: "5",
-        value: 5,
-      },
-      {
-        label: "10",
-        value: 10,
-      },
-      {
-        label: "50",
-        value: 50,
-      },
-      {
-        label: "100",
-        value: 100,
-      },
-      {
-        label: "200",
-        value: 200,
-      },
-    ],
-  },
-});
+const fetcher = (q: any) =>
+  $fetch<{ data: any[]; total: number }>(
+    "/api/user/get?" +
+      new URLSearchParams({
+        limit: String(q.limit),
+        skip: String(q.skip),
+        q: q.search,
+        sortBy: q.sortBy,
+        sortType: q.sortType,
+      }),
+    { method: "get" }
+  );
 
-const globalData: any = ref();
-const config = useRuntimeConfig()
-// const datareturn :any = ref()
-const fetchData = async () => {
-  const baseUrl = "/api/user/get";
-  const response = await $fetch<{
-    total: number;
-    data: DatatableData[];
-  }>(
-    baseUrl +
-    "?" +
-    new URLSearchParams({
-      limit: data.value.limit.toString(),
-      skip: data.value.offset.toString(),
-      q: data.value.search.toString(),
-      sortType: data.value.sortType,
-      sortBy: data.value.sortBy,
-    }),
-    {
-      method: 'get'
-    },
-  )
+const avatar = (row: any) =>
+  row.image ? `${config.public.origin}/${row.image}` : `${config.public.origin}/placeholder.png`;
 
-  globalData.value = {
-    totalData: response?.total, // response["total"],
-    data: response?.data, // response["data"],   
-  };
-  return {
-    totalData: response?.total ? response?.total : 0, // response["total"],
-    data: response?.data ? response?.data : [], // response["data"],  
-  }
-}
-
-fetchData()
-
-
-const sortClick = (event: any) => {
-  const sortBy = data.value.sortBy;
-  const sortType = data.value.sortType;
-  const sortByNew = event;
-  const sortTypeNew =
-    event === sortBy ? (sortType === "asc" ? "desc" : "asc") : "asc";
-  data.value = { ...data.value, sortBy: sortByNew, sortType: sortTypeNew };
-};
-
-const deleteRecord = async (id: string) => {
+const deleteRecord = async (row: any) => {
   if (readOnly) return;
-  if (!(await confirmDialog())) return;
+  const who = [row?.username, [row?.lastname, row?.firstname].filter(Boolean).join(" ")]
+    .filter(Boolean)
+    .join(" · ");
+  if (!(await confirmDelete(`លុបគណនី ${who}។`))) return;
 
-  const { error } = await useFetch("/api/user/delete", {
-    method: "POST",
-    body: JSON.stringify({
-      id: id,
-    }),
-  })
-
-  if (error.value?.statusCode) {
-    toast.error({
-      message: t('message.notSaved'),
-    });
-  } else {
-    toast.success({
-      message: t('message.saved'),
-    });
+  try {
+    await $fetch("/api/user/delete", { method: "POST", body: { id: row.id } });
+    toast.success({ message: t("message.saved") });
+  } catch (e: any) {
+    toast.error({ message: e?.data?.error ?? e?.message ?? t("message.notSaved") });
   }
-  //update change limit ref in order to refetch data
-  data.value.limit === 10 ? (data.value.limit = 5) : (data.value.limit = 10);
+  table.value?.refresh();
 };
 
-const notGrated = ref(false)
-
+// Which roles this user may act on — an account holding a role outside this list
+// is one they are not allowed to delete.
 const { data: roleData } = await useFetch("/api/role/get", {
-  method: 'get', query: {
-    //@ts-ignore
-    userID: userDataAuth.value?.sub
-  }
-})
-const roleDataFormat: DropdownItem[] = new Array({ label: '', value: '' })
-roleDataFormat.pop()
-//@ts-ignored
-roleData.value?.data?.forEach((ele: any) => {
-  roleDataFormat.push(
-    {
-      label: ele?.name,
-      value: ele?.id
-    }
-  )
+  method: "get",
+  //@ts-ignore
+  query: { userID: userDataAuth.value?.sub },
 });
+const roleDataFormat: DropdownItem[] = [];
+//@ts-ignore
+roleData.value?.data?.forEach((ele: any) => {
+  roleDataFormat.push({ label: ele?.name, value: ele?.id });
+});
+
+const canDelete = (row: any) =>
+  !readOnly && !!roleDataFormat.find((ii) => ii.value == row?.Role?.id);
 </script>
+
 <template>
   <div class="font-[Battambang]">
     <div class="mt-5">
-      <div class="flex justify-between">
-        <h2 class="text-sm lg:text-xl font-[Moul] text-primary">បញ្ចីគណនី</h2>
-        <NuxtLink :to="config.public.origin + '/register'" :disabled="readOnly">
+      <div class="flex items-center justify-between gap-4">
+        <h2 class="text-sm font-[Moul] text-primary lg:text-xl">បញ្ចីគណនី</h2>
+        <NuxtLink :to="config.public.origin + '/register'">
           <UButton color="primary" size="xl" :disabled="readOnly">
-            <h2 class="text-sm  lg:text-xl  font-[Moul]"> បង្កើតគណនី </h2>
+            <span class="font-[Moul] text-sm lg:text-xl">បង្កើតគណនី</span>
           </UButton>
         </NuxtLink>
       </div>
       <hr class="my-2 border dark:border-gray-700" />
-      <TwDatatableServer v-bind:fetch-data="fetchData" v-model:search="data.search" v-model:limit="data.limit"
-        v-model:offset="data.offset" v-model:sort-by="data.sortBy" v-model:sort-type="data.sortType"
-        :column="data.column" @on-sort-change="sortClick">
-        <template #row="{ index, column, data }">
-          <!-- <template v-if="column.field === 'number'">
-            <div class="flex justify-center">       
-                  {{ index }}           
-            </div> 
-          </template> -->
-          <template v-if="column.field === 'Profile'">
-            <div class="flex justify-center">
-              <img :src="config.public.origin + '/' + data.image" alt=""
-                class="w-12 h-12 rounded-full border border-[#1d152a7a]">
-            </div>
-          </template>
-          <template v-if="column.field === 'category'">
-            <div class="flex justify-center">
-              {{ data.lastname }} {{ data.firstname }}
-            </div>
-          </template>
-          <template v-if="column.field === 'username'">
-            <div class="flex justify-center">
-              {{ data.username }}
-            </div>
-          </template>
-          <template v-if="column.field === 'status'">
-            <div class="flex justify-center">
-              <span v-if="data.status" class="text-blue-700 dark:text-white"> ដំណើការ </span>
-              <span v-else class="text-red-700"> បិទដំណើការ </span>
-            </div>
-          </template>
-          <template v-if="column.field === 'permission'">
-            <div class="flex justify-center">
-              {{ data.Role.name }}
-            </div>
-          </template>
-          <template v-if="column.field === 'action'">
-            <div class="flex gap-2 justify-center">
-              <NuxtLink :to="config.public.origin + '/register?id=' + data.id" :disabled="readOnly">
-                <UButton color="primary" icon="i-heroicons-pencil-square" class="border" :disabled="readOnly">
-                  កែសម្រួល
-                </UButton>
-              </NuxtLink>
-              <UButton color="red" icon="i-heroicons-trash" @click="deleteRecord(data.id)"
-                :disabled="readOnly || !(roleDataFormat?.find(ii => ii.value == data.Role.id)?.value ? true : false)">
-                លុបចេញ
-              </UButton>
-            </div>
-          </template>
-        </template>
-        <template #empty>
-          <div class="bg-white dark:bg-gray-800 text-center w-full">
-            គ្មាន​ទិន្នន័យ
+
+      <DataTableServer
+        ref="table"
+        :columns="columns"
+        :fetcher="fetcher"
+        sort-by="username"
+        sort-type="asc"
+        search-placeholder="ស្វែងរកតាមឈ្មោះ ឬឈ្មោះគណនី..."
+        empty-text="មិនទាន់មានគណនីនៅឡើយទេ។"
+      >
+        <template #account-data="{ row }">
+          <div class="flex items-center gap-3">
+            <img :src="avatar(row)" alt=""
+              class="h-10 w-10 shrink-0 rounded-full border border-gray-200 object-cover dark:border-gray-600" />
+            <span class="truncate text-gray-800 dark:text-gray-100">
+              {{ [row.lastname, row.firstname].filter(Boolean).join(' ') || '—' }}
+            </span>
           </div>
         </template>
-      </TwDatatableServer>
+
+        <template #username-data="{ row }">
+          <span class="text-gray-800 dark:text-gray-100">{{ row.username }}</span>
+        </template>
+
+        <template #permission-data="{ row }">
+          <span class="text-gray-800 dark:text-gray-100">{{ row.Role?.name ?? '—' }}</span>
+        </template>
+
+        <template #status-data="{ row }">
+          <span v-if="row.status" class="text-primary">ដំណើការ</span>
+          <span v-else class="text-red-600 dark:text-red-400">បិទដំណើការ</span>
+        </template>
+
+        <template #actions-data="{ row }">
+          <div class="flex gap-2">
+            <NuxtLink :to="config.public.origin + '/register?id=' + row.id">
+              <UButton color="primary" icon="i-heroicons-pencil-square" size="sm" :disabled="readOnly">
+                កែសម្រួល
+              </UButton>
+            </NuxtLink>
+            <UButton color="red" icon="i-heroicons-trash" size="sm" :disabled="!canDelete(row)"
+              @click="deleteRecord(row)">
+              លុបចេញ
+            </UButton>
+          </div>
+        </template>
+      </DataTableServer>
     </div>
   </div>
 </template>

@@ -1,380 +1,209 @@
 <script setup lang="ts">
-import {
-  useToast,
-  type DatatableColumn,
-  type DatatableData,
-  TwDatatableServer,
-  TwOffcanvas,
-} from "vue3-tailwind";
+import { useToast } from "vue3-tailwind";
 
-// import { useResource } from '~~/store/resource'
-const readOnly = checkIfPageReadOnly()
-// const resource = useResource()
+/**
+ * បុគ្គលិកមណ្ឌល — contract officers and civil servants, two lists on one page.
+ *
+ * Both were TwDatatableServer with every column `sortable: false` and a search
+ * box the endpoint ignored. They are DataTableServer now, each with its own
+ * server-side search and sort.
+ *
+ * Two bugs went with the rewrite:
+ *
+ *   - the contract table rendered `data.ServiceCenter.nameKH`, but Staff names
+ *     that relation `serviceCenter` — only governStaff capitalises it. The
+ *     endpoint was selecting the capitalised one too, so the contract list threw
+ *     in Prisma and rendered nothing.
+ *   - deleteRecord took the kind of staff as an argument and then ignored it,
+ *     using the `typeEmployee` ref instead. That ref holds whichever kind the
+ *     canvas form last opened, so deleting from one table could delete from the
+ *     other's table entirely.
+ */
+const readOnly = checkIfPageReadOnly();
+const toast = useToast();
+const typeEmployee = ref("Contract");
 
-const { data : datauseAuth, status } = useAuth();
-const typeEmployee = ref('Contract')
+useHead({ title: "បុគ្គលិកមណ្ឌល" });
 
-useHead({
-  title: "បុគ្គលិកមណ្ឌល",
-});
+const contractTable = ref<any>(null);
+const officialTable = ref<any>(null);
 
-const toast = useToast()
+const contractColumns = [
+  { key: "name", label: "ឈ្មោះ", sortable: true },
+  { key: "position", label: "តួនាទី", sortable: true, class: "w-[180px]" },
+  { key: "telephone", label: "ទូរស័ព្ទ", sortable: false, class: "w-[150px]" },
+  { key: "center", label: "មណ្ឌល", sortable: false },
+  { key: "actions", label: "សកម្មភាព", class: "w-[200px]" },
+];
 
-const data = ref({
-  column: [
-    {
-      label: "ឈ្មោះ",
-      field: "name",
-      width: "400px",
-      sortable: false,
+const officialColumns = [
+  { key: "name", label: "ឈ្មោះ", sortable: true },
+  { key: "gender", label: "ភេទ", sortable: true, class: "w-[100px]" },
+  { key: "CurrentRank", label: "ឋានៈ", sortable: true, class: "w-[160px]" },
+  { key: "center", label: "មណ្ឌល", sortable: false },
+  { key: "actions", label: "សកម្មភាព", class: "w-[200px]" },
+];
+
+const makeFetcher = (kind: "Contract" | "Official") => (q: any) =>
+  $fetch<{ data: any[]; total: number }>("/api/center/staff/get", {
+    method: "post",
+    body: {
+      limit: String(q.limit),
+      skip: String(q.skip),
+      q: q.search,
+      sortBy: q.sortBy,
+      sortType: q.sortType,
+      typeEmployee: kind,
     },
-    {
-      label: "មណ្ឌល",
-      field: "description",
-      width: "800px",
-      sortable: false,
-    },
-    {
-      label: "សកម្មភាព",
-      field: "action",
-      width: "400px",
-      sortable: false,
-    },
-  ] as Array<DatatableColumn>,
-  data: [] as Array<DatatableData>,
-  limit: 5,
-  offset: 0,
-  search: "",
-  sortBy: "id",
-  sortType: "desc",
-  setting: {
-    checkbox: false,
-    limitOption: [
-      {
-        label: "5",
-        value: 5,
-      },
-      {
-        label: "10",
-        value: 10,
-      },
-      {
-        label: "50",
-        value: 50,
-      },
-      {
-        label: "100",
-        value: 100,
-      },
-      {
-        label: "200",
-        value: 200,
-      },
-    ],
-  },
-});
-
-const dataOfficial = ref({
-  column: [
-    {
-      label: "ឈ្មោះ",
-      field: "name",
-      width: "400px",
-      sortable: false,
-    },
-    {
-      label: "មណ្ឌល",
-      field: "description",
-      width: "800px",
-      sortable: false,
-    },
-    {
-      label: "សកម្មភាព",
-      field: "action",
-      width: "400px",
-      sortable: false,
-    },
-  ] as Array<DatatableColumn>,
-  data: [] as Array<DatatableData>,
-  limit: 5,
-  offset: 0,
-  search: "",
-  sortBy: "id",
-  sortType: "desc",
-  setting: {
-    checkbox: false,
-    limitOption: [
-      {
-        label: "5",
-        value: 5,
-      },
-      {
-        label: "10",
-        value: 10,
-      },
-      {
-        label: "50",
-        value: 50,
-      },
-      {
-        label: "100",
-        value: 100,
-      },
-      {
-        label: "200",
-        value: 200,
-      },
-    ],
-  },
-});
-
-const fetchData = async () => {
-  const response = await $fetch <{
-    total: number;
-    data: DatatableData[];
-}> (
-  '/api/center/staff/get',      
-      {
-        body : JSON.stringify(({
-        limit: data.value.limit.toString(),
-        skip: data.value.offset.toString(),
-        q: data.value.search.toString(),
-        sortType: data.value.sortType,
-        sortBy: data.value.sortBy,         
-        serviceCenterID : true,
-        typeEmployee : 'Contract'
-      })),
-        method : 'post'
-      }
-  );
- 
-  return {//@ts-ignore
-    data: response.value?.data  ? response.value?.data: [],
-    totalData: response.value?.total ? response.value?.total : 0,
-  };
-}
-
-fetchData()
-
-const fetchDataOfficial = async () => {
-  const { data: response } = await useFetch<{
-    total: number;
-    data: DatatableData[];
-  }>(
-    '/api/center/staff/get',
-    {
-      body: JSON.stringify(({
-        limit: dataOfficial.value.limit.toString(),
-        skip: dataOfficial.value.offset.toString(),
-        q: dataOfficial.value.search.toString(),
-        sortType: dataOfficial.value.sortType,
-        sortBy: dataOfficial.value.sortBy,
-        serviceCenterID: true,
-        typeEmployee: 'Official'
-      })),
-      method: 'post'
-    }
-  );
-
-  return {//@ts-ignore
-    data: response.value?.data ? response.value?.data : [],
-    totalData: response.value?.total ? response.value?.total : 0,
-  };
-}
-
-fetchDataOfficial()
-
-const sortClick = (event: any) => {
-  const sortBy = data.value.sortBy;
-  const sortType = data.value.sortType;
-  const sortByNew = event;
-  const sortTypeNew =
-    event === sortBy ? (sortType === "asc" ? "desc" : "asc") : "asc";
-  data.value = { ...data.value, sortBy: sortByNew, sortType: sortTypeNew };
-};
-
-
-const updateTable = () => {
-  data.value.limit === 10 ? (data.value.limit = 5) : (data.value.limit = 10);
-}
-const updateTableOfficial = () => {
-  dataOfficial.value.limit === 10 ? (dataOfficial.value.limit = 5) : (dataOfficial.value.limit = 10);
-}
-
-const openisTrue = ref(false);
-const openisKey = ref(0)
-const editID = ref("");
-const deleteRecord = async (id: string, typeEmployees: string) => {
-  if (readOnly) return;
-  if (!(await confirmDialog())) return;
-
-  const { error } = await useFetch("/api/center/staff/delete", {
-    method: "POST",
-    body: JSON.stringify({
-      id: id,
-      typeEmployee: typeEmployee.value
-    }),
   });
 
-  if (error.value?.statusCode) {
-    toast.error({
-      message: "មិនឈោកជ័យ",
-    });
-  } else {
-    toast.success({
-      message: "ជោកជ័យ",
-    });
-  }
-  //update change limit ref in order to refetch data
-  updateTable()
-  updateTableOfficial()
-};
-const editRecord = async (id: string, typeEmployees : string) => {
-  if(readOnly) return;
-  // console.log(id)
-  typeEmployee.value = typeEmployees
-  openisTrue.value = true
-  openisKey.value ++ 
-  editID.value = id;  
-}
+const fetchContract = makeFetcher("Contract");
+const fetchOfficial = makeFetcher("Official");
 
-const openRegisterForm = (typeEmployees : string)=>{
-  typeEmployee.value = typeEmployees
-  openisTrue.value = true
-  openisKey.value ++ 
-  editID.value = '';  
-}
+const refreshAll = () => {
+  contractTable.value?.refresh();
+  officialTable.value?.refresh();
+};
+
+const openisTrue = ref(false);
+const openisKey = ref(0);
+const editID = ref("");
+
+/** `kind` is the table the row came from — not the ref, which tracks the form. */
+const deleteRecord = async (row: any, kind: "Contract" | "Official") => {
+  if (readOnly) return;
+  const who =
+    kind === "Contract"
+      ? [row?.lastName, row?.firstName].filter(Boolean).join(" ")
+      : [row?.lastNameKH, row?.firstNameKH].filter(Boolean).join(" ");
+  if (!(await confirmDelete(`លុបបុគ្គលិក ${who}។`))) return;
+
+  try {
+    await $fetch("/api/center/staff/delete", {
+      method: "POST",
+      body: { id: row.id, typeEmployee: kind },
+    });
+    toast.success({ message: "ជោគជ័យ" });
+  } catch (e: any) {
+    toast.error({ message: e?.data?.error ?? e?.message ?? "មិនជោគជ័យ" });
+  }
+  refreshAll();
+};
+
+const editRecord = (id: string, kind: string) => {
+  if (readOnly) return;
+  typeEmployee.value = kind;
+  openisTrue.value = true;
+  openisKey.value++;
+  editID.value = id;
+};
+
+const openRegisterForm = (kind: string) => {
+  typeEmployee.value = kind;
+  openisTrue.value = true;
+  openisKey.value++;
+  editID.value = "";
+};
 </script>
 
 <template>
-  <div class="font-[Battambang]">    
-  
-    <div class="mt-5">      
-      <div class="flex justify-between">
-            <h2 class=" text-md  lg:text-2xl font-[Moul] text-primary">បញ្ចីមន្ត្រីកិច្ចសន្យា</h2>                        
-            <UButton @click="openRegisterForm('Contract')" color="primary"  size="xl" :disabled="readOnly">
-              <h2 class=" text-sm  lg:text-xl font-[Moul]">ចុះឈ្មោះមន្ត្រីកិច្ចសន្យា </h2>
-            </UButton>                                
-        </div>
-      <hr class="my-2 border dark:border-gray-700" />             
-      <TwDatatableServer        
-        v-bind:fetch-data="fetchData"
-        v-model:search="data.search"
-        v-model:limit="data.limit"
-        v-model:offset="data.offset"
-        v-model:sort-by="data.sortBy"
-        v-model:sort-type="data.sortType"
-        :column="data.column"       
-        :setting="data.setting"
-        @on-sort-change="sortClick"
-      >
-        <template  #row="{ column, data }">
-          <template v-if="column.field === 'name'">      
-            <div class="flex justify-center">
-                {{  data.lastName }} {{  data.firstName }}      
-            </div>    
-          </template>
-          <template v-if="column.field === 'description'" >
-            <div class="flex justify-center"> 
-              {{ data.ServiceCenter.nameKH }}            
-            </div>
-          </template>
-          <template v-if="column.field === 'action'">
-            <div class="flex gap-2 justify-center">             
-              <UButton 
-              :disabled ="readOnly"
-              icon="i-heroicons-pencil-square"
-              size="sm"
-              color="primary"
-              square
-              variant="solid"                
-              @click="editRecord(data.id, 'Contract')"
-              >
-                កែសម្រួល
-              </UButton >  
-              <UButton 
-              :disabled ="readOnly"
-              icon="i-heroicons-trash"
-              size="sm"
-              color="red"
-              square
-              variant="solid"  
-               @click="deleteRecord(data.id, 'Contract')">
-                លុបចេញ
-              </UButton >
-            </div>
-          </template>
-        </template>
-        <template #empty>
-          <div class="bg-white dark:bg-gray-800 text-center w-full">
-            គ្មាន​ទិន្នន័យ
-          </div>
-        </template>
-      </TwDatatableServer>
-    </div>
-     <div class="mt-5">      
-        <div class="flex justify-between">
-              <h2 class=" text-md  lg:text-2xl font-[Moul] text-primary">បញ្ចីមន្ត្រីរាជការ</h2>                        
-              <UButton @click="openRegisterForm('Official')" color="primary"  size="xl" :disabled="readOnly">
-                <h2 class=" text-sm  lg:text-xl font-[Moul]">ចុះឈ្មោះមន្ត្រីរាជការ </h2>
-              </UButton>                                
-          </div>
-        <hr class="my-2 border dark:border-gray-700" />             
-        <TwDatatableServer        
-          v-bind:fetch-data="fetchDataOfficial"
-          v-model:search="dataOfficial.search"
-          v-model:limit="dataOfficial.limit"
-          v-model:offset="dataOfficial.offset"
-          v-model:sort-by="dataOfficial.sortBy"
-          v-model:sort-type="dataOfficial.sortType"
-          :column="dataOfficial.column"       
-          :setting="dataOfficial.setting"
-          @on-sort-change="sortClick"
-        >
-          <template  #row="{ column, data }">
-            <template v-if="column.field === 'name'">      
-              <div class="flex justify-center">
-                {{ data.lastNameKH }} {{ data.firstNameKH }} ភេទ {{ data.gender }}       
-              </div>    
-            </template>
-            <template v-if="column.field === 'description'" >
-              <div class="flex justify-center"> 
-                {{ data.ServiceCenter.nameKH }}            
-              </div>
-            </template>
-            <template v-if="column.field === 'action'">
-              <div class="flex gap-2 justify-center">             
-                <UButton 
-                :disabled ="readOnly"
-                icon="i-heroicons-pencil-square"
-                size="sm"
-                color="primary"
-                square
-                variant="solid"                
-                @click="editRecord(data.id, 'Official')"
-                >
-                  កែសម្រួល
-                </UButton >  
-                <UButton 
-                :disabled ="readOnly"
-                icon="i-heroicons-trash"
-                size="sm"
-                color="red"
-                square
-                variant="solid"  
-                 @click="deleteRecord(data.id, 'Official')">
-                  លុបចេញ
-                </UButton >
-              </div>
-            </template>
-          </template>
-          <template #empty>
-            <div class="bg-white dark:bg-gray-800 text-center w-full">
-              គ្មាន​ទិន្នន័យ
-            </div>
-          </template>
-        </TwDatatableServer>
+  <div class="font-[Battambang]">
+    <div class="mt-5">
+      <div class="flex items-center justify-between gap-4">
+        <h2 class="text-md font-[Moul] text-primary lg:text-2xl">បញ្ចីមន្ត្រីកិច្ចសន្យា</h2>
+        <UButton color="primary" size="xl" :disabled="readOnly" @click="openRegisterForm('Contract')">
+          <span class="font-[Moul] text-sm lg:text-xl">ចុះឈ្មោះមន្ត្រីកិច្ចសន្យា</span>
+        </UButton>
       </div>
-    <CenterStaffCanvasForm @canvasIsOpen="updateTable"  :typeEmployee="typeEmployee" :readOnly="readOnly" :id="editID" :openisTrue="openisTrue"  :serviceCenterID="null" :key="openisKey"/>   
+      <hr class="my-2 border dark:border-gray-700" />
+
+      <DataTableServer
+        ref="contractTable"
+        :columns="contractColumns"
+        :fetcher="fetchContract"
+        sort-by="firstName"
+        sort-type="asc"
+        search-placeholder="ស្វែងរកតាមឈ្មោះ, តួនាទី, ទូរស័ព្ទ..."
+        empty-text="មិនទាន់មានមន្ត្រីកិច្ចសន្យានៅឡើយទេ។"
+      >
+        <template #name-data="{ row }">
+          <span class="text-gray-800 dark:text-gray-100">
+            {{ [row.lastName, row.firstName].filter(Boolean).join(' ') || '—' }}
+          </span>
+        </template>
+        <template #position-data="{ row }">
+          <span class="text-gray-800 dark:text-gray-100">{{ row.position || '—' }}</span>
+        </template>
+        <template #telephone-data="{ row }">
+          <span class="text-gray-800 dark:text-gray-100">{{ row.telephone || '—' }}</span>
+        </template>
+        <!-- Lowercase: Staff.serviceCenter, unlike governStaff.ServiceCenter. -->
+        <template #center-data="{ row }">
+          <span class="text-gray-800 dark:text-gray-100">{{ row.serviceCenter?.nameKH ?? '—' }}</span>
+        </template>
+        <template #actions-data="{ row }">
+          <div class="flex gap-2">
+            <UButton icon="i-heroicons-pencil-square" size="sm" color="primary" :disabled="readOnly"
+              @click="editRecord(row.id, 'Contract')">
+              កែសម្រួល
+            </UButton>
+            <UButton icon="i-heroicons-trash" size="sm" color="red" :disabled="readOnly"
+              @click="deleteRecord(row, 'Contract')">
+              លុបចេញ
+            </UButton>
+          </div>
+        </template>
+      </DataTableServer>
+    </div>
+
+    <div class="mt-8">
+      <div class="flex items-center justify-between gap-4">
+        <h2 class="text-md font-[Moul] text-primary lg:text-2xl">បញ្ចីមន្ត្រីរាជការ</h2>
+        <UButton color="primary" size="xl" :disabled="readOnly" @click="openRegisterForm('Official')">
+          <span class="font-[Moul] text-sm lg:text-xl">ចុះឈ្មោះមន្ត្រីរាជការ</span>
+        </UButton>
+      </div>
+      <hr class="my-2 border dark:border-gray-700" />
+
+      <DataTableServer
+        ref="officialTable"
+        :columns="officialColumns"
+        :fetcher="fetchOfficial"
+        sort-by="firstNameKH"
+        sort-type="asc"
+        search-placeholder="ស្វែងរកតាមឈ្មោះ, ឋានៈ, ទូរស័ព្ទ..."
+        empty-text="មិនទាន់មានមន្ត្រីរាជការនៅឡើយទេ។"
+      >
+        <template #name-data="{ row }">
+          <span class="text-gray-800 dark:text-gray-100">
+            {{ [row.lastNameKH, row.firstNameKH].filter(Boolean).join(' ') || '—' }}
+          </span>
+        </template>
+        <template #gender-data="{ row }">
+          <span class="text-gray-800 dark:text-gray-100">{{ row.gender || '—' }}</span>
+        </template>
+        <template #CurrentRank-data="{ row }">
+          <span class="text-gray-800 dark:text-gray-100">{{ row.CurrentRank || '—' }}</span>
+        </template>
+        <template #center-data="{ row }">
+          <span class="text-gray-800 dark:text-gray-100">{{ row.ServiceCenter?.nameKH ?? '—' }}</span>
+        </template>
+        <template #actions-data="{ row }">
+          <div class="flex gap-2">
+            <UButton icon="i-heroicons-pencil-square" size="sm" color="primary" :disabled="readOnly"
+              @click="editRecord(row.id, 'Official')">
+              កែសម្រួល
+            </UButton>
+            <UButton icon="i-heroicons-trash" size="sm" color="red" :disabled="readOnly"
+              @click="deleteRecord(row, 'Official')">
+              លុបចេញ
+            </UButton>
+          </div>
+        </template>
+      </DataTableServer>
+    </div>
+
+    <CenterStaffCanvasForm @canvasIsOpen="refreshAll" :typeEmployee="typeEmployee" :readOnly="readOnly"
+      :id="editID" :openisTrue="openisTrue" :serviceCenterID="null" :key="openisKey" />
   </div>
 </template>

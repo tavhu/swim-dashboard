@@ -6,9 +6,6 @@ import {
   TwForm,
   TwTextarea,
   useToast,
-  type DatatableColumn,
-  type DatatableData,
-  TwDatatableServer,
   TwOffcanvas,
 } from "vue3-tailwind";
 
@@ -81,7 +78,7 @@ async function submit() {
     });
     clear();
   }
-  data.value.limit === 10 ? (data.value.limit = 5) : (data.value.limit = 10);
+  table.value?.refresh();
 }
 
 const clear = () => {
@@ -143,7 +140,7 @@ async function submitEdit() {
     });
     clearEdit();
   }
-  data.value.limit === 10 ? (data.value.limit = 5) : (data.value.limit = 10);
+  table.value?.refresh();
   openisTrue.value.closeOffCanvas();
 }
 
@@ -159,128 +156,52 @@ useHead({
   title: "តួនាទី និងការអនុញ្ញាត",
 });
 
-const data = ref({
-  column: [
-    {
-      label: "ឈ្មោះ",
-      field: "category",
-      width: "400px",
-      sortable: false,
-    },
-    {
-      label: "ការពិពណ៌នាតួនាទី",
-      field: "description",
-      width: "800px",
-      sortable: false,
-    },
-    {
-      label: "សកម្មភាព",
-      field: "action",
-      width: "400px",
-      sortable: false,
-    },
-  ] as Array<DatatableColumn>,
-  data: [] as Array<DatatableData>,
-  limit: 5,
-  offset: 0,
-  search: "",
-  sortBy: "id",
-  sortType: "desc",
-  setting: {
-    checkbox: false,
-    limitOption: [
-      {
-        label: "5",
-        value: 5,
-      },
-      {
-        label: "10",
-        value: 10,
-      },
-      {
-        label: "50",
-        value: 50,
-      },
-      {
-        label: "100",
-        value: 100,
-      },
-      {
-        label: "200",
-        value: 200,
-      },
-    ],
-  },
-});
-
-const globalData: any = ref();
-
-const fetchData = async () => {
-  const baseUrl = "/api/role/get";
-  const response = await $fetch<{
-    total: number;
-    data: DatatableData[];
-  }>(
-    baseUrl +
-    "?" +
-    new URLSearchParams({
-      limit: data.value.limit.toString(),
-      skip: data.value.offset.toString(),
-      q: data.value.search.toString(),
-      sortType: data.value.sortType,
-      sortBy: data.value.sortBy,
-      //@ts-ignored
-      userID: userDataAuth.value?.sub
-    }),
-    {
-      method: 'get'
-    },
-  );
 
 
-  // console.log(responseJson)
-  globalData.value = {
-    data: response?.data ? response?.data : [],
-    totalData: response?.total ? response?.total : 0,
-  };
-  return {
-    data: response?.data ? response?.data : [],
-    totalData: response?.total ? response?.total : 0,
-  };
-}
-fetchData()
+/**
+ * The rows currently on screen. editRecord() and the permission canvas both read
+ * a role out of here by id rather than refetching it, so the fetcher keeps it in
+ * step with whatever page the table is showing.
+ */
+const globalData: any = ref({ data: [], totalData: 0 });
 
-const sortClick = (event: any) => {
-  const sortBy = data.value.sortBy;
-  const sortType = data.value.sortType;
-  const sortByNew = event;
-  const sortTypeNew =
-    event === sortBy ? (sortType === "asc" ? "desc" : "asc") : "asc";
-  data.value = { ...data.value, sortBy: sortByNew, sortType: sortTypeNew };
-};
+const table = ref<any>(null);
 
-const deleteRecord = async (id: string) => {
-  if (readOnly) return;
-  if (!(await confirmDialog())) return;
+const columns = [
+  { key: "name", label: "ឈ្មោះ", sortable: true, class: "w-[280px]" },
+  { key: "description", label: "ការពិពណ៌នាតួនាទី", sortable: true },
+  { key: "actions", label: "សកម្មភាព", class: "w-[340px]" },
+];
 
-  const { error } = await useFetch("/api/role/delete", {
-    method: "POST",
-    body: JSON.stringify({
-      id: id,
-    }),
+const fetcher = (q: any) =>
+  $fetch<{ data: any[]; total: number }>(
+    "/api/role/get?" +
+      new URLSearchParams({
+        limit: String(q.limit),
+        skip: String(q.skip),
+        q: q.search,
+        sortBy: q.sortBy,
+        sortType: q.sortType,
+        //@ts-ignore — filters the list to roles this caller may assign
+        userID: userDataAuth.value?.sub,
+      }),
+    { method: "get" }
+  ).then((res) => {
+    globalData.value = { data: res?.data ?? [], totalData: res?.total ?? 0 };
+    return res;
   });
 
-  if (error.value?.statusCode) {
-    toast.error({
-      message: "មិនឈោកជ័យ",
-    });
-  } else {
-    toast.success({
-      message: "ជោកជ័យ",
-    });
+const deleteRecord = async (row: any) => {
+  if (readOnly) return;
+  if (!(await confirmDelete(`លុបតួនាទី ${row?.name ?? ""}។`))) return;
+
+  try {
+    await $fetch("/api/role/delete", { method: "POST", body: { id: row.id } });
+    toast.success({ message: "ជោគជ័យ" });
+  } catch (e: any) {
+    toast.error({ message: e?.data?.error ?? e?.message ?? "មិនជោគជ័យ" });
   }
-  //update change limit ref in order to refetch data
-  data.value.limit === 10 ? (data.value.limit = 5) : (data.value.limit = 10);
+  table.value?.refresh();
 };
 
 const openisTrue = ref();
@@ -384,41 +305,38 @@ const { data: readRoleToResource, refresh } = await useFetch(
     <div class="mt-5">
       <h2 class="text-2xl font-[Moul] text-primary">បញ្ចីតួនាទី</h2>
       <hr class="my-2 border dark:border-gray-700" />
-      <TwDatatableServer v-bind:fetch-data="fetchData" v-model:search="data.search" v-model:limit="data.limit"
-        v-model:offset="data.offset" v-model:sort-by="data.sortBy" v-model:sort-type="data.sortType"
-        :column="data.column" :setting="data.setting" @on-sort-change="sortClick">
-        <template #row="{ column, data }">
-          <template v-if="column.field === 'category'">
-            {{ data.name }}
-          </template>
-          <template v-if="column.field === 'description'">
-            {{ data.description }}
-          </template>
-          <template v-if="column.field === 'action'">
-            <div class="flex gap-2 justify-center">
-              <UButton :disabled="readOnly" :ripple="true" @click="AddPermission(data.id)"
-                icon="i-heroicons-lock-closed" size="sm" color="primary" square variant="solid">
-                ការអនុញ្ញាត
-              </UButton>
-              <UButton :disabled="readOnly" icon="i-heroicons-pencil-square" size="sm" color="gray" square
-                variant="solid" @click="editRecord(data.id)">
-                កែសម្រួល
-              </UButton>
-
-
-              <UButton :disabled="readOnly" icon="i-heroicons-trash" size="sm" color="red" square variant="solid"
-                @click="deleteRecord(data.id)">
-                លុបចេញ
-              </UButton>
-            </div>
-          </template>
+      <DataTableServer
+        ref="table"
+        :columns="columns"
+        :fetcher="fetcher"
+        sort-by="name"
+        sort-type="asc"
+        search-placeholder="ស្វែងរកតាមឈ្មោះ ឬការពិពណ៌នា..."
+        empty-text="មិនទាន់មានតួនាទីនៅឡើយទេ។"
+      >
+        <template #name-data="{ row }">
+          <span class="text-gray-800 dark:text-gray-100">{{ row.name }}</span>
         </template>
-        <template #empty>
-          <div class="bg-white dark:bg-gray-800 text-center w-full">
-            គ្មាន​ទិន្នន័យ
+        <template #description-data="{ row }">
+          <span class="text-gray-800 dark:text-gray-100">{{ row.description || '—' }}</span>
+        </template>
+        <template #actions-data="{ row }">
+          <div class="flex gap-2">
+            <UButton :disabled="readOnly" icon="i-heroicons-lock-closed" size="sm" color="primary"
+              @click="AddPermission(row.id)">
+              ការអនុញ្ញាត
+            </UButton>
+            <UButton :disabled="readOnly" icon="i-heroicons-pencil-square" size="sm" color="gray"
+              @click="editRecord(row.id)">
+              កែសម្រួល
+            </UButton>
+            <UButton :disabled="readOnly" icon="i-heroicons-trash" size="sm" color="red"
+              @click="deleteRecord(row)">
+              លុបចេញ
+            </UButton>
           </div>
         </template>
-      </TwDatatableServer>
+      </DataTableServer>
     </div>
 
     <TwOffcanvas position="right" width="800px" ref="openisTrue">

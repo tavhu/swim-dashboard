@@ -1,4 +1,10 @@
 import { getServerSession } from "#auth";
+import { readListQuery, searchFilter, orderByFor } from "../../utils/listQuery";
+
+/** Checked against, never passed through: Prisma throws on an unknown field. */
+const SORTABLE = ["username", "firstname", "lastname", "status", "Role.name"] as const;
+/** Text columns only — `contains` on the Boolean `status` is an error. */
+const SEARCHABLE = ["username", "firstname", "lastname", "Role.name"] as const;
 
 export default eventHandler(async (event) => {
   const session = await getServerSession(event);
@@ -16,8 +22,17 @@ export default eventHandler(async (event) => {
     };
   }
   try {
-    const totalCount = await event.context.prisma.user.count();
-    const data = await event.context.prisma.user.findMany({
+    const q = readListQuery(body, {
+      sortable: SORTABLE,
+      searchable: SEARCHABLE,
+      defaultSort: "username",
+      defaultSortType: "asc",
+    });
+    const where = searchFilter(q.search, SEARCHABLE) ?? {};
+
+    const [data, totalCount] = await Promise.all([
+      event.context.prisma.user.findMany({
+      where,
       select: {
         username: true,
         id: true,
@@ -33,14 +48,14 @@ export default eventHandler(async (event) => {
           },
         },
       },
-      orderBy: {
-        id: "desc",
-      },
-      //@ts-ignore
-      take: body?.limit ? parseInt(body?.limit) : 1000,
-      //@ts-ignore
-      skip: body?.skip ? parseInt(body?.skip) : 0,
-    });
+      orderBy: orderByFor(q.sortBy, q.sortType),
+      take: q.take,
+      skip: q.skip,
+      }),
+      // Counts the matches, not the table: the footer said "of 40" while the
+      // search showed three rows.
+      event.context.prisma.user.count({ where }),
+    ]);
 
     // console.log(data)
     setResponseStatus(event, 201);

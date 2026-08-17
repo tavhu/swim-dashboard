@@ -1,334 +1,220 @@
 <script setup lang="ts">
-import {
-    useToast,
-    type DatatableColumn,
-    type DatatableData,
-    type DropdownItem,
-    TwDatatableServer,
-} from "vue3-tailwind";
-
-const readOnly = checkIfPageReadOnly()
-const { t } = useI18n();
-const { data: userDataAuth } = useAuth()
-const toast = useToast();
-useHead({
-    title: "បញ្ចីអតិថិជន",
-});
-
-
-const data = ref({
-    column: [
-        {
-            label: "លេខសំគាល់",
-            field: "readableCode",
-            width: "120px",
-            sortable: false,
-        },
-        {
-            label: "រូបថត",
-            field: "logo",
-            width: "90px",
-            sortable: false,
-        },
-        {
-            label: "ឈ្មោះជាភាសារខ្មែរ",
-            field: "nameKH",
-            width: "auto",
-            sortable: false,
-        },
-        {
-            label: "ស្ថានភាព",
-            field: "status",
-            width: "140px",
-            sortable: false,
-        },
-        {
-            label: "សកម្មភាព",
-            field: "action",
-            width: "150px",
-            sortable: false,
-        },
-    ] as Array<DatatableColumn>,
-    data: [] as Array<DatatableData>,
-    limit: 5,
-    offset: 0,
-    search: "",
-    sortBy: "id",
-    sortType: "desc",
-    setting: {
-        checkbox: true,
-        limitOption: [
-            {
-                label: "5",
-                value: 5,
-            },
-            {
-                label: "10",
-                value: 10,
-            },
-            {
-                label: "50",
-                value: 50,
-            },
-            {
-                label: "100",
-                value: 100,
-            },
-            {
-                label: "200",
-                value: 200,
-            },
-        ],
-    },
-});
-
-const globalData: any = ref();
-const config = useRuntimeConfig()
-// const datareturn :any = ref()
-const fetchData = async () => {
-
-    const response = await $fetch<{
-        total: number;
-        data: DatatableData[];
-    }>(
-        '/api/client/personalInformationGet'
-        ,
-        {
-            body: {
-                limit: data.value.limit.toString(),
-                skip: data.value.offset.toString(),
-                q: data.value.search.toString(),
-                sortType: data.value.sortType,
-                sortBy: data.value.sortBy,
-            }
-            ,
-            method: 'post'
-        },
-    )
-
-    globalData.value = {
-        totalData: response?.total, // response["total"],
-        data: response?.data, // response["data"],   
-    };
-    return {
-        totalData: response?.total ? response?.total : 0, // response["total"],
-        data: response?.data ? response?.data : [], // response["data"],  
-    }
-}
-
-fetchData()
-
-const sortClick = (event: any) => {
-    const sortBy = data.value.sortBy;
-    const sortType = data.value.sortType;
-    const sortByNew = event;
-    const sortTypeNew =
-        event === sortBy ? (sortType === "asc" ? "desc" : "asc") : "asc";
-    data.value = { ...data.value, sortBy: sortByNew, sortType: sortTypeNew };
-};
-
-const deleteRecord = async (row: any) => {
-    if (readOnly) return;
-    // Name the client and say what else goes with them: a case file is six
-    // forms, the progress notes, the photograph and every attachment.
-    const who = [row?.ReadableCode, row?.fullNameKH].filter(Boolean).join(" · ");
-    if (!(await confirmDelete(
-        `លុបអតិថិជន ${who} និងទិន្នន័យពាក់ព័ន្ធទាំងអស់ (ទម្រង់ទី១-៦, កំណត់ត្រា, រូបថត និងឯកសារភ្ជាប់)។`
-    ))) return;
-    const id = row.id;
-
-    // Was "/api/center/delete", which calls prisma.serviceCenter.delete() — it
-    // looked a client id up in the service-centre table and always failed.
-    // $fetch, not useFetch: this runs from a row action, and the response body
-    // is wanted so the toast can say what was actually removed.
-    try {
-        const res: any = await $fetch("/api/client/delete", {
-            method: "POST",
-            body: { id },
-        });
-        const d = res?.deleted;
-        const forms = d ? d.services + d.casePlans + d.reintegrations + d.followUps + d.closures : 0;
-        toast.success({
-            message: d
-                ? `បានលុប។ ទម្រង់ ${forms} និងឯកសារ ${d.filesRemoved}`
-                : t('message.saved'),
-        });
-    } catch (e: any) {
-        toast.error({
-            message: e?.data?.error ?? e?.message ?? t('message.notSaved'),
-        });
-    }
-    //update change limit ref in order to refetch data
-    data.value.limit === 10 ? (data.value.limit = 5) : (data.value.limit = 10);
-};
-
-const { data: roleData } = await useFetch("/api/role/get", {
-    method: 'get', query: {
-        //@ts-ignore
-        userID: userDataAuth.value?.sub
-    }
-})
-// The six national forms from the SWIMS manual (ទម្រង់ទី១-៦), matching the
-// ApprovalRecordType enum. The action column previously offered eight from an
-// older set — needs assessment, family tracing, family assessment, referral —
-// and all but the first linked to service-centre pages with a client id.
-// `to` opens what already exists; `create` starts a new one. A form with
-// neither is not built yet and shows greyed as មិនទាន់មាន.
-//
-// Forms 2-6 record an episode rather than a single record, so they offer both:
-// the list of what has been recorded, and a direct ចុះឈ្មោះ. Form 1 has only
-// `to` — a client cannot be registered twice.
-const CASE_FORMS = [
-    { label: 'ទម្រង់(១)', title: 'បញ្ជីអតិថិជន', to: (id: string) => `/client/id/${id}` },
-    {
-        label: 'ទម្រង់(២)', title: 'ការប្រើសេវាកម្មរបស់អតិថិជន',
-        to: (id: string) => `/client/service/${id}`,
-        create: (id: string) => `/client/service/form?client=${id}`,
-    },
-    {
-        label: 'ទម្រង់(៣)', title: 'ផែនការករណីរបស់អតិថិជន',
-        to: (id: string) => `/client/case-plan/${id}`,
-        create: (id: string) => `/client/case-plan/form?client=${id}`,
-    },
-    {
-        label: 'ទម្រង់(៤)', title: 'សមាហរណកម្ម',
-        to: (id: string) => `/client/reintegration/${id}`,
-        create: (id: string) => `/client/reintegration/form?client=${id}`,
-    },
-    {
-        label: 'ទម្រង់(៥)', title: 'តាមដាន និងវាយតម្លៃស្ថានភាពអតិថិជន',
-        to: (id: string) => `/client/follow-up/${id}`,
-        create: (id: string) => `/client/follow-up/form?client=${id}`,
-    },
-    {
-        label: 'ទម្រង់(៦)', title: 'បិទករណី',
-        to: (id: string) => `/client/case-closure/${id}`,
-        create: (id: string) => `/client/case-closure/form?client=${id}`,
-    },
-]
+import { useToast } from "vue3-tailwind";
 
 /**
- * Row actions for UDropdown.
+ * បញ្ជីអតិថិជន.
  *
- * UDropdown rather than TwDropdownMenu because the datatable wraps its table in
- * a `vt-overflow-auto` container that clips on both axes: an inline menu was cut
- * off and pushed the table into scrolling, so the forms could not be seen
- * without scrolling sideways. UDropdown teleports out of that container, and it
- * is already how the organisation and centre-document tables do row actions.
+ * The table was four columns — code, photo, name, status — and its search and
+ * sort controls did nothing: the endpoint ignored both and returned up to a
+ * thousand rows ordered by id. It now runs on DataTableServer, so searching and
+ * sorting happen in the database and the footer counts matches.
  *
- * A row only reaches this list because ទម្រង់ទី១ is registered, and that save is
- * what issues ReadableCode, so the code is what gates the forms hanging off it.
+ * The columns are the ones an officer identifies a client by: who they are, sex
+ * and age, which centre holds the case, where the record stands in the approval
+ * flow, and when they were interviewed.
  */
-const actionItems = (row: any) => {
-    const registered = !!row?.ReadableCode;
-    const groups: any[] = CASE_FORMS.map((form) => {
-        const entries: any[] = [];
-        if (form.to && registered) {
-            entries.push({ label: `${form.label} ${form.title}`, icon: 'i-heroicons-document-text', to: form.to(row.id) });
-        } else {
-            entries.push({ label: `${form.label} ${form.title}`, icon: 'i-heroicons-document-text', disabled: true });
-        }
-        if (form.create && registered && !readOnly) {
-            entries.push({ label: `ចុះឈ្មោះ ${form.label}`, icon: 'i-heroicons-plus', to: form.create(row.id) });
-        }
-        return entries;
-    });
-    // Red, and its own group at the bottom: a destructive action should not
-    // look like the six navigation entries above it.
-    groups.push([{
-        label: 'លុបចេញ',
-        icon: 'i-heroicons-trash',
-        class: 'text-red-600 dark:text-red-400',
-        iconClass: 'text-red-600 dark:text-red-400',
-        click: () => deleteRecord(row),
-        disabled: readOnly,
-    }]);
-    return groups;
+const readOnly = checkIfPageReadOnly();
+const { t } = useI18n();
+const toast = useToast();
+const config = useRuntimeConfig();
+const table = ref<any>(null);
+
+useHead({ title: "បញ្ចីអតិថិជន" });
+
+const columns = [
+  { key: "ReadableCode", label: "លេខសំគាល់", sortable: true, class: "w-[110px]" },
+  { key: "client", label: "អតិថិជន", sortable: false },
+  { key: "Gender", label: "ភេទ", sortable: true, class: "w-[80px]" },
+  { key: "DOB", label: "អាយុ", sortable: true, class: "w-[90px]" },
+  { key: "center", label: "មជ្ឈមណ្ឌល", sortable: false },
+  { key: "approvalStatus", label: "ស្ថានភាពឯកសារ", sortable: true, class: "w-[140px]" },
+  { key: "status", label: "ស្ថានភាព", sortable: true, class: "w-[110px]" },
+  { key: "InterViewDate", label: "ថ្ងៃសម្ភាសន៍", sortable: true, class: "w-[130px]" },
+  { key: "actions", label: "សកម្មភាព", class: "w-[130px]" },
+];
+
+const fetcher = (q: any) =>
+  $fetch<{ data: any[]; total: number }>("/api/client/personalInformationGet", {
+    method: "POST",
+    body: {
+      q: q.search,
+      limit: String(q.limit),
+      skip: String(q.skip),
+      sortBy: q.sortBy,
+      sortType: q.sortType,
+    },
+  });
+
+const fmtDate = (d?: string | null) =>
+  d ? new Date(d).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : "—";
+
+/** Age at today, from the date of birth — what a case officer actually reads. */
+const age = (dob?: string | null) => {
+  if (!dob) return "—";
+  const b = new Date(dob);
+  if (Number.isNaN(b.getTime())) return "—";
+  const now = new Date();
+  let years = now.getFullYear() - b.getFullYear();
+  const m = now.getMonth() - b.getMonth();
+  if (m < 0 || (m === 0 && now.getDate() < b.getDate())) years--;
+  return years >= 0 && years < 150 ? `${years} ឆ្នាំ` : "—";
 };
 
-const roleDataFormat: DropdownItem[] = new Array({ label: '', value: '' })
-roleDataFormat.pop()
-//@ts-ignored
-roleData.value?.data?.forEach((ele: any) => {
-    roleDataFormat.push(
-        {
-            label: ele?.name,
-            value: ele?.id
-        }
-    )
-});
+/** Same vocabulary and colours as the ទម្រង់ទី២-៦ listings. */
+const APPROVAL: Record<string, { label: string; classes: string }> = {
+  DRAFT: { label: "ព្រាង", classes: "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300" },
+  SUBMITTED: { label: "បានស្នើសុំ", classes: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300" },
+  APPROVED: { label: "បានអនុម័ត", classes: "bg-primary/10 text-primary" },
+  REJECTED: { label: "បានបដិសេធ", classes: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300" },
+};
 
-const openisTrue = ref(false)
-const openisKey = ref(0)
-const editID = ref(null)
-const serviceCenterID = ref('')
+const photoUrl = (row: any) =>
+  row.photo ? `${config.public.origin}/${row.photo}` : `${config.public.origin}/placeholder.png`;
 
-const addStaff = (CenterID: string) => {
-    serviceCenterID.value = CenterID
-    openisTrue.value = true
-    openisKey.value++
+const deleteRecord = async (row: any) => {
+  if (readOnly) return;
+  const who = [row?.ReadableCode, row?.fullNameKH].filter(Boolean).join(" · ");
+  if (
+    !(await confirmDelete(
+      `លុបអតិថិជន ${who} និងទិន្នន័យពាក់ព័ន្ធទាំងអស់ (ទម្រង់ទី១-៦, កំណត់ត្រា, រូបថត និងឯកសារភ្ជាប់)។`
+    ))
+  )
+    return;
 
-}
+  try {
+    const res: any = await $fetch("/api/client/delete", { method: "POST", body: { id: row.id } });
+    const d = res?.deleted;
+    const forms = d ? d.services + d.casePlans + d.reintegrations + d.followUps + d.closures : 0;
+    toast.success({
+      message: d ? `បានលុប។ ទម្រង់ ${forms} និងឯកសារ ${d.filesRemoved}` : t("message.saved"),
+    });
+  } catch (e: any) {
+    toast.error({ message: e?.data?.error ?? e?.message ?? t("message.notSaved") });
+  }
+  table.value?.refresh();
+};
+
+/**
+ * The six national forms, matching the ApprovalRecordType enum. `to` opens what
+ * exists, `create` starts a new one. Forms 2-6 record an episode rather than a
+ * single record, so they offer both; ទម្រង់ទី១ has only `to`, since a client
+ * cannot be registered twice.
+ */
+const CASE_FORMS = [
+  { label: "ទម្រង់(១)", title: "បញ្ជីអតិថិជន", to: (id: string) => `/client/id/${id}` },
+  { label: "ទម្រង់(២)", title: "ការប្រើសេវាកម្មរបស់អតិថិជន", to: (id: string) => `/client/service/${id}`, create: (id: string) => `/client/service/form?client=${id}` },
+  { label: "ទម្រង់(៣)", title: "ផែនការករណីរបស់អតិថិជន", to: (id: string) => `/client/case-plan/${id}`, create: (id: string) => `/client/case-plan/form?client=${id}` },
+  { label: "ទម្រង់(៤)", title: "សមាហរណកម្ម", to: (id: string) => `/client/reintegration/${id}`, create: (id: string) => `/client/reintegration/form?client=${id}` },
+  { label: "ទម្រង់(៥)", title: "តាមដាន និងវាយតម្លៃស្ថានភាពអតិថិជន", to: (id: string) => `/client/follow-up/${id}`, create: (id: string) => `/client/follow-up/form?client=${id}` },
+  { label: "ទម្រង់(៦)", title: "បិទករណី", to: (id: string) => `/client/case-closure/${id}`, create: (id: string) => `/client/case-closure/form?client=${id}` },
+];
+
+/**
+ * A row reaches this menu only because ទម្រង់ទី១ is registered, and that save is
+ * what issues ReadableCode — so the code gates the forms hanging off it.
+ */
+const actionItems = (row: any) => {
+  const registered = !!row?.ReadableCode;
+  const groups: any[] = CASE_FORMS.map((form) => {
+    const entries: any[] = [
+      registered
+        ? { label: `${form.label} ${form.title}`, icon: "i-heroicons-document-text", to: form.to(row.id) }
+        : { label: `${form.label} ${form.title}`, icon: "i-heroicons-document-text", disabled: true },
+    ];
+    if (form.create && registered && !readOnly) {
+      entries.push({ label: `ចុះឈ្មោះ ${form.label}`, icon: "i-heroicons-plus", to: form.create(row.id) });
+    }
+    return entries;
+  });
+  // Red, and its own group at the bottom: a destructive action should not look
+  // like the six navigation entries above it.
+  groups.push([
+    {
+      label: "លុបចេញ",
+      icon: "i-heroicons-trash",
+      class: "text-red-600 dark:text-red-400",
+      iconClass: "text-red-600 dark:text-red-400",
+      click: () => deleteRecord(row),
+      disabled: readOnly,
+    },
+  ]);
+  return groups;
+};
 </script>
+
 <template>
-    <div class="font-[Battambang]">
-        <div class="mt-5">
-            <div class="flex justify-between">
-                <h2 class="text-2xl font-[Moul] text-primary">បញ្ចីអតិថិជន</h2>
-                <NuxtLink :to="config.public.origin + '/client/register'" :disabled="readOnly">
-                    <UButton color="primary" size="xl" :disabled="readOnly">
-                        <h2 class="text-xl font-[Moul]"> ចុះឈ្មោះអតិថិជន </h2>
-                    </UButton>
-                </NuxtLink>
+  <div class="font-[Battambang]">
+    <div class="mt-5">
+      <div class="flex items-center justify-between gap-4">
+        <h2 class="text-2xl font-[Moul] text-primary">បញ្ចីអតិថិជន</h2>
+        <NuxtLink :to="config.public.origin + '/client/register'">
+          <UButton color="primary" size="xl" :disabled="readOnly">
+            <span class="font-[Moul] text-lg">ចុះឈ្មោះអតិថិជន</span>
+          </UButton>
+        </NuxtLink>
+      </div>
+      <hr class="my-2 border dark:border-gray-700" />
+
+      <DataTableServer
+        ref="table"
+        :columns="columns"
+        :fetcher="fetcher"
+        sort-by="ReadableCode"
+        sort-type="desc"
+        search-placeholder="ស្វែងរកតាមឈ្មោះ, លេខសំគាល់, ទីកន្លែង..."
+        empty-text="មិនទាន់មានអតិថិជននៅឡើយទេ។"
+      >
+        <template #client-data="{ row }">
+          <div class="flex items-center gap-3">
+            <img :src="photoUrl(row)" alt=""
+              class="h-10 w-10 shrink-0 rounded-full border border-gray-200 object-cover dark:border-gray-600" />
+            <div class="min-w-0">
+              <p class="truncate text-gray-800 dark:text-gray-100">{{ row.fullNameKH }}</p>
+              <p v-if="row.nickName" class="truncate text-sm text-gray-500 dark:text-gray-400">
+                ហៅ {{ row.nickName }}
+              </p>
             </div>
-            <hr class="my-2 border dark:border-gray-700" />
-            <TwDatatableServer v-bind:fetch-data="fetchData" v-model:search="data.search" v-model:limit="data.limit"
-                v-model:offset="data.offset" v-model:sort-by="data.sortBy" v-model:sort-type="data.sortType"
-                :column="data.column" @on-sort-change="sortClick">
-                <template #row="{ index, column, data }">
-                    <!-- <template v-if="column.field === 'number'">
-            <div class="flex justify-center">       
-                  {{ index }}           
-            </div> 
-          </template> -->
-                    <template v-if="column.field === 'readableCode'">
-                        <div class="flex justify-center font-medium">
-                            {{ data.ReadableCode || '—' }}
-                        </div>
-                    </template>
-                    <template v-if="column.field === 'logo'">
-                        <div class="flex justify-center">
-                            <img :src="config.public.origin + '/' + data.photo" alt=""
-                                class="w-12 h-12 rounded-full border border-[#1d152a7a]">
-                        </div>
-                    </template>
-                    <template v-if="column.field === 'nameKH'">
-                        <div class="flex justify-center">
-                            {{ data.fullNameKH }}
-                        </div>
-                    </template>
-                    <template v-if="column.field === 'status'">
-                        <div class="flex justify-center">
-                            <span v-if="data.status" class="text-blue-700 dark:text-white"> ដំណើការ </span>
-                            <span v-else class="text-red-700"> បិទដំណើការ </span>
-                        </div>
-                    </template>
-                    <template v-if="column.field === 'action'">
-                        <div class="flex justify-center">
-                            <UDropdown :items="actionItems(data)" :popper="{ placement: 'bottom-end' }">
-                                <UButton color="primary" icon="i-heroicons-document-text" trailing-icon="i-heroicons-chevron-down-20-solid">
-                                    ទម្រង់
-                                </UButton>
-                            </UDropdown>
-                        </div>
-                    </template>
-                </template>
-                <template #empty>
-                    <div class="bg-white dark:bg-gray-800 text-center w-full">
-                        គ្មាន​ទិន្នន័យ
-                    </div>
-                </template>
-            </TwDatatableServer>
-        </div>
+          </div>
+        </template>
+
+        <template #Gender-data="{ row }">
+          <span class="text-gray-800 dark:text-gray-100">{{ row.Gender || '—' }}</span>
+        </template>
+
+        <template #DOB-data="{ row }">
+          <span class="text-gray-800 dark:text-gray-100">{{ age(row.DOB) }}</span>
+        </template>
+
+        <template #center-data="{ row }">
+          <span class="text-gray-800 dark:text-gray-100">{{ row.ServiceCenter?.nameKH ?? '—' }}</span>
+        </template>
+
+        <template #approvalStatus-data="{ row }">
+          <span class="inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm"
+            :class="(APPROVAL[row.approvalStatus] ?? APPROVAL.DRAFT).classes">
+            <span class="h-1.5 w-1.5 rounded-full bg-current" />
+            {{ (APPROVAL[row.approvalStatus] ?? APPROVAL.DRAFT).label }}
+          </span>
+        </template>
+
+        <template #status-data="{ row }">
+          <span v-if="row.status" class="text-primary">ដំណើការ</span>
+          <span v-else class="text-red-600 dark:text-red-400">បិទដំណើការ</span>
+        </template>
+
+        <template #InterViewDate-data="{ row }">
+          <span class="text-gray-800 dark:text-gray-100">{{ fmtDate(row.InterViewDate) }}</span>
+        </template>
+
+        <template #actions-data="{ row }">
+          <UDropdown :items="actionItems(row)" :popper="{ placement: 'bottom-end' }">
+            <UButton color="primary" icon="i-heroicons-document-text"
+              trailing-icon="i-heroicons-chevron-down-20-solid" size="sm">
+              ទម្រង់
+            </UButton>
+          </UDropdown>
+        </template>
+      </DataTableServer>
     </div>
+  </div>
 </template>

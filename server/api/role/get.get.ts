@@ -1,3 +1,8 @@
+import { readListQuery, searchFilter, orderByFor } from "../../utils/listQuery";
+
+const SORTABLE = ["name", "description"] as const;
+const SEARCHABLE = ["name", "description"] as const;
+
 export default eventHandler(async (event) => {
   const caller = await requireAuth(event);
   const body = getQuery(event);
@@ -8,16 +13,23 @@ export default eventHandler(async (event) => {
   const scopeToCaller = !!body?.userID;
 
   try {
-    const totalCount = await event.context.prisma.role.count();
-    let data = await event.context.prisma.role.findMany({
-      orderBy: {
-        id: "desc",
-      },
-      //@ts-ignore
-      take: body?.limit ? parseInt(body?.limit) : 1000,
-      //@ts-ignore
-      skip: body?.skip ? parseInt(body?.skip) : 0,
+    const q = readListQuery(body, {
+      sortable: SORTABLE,
+      searchable: SEARCHABLE,
+      defaultSort: "name",
+      defaultSortType: "asc",
     });
+    const where = searchFilter(q.search, SEARCHABLE) ?? {};
+
+    const [data, totalCount] = await Promise.all([
+      event.context.prisma.role.findMany({
+        where,
+        orderBy: orderByFor(q.sortBy, q.sortType),
+        take: q.take,
+        skip: q.skip,
+      }),
+      event.context.prisma.role.count({ where }),
+    ]);
 
     const roleResource = await event.context.prisma.roleToResource.findMany({
       where: {
