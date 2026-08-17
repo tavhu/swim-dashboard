@@ -341,6 +341,16 @@ export const RULES: Rule[] = [
     action: "write",
   },
 
+  // --- reports --------------------------------------------------------------
+  // Every report aggregates client records, and the client register report
+  // lists them by name, so this is the same resource with the same read grant.
+  {
+    mode: "permission",
+    pattern: /^\/api\/report\/(data|export)\/?$/,
+    resource: RESOURCE.client,
+    action: "read",
+  },
+
   // --- dashboard ------------------------------------------------------------
   // Counts of client records, so gated on the same resource the records are.
   // Nothing here returns a row — only totals — but "how many clients does this

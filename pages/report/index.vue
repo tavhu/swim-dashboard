@@ -1,669 +1,288 @@
 <script setup lang="ts">
-import {
-  useForm,
-  TwInput,
-  TwForm,
-  TwTextarea,
-  TwSelect,
-  useToast,
-  type DatatableColumn,
-  type DatatableData,
-  TwDatatableServer,
-  TwOffcanvas,
-} from "vue3-tailwind";
+import { TwFeather, useToast } from "vue3-tailwind";
+import Datepicker from "@vuepic/vue-datepicker";
+import gazetteers from "~~/store/data/gazetteers";
 
-// import { useResource } from '~~/store/resource'
-const readOnly = checkIfPageReadOnly()
-// const resource = useResource()
-
-const { data: res } = await useFetch("/api/role/readResource", {
-  method: "POST",
-});
-//@ts-ignore
-const resource: any = res.value?.data;
-
+/**
+ * Reports.
+ *
+ * The page this replaces was the role-and-permission screen copied whole, with a
+ * report heading on top — every request it made went to /api/role/*. None of it
+ * produced a report.
+ *
+ * Six reports, one preview table, three downloads. The report definitions live
+ * on the server (server/utils/reports.ts) and drive the preview and both Office
+ * exports from the same query, so a download cannot disagree with the figures on
+ * screen.
+ *
+ * PDF is the browser printing the preview, not a generated file: jspdf is
+ * installed but carries no Khmer glyphs, so it renders Khmer as boxes. Printing
+ * goes through the same @media print stylesheet the six ទម្រង់ use and produces a
+ * correct Khmer document via Save as PDF.
+ */
 const toast = useToast();
-const composableForm = useForm();
+useHead({ title: "របាយការណ៍" });
 
-const formName = "Role";
-const formData: {
-  [key: string]: any;
-} = reactive({
-  roleName: null,
-});
+/** Must match the keys in server/utils/reports.ts. */
+const REPORTS = [
+  { key: "clients", title: "បញ្ជីអតិថិជន", hint: "អតិថិជនទាំងអស់ និងវឌ្ឍនភាពតាមទម្រង់", icon: "users", filters: ["date", "centre", "province"] },
+  { key: "summary", title: "សង្ខេបតាមកាលបរិច្ឆេទ", hint: "តួលេខសម្រាប់ដាក់ជូនថ្នាក់លើ", icon: "bar-chart-2", filters: ["date", "centre"] },
+  { key: "approval", title: "ស្ថានភាពការអនុម័ត", hint: "អ្វីដែលកំពុងរង់ចាំ និងរង់ចាំយូរប៉ុណ្ណា", icon: "clock", filters: ["centre"] },
+  { key: "outcomes", title: "លទ្ធផលបិទករណី", hint: "ជោគជ័យ ឬមិនជោគជ័យ និងមូលហេតុ", icon: "check-circle", filters: ["date", "centre"] },
+  { key: "services", title: "សេវាកម្មដែលបានផ្តល់", hint: "សេវាកម្មនីមួយៗ និងចំនួនដង", icon: "layers", filters: ["date"] },
+  { key: "centres", title: "មជ្ឈមណ្ឌល", hint: "អតិថិជន បុគ្គលិក និងករណីបានបិទ", icon: "home", filters: [] },
+] as const;
 
-const formRules = {
-  roleName: ["required", "string"],
-  roleDescription: ["string"],
-};
+const selected = ref<string>("clients");
+const def = computed(() => REPORTS.find((r) => r.key === selected.value)!);
+const shows = (f: string) => (def.value.filters as readonly string[]).includes(f);
 
-const isError = ref(false);
-const form = computed(() => composableForm.getForm(formName));
-const validator = computed(() => form.value.validator);
+const dateFrom = ref<Date | string>("");
+const dateTo = ref<Date | string>("");
+const centreId = ref("");
+const provinceCode = ref("");
 
-async function submit() {
-  if(readOnly) return;
-  if (!(await confirmDialog())) return;
-  validator.value.clearErrors();
-  await validator.value.validate();
-  if (validator.value.fail()) {
-    toast.error({
-      message: validator.value.getErrorMessage(),
-    });
-    isError.value = true;
-    setTimeout(() => {
-      isError.value = false;
-    }, 1000);
-    return true;
-  }
+const report = ref<any>(null);
+const loading = ref(false);
+const busyFormat = ref<string | null>(null);
+/** Set only when a run actually failed, so the empty state can say which. */
+const failed = ref(false);
 
-  const { error } = await useFetch("/api/role/create", {
-    method: "POST",
-    body: JSON.stringify({
-      roleName: formData.roleName,
-      description: formData.roleDescription,
-    }),
-  });
-
-  if (error.value?.statusCode) {
-    toast.error({
-      message: "មិនជោគជ័យ",
-    });
-  } else {
-    toast.success({
-      message: "ជោគជ័យ",
-    });
-    clear();
-  }
-  data.value.limit === 10 ? (data.value.limit = 5) : (data.value.limit = 10);
-}
-
-const clear = () => {
-  formData.roleName = null;
-  formData.roleDescription = null;
-  setTimeout(() => {
-    validator.value.clearErrors();
-  }, 100);
-};
-
-const formNameEdit = "EditRole";
-const formDataEdit: {
-  [key: string]: any;
-} = reactive({
-  roleName: null,
-});
-
-const formRulesEdit = {
-  roleName: ["required", "string"],
-  roleDescription: ["string"],
-};
-
-const isErrorEdit = ref(false);
-const formEdit = computed(() => composableForm.getForm(formNameEdit));
-const validatorEdit = computed(() => formEdit.value.validator);
-
-async function submitEdit() {
-  if(readOnly) return;
-  if (!(await confirmDialog())) return;
-  validatorEdit.value.clearErrors();
-  await validatorEdit.value.validate();
-  if (validatorEdit.value.fail()) {
-    toast.error({
-      message: validatorEdit.value.getErrorMessage(),
-    });
-    isError.value = true;
-    setTimeout(() => {
-      isError.value = false;
-    }, 1000);
-    return true;
-  }
-
-  const { error } = await useFetch("/api/role/edit", {
-    method: "POST",
-    body: JSON.stringify({
-      roleName: formDataEdit.roleName,
-      description: formDataEdit.roleDescription,
-      id: editID.value.toString(),
-    }),
-  });
-
-  if (error.value?.statusCode) {
-    toast.error({
-      message: "មិនឈោកជ័យ",
-    });
-  } else {
-    toast.success({
-      message: "ជោកជ័យ",
-    });
-    clearEdit();
-  }
-  data.value.limit === 10 ? (data.value.limit = 5) : (data.value.limit = 10);
-  openisTrue.value.closeOffCanvas();
-}
-
-const clearEdit = () => {
-  formDataEdit.roleName = null;
-  formDataEdit.roleDescription = null;
-  setTimeout(() => {
-    validatorEdit.value.clearErrors();
-  }, 100);
-};
-
-useHead({
-  title: "របាយការណ៏",
-});
-
-const data = ref({
-  column: [
-    {
-      label: "ឈ្មោះ",
-      field: "category",
-      width: "400px",
-      sortable: false,
-    },
-    {
-      label: "ការពិពណ៌នាតួនាទី",
-      field: "description",
-      width: "800px",
-      sortable: false,
-    },
-    {
-      label: "សកម្មភាព",
-      field: "action",
-      width: "400px",
-      sortable: false,
-    },
-  ] as Array<DatatableColumn>,
-  data: [] as Array<DatatableData>,
-  limit: 5,
-  offset: 0,
-  search: "",
-  sortBy: "id",
-  sortType: "desc",
-  setting: {
-    checkbox: false,
-    limitOption: [
-      {
-        label: "5",
-        value: 5,
-      },
-      {
-        label: "10",
-        value: 10,
-      },
-      {
-        label: "50",
-        value: 50,
-      },
-      {
-        label: "100",
-        value: 100,
-      },
-      {
-        label: "200",
-        value: 200,
-      },
-    ],
-  },
-});
-
-const globalData: any = ref();
-
-const fetchData = async () => {
-  const baseUrl = "/api/role/get";
-  const response = await $fetch <{
-    total: number;
-    data: DatatableData[];
-}> (
-    baseUrl +
-      "?" +
-      new URLSearchParams({
-        limit: data.value.limit.toString(),
-        skip: data.value.offset.toString(),
-        q: data.value.search.toString(),
-        sortType: data.value.sortType,
-        sortBy: data.value.sortBy,
-      }),
-      {
-        method : 'get'
-      }
-  );
-
-
-  // console.log(responseJson)
-  globalData.value = {
-    data: response.value?.data  ? response.value?.data : [],
-    totalData: response.value?.total ? response.value?.total : 0,
-  };
-  return {
-    data: response.value?.data  ? response.value?.data : [],
-    totalData: response.value?.total ? response.value?.total : 0,
-  };
-}
-fetchData()
-
-const sortClick = (event: any) => {
-  const sortBy = data.value.sortBy;
-  const sortType = data.value.sortType;
-  const sortByNew = event;
-  const sortTypeNew =
-    event === sortBy ? (sortType === "asc" ? "desc" : "asc") : "asc";
-  data.value = { ...data.value, sortBy: sortByNew, sortType: sortTypeNew };
-};
-
-const deleteRecord = async (id: string) => {
-  if(readOnly) return;
-  if (!(await confirmDialog())) return;
-
-  const { error } = await useFetch("/api/role/delete", {
-    method: "POST",
-    body: JSON.stringify({
-      id: id,
-    }),
-  });
-
-  if (error.value?.statusCode) {
-    toast.error({
-      message: "មិនឈោកជ័យ",
-    });
-  } else {
-    toast.success({
-      message: "ជោកជ័យ",
-    });
-  }
-  //update change limit ref in order to refetch data
-  data.value.limit === 10 ? (data.value.limit = 5) : (data.value.limit = 10);
-};
-
-const openisTrue = ref();
-const editID = ref("");
-const editRecord = async (id: string) => {
-  if(readOnly) return;
-  openisTrue.value.openOffCanvas();
-  editID.value = id;
-  const datRes = globalData.value.data.find((element: any) => element.id == id);
-  formDataEdit.roleName = datRes.name;
-  formDataEdit.roleDescription = datRes.description;
-  return true;
-}
-
-const PopUPPermission = ref();
-const refClickRoleID = ref("");
-const AddPermission = (clickPermissionID: string) => {
-  if(readOnly) return;
-  PopUPPermission.value.openOffCanvas();
-  refClickRoleID.value = clickPermissionID;
-  refresh();
-};
-
-
-const headers = useRequestHeaders(["cookie"]) as HeadersInit;
-const { data: token } = await useFetch("/api/token", { headers });
-
-const grantedResourceToRole = async (resourceID: string, granted: boolean, read: boolean) => {
-  // console.log refClickRoleID.value, resourceID);
-
-  const { error } = await useFetch("/api/role/updateRoleToResource", {
-    method: "POST",
-    body: JSON.stringify({
-      roleID: refClickRoleID.value,
-      resourceID: resourceID,
-      granted: granted,      
-      read : read
-    }),
-  });
-
-  if (error.value?.statusCode) {
-    PopUPPermission.value.closeOffCanvas();
-    toast.error({
-      message: "មិនឈោកជ័យ",
-    });
-  }
-  //  else {
-  //   toast.success({
-  //     message: "ជោកជ័យ",
-  //   });
-  // }
-}
-
-const { data: readRoleToResource , refresh } = await useFetch(
-  "/api/role/getRoleToResource",
-  {
-    method: "POST",
-    body: JSON.stringify({
-      //@ts-ignored
-      userID: token.value?.sub,
-    }),
-  }
+const { data: centreList } = await useFetch<any>("/api/center/get", { method: "POST" });
+const centres = computed(() => centreList.value?.data ?? []);
+const provinces = computed(() =>
+  (gazetteers as any[]).map((p) => ({ code: p.code, name: p.name.km })).sort((a, b) => a.name.localeCompare(b.name, "km"))
 );
 
+const payload = () => ({
+  type: selected.value,
+  dateFrom: shows("date") && dateFrom.value ? new Date(dateFrom.value).toISOString() : null,
+  dateTo: shows("date") && dateTo.value ? new Date(dateTo.value).toISOString() : null,
+  centreId: shows("centre") ? centreId.value || null : null,
+  provinceCode: shows("province") ? provinceCode.value || null : null,
+});
+
+async function run() {
+  loading.value = true;
+  failed.value = false;
+  try {
+    const res: any = await $fetch("/api/report/data", { method: "POST", body: payload() });
+    if (res?.error) throw new Error(res.error);
+    report.value = res;
+  } catch (e: any) {
+    report.value = null;
+    failed.value = true;
+    toast.error({ message: e?.data?.error ?? e?.message ?? "មិនអាចបង្កើតរបាយការណ៍បានទេ" });
+  } finally {
+    loading.value = false;
+  }
+}
+
+/** Excel and Word come back as a blob; the filename is on the response. */
+async function download(format: "xlsx" | "docx") {
+  busyFormat.value = format;
+  try {
+    const res = await fetch("/api/report/export", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ ...payload(), format }),
+    });
+    if (!res.ok) throw new Error(decodeURIComponent(res.statusText || "") || "មិនអាចទាញយកបានទេ");
+    const blob = await res.blob();
+    const name =
+      res.headers.get("content-disposition")?.match(/filename="([^"]+)"/)?.[1] ??
+      `${selected.value}.${format}`;
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = name;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success({ message: "បានទាញយក " + name });
+  } catch (e: any) {
+    toast.error({ message: e?.message ?? "មិនអាចទាញយកបានទេ" });
+  } finally {
+    busyFormat.value = null;
+  }
+}
+
+/** PDF: the browser's own Save as PDF over the printed preview. */
+const printReport = () => window.print();
+
+const resetFilters = () => {
+  dateFrom.value = "";
+  dateTo.value = "";
+  centreId.value = "";
+  provinceCode.value = "";
+};
+
+// Switching report shows it straight away. Clearing without re-running left the
+// new title over the previous report's blank table, which read as a failure.
+// Filters reset too: the ones the new report does not offer would otherwise sit
+// in the payload unseen.
+watch(selected, () => {
+  report.value = null;
+  failed.value = false;
+  resetFilters();
+  run();
+});
+
+onMounted(run);
 </script>
 
 <template>
   <div class="font-[Battambang]">
-    <h2 class="text-2xl font-[Moul] text-primary">ជ្រើរើសប្រភេទរបាយកាណ៏</h2>
-    <hr class="my-2 border dark:border-gray-700" />
-    <div>
-      <TwForm      
-        :name="formName"
-        class="grid grid-cols-12 gap-2 bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded-lg p-2 shadow"
-        :class="{
-          'tw-shake': isError,
-        }"
-        :rules="formRules"
-        @submit="submit()"
-        :custom-field-name="{
-          roleName: 'រាយការណ៍លទ្ធផល',
-          roleDescription: 'ពិពណ៌នាតួនាទី',
-        }"
-      >
-        <div class="col-span-6">
-        
-            <TwSelect
-              label="ជ្រើរើសរយៈពេល"
-              name="selectExample"
-              v-model="formData.roleName"
-              :items="[{ value: 'monthly', label: 'ប្រចាំខែ' }, { value: 'semester', label: 'ប្រចាំឆមាស' }, { value: 'yearly', label: 'ប្រចាំឆ្នាំ' }]"
-              placeholder="ប្រចាំ"
-            />
-
-          <CustomErrorMessage name="roleName" />
-        </div>
-        <div class="col-span-6">
-         
-           <TwSelect
-              label="ជ្រើរើសទិន្នន័យរបាយការណ៏"
-              name="roleDescription"
-              v-model="formData.roleDescription"
-              :items="[{ value: 'monthly', label: 'អ្នកទទួលសេវា' } ]"
-              placeholder="ទិន្នន័យ"
-            />
-          <CustomErrorMessage name="roleDescription" />
-        </div>
-        <div class="col-span-12 flex justify-end gap-1">
-          <UButton
-            :ripple="true"
-            :disabled ="readOnly"     
-            color="gray"       
-            type="button"
-            size="lg"
-            class="px-4 dark:text-gray-200 dark:!border-gray-800 dark:border"
-            @click="clear()"
-          >
-            កំណត់ឡើងវិញ
-          </UButton>
-
-          <UButton  :disabled ="readOnly" size="lg" type="submit" color="primary" class="px-4"   > ស្វែងរក </UButton>
-        </div>
-      </TwForm>
-    </div>
-
     <div class="mt-5">
-       <div class="col-span-12 flex justify-between gap-1">
-       <h2 class="text-2xl font-[Moul] text-primary">រាយការណ៍លទ្ធផល</h2>
-          <div class="col-span-12 flex justify-end gap-1">
-              <UButton
-                :ripple="true"
-                :disabled ="readOnly"     
-                color="gray"       
-                type="button"
-                size="lg"
-                class="px-4 dark:text-gray-200 dark:!border-gray-800 dark:border"
-                @click="clear()"
-              >
-                ទាញយករបាយការណ៏ជា MS Words
-              </UButton>
-              <UButton  :disabled ="readOnly" size="lg" type="submit" color="primary" class="px-4"   > ទាញយករបាយការណ៏ជា MS Excel
- </UButton>
-
-          </div>
+      <div class="no-print flex items-start justify-between gap-4">
+        <div>
+          <h2 class="text-2xl font-[Moul] text-primary">របាយការណ៍</h2>
+          <p class="mt-1 text-base text-gray-500 dark:text-gray-400">
+            ជ្រើសរើសរបាយការណ៍ កំណត់លក្ខខណ្ឌ បន្ទាប់មកទាញយក
+          </p>
         </div>
-      <hr class="my-2 border dark:border-gray-700" />
-      <TwDatatableServer
-        v-bind:fetch-data="fetchData"
-        v-model:search="data.search"
-        v-model:limit="data.limit"
-        v-model:offset="data.offset"
-        v-model:sort-by="data.sortBy"
-        v-model:sort-type="data.sortType"
-        :column="data.column"
-        :setting="data.setting"
-        @on-sort-change="sortClick"
-      >
-        <template  #row="{ column, data }">
-          <template v-if="column.field === 'category'">
-            {{ data.name }}
-          </template>
-          <template v-if="column.field === 'description'">
-            {{ data.description }}
-          </template>
-          <template v-if="column.field === 'action'">
-            <div class="flex gap-2 justify-center">
-              <UButton 
-                :disabled ="readOnly"
-                :ripple="true"             
-                @click="AddPermission(data.id)"
-                icon="i-heroicons-lock-closed"
-                size="sm"
-                color="primary"
-                square
-                variant="solid"  
+      </div>
+      <hr class="no-print my-2 border dark:border-gray-700" />
 
-              >
-                ការអនុញ្ញាត
-              </UButton >
-              <UButton 
-              :disabled ="readOnly"
-              icon="i-heroicons-pencil-square"
-              size="sm"
-              color="gray"
-              square
-              variant="solid"                
-              @click="editRecord(data.id)"
-              >
-                កែសម្រួល
-              </UButton >
-             
-
-              <UButton 
-              :disabled ="readOnly"
-              icon="i-heroicons-trash"
-              size="sm"
-              color="red"
-              square
-              variant="solid"  
-               @click="deleteRecord(data.id)">
-                លុបចេញ
-              </UButton >
-            </div>
-          </template>
-        </template>
-        <template #empty>
-          <div class="bg-white dark:bg-gray-800 text-center w-full">
-            គ្មាន​ទិន្នន័យ
+      <div class="grid grid-cols-12 items-start gap-4">
+        <!-- Which report -->
+        <section class="no-print col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800 xl:col-span-3">
+          <h3 class="text-xl font-[Moul] text-primary">ប្រភេទរបាយការណ៍</h3>
+          <hr class="my-2 border dark:border-gray-700" />
+          <div class="space-y-2">
+            <button v-for="r in REPORTS" :key="r.key" type="button"
+              class="flex w-full items-start gap-3 rounded-lg border p-3 text-left transition-colors"
+              :class="selected === r.key
+                ? 'border-primary bg-primary/5'
+                : 'border-gray-200 hover:border-primary dark:border-gray-700'"
+              @click="selected = r.key">
+              <TwFeather :type="r.icon" :size="18"
+                :class="selected === r.key ? 'mt-0.5 shrink-0 text-primary' : 'mt-0.5 shrink-0 text-gray-400'" />
+              <span class="min-w-0">
+                <span class="block text-base text-gray-800 dark:text-gray-100">{{ r.title }}</span>
+                <span class="block text-xs text-gray-500 dark:text-gray-400">{{ r.hint }}</span>
+              </span>
+            </button>
           </div>
-        </template>
-      </TwDatatableServer>
+        </section>
+
+        <div class="col-span-12 grid grid-cols-12 items-start gap-4 xl:col-span-9">
+          <!-- Filters, in one row above the table -->
+          <section class="no-print col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800">
+            <h3 class="text-xl font-[Moul] text-primary">លក្ខខណ្ឌ</h3>
+            <hr class="my-2 border dark:border-gray-700" />
+            <p v-if="!def.filters.length" class="text-base text-gray-500 dark:text-gray-400">
+              របាយការណ៍នេះមិនត្រូវការលក្ខខណ្ឌទេ។
+            </p>
+            <div v-else class="grid grid-cols-1 gap-4 sm:grid-cols-2 2xl:grid-cols-4">
+              <label v-if="shows('date')" class="block">
+                <span class="text-sm text-gray-500 dark:text-gray-400">ចាប់ពី</span>
+                <Datepicker v-model="dateFrom" :enableTimePicker="false" format="dd/MM/yyyy" autoApply class="mt-1" />
+              </label>
+              <label v-if="shows('date')" class="block">
+                <span class="text-sm text-gray-500 dark:text-gray-400">ដល់</span>
+                <Datepicker v-model="dateTo" :enableTimePicker="false" format="dd/MM/yyyy" autoApply class="mt-1" />
+              </label>
+              <label v-if="shows('centre')" class="block">
+                <span class="text-sm text-gray-500 dark:text-gray-400">មជ្ឈមណ្ឌល</span>
+                <select v-model="centreId"
+                  class="mt-1 h-10 w-full rounded border px-2 text-base dark:border-gray-700 dark:bg-gray-900">
+                  <option value="">ទាំងអស់</option>
+                  <option v-for="c in centres" :key="c.id" :value="c.id">{{ c.nameKH }}</option>
+                </select>
+              </label>
+              <label v-if="shows('province')" class="block">
+                <span class="text-sm text-gray-500 dark:text-gray-400">ខេត្ត</span>
+                <select v-model="provinceCode"
+                  class="mt-1 h-10 w-full rounded border px-2 text-base dark:border-gray-700 dark:bg-gray-900">
+                  <option value="">ទាំងអស់</option>
+                  <option v-for="p in provinces" :key="p.code" :value="p.code">{{ p.name }}</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="mt-4 flex flex-wrap items-center gap-2">
+              <UButton color="primary" size="lg" :loading="loading" @click="run">
+                <TwFeather type="search" :size="16" class="mr-1" />
+                <span class="font-[Moul]">បង្កើតរបាយការណ៍</span>
+              </UButton>
+              <UButton v-if="def.filters.length" color="gray" size="lg" variant="soft" @click="resetFilters(); run()">
+                <span>សម្អាតលក្ខខណ្ឌ</span>
+              </UButton>
+
+              <span class="mx-1 hidden h-6 w-px bg-gray-200 dark:bg-gray-700 sm:block" />
+
+              <UButton color="gray" size="lg" :disabled="!report?.rows?.length" :loading="busyFormat === 'xlsx'"
+                @click="download('xlsx')">
+                <TwFeather type="grid" :size="16" class="mr-1" />
+                <span>Excel</span>
+              </UButton>
+              <UButton color="gray" size="lg" :disabled="!report?.rows?.length" :loading="busyFormat === 'docx'"
+                @click="download('docx')">
+                <TwFeather type="file-text" :size="16" class="mr-1" />
+                <span>Word</span>
+              </UButton>
+              <UButton color="gray" size="lg" :disabled="!report?.rows?.length" @click="printReport">
+                <TwFeather type="printer" :size="16" class="mr-1" />
+                <span>PDF</span>
+              </UButton>
+            </div>
+            <p class="mt-2 text-xs text-gray-400">
+              PDF ប្រើមុខងារបោះពុម្ពរបស់កម្មវិធីរុករក (Save as PDF) ដើម្បីបង្ហាញអក្សរខ្មែរបានត្រឹមត្រូវ។
+            </p>
+          </section>
+
+          <!-- The preview, and the thing that gets printed -->
+          <section class="print-block col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800">
+            <h3 class="text-xl font-[Moul] text-primary">{{ report?.title ?? def.title }}</h3>
+            <p v-if="report" class="text-sm text-gray-500 dark:text-gray-400">{{ report.description }}</p>
+            <p v-if="report" class="mt-1 text-xs text-gray-400">
+              ចំនួន {{ report.total }} កំណត់ត្រា · បង្កើតនៅ
+              {{ new Date(report.generatedAt).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' }) }}
+            </p>
+            <hr class="my-2 border dark:border-gray-700" />
+
+            <div v-if="loading" class="space-y-2">
+              <div v-for="n in 6" :key="n" class="h-8 animate-pulse rounded bg-gray-100 dark:bg-gray-700" />
+            </div>
+
+            <p v-else-if="failed" class="py-10 text-center text-base text-red-600 dark:text-red-400">
+              មិនអាចបង្កើតរបាយការណ៍បានទេ។
+            </p>
+
+            <p v-else-if="!report" class="py-10 text-center text-base text-gray-500 dark:text-gray-400">
+              ចុច «បង្កើតរបាយការណ៍» ដើម្បីមើលទិន្នន័យ។
+            </p>
+
+            <p v-else-if="!report.rows.length" class="py-10 text-center text-base text-gray-500 dark:text-gray-400">
+              គ្មានទិន្នន័យសម្រាប់លក្ខខណ្ឌនេះទេ។
+            </p>
+
+            <div v-else class="overflow-x-auto">
+              <table class="w-full text-left text-sm">
+                <thead class="border-b text-xs text-gray-500 dark:border-gray-700 dark:text-gray-400">
+                  <tr>
+                    <th class="py-2 pr-3 font-normal">ល.រ</th>
+                    <th v-for="c in report.columns" :key="c.key" class="py-2 pr-3 font-normal"
+                      :class="c.numeric ? 'text-right' : ''">
+                      {{ c.label }}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                  <tr v-for="(row, i) in report.rows" :key="i">
+                    <td class="py-2 pr-3 align-top tabular-nums text-gray-400">{{ i + 1 }}</td>
+                    <td v-for="c in report.columns" :key="c.key"
+                      class="py-2 pr-3 align-top text-gray-700 dark:text-gray-200"
+                      :class="c.numeric ? 'text-right tabular-nums' : ''">
+                      {{ row[c.key] }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </div>
     </div>
-
-    <TwOffcanvas position="right" width="800px" ref="openisTrue">
-      <template #headerTitle>
-        <span class="font-[Moul] text-primary"> កែសម្រួលតួនាទី </span></template
-      >
-      <div class="p-4 overflow-auto font-[battambang]">
-        <div>
-          <TwForm
-            :name="formNameEdit"
-            class="grid grid-cols-12 gap-2 bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded-lg p-2 shadow"
-            :class="{
-              'tw-shake': isErrorEdit,
-            }"
-            :rules="formRulesEdit"
-            @submit="submitEdit()"
-            :custom-field-name="{
-              roleName: 'ឈ្មោះតួនាទី',
-              roleDescription: 'ពិពណ៌នាតួនាទី',
-            }"
-          >
-            <div class="col-span-12">
-              <TwInput
-                label="ឈ្មោះតួនាទី"
-                name="roleName"
-                v-model="formDataEdit.roleName"
-                placeholder="ប្រអប់បញ្ចូល"
-                type="text"
-              />
-              <CustomErrorMessage name="roleName" />
-            </div>
-            <div class="col-span-12">
-              <TwTextarea
-                label="ការពិពណ៌នាតួនាទី"
-                name="roleDescription"
-                v-model="formDataEdit.roleDescription"
-                placeholder="ប្រអប់បញ្ចូល"
-                type="text"
-              />
-              <CustomErrorMessage name="roleDescription" />
-            </div>
-            <div class="col-span-12 flex justify-end gap-1">
-              <UButton
-                :ripple="true"
-                color="gray"
-                square
-                type="button"
-                size="lg"
-                class="px-4 dark:text-gray-200 dark:!border-gray-800 dark:border"
-                @click="clearEdit()"
-              >
-                កំណត់ឡើងវិញ
-              </UButton>
-              <UButton color="primary" size="lg" class="px-4" type="submit"> រក្សាទុក </UButton>
-            </div>
-          </TwForm>
-        </div>
-      </div>
-    </TwOffcanvas>
-
-    <TwOffcanvas position="right" width="800px" ref="PopUPPermission">
-      <template #headerTitle>
-        <span class="font-[Moul] text-primary"> ការអនុញ្ញាតរបស់ {{ globalData.data?.find((item : any)  => item.id == refClickRoleID)?.name }} </span></template
-      >
-      <div class="p-4 overflow-auto font-[battambang]">
-        <div>
-          <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-            <table
-              class="w-full text-sm text-left text-gray-500 dark:text-gray-400"
-            >
-              <thead
-                class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
-              >
-                <tr>
-                  <th
-                    scope="col"
-                    class="px-6 py-3 text-sm md:text-md lg:text-lg"
-                  >
-                    ព័ត៌មានលម្អិតអំពីការអនុញ្ញាត
-                  </th>
-                  <th
-                    scope="col"
-                    class="px-6 py-3 text-sm md:text-md lg:text-lg text-center"
-                  >
-                    អនុញ្ញាត
-                  </th>
-                  <th
-                    scope="col"
-                    class="px-6 py-3 text-sm md:text-md lg:text-lg text-center"
-                  >
-                    បានត្រឹមមើល
-                  </th>
-                  <th
-                    scope="col"
-                    class="px-6 py-3 text-sm md:text-md lg:text-lg text-center"
-                  >
-                    មិនអនុញ្ញាត
-                  </th>
-
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  v-for="(item, index) in resource"
-                  :key="item?.id"
-                  :class="
-                    index % 2 == 0
-                      ? 'bg-white border-b dark:bg-gray-900 dark:border-gray-700'
-                      : 'border-b bg-gray-50 dark:bg-gray-800 dark:border-gray-700'
-                  "
-                >
-                  <th
-                    scope="row"
-                    class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                  >
-                    {{ item?.name }}
-                  </th>
-                  <td class="px-6 py-4 text-center">
-                    <URadio                     
-                      :name="'bordered-checkbox' + item?.id"
-                      @click="grantedResourceToRole(item?.id, true, true)"
-                      :checked="
-                       //@ts-ignore
-                        readRoleToResource?.data?.find(
-                          (e : any) =>
-                            e.resourceID == item?.id &&
-                            refClickRoleID == e.roleID     
-                            //@ts-ignore                        
-                        )?.granted && readRoleToResource?.data?.find(
-                          (e : any) =>
-                            e.resourceID == item?.id &&
-                            refClickRoleID == e.roleID                             
-                        )?.read
-                      "                      
-                    />
-                  </td>
-                  <td class="px-6 py-4 text-center">
-                    <URadio                                  
-                      :name="'bordered-checkbox' + item?.id"
-                      @click="grantedResourceToRole(item?.id, false,true)"
-                      :checked="
-                      //@ts-ignore
-                        !readRoleToResource?.data?.find(
-                          (e : any) =>
-                            e.resourceID == item?.id &&
-                            refClickRoleID == e.roleID          
-                            //@ts-ignore              
-                        )?.granted &&  readRoleToResource?.data?.find(
-                          (e : any) =>
-                            e.resourceID == item?.id &&
-                            refClickRoleID == e.roleID                        
-                        )?.read
-                      "                   
-                    />
-                  </td>
-                  <td class="text-center ">
-                    <URadio                                    
-                      :name="'bordered-checkbox' + item?.id"
-                      @click="grantedResourceToRole(item?.id, false,false)"
-                      :checked="
-                      //@ts-ignore
-                        ! readRoleToResource?.data?.find(
-                          (e : any) =>
-                            e.resourceID == item?.id &&
-                            refClickRoleID == e.roleID          
-                             //@ts-ignore               
-                        )?.granted &&  ! readRoleToResource?.data?.find(
-                          (e : any) =>
-                            e.resourceID == item?.id &&
-                            refClickRoleID == e.roleID                        
-                        )?.read
-                      "                     
-                    />
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </TwOffcanvas>
   </div>
 </template>
