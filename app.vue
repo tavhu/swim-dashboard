@@ -3,6 +3,11 @@ import { TwButton, TwDialog, TwFeather } from "vue3-tailwind";
 import { usePermissionStore } from '~/stores/permission';
 import { watch } from 'vue';
 
+/** Set by confirmDelete() just before the dialog fires — see
+ *  composables/globalFunction.ts. TwDialog drops keys it does not know, so the
+ *  danger styling cannot travel on the dialog object itself. */
+const isDangerous = confirmDialogDanger;
+
 const { status } = useAuth();
 
 // IMPORTANT: This logic MUST run only on the client.
@@ -51,54 +56,45 @@ if (process.client) {
             leave-to-class="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
           >
             <div
-              class="flex items-center justify-center h-screen w-screen absolute top-0"
+              class="flex items-center justify-center h-screen w-screen absolute top-0 px-4 font-[Battambang]"
               @click.self="reject"
               v-if="isShown.value"
             >
+              <!-- Same card language as the rest of the app: white on the grey
+                   page, rounded-lg, a Moul heading. `danger` puts the whole
+                   dialog in red — a delete should not look like a save. -->
               <div
-                class="bg-white dark:bg-gray-900 rounded shadow-lg w-96 overflow-hidden -mt-10"
+                class="w-full max-w-md -mt-10 overflow-hidden rounded-lg bg-white shadow-xl dark:bg-gray-800"
               >
-                <div
-                  class="border-b dark:border-gray-700 p-2 border-t-4 border-t-gray-800 dark:border-t-gray-200 flex gap-4"
-                >
-                  <div class="icon flex items-center">
-                    <TwFeather
-                      class="text-gray-600 dark:text-gray-400"
-                      size="50"
-                      :type="dialog.icon"
-                    />
+                <div class="flex items-start gap-4 p-5">
+                  <div
+                    class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full"
+                    :class="isDangerous
+                      ? 'bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-400'
+                      : 'bg-primary/10 text-primary'"
+                  >
+                    <TwFeather :size="24" :type="dialog.icon || (isDangerous ? 'alert-triangle' : 'help-circle')" />
                   </div>
-                  <div class="py-2">
-                    <div
-                      class="title text-gray-800 dark:text-gray-200 font-bold flex items-center "
-                    >
+                  <div class="min-w-0 pt-0.5">
+                    <h3 class="text-lg font-[Moul] text-gray-800 dark:text-gray-100">
                       {{ dialog.title }}
-                    </div>
-                    <div
-                      class="description text-gray-500 dark:text-gray-400 italic"
+                    </h3>
+                    <p
+                      class="mt-1 text-base leading-relaxed text-gray-600 dark:text-gray-300"
                       v-if="dialog.description"
                       v-html="dialog.description"
-                    ></div>
+                    ></p>
                   </div>
                 </div>
-                <div class="footer flex justify-center gap-2 p-2">
-                  <TwButton
-                    ripple
-                    class="w-12"
-                    button-text-position="center"
-                    variant="secondary"
-                    @click="reject"
-                  >
-                    {{ dialog.rejectText }}
-                  </TwButton>
-                  <TwButton
-                    ripple
-                    class="w-12"
-                    button-text-position="center"
-                    @click="confirm"
-                  >
-                    {{ dialog.acceptText }}
-                  </TwButton>
+                <div
+                  class="flex justify-end gap-2 border-t bg-gray-50 px-5 py-3 dark:border-gray-700 dark:bg-gray-900/40"
+                >
+                  <UButton color="gray" size="lg" @click="reject">
+                    <span class="font-[Moul]">{{ dialog.rejectText }}</span>
+                  </UButton>
+                  <UButton :color="isDangerous ? 'red' : 'primary'" size="lg" @click="confirm">
+                    <span class="font-[Moul]">{{ dialog.acceptText }}</span>
+                  </UButton>
                 </div>
               </div>
             </div>

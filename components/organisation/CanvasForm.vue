@@ -125,7 +125,10 @@ const submit = async () => {
 
     toast.success({ message: t('message.saved') });
     emit("update:open", false);
-    files.value = null;
+    // Reset, or the next "add new" opens on the record just saved and the user
+    // edits it into a duplicate. The watcher on props.item only clears when the
+    // parent passes null, which it does not do after a create.
+    resetForm();
   } catch (e: any) {
     // Name what failed rather than reporting only that it did.
     toast.error({
@@ -136,8 +139,22 @@ const submit = async () => {
   }
 };
 
+/** Back to an empty form — used after a save and when closing. */
+const resetForm = () => {
+  formData.id = "";
+  formData.name = "";
+  formData.logo = "";
+  formData.website = "";
+  formData.email = "";
+  formData.phoneNumber = "";
+  formData.address = "";
+  files.value = null;
+  validator.value?.clearErrors?.();
+};
+
 const close = () => {
   emit("update:open", false);
+  resetForm();
 };
 </script>
 

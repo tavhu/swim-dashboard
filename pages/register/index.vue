@@ -54,6 +54,21 @@ const formData: {
 })
 
 const usernameDuplicated = ref(false)
+/**
+ * Field names as they read on screen. The validator's own message is just
+ * "1 error occured", which on a form with a role dropdown, two names, a username
+ * and two password boxes tells the user nothing about where to look — the most
+ * common miss being the role, which is a custom dropdown rather than an input.
+ */
+const FIELD_LABELS: Record<string, string> = {
+  userRoleID: "តួនាទី",
+  username: "ឈ្មោះគណនី",
+  password: "លេខសម្ងាត់",
+  confirmPassword: "បញ្ជាក់លេខសម្ងាត់",
+  firstname: "នាមខ្លួន",
+  lastname: "គោត្តនាម",
+};
+
 const formRules = {
   userRoleID: ["required"],
   firstname: ["string"],
@@ -108,8 +123,11 @@ const submit = async () => {
   validator.value.clearErrors();
   await validator.value.validate();
   if (validator.value.fail()) {
+    const failed: string[] = validator.value.getFailedFields?.() ?? [];
     toast.error({
-      message: validator.value.getErrorMessage(),
+      message: failed.length
+        ? "សូមបំពេញ៖ " + failed.map((f) => FIELD_LABELS[f] ?? f).join(" / ")
+        : validator.value.getErrorMessage(),
     });
     isError.value = true;
     setTimeout(() => {

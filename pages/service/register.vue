@@ -84,7 +84,11 @@ async function submit() {
       message: "ការចុះឈ្មោះសេវាកម្មបានជោគជ័យ",
     });
     clearForm();
-    router.back();
+    // router.back() sent the user to whatever was previously in history — often
+    // an unrelated page, and if that record had since been deleted, to a "record
+    // not found". The save had worked; it just looked like it had not. Go to the
+    // list, which is where a new service can actually be seen.
+    router.push("/service");
   }
 }
 

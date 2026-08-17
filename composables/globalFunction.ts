@@ -1,15 +1,67 @@
 import { useDialog } from "vue3-tailwind";
 
-export const confirmDialog = async () => {
+/**
+ * Whether the open confirm dialog is destructive, read by the dialog template in
+ * app.vue to turn the icon badge and the accept button red.
+ *
+ * A module-level ref rather than useState() because confirmDelete() is called
+ * from click handlers, where the Nuxt instance is not guaranteed. The dialog is
+ * client-only and this always starts false, so there is nothing for SSR to leak.
+ */
+export const confirmDialogDanger = ref(false);
+
+/**
+ * The shared confirmation.
+ *
+ * Saving and deleting used the same wording and the same green button, so a
+ * delete looked exactly like a save. `confirmDelete()` below asks a different
+ * question in red, and names what is about to go.
+ */
+export const confirmDialog = async (opts?: {
+  title?: string;
+  description?: string;
+  acceptText?: string;
+  danger?: boolean;
+  icon?: string;
+}) => {
   const dialog = useDialog();
 
+  // TwDialog only carries the keys it knows about, so a `danger` passed to
+  // fire() never reaches the template — the panel stayed green on a delete.
+  // It rides on the shared ref above instead, set just before firing.
+  confirmDialogDanger.value = opts?.danger ?? false;
+
   const isConfirmed = await dialog.fire({
-    title: "តើអ្នកប្រាកដទេថាអ្នកចង់ដាក់បញ្ជូន?",
-    description: "សកម្មភាពនេះគឺមិនអាចត្រឡប់វិញបានទេ។",
-  });
+    title: opts?.title ?? "តើអ្នកប្រាកដទេថាអ្នកចង់ដាក់បញ្ជូន?",
+    description: opts?.description ?? "សកម្មភាពនេះគឺមិនអាចត្រឡប់វិញបានទេ។",
+    acceptText: opts?.acceptText ?? "យល់ព្រម",
+    rejectText: "បោះបង់",
+    ...(opts?.icon ? { icon: opts.icon } : {}),
+  } as any);
+
+  // After the close transition, not immediately: resetting on the same tick
+  // turns the button green again while the panel is still fading out.
+  setTimeout(() => (confirmDialogDanger.value = false), 300);
+
   if (!isConfirmed) return false;
   return true;
 };
+
+/**
+ * Deleting a client removes the whole case file — all six ទម្រង់, the progress
+ * notes, the previous centres, the photograph and every attachment. Saying so
+ * is the difference between a confirmation and a formality.
+ */
+export const confirmDelete = async (what?: string) =>
+  confirmDialog({
+    title: "លុបចេញ?",
+    description: what
+      ? `${what}<br /><span class="text-sm">សកម្មភាពនេះមិនអាចត្រឡប់វិញបានទេ។</span>`
+      : "សកម្មភាពនេះមិនអាចត្រឡប់វិញបានទេ។",
+    acceptText: "លុបចេញ",
+    danger: true,
+    icon: "alert-triangle",
+  });
 
 export const userPermission = async () => {
   const { data } = useAuth();

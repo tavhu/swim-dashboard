@@ -127,26 +127,35 @@ const sortClick = (event: any) => {
     data.value = { ...data.value, sortBy: sortByNew, sortType: sortTypeNew };
 };
 
-const deleteRecord = async (id: string) => {
+const deleteRecord = async (row: any) => {
     if (readOnly) return;
-    if (!(await confirmDialog())) return;
+    // Name the client and say what else goes with them: a case file is six
+    // forms, the progress notes, the photograph and every attachment.
+    const who = [row?.ReadableCode, row?.fullNameKH].filter(Boolean).join(" · ");
+    if (!(await confirmDelete(
+        `លុបអតិថិជន ${who} និងទិន្នន័យពាក់ព័ន្ធទាំងអស់ (ទម្រង់ទី១-៦, កំណត់ត្រា, រូបថត និងឯកសារភ្ជាប់)។`
+    ))) return;
+    const id = row.id;
 
     // Was "/api/center/delete", which calls prisma.serviceCenter.delete() — it
     // looked a client id up in the service-centre table and always failed.
-    const { error } = await useFetch("/api/client/delete", {
-        method: "POST",
-        body: JSON.stringify({
-            id: id,
-        }),
-    })
-
-    if (error.value?.statusCode) {
-        toast.error({
-            message: t('message.notSaved'),
+    // $fetch, not useFetch: this runs from a row action, and the response body
+    // is wanted so the toast can say what was actually removed.
+    try {
+        const res: any = await $fetch("/api/client/delete", {
+            method: "POST",
+            body: { id },
         });
-    } else {
+        const d = res?.deleted;
+        const forms = d ? d.services + d.casePlans + d.reintegrations + d.followUps + d.closures : 0;
         toast.success({
-            message: t('message.saved'),
+            message: d
+                ? `បានលុប។ ទម្រង់ ${forms} និងឯកសារ ${d.filesRemoved}`
+                : t('message.saved'),
+        });
+    } catch (e: any) {
+        toast.error({
+            message: e?.data?.error ?? e?.message ?? t('message.notSaved'),
         });
     }
     //update change limit ref in order to refetch data
@@ -224,7 +233,16 @@ const actionItems = (row: any) => {
         }
         return entries;
     });
-    groups.push([{ label: 'លុបចេញ', icon: 'i-heroicons-trash', click: () => deleteRecord(row.id), disabled: readOnly }]);
+    // Red, and its own group at the bottom: a destructive action should not
+    // look like the six navigation entries above it.
+    groups.push([{
+        label: 'លុបចេញ',
+        icon: 'i-heroicons-trash',
+        class: 'text-red-600 dark:text-red-400',
+        iconClass: 'text-red-600 dark:text-red-400',
+        click: () => deleteRecord(row),
+        disabled: readOnly,
+    }]);
     return groups;
 };
 
