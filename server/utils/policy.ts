@@ -110,6 +110,15 @@ export const RULES: Rule[] = [
     resource: RESOURCE.client,
     action: "write",
   },
+  // ទម្រង់ទី១'s own approval. Must sit before the sub-form rules only in the
+  // sense that its pattern is anchored — /api/client/approve cannot be confused
+  // with /api/client/<form>/approve.
+  {
+    mode: "permission",
+    pattern: /^\/api\/client\/approve\/?$/,
+    resource: RESOURCE.client,
+    action: "write",
+  },
   {
     mode: "permission",
     pattern: /^\/api\/client\/service\/(get|options)\/?$/,

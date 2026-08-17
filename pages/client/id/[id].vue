@@ -7,6 +7,7 @@ import {
 
 const config = useRuntimeConfig();
 const route = useRoute();
+const readOnly = checkIfPageReadOnly();
 
 const client = ref<any>(null);
 const pending = ref(true);
@@ -142,7 +143,8 @@ const serveHistory = computed(() => client.value?.ClientServeHistory ?? []);
 
 useHead(() => ({ title: client.value?.fullNameKH || "អតិថិជន" }));
 
-onMounted(async () => {
+/** Named so ApprovalPanel can reload the record after a decision. */
+async function load() {
   try {
     client.value = await $fetch("/api/client/personalInformationGet", {
       method: "POST",
@@ -154,7 +156,8 @@ onMounted(async () => {
   } finally {
     pending.value = false;
   }
-});
+}
+onMounted(load);
 </script>
 
 <template>
@@ -170,7 +173,7 @@ onMounted(async () => {
         </h2>
         <div class="no-print flex shrink-0 gap-2">
           <NuxtLink v-if="client" :to="`/client/register/${client.id}`">
-            <UButton color="gray" size="xl">
+            <UButton color="gray" size="xl" :disabled="readOnly">
               <TwFeather type="edit-2" :size="18" class="mr-1" />
               <span class="hidden font-[Moul] text-lg sm:inline">កែសម្រួល</span>
             </UButton>
@@ -330,6 +333,14 @@ onMounted(async () => {
             </table>
           </div>
         </section>
+
+        <!-- The approval block every ទម្រង់ carries. ទម្រង់ទី១ had the columns and
+             the CLIENT record type from the start but nothing to drive them, so
+             the intake form was the one part of a case file that could not be
+             signed off. Same shared panel as ទម្រង់ទី២-៦. -->
+        <ApprovalPanel :record-id="client.id" endpoint="/api/client/approve" :status="client.approvalStatus"
+          :submitted-at="client.submittedAt" :decided-at="client.decidedAt"
+          :rejection-reason="client.rejectionReason" :can-decide="true" :read-only="readOnly" @changed="load" />
       </div>
     </div>
   </div>
