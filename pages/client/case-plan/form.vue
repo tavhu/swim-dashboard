@@ -50,14 +50,6 @@ const form = reactive<Record<string, any>>({
 const blankActivity = () => ({ serviceId: "", startDate: "", endDate: "" });
 const activities = ref<any[]>([blankActivity()]);
 
-const addActivity = () => activities.value.push(blankActivity());
-const removeActivity = (i: number) => {
-  activities.value.splice(i, 1);
-  // Never leave the table with no rows — the add button would be the only way
-  // back and it reads as though the section is unavailable.
-  if (!activities.value.length) activities.value.push(blankActivity());
-};
-
 /** Section ១, all derived from ទម្រង់ទី១. */
 const clientAge = computed(() => ageFrom(client.value?.DOB));
 const familyAddress = computed(() => {
@@ -249,44 +241,7 @@ async function submit() {
           <!-- ក. សកម្មភាពសេវាកម្ម — repeatable -->
           <h4 class="mt-6 text-lg font-[Moul] text-primary">ក. សកម្មភាពសេវាកម្ម (ផ្អែកលើតម្រូវការអតិថិជន)</h4>
           <hr class="my-2 border dark:border-gray-700" />
-          <div class="space-y-3">
-            <div v-for="(row, i) in activities" :key="i"
-              class="grid grid-cols-1 items-end gap-3 rounded-lg border p-3 dark:border-gray-700 sm:grid-cols-12">
-              <div class="sm:col-span-1">
-                <span class="text-sm text-gray-500 dark:text-gray-400">ល.រ</span>
-                <p class="mt-1 h-10 text-base leading-10 text-gray-800 dark:text-gray-100">{{ i + 1 }}</p>
-              </div>
-              <label class="block sm:col-span-5">
-                <span class="text-sm text-gray-500 dark:text-gray-400">សេវាកម្ម</span>
-                <select v-model="row.serviceId" :disabled="readOnly"
-                  class="mt-1 h-10 w-full rounded border px-2 text-base dark:border-gray-700 dark:bg-gray-900">
-                  <option value="">សូមជ្រើសរើស</option>
-                  <option v-for="s in services" :key="s.id" :value="s.id">{{ s.nameKh }}</option>
-                </select>
-              </label>
-              <label class="block sm:col-span-2">
-                <span class="text-sm text-gray-500 dark:text-gray-400">កាលបរិច្ឆេទចាប់ផ្តើម</span>
-                <Datepicker v-model="row.startDate" :disabled="readOnly" :enableTimePicker="false"
-                  format="dd/MM/yyyy" autoApply class="mt-1" />
-              </label>
-              <label class="block sm:col-span-2">
-                <span class="text-sm text-gray-500 dark:text-gray-400">កាលបរិច្ឆេទបញ្ចប់</span>
-                <Datepicker v-model="row.endDate" :disabled="readOnly" :enableTimePicker="false" format="dd/MM/yyyy"
-                  autoApply class="mt-1" />
-              </label>
-              <div class="sm:col-span-2">
-                <UButton color="red" variant="soft" size="sm" type="button" :disabled="readOnly"
-                  @click="removeActivity(i)">
-                  <TwFeather type="trash-2" :size="16" class="mr-1" />
-                  <span>លុបជួរ</span>
-                </UButton>
-              </div>
-            </div>
-          </div>
-          <UButton color="gray" size="sm" type="button" class="mt-3" :disabled="readOnly" @click="addActivity">
-            <TwFeather type="plus" :size="16" class="mr-1" />
-            <span>បន្ថែមសកម្មភាព</span>
-          </UButton>
+          <ServiceRowsField v-model="activities" :services="services" :read-only="readOnly" />
         </section>
 
         <!-- ៣. កាលបរិច្ឆេទតាមដាន ត្រួតពិនិត្យ -->

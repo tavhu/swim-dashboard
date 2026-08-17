@@ -32,7 +32,7 @@ const userDataAuthRef = computed(() => userDataAuth.value?.sub)
 
 const config = useRuntimeConfig()
 const toast = useToast()
-const { uploadImage } = useImageUpload()
+const { uploadFiles } = useFileUpload()
 const composableForm = useForm()
 const formName = "User"
 const formData: {
@@ -185,12 +185,12 @@ const clear = () => {
 };
 
 const files = ref();
-// Errors deliberately propagate — see composables/useImageUpload.ts. The caller
+// Errors deliberately propagate — see composables/useFileUpload.ts. The caller
 // aborts the save rather than storing a record whose image silently went
 // missing.
 const handleImageUpload = async () => {
   if (readOnly) return;
-  return await uploadImage(files.value);
+  return await uploadFiles(files.value);
 }
 
 const { data: roleData } = await useFetch("/api/role/get", {

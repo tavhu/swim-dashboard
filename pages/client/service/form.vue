@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { TwFeather, TwFile, useToast } from "vue3-tailwind";
+import { TwFeather, useToast } from "vue3-tailwind";
 import Datepicker from "@vuepic/vue-datepicker";
 
 /**
@@ -25,16 +25,9 @@ const saving = ref(false);
 const error = ref<string | null>(null);
 const client = ref<any>(null);
 
-const { uploadImage } = useImageUpload();
-const files = ref();
-
-/** Paths already stored, comma separated as CenterPlan.filePath does it. */
-const attachmentList = computed(() =>
-  String(form.attachments ?? "").split(",").map((f) => f.trim()).filter(Boolean)
-);
-const removeAttachment = (path: string) => {
-  form.attachments = attachmentList.value.filter((f) => f !== path).join(",");
-};
+const { uploadFiles } = useFileUpload();
+/** Files chosen but not yet uploaded; AttachmentField owns the stored list. */
+const files = ref<File[] | null>(null);
 
 const options = ref<{ clientTypes: any[]; services: any[] }>({ clientTypes: [], services: [] });
 
@@ -130,10 +123,11 @@ async function submit() {
     // Upload first: a failure here must stop the save, not store a record whose
     // documents silently went missing.
     if (files.value?.length) {
-      const uploaded = await uploadImage(files.value);
+      const uploaded = await uploadFiles(files.value);
       if (uploaded) {
         const paths = Object.values(uploaded) as string[];
-        form.attachments = [...attachmentList.value, ...paths].join(",");
+        const existing = String(form.attachments ?? "").split(",").map((f) => f.trim()).filter(Boolean);
+        form.attachments = [...existing, ...paths].join(",");
       }
       files.value = null;
     }
@@ -231,17 +225,7 @@ async function submit() {
             <!-- Documents are uploaded on save, so a failed upload aborts the
                  whole save rather than leaving a record referring to nothing. -->
             <div class="sm:col-span-2">
-              <span class="text-sm text-gray-500 dark:text-gray-400">ឯកសារពាក់ព័ន្ធ</span>
-              <ul v-if="attachmentList.length" class="mt-1 mb-2 space-y-1">
-                <li v-for="path in attachmentList" :key="path"
-                  class="flex items-center justify-between gap-2 rounded bg-gray-50 px-2 py-1 dark:bg-gray-900">
-                  <a :href="`/${path}`" target="_blank" rel="noopener"
-                    class="truncate text-base text-primary hover:underline">{{ path.split('/').pop() }}</a>
-                  <button v-if="!readOnly" type="button" class="shrink-0 text-sm text-red-600 hover:underline"
-                    @click="removeAttachment(path)">លុប</button>
-                </li>
-              </ul>
-              <TwFile v-if="!readOnly" v-model="files" label="" />
+              <AttachmentField v-model="form.attachments" v-model:pending="files" :read-only="readOnly" />
             </div>
           </div>
           <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">

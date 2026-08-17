@@ -142,6 +142,19 @@ export const RULES: Rule[] = [
     resource: RESOURCE.client,
     action: "write",
   },
+  // ទម្រង់ទី៤ សមាហរណកម្ម — same reasoning as ទម្រង់ទី៣.
+  {
+    mode: "permission",
+    pattern: /^\/api\/client\/reintegration\/get\/?$/,
+    resource: RESOURCE.client,
+    action: "read",
+  },
+  {
+    mode: "permission",
+    pattern: /^\/api\/client\/reintegration\/(upsert|approve)\/?$/,
+    resource: RESOURCE.client,
+    action: "write",
+  },
 
   // --- roles & permissions --------------------------------------------------
   {

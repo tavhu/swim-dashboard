@@ -48,6 +48,16 @@ export const CASE_PLAN_ACTIVITY_FIELDS: FieldSpec = {
   optionalDates: ["startDate", "endDate"],
 };
 
+/** Reintegration (ទម្រង់ទី៤). Its two service lists use the row spec below. */
+export const REINTEGRATION_FIELDS: FieldSpec = {
+  optionalDates: ["handoverDate", "monitorDate", "nextMonitorDate"],
+};
+
+/** One row of either of ទម្រង់ទី៤'s service lists. */
+export const REINTEGRATION_SERVICE_FIELDS: FieldSpec = {
+  optionalDates: ["startDate", "endDate"],
+};
+
 /**
  * governStaff — the same defect. spouseDateOfBirth is optional in the schema
  * but StaffCanvasForm initialises it to '', so an unmarried staff member

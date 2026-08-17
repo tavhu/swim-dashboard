@@ -91,7 +91,7 @@ const formDataEdit: {
 
 
 const toast = useToast()
-const { uploadImage } = useImageUpload()
+const { uploadFiles } = useFileUpload()
 const { toasts: useToat } = useToast()
 const composableForm = useForm();
 const isErrorEdit = ref(false);
@@ -902,12 +902,12 @@ async function submitEditOfficial() {
 }
 
 const files = ref();
-// Errors deliberately propagate — see composables/useImageUpload.ts. The caller
+// Errors deliberately propagate — see composables/useFileUpload.ts. The caller
 // aborts the save rather than storing a record whose image silently went
 // missing.
 const handleImageUpload = async () => {
   if (prop.readOnly) return;
-  return await uploadImage(files.value);
+  return await uploadFiles(files.value);
 }
 
 watch(selectedAddressOption, () => {

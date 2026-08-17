@@ -180,7 +180,11 @@ const CASE_FORMS = [
         to: (id: string) => `/client/case-plan/${id}`,
         create: (id: string) => `/client/case-plan/form?client=${id}`,
     },
-    { label: 'ទម្រង់(៤)', title: 'សមាហរណកម្ម' },
+    {
+        label: 'ទម្រង់(៤)', title: 'សមាហរណកម្ម',
+        to: (id: string) => `/client/reintegration/${id}`,
+        create: (id: string) => `/client/reintegration/form?client=${id}`,
+    },
     { label: 'ទម្រង់(៥)', title: 'តាមដាន និងវាយតម្លៃស្ថានភាពអតិថិជន' },
     { label: 'ទម្រង់(៦)', title: 'បិទករណី' },
 ]

@@ -499,6 +499,7 @@ model Client_PersonalInformation {
   services                   ServicesOnClients[]
   clientServices             ClientService[]
   casePlans                  CasePlan[]
+  reintegrations             Reintegration[]
 
   // Propose → approve (ស្នើឡើង / អនុម័ត / បដិសេធ). Intake staff at a centre
   // submit a record; a ប្រធានមជ្ឈមណ្ឌល or ministry user approves or rejects it.
@@ -585,29 +586,31 @@ model CenterPlan {
 }
 
 model Service {
-  id                   String                     @id @default(cuid())
+  id                     String                          @id @default(cuid())
   /// លេខកូដ. The manual writes every service reference as (លេខកូដ*, ឈ្មោះខ្មែរ,
   /// ឈ្មោះអង់គ្លេស, បរិយាយ) and marks the code required, but this table was
   /// keyed only by name. Filled from a sequence when left blank, as
   /// ClientType.code and Client ReadableCode are, so an official ministry code
   /// can still be typed in and kept.
-  code                 String                     @unique @default(dbgenerated("('SV'::text || lpad((nextval('service_code_seq'::regclass))::text, 3, '0'::text))"))
-  nameKh               String                     @unique // ឈ្មោះសេវា
-  providingInstitution String? // ក្រសួង/ស្ថាប័ន ផ្តល់សេវា
-  purpose              String? // គោលបំណង នៃការផ្តល់សេវា
-  legalBasis           String? // មូលដ្ឋានគតិយុត្ត
-  eligibleClients      String? // អតិថិជនដែលមាន សិទ្ធិទទួលសេវា
-  serviceStandard      String? // ស្តង់ដារសេវា
-  requiredDocuments    String? // តម្រូវការឯកសារ ដើម្បីទទួលបានសេវា
-  feedback             String? // យោបល់
-  isActive             Boolean                    @default(true)
-  createdAt            DateTime                   @default(now())
-  updatedAt            DateTime                   @updatedAt
-  clients              ServicesOnClients[]
-  clientServices       ClientService[]            @relation("ClientServiceCatalogue")
-  followUpFor          ClientService[]            @relation("ClientServiceFollowUp")
-  casePlanActivities   CasePlanActivity[]         @relation("CasePlanActivityService")
-  serviceCenters       ServicesOnServiceCenters[]
+  code                   String                          @unique @default(dbgenerated("('SV'::text || lpad((nextval('service_code_seq'::regclass))::text, 3, '0'::text))"))
+  nameKh                 String                          @unique // ឈ្មោះសេវា
+  providingInstitution   String? // ក្រសួង/ស្ថាប័ន ផ្តល់សេវា
+  purpose                String? // គោលបំណង នៃការផ្តល់សេវា
+  legalBasis             String? // មូលដ្ឋានគតិយុត្ត
+  eligibleClients        String? // អតិថិជនដែលមាន សិទ្ធិទទួលសេវា
+  serviceStandard        String? // ស្តង់ដារសេវា
+  requiredDocuments      String? // តម្រូវការឯកសារ ដើម្បីទទួលបានសេវា
+  feedback               String? // យោបល់
+  isActive               Boolean                         @default(true)
+  createdAt              DateTime                        @default(now())
+  updatedAt              DateTime                        @updatedAt
+  clients                ServicesOnClients[]
+  clientServices         ClientService[]                 @relation("ClientServiceCatalogue")
+  followUpFor            ClientService[]                 @relation("ClientServiceFollowUp")
+  casePlanActivities     CasePlanActivity[]              @relation("CasePlanActivityService")
+  reintegrationPast      ReintegrationPastService[]      @relation("ReintegrationPastService")
+  reintegrationCommunity ReintegrationCommunityService[] @relation("ReintegrationCommunityService")
+  serviceCenters         ServicesOnServiceCenters[]
 
   @@map("services")
 }
@@ -880,4 +883,124 @@ model CasePlanActivity {
   @@index([casePlanId, sortOrder])
   @@index([serviceId])
   @@map("casePlanActivities")
+}
+
+/// ទម្រង់ទី៤ សមាហរណកម្ម — reintegrating a client back into their community.
+///
+/// Many per client, as the other episode forms are. Section ១ is read through
+/// the client relation rather than copied, the same as ទម្រង់ទី៣.
+model Reintegration {
+  id       String                     @id @default(cuid())
+  clientId String
+  client   Client_PersonalInformation @relation(fields: [clientId], references: [id])
+
+  // ២. ស្ថានភាពបច្ចុប្បន្ន
+  consultation String? // សេចក្តីពិគ្រោះយោបល់
+  /// សេវាកម្មដែលបានទទួលកន្លងមក
+  pastServices ReintegrationPastService[]
+
+  // ៣. គោលដៅ
+  handoverDate    DateTime? // កាលបរិច្ឆេទទទួល
+  recipient       String? // ឱពុកម្តាយ / អាណាព្យាបាល / ឱពុកម្តាយធម៌ / សាច់ញាតិ / អាជ្ញាធរមានសមត្ថកិច្ច
+  /// លេខទូរស័ព្ទទំនាក់ទំនង. The manual asks for យ៉ាងតិច២ខ្សែរ — at least two
+  /// lines — so both are their own column rather than one field holding a
+  /// comma-separated pair nobody can search.
+  recipientPhone1 String?
+  recipientPhone2 String?
+
+  // អភិបាលកិច្ចសហគមន៍ — the local officials who will keep an eye on the client.
+  // Flat columns rather than a table: the manual fixes exactly two named posts
+  // and one free-text body, and a three-row table with fixed roles is a table
+  // pretending to be a form.
+  communeChiefName  String? // ក. មេឃុំ ចៅសង្កាត់
+  communeChiefSex   String?
+  communeChiefAge   Int?
+  communeChiefPhone String?
+  villageChiefName  String? // ខ. មេភូមិ
+  villageChiefSex   String?
+  villageChiefAge   Int?
+  villageChiefPhone String?
+  localOrganisation String? // គ. អង្គភាព/អង្គការមូលដ្ឋាន
+
+  /// Upload កិច្ចសន្យា ការផ្តល់សេវាកម្មនៅសហគមន៍ និងឯកសារពាក់ព័ន្ធ.
+  /// Comma separated, as ClientService.attachments and CenterPlan.filePath are.
+  goalAttachments String?
+
+  // ៤. សេវាកម្មនៅសហគមន៍ត្រូវផ្តល់បន្ត
+  communityServices    ReintegrationCommunityService[]
+  /// Upload កិច្ចសន្យា គ្រួសារ ឬអ្នកថែទាំបន្ត. A second, separate upload: the
+  /// manual attaches it to its own section, and the community-service contract
+  /// and the family-carer contract are different documents.
+  communityAttachments String?
+
+  // ៥. ការតាមដាន និងវាយតម្លៃ
+  monitorDate     DateTime? // កាលបរិច្ឆេទតាមដាន
+  /// អ្នកផ្តល់ព័តមាន — ជ្រើសរើសបានច្រើន, so comma separated rather than one
+  /// value. The other three below are single choice.
+  informants      String?
+  monitorMethod   String?
+  monitorResult   String?
+  nextMonitorDate DateTime? // កាលបរិច្ឆេទតាមដានបន្ត
+
+  // ៦. សិទ្ធិធ្វើសេចក្តីសន្និដ្ឋាន
+  conclusion String?
+
+  approvalStatus  ApprovalStatus @default(DRAFT)
+  submittedAt     DateTime?
+  submittedByID   String?
+  decidedAt       DateTime?
+  decidedByID     String?
+  rejectionReason String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([clientId])
+  @@index([approvalStatus])
+  @@map("reintegrations")
+}
+
+/// One row of ២. សេវាកម្មដែលបានទទួលកន្លងមក — a service already delivered, with
+/// how it turned out.
+model ReintegrationPastService {
+  id              String        @id @default(cuid())
+  reintegrationId String
+  reintegration   Reintegration @relation(fields: [reintegrationId], references: [id], onDelete: Cascade)
+
+  serviceId String?
+  service   Service?  @relation("ReintegrationPastService", fields: [serviceId], references: [id])
+  startDate DateTime?
+  endDate   DateTime?
+  /// លទ្ធផល. A different list from the monitoring one: this asks how a finished
+  /// service turned out (…, សះស្បើយ), not how the client is doing right now.
+  outcome   String?
+
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([reintegrationId, sortOrder])
+  @@index([serviceId])
+  @@map("reintegrationPastServices")
+}
+
+/// One row of ៤. សេវាកម្មនៅសហគមន៍ត្រូវផ្តល់បន្ត — a service to continue in the
+/// community. No outcome: it has not happened yet.
+model ReintegrationCommunityService {
+  id              String        @id @default(cuid())
+  reintegrationId String
+  reintegration   Reintegration @relation(fields: [reintegrationId], references: [id], onDelete: Cascade)
+
+  serviceId String?
+  service   Service?  @relation("ReintegrationCommunityService", fields: [serviceId], references: [id])
+  startDate DateTime?
+  endDate   DateTime?
+
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([reintegrationId, sortOrder])
+  @@index([serviceId])
+  @@map("reintegrationCommunityServices")
 }

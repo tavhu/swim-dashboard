@@ -63,22 +63,27 @@ export default eventHandler(async (event) => {
   const written: string[] = [];
 
   try {
+    // Every file under every key. This used to read `files[key][0]`, which is
+    // right only when the caller appends one file per key — a single
+    // <input type="file" multiple> posts all of its files under one name, and
+    // all but the first were dropped silently, reported as a success.
     for (const key of Object.keys(files)) {
-      const file = files[key]?.[0];
-      if (!file) continue;
+      for (const file of files[key] ?? []) {
+        if (!file) continue;
 
-      const ext = file.mimetype ? ALLOWED[file.mimetype] : undefined;
-      if (!ext) {
-        throw createError({
-          statusCode: 415,
-          statusMessage: `Unsupported file type: ${file.mimetype ?? "unknown"}`,
-        });
+        const ext = file.mimetype ? ALLOWED[file.mimetype] : undefined;
+        if (!ext) {
+          throw createError({
+            statusCode: 415,
+            statusMessage: `Unsupported file type: ${file.mimetype ?? "unknown"}`,
+          });
+        }
+
+        // Server-generated name: nothing from the client reaches the filesystem.
+        const name = `${crypto.randomUUID()}.${ext}`;
+        await fs.copyFile(file.filepath, path.join(UPLOAD_DIR, name));
+        written.push(`uploads/${name}`);
       }
-
-      // Server-generated name: nothing from the client reaches the filesystem.
-      const name = `${crypto.randomUUID()}.${ext}`;
-      await fs.copyFile(file.filepath, path.join(UPLOAD_DIR, name));
-      written.push(`uploads/${name}`);
     }
 
     if (written.length === 0) {
