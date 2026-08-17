@@ -30,6 +30,8 @@ const props = withDefaults(
 
 const emit = defineEmits<{ (e: "update:modelValue", v: any[]): void }>();
 
+const { localisedName } = useLocalisedName();
+
 const blank = () => ({ serviceId: "", startDate: "", endDate: "", outcome: "" });
 
 const rows = computed({
@@ -62,8 +64,8 @@ const remove = (i: number) => {
           <span class="text-sm text-gray-500 dark:text-gray-400">សេវាកម្ម</span>
           <select v-model="row.serviceId" :disabled="readOnly"
             class="mt-1 h-10 w-full rounded border px-2 text-base dark:border-gray-700 dark:bg-gray-900">
-            <option value="">សូមជ្រើសរើស</option>
-            <option v-for="s in services" :key="s.id" :value="s.id">{{ s.nameKh }}</option>
+            <option value="">{{ $t('action.selectOne') }}</option>
+            <option v-for="s in services" :key="s.id" :value="s.id">{{ localisedName(s) }}</option>
           </select>
         </label>
 
@@ -83,7 +85,7 @@ const remove = (i: number) => {
           <span class="text-sm text-gray-500 dark:text-gray-400">លទ្ធផល</span>
           <select v-model="row.outcome" :disabled="readOnly"
             class="mt-1 h-10 w-full rounded border px-2 text-base dark:border-gray-700 dark:bg-gray-900">
-            <option value="">សូមជ្រើសរើស</option>
+            <option value="">{{ $t('action.selectOne') }}</option>
             <option v-for="o in outcomes" :key="o" :value="o">{{ o }}</option>
           </select>
         </label>
@@ -91,7 +93,7 @@ const remove = (i: number) => {
         <div class="sm:col-span-2">
           <UButton color="red" variant="soft" size="sm" type="button" :disabled="readOnly" @click="remove(i)">
             <TwFeather type="trash-2" :size="16" class="mr-1" />
-            <span>លុបជួរ</span>
+            <span>{{ $t('action.removeRow') }}</span>
           </UButton>
         </div>
       </div>

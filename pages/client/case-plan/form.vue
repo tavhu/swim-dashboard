@@ -151,7 +151,7 @@ async function submit() {
         </h2>
         <NuxtLink v-if="client" :to="`/client/case-plan/${client.id}`">
           <UButton color="gray" size="xl">
-            <span class="font-[Moul] text-lg">ត្រឡប់ក្រោយ</span>
+            <span class="font-[Moul] text-lg">{{ $t('action.back') }}</span>
           </UButton>
         </NuxtLink>
       </div>
@@ -162,7 +162,7 @@ async function submit() {
       <div v-else-if="error" class="rounded-lg bg-white p-8 text-center shadow dark:bg-gray-800">
         <p class="text-lg text-red-600 dark:text-red-400">{{ error }}</p>
         <NuxtLink to="/client">
-          <UButton color="primary" class="mt-4"><span class="font-[Moul]">ត្រឡប់ក្រោយ</span></UButton>
+          <UButton color="primary" class="mt-4"><span class="font-[Moul]">{{ $t('action.back') }}</span></UButton>
         </NuxtLink>
       </div>
 
@@ -263,7 +263,7 @@ async function submit() {
               <span class="text-sm text-gray-500 dark:text-gray-400">វិធីសាស្រ្តតាមដាន</span>
               <select v-model="form.monitorMethod" :disabled="readOnly"
                 class="mt-1 h-10 w-full rounded border px-2 text-base dark:border-gray-700 dark:bg-gray-900">
-                <option value="">សូមជ្រើសរើស</option>
+                <option value="">{{ $t('action.selectOne') }}</option>
                 <option v-for="m in MONITOR_METHOD" :key="m" :value="m">{{ m }}</option>
               </select>
             </label>
@@ -271,7 +271,7 @@ async function submit() {
               <span class="text-sm text-gray-500 dark:text-gray-400">លទ្ធផល</span>
               <select v-model="form.monitorResult" :disabled="readOnly"
                 class="mt-1 h-10 w-full rounded border px-2 text-base dark:border-gray-700 dark:bg-gray-900">
-                <option value="">សូមជ្រើសរើស</option>
+                <option value="">{{ $t('action.selectOne') }}</option>
                 <option v-for="r in MONITOR_RESULT" :key="r" :value="r">{{ r }}</option>
               </select>
             </label>
@@ -293,11 +293,11 @@ async function submit() {
         <div class="col-span-12 flex justify-end gap-2">
           <NuxtLink :to="client ? `/client/case-plan/${client.id}` : '/client'">
             <UButton color="gray" size="xl" type="button">
-              <span class="font-[Moul] text-lg">ត្រឡប់ក្រោយ</span>
+              <span class="font-[Moul] text-lg">{{ $t('action.back') }}</span>
             </UButton>
           </NuxtLink>
           <UButton type="submit" color="primary" size="xl" :loading="saving" :disabled="readOnly">
-            <span class="font-[Moul] text-lg">រក្សាទុក</span>
+            <span class="font-[Moul] text-lg">{{ $t('action.save') }}</span>
           </UButton>
         </div>
       </form>

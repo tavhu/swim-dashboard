@@ -596,6 +596,11 @@ model Service {
   /// can still be typed in and kept.
   code                   String                          @unique @default(dbgenerated("('SV'::text || lpad((nextval('service_code_seq'::regclass))::text, 3, '0'::text))"))
   nameKh                 String                          @unique // ឈ្មោះសេវា
+  /// ឈ្មោះសេវា (អង់គ្លេស). Optional on purpose: the manual asks for it, and five
+  /// forms display service names, but a centre entering a service in Khmer
+  /// should not be blocked for want of a translation. Where it is missing the
+  /// UI falls back to nameKh in either language.
+  nameEn                 String?
   providingInstitution   String? // ក្រសួង/ស្ថាប័ន ផ្តល់សេវា
   purpose                String? // គោលបំណង នៃការផ្តល់សេវា
   legalBasis             String? // មូលដ្ឋានគតិយុត្ត

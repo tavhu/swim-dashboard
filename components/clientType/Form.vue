@@ -125,7 +125,7 @@ async function submit() {
     <div v-else-if="loadError" class="rounded-lg bg-white p-8 text-center shadow dark:bg-gray-800">
       <p class="text-lg text-red-600 dark:text-red-400">{{ loadError }}</p>
       <NuxtLink to="/client-type">
-        <UButton color="primary" class="mt-4"><span class="font-[Moul]">ត្រឡប់ក្រោយ</span></UButton>
+        <UButton color="primary" class="mt-4"><span class="font-[Moul]">{{ $t('action.back') }}</span></UButton>
       </NuxtLink>
     </div>
 
@@ -172,11 +172,11 @@ async function submit() {
       <div class="col-span-12 mt-4 flex justify-end gap-2">
         <NuxtLink to="/client-type">
           <UButton color="gray" size="xl" type="button">
-            <span class="font-[Moul] text-lg">ត្រឡប់ក្រោយ</span>
+            <span class="font-[Moul] text-lg">{{ $t('action.back') }}</span>
           </UButton>
         </NuxtLink>
         <UButton v-if="!readOnly" color="primary" size="xl" type="submit" :loading="busy">
-          <span class="font-[Moul] text-lg">រក្សាទុក</span>
+          <span class="font-[Moul] text-lg">{{ $t('action.save') }}</span>
         </UButton>
       </div>
     </TwForm>

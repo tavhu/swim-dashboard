@@ -85,7 +85,7 @@ const STATUS_NAME: Record<string, string> = {
           </div>
           <UButton color="gray" size="xl" :loading="loading" @click="refresh()">
             <TwFeather type="refresh-cw" :size="18" class="mr-1" />
-            <span class="hidden font-[Moul] text-lg sm:inline">ធ្វើបច្ចុប្បន្នភាព</span>
+            <span class="hidden font-[Moul] text-lg sm:inline">{{ $t('action.refresh') }}</span>
           </UButton>
         </div>
         <hr class="my-2 border dark:border-gray-700" />

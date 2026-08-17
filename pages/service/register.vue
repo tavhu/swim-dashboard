@@ -23,6 +23,7 @@ const formName = 'serviceRegisterForm';
 // Form Data based on Prisma Schema
 const formData = reactive({
   nameKh: '',
+  nameEn: '',
   providingInstitution: '',
   purpose: '',
   legalBasis: '',
@@ -41,6 +42,7 @@ const validator = computed(() => form.value.validator);
 // Validation Rules
 const formRules = {
   nameKh: ['string', 'required'],
+  nameEn: ['string'],
   providingInstitution: ['string'],
   purpose: ['string'],
   legalBasis: ['string'],
@@ -109,6 +111,7 @@ const clearForm = () => {
       class="grid grid-cols-12 gap-4 bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded-lg p-4 shadow"
       :class="{ 'tw-shake': isError }" :rules="formRules" @submit="submit" :custom-field-name="{
         nameKh: 'ឈ្មោះសេវា',
+        nameEn: 'ឈ្មោះសេវា (អង់គ្លេស)',
         providingInstitution: 'ក្រសួង/ស្ថាប័ន ផ្តល់សេវា',
         purpose: 'គោលបំណង នៃការផ្តល់សេវា',
         legalBasis: 'មូលដ្ឋានគតិយុត្ត',
@@ -121,6 +124,11 @@ const clearForm = () => {
         <TwInput label="ឈ្មោះសេវា" name="nameKh" v-model="formData.nameKh" placeholder="ឈ្មោះសេវា" required
           :disabled="readOnly" />
         <CustomErrorMessage name="nameKh" />
+      </div>
+      <div class="col-span-12 lg:col-span-6">
+        <TwInput label="ឈ្មោះសេវា (អង់គ្លេស)" name="nameEn" v-model="formData.nameEn"
+          placeholder="English service name" :disabled="readOnly" />
+        <CustomErrorMessage name="nameEn" />
       </div>
 
       <div class="col-span-12 lg:col-span-6">

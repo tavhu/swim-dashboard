@@ -15,14 +15,16 @@ export default eventHandler(async (event) => {
 
   try {
     const [clientTypes, services] = await Promise.all([
+      // nameEn comes back too so the dropdowns can follow the reader's language.
+      // It is optional on both tables, and the UI falls back to Khmer.
       prisma.clientType.findMany({
         where: { isActive: true },
-        select: { id: true, nameKh: true },
+        select: { id: true, nameKh: true, nameEn: true },
         orderBy: { nameKh: "asc" },
       }),
       prisma.service.findMany({
         where: { isActive: true },
-        select: { id: true, nameKh: true },
+        select: { id: true, nameKh: true, nameEn: true },
         orderBy: { nameKh: "asc" },
       }),
     ]);

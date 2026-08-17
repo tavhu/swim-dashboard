@@ -266,7 +266,7 @@ function removeExistingFile(index: number) {
 
       <!-- Action Buttons -->
       <div class="col-span-12 flex justify-end gap-2 mt-4">
-        <UButton color="gray" type="button" @click="goBack()">ត្រឡប់ក្រោយ</UButton>
+        <UButton color="gray" type="button" @click="goBack()">{{ $t('action.back') }}</UButton>
         <UButton v-if="canSave" color="gray" type="button" @click="clearForm()">{{ isEditMode ? 'បោះបង់' : 'កំណត់ឡើងវិញ'
         }}</UButton>
         <UButton v-if="canSave" color="primary" type="submit">{{ isEditMode ? 'រក្សាទុកការផ្លាស់ប្តូរ' : 'រក្សាទុក' }}

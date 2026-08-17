@@ -755,7 +755,7 @@ watch(() => formData.communeBA, (newCommune) => {
                 </h2>
                 <NuxtLink :to="prop.id ? `/client/id/${prop.id}` : '/client'">
                     <UButton color="gray" size="xl" type="button">
-                        <span class="font-[Moul] text-lg">ត្រឡប់ក្រោយ</span>
+                        <span class="font-[Moul] text-lg">{{ $t('action.back') }}</span>
                     </UButton>
                 </NuxtLink>
             </div>
@@ -1074,7 +1074,7 @@ watch(() => formData.communeBA, (newCommune) => {
                                 <UButton color="red" variant="soft" size="sm" type="button" :disabled="readOnly"
                                     @click="removeServeHistory(index)">
                                     <TwFeather type="trash-2" :size="16" class="mr-1" />
-                                    <span>លុបជួរ</span>
+                                    <span>{{ $t('action.removeRow') }}</span>
                                 </UButton>
                             </div>
                         </div>
@@ -1240,7 +1240,7 @@ watch(() => formData.communeBA, (newCommune) => {
                                 <UButton color="red" variant="soft" size="sm" type="button" :disabled="readOnly"
                                     @click="removeProgress(index)">
                                     <TwFeather type="trash-2" :size="16" class="mr-1" />
-                                    <span>លុបជួរ</span>
+                                    <span>{{ $t('action.removeRow') }}</span>
                                 </UButton>
                             </div>
                         </div>
@@ -1293,12 +1293,12 @@ watch(() => formData.communeBA, (newCommune) => {
                 <div class="col-span-12 flex justify-end gap-2">
                     <NuxtLink :to="prop.id ? `/client/id/${prop.id}` : '/client'">
                         <UButton color="gray" size="xl" type="button">
-                            <span class="font-[Moul] text-lg">ត្រឡប់ក្រោយ</span>
+                            <span class="font-[Moul] text-lg">{{ $t('action.back') }}</span>
                         </UButton>
                     </NuxtLink>
                     <UButton color="primary" type="submit" size="xl" :loading="saving" :disabled="readOnly">
                         <TwFeather type="save" :size="18" class="mr-1" />
-                        <span class="font-[Moul] text-lg">រក្សាទុក</span>
+                        <span class="font-[Moul] text-lg">{{ $t('action.save') }}</span>
                     </UButton>
                 </div>
             </TwForm>

@@ -108,12 +108,12 @@ onMounted(load);
           <NuxtLink v-if="rec" :to="`/client/case-plan/form?id=${rec.id}`">
             <UButton color="gray" size="xl" :disabled="readOnly">
               <TwFeather type="edit-2" :size="18" class="mr-1" />
-              <span class="hidden font-[Moul] text-lg sm:inline">កែសម្រួល</span>
+              <span class="hidden font-[Moul] text-lg sm:inline">{{ $t('action.edit') }}</span>
             </UButton>
           </NuxtLink>
           <UButton v-if="rec" color="primary" size="xl" @click="printPage">
             <TwFeather type="printer" :size="18" class="mr-1" />
-            <span class="hidden font-[Moul] text-lg sm:inline">បោះពុម្ព</span>
+            <span class="hidden font-[Moul] text-lg sm:inline">{{ $t('action.print') }}</span>
           </UButton>
         </div>
       </div>
@@ -127,7 +127,7 @@ onMounted(load);
       <div v-else-if="error" class="rounded-lg bg-white p-8 text-center shadow dark:bg-gray-800">
         <p class="text-lg text-red-600 dark:text-red-400">{{ error }}</p>
         <NuxtLink to="/client">
-          <UButton color="primary" class="mt-4"><span class="font-[Moul]">ត្រឡប់ក្រោយ</span></UButton>
+          <UButton color="primary" class="mt-4"><span class="font-[Moul]">{{ $t('action.back') }}</span></UButton>
         </NuxtLink>
       </div>
 

@@ -59,7 +59,7 @@ onMounted(async () => {
         <NuxtLink v-if="client" :to="`/client/follow-up/form?client=${client.id}`">
           <UButton color="primary" size="xl" :disabled="readOnly">
             <TwFeather type="plus" :size="18" class="mr-1" />
-            <span class="font-[Moul] text-lg">បង្កើតថ្មី</span>
+            <span class="font-[Moul] text-lg">{{ $t('action.createNew') }}</span>
           </UButton>
         </NuxtLink>
       </div>
@@ -70,7 +70,7 @@ onMounted(async () => {
       <div v-else-if="error" class="rounded-lg bg-white p-8 text-center shadow dark:bg-gray-800">
         <p class="text-lg text-red-600 dark:text-red-400">{{ error }}</p>
         <NuxtLink to="/client">
-          <UButton color="primary" class="mt-4"><span class="font-[Moul]">ត្រឡប់ក្រោយ</span></UButton>
+          <UButton color="primary" class="mt-4"><span class="font-[Moul]">{{ $t('action.back') }}</span></UButton>
         </NuxtLink>
       </div>
 
@@ -111,7 +111,7 @@ onMounted(async () => {
                 <td class="py-3">
                   <div class="flex gap-2">
                     <NuxtLink :to="`/client/follow-up/view/${r.id}`">
-                      <UButton color="gray" icon="i-heroicons-eye" size="sm">មើល</UButton>
+                      <UButton color="gray" icon="i-heroicons-eye" size="sm">{{ $t('action.view') }}</UButton>
                     </NuxtLink>
                     <NuxtLink :to="`/client/follow-up/form?id=${r.id}`">
                       <UButton color="primary" icon="i-heroicons-pencil-square" size="sm" :disabled="readOnly">

@@ -24,6 +24,7 @@ const formName = 'serviceEditForm';
 const formData = reactive({
   id: serviceId,
   nameKh: '',
+  nameEn: '',
   providingInstitution: '',
   purpose: '',
   legalBasis: '',
@@ -53,6 +54,7 @@ const validator = computed(() => form.value.validator);
 // Validation Rules
 const formRules = {
   nameKh: ['string', 'required'],
+  nameEn: ['string'],
   providingInstitution: ['string'],
   purpose: ['string'],
   legalBasis: ['string'],
@@ -113,6 +115,7 @@ async function submit() {
       @submit="submit"
       :custom-field-name="{
         nameKh: 'ឈ្មោះសេវា',
+        nameEn: 'ឈ្មោះសេវា (អង់គ្លេស)',
         providingInstitution: 'ក្រសួង/ស្ថាប័ន ផ្តល់សេវា',
         purpose: 'គោលបំណង នៃការផ្តល់សេវា',
         legalBasis: 'មូលដ្ឋានគតិយុត្ត',
@@ -125,6 +128,10 @@ async function submit() {
       <div class="col-span-12 lg:col-span-6">
         <TwInput label="ឈ្មោះសេវា" name="nameKh" v-model="formData.nameKh" placeholder="ឈ្មោះសេវា" required :disabled="readOnly" />
         <CustomErrorMessage name="nameKh" />
+      </div>
+      <div class="col-span-12 lg:col-span-6">
+        <TwInput label="ឈ្មោះសេវា (អង់គ្លេស)" name="nameEn" v-model="formData.nameEn" placeholder="English service name" :disabled="readOnly" />
+        <CustomErrorMessage name="nameEn" />
       </div>
 
       <div class="col-span-12 lg:col-span-6">

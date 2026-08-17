@@ -166,7 +166,7 @@ const close = () => {
         </div>
         <div class="flex justify-end gap-2 mt-4">
           <UButton @click="close" color="gray" size="xl">បោះបង់</UButton>
-          <UButton type="submit" color="primary" size="xl">រក្សាទុក</UButton>
+          <UButton type="submit" color="primary" size="xl">{{ $t('action.save') }}</UButton>
         </div>
       </TwForm>
     </div>

@@ -134,7 +134,7 @@ onMounted(async () => {
         </h2>
         <UButton v-if="serviceCenter" color="primary" size="xl" class="no-print shrink-0" @click="printPage">
           <TwFeather type="printer" :size="18" class="mr-1" />
-          <span class="hidden font-[Moul] text-lg sm:inline">បោះពុម្ព</span>
+          <span class="hidden font-[Moul] text-lg sm:inline">{{ $t('action.print') }}</span>
         </UButton>
       </div>
       <hr class="my-2 border dark:border-gray-700" />

@@ -100,7 +100,7 @@ async function remove(id: string) {
         <NuxtLink v-if="!readOnly" to="/client-type/register">
           <UButton color="primary" size="xl">
             <TwFeather type="plus" :size="18" class="mr-1" />
-            <span class="font-[Moul] text-lg">បង្កើតថ្មី</span>
+            <span class="font-[Moul] text-lg">{{ $t('action.createNew') }}</span>
           </UButton>
         </NuxtLink>
       </div>

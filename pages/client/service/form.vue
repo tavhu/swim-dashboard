@@ -16,6 +16,7 @@ const route = useRoute();
 const router = useRouter();
 const toast = useToast();
 const readOnly = checkIfPageReadOnly();
+const { localisedName } = useLocalisedName();
 
 const serviceId = computed(() => (route.query.id as string) || "");
 const clientIdParam = computed(() => (route.query.client as string) || "");
@@ -152,7 +153,7 @@ async function submit() {
         </h2>
         <NuxtLink v-if="client" :to="`/client/service/${client.id}`">
           <UButton color="gray" size="xl">
-            <span class="font-[Moul] text-lg">ត្រឡប់ក្រោយ</span>
+            <span class="font-[Moul] text-lg">{{ $t('action.back') }}</span>
           </UButton>
         </NuxtLink>
       </div>
@@ -163,7 +164,7 @@ async function submit() {
       <div v-else-if="error" class="rounded-lg bg-white p-8 text-center shadow dark:bg-gray-800">
         <p class="text-lg text-red-600 dark:text-red-400">{{ error }}</p>
         <NuxtLink to="/client">
-          <UButton color="primary" class="mt-4"><span class="font-[Moul]">ត្រឡប់ក្រោយ</span></UButton>
+          <UButton color="primary" class="mt-4"><span class="font-[Moul]">{{ $t('action.back') }}</span></UButton>
         </NuxtLink>
       </div>
 
@@ -202,8 +203,8 @@ async function submit() {
               <span class="text-sm text-gray-500 dark:text-gray-400">ប្រភេទអតិថិជន</span>
               <select v-model="form.clientTypeId" :disabled="readOnly"
                 class="mt-1 h-10 w-full rounded border px-2 text-base dark:border-gray-700 dark:bg-gray-900">
-                <option value="">សូមជ្រើសរើស</option>
-                <option v-for="t in options.clientTypes" :key="t.id" :value="t.id">{{ t.nameKh }}</option>
+                <option value="">{{ $t('action.selectOne') }}</option>
+                <option v-for="t in options.clientTypes" :key="t.id" :value="t.id">{{ localisedName(t) }}</option>
               </select>
             </label>
             <label class="block">
@@ -247,8 +248,8 @@ async function submit() {
               <span class="text-sm text-gray-500 dark:text-gray-400">សេវាកម្ម</span>
               <select v-model="form.serviceId" :disabled="readOnly"
                 class="mt-1 h-10 w-full rounded border px-2 text-base dark:border-gray-700 dark:bg-gray-900">
-                <option value="">សូមជ្រើសរើស</option>
-                <option v-for="s in options.services" :key="s.id" :value="s.id">{{ s.nameKh }}</option>
+                <option value="">{{ $t('action.selectOne') }}</option>
+                <option v-for="s in options.services" :key="s.id" :value="s.id">{{ localisedName(s) }}</option>
               </select>
             </label>
           </div>
@@ -283,7 +284,7 @@ async function submit() {
               <span class="text-sm text-gray-500 dark:text-gray-400">ស្ថានភាពអតិថិជនបច្ចុប្បន្ន</span>
               <select v-model="form.currentStatus" :disabled="readOnly"
                 class="mt-1 h-10 w-full rounded border px-2 text-base dark:border-gray-700 dark:bg-gray-900">
-                <option value="">សូមជ្រើសរើស</option>
+                <option value="">{{ $t('action.selectOne') }}</option>
                 <option v-for="s in CURRENT_STATUS" :key="s.value" :value="s.value">{{ s.label }}</option>
               </select>
             </label>
@@ -291,8 +292,8 @@ async function submit() {
               <span class="text-sm text-gray-500 dark:text-gray-400">តម្រូវការសេវាបន្ត</span>
               <select v-model="form.followUpServiceId" :disabled="readOnly"
                 class="mt-1 h-10 w-full rounded border px-2 text-base dark:border-gray-700 dark:bg-gray-900">
-                <option value="">សូមជ្រើសរើស</option>
-                <option v-for="s in options.services" :key="s.id" :value="s.id">{{ s.nameKh }}</option>
+                <option value="">{{ $t('action.selectOne') }}</option>
+                <option v-for="s in options.services" :key="s.id" :value="s.id">{{ localisedName(s) }}</option>
               </select>
             </label>
           </div>
@@ -308,7 +309,7 @@ async function submit() {
         <div class="col-span-12 flex justify-end gap-2">
           <UButton type="submit" color="primary" size="xl" :loading="saving" :disabled="readOnly">
             <TwFeather type="save" :size="18" class="mr-1" />
-            <span class="font-[Moul] text-lg">រក្សាទុក</span>
+            <span class="font-[Moul] text-lg">{{ $t('action.save') }}</span>
           </UButton>
         </div>
       </form>
