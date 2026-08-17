@@ -1,11 +1,10 @@
 import { getServerSession } from "#auth";
 
 /**
- * Approval transitions for ទម្រង់ទី២.
+ * Approval transitions for ទម្រង់ទី៣ — the manual's ៤. សេចក្តីសន្និដ្ឋាន, where
+ * the social worker submits and the centre director approves.
  *
- * The rules and the audit row are in server/utils/approval.ts, shared with the
- * other ទម្រង់ — all six carry the same approval fields, so only the table and
- * the ApprovalRecordType differ.
+ * Rules and audit row shared with the other ទម្រង់ via server/utils/approval.ts.
  */
 export default eventHandler(async (event) => {
   const session = await getServerSession(event);
@@ -18,16 +17,16 @@ export default eventHandler(async (event) => {
   try {
     return await runApprovalTransition({
       event,
-      delegate: event.context.prisma.clientService,
-      recordType: "CLIENT_SERVICE",
-      label: "service record",
+      delegate: event.context.prisma.casePlan,
+      recordType: "CASE_PLAN",
+      label: "case plan",
       id: body?.id,
       action: body?.action,
       reason: body?.reason,
       actorID: (session as any)?.id ?? (session as any)?.sub,
     });
   } catch (e: any) {
-    console.error("[client/service/approve]", e);
+    console.error("[client/case-plan/approve]", e);
     setResponseStatus(event, 412);
     return { error: e?.message ?? "Could not record the decision" };
   }

@@ -38,6 +38,16 @@ export const CLIENT_SERVICE_FIELDS: FieldSpec = {
   optionalDates: ["serviceDate"],
 };
 
+/** CasePlan (ទម្រង់ទី៣). Its activity rows are normalised separately, per row. */
+export const CASE_PLAN_FIELDS: FieldSpec = {
+  optionalDates: ["monitorDate", "nextMonitorDate"],
+};
+
+/** One ក. សកម្មភាពសេវាកម្ម row. */
+export const CASE_PLAN_ACTIVITY_FIELDS: FieldSpec = {
+  optionalDates: ["startDate", "endDate"],
+};
+
 /**
  * governStaff — the same defect. spouseDateOfBirth is optional in the schema
  * but StaffCanvasForm initialises it to '', so an unmarried staff member

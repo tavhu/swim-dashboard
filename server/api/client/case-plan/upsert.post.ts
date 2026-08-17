@@ -1,0 +1,101 @@
+import { getServerSession } from "#auth";
+
+/**
+ * ទម្រង់ទី៣ — create or update a client's case plan, with its ក. សកម្មភាពសេវាកម្ម
+ * rows.
+ *
+ * The activities are replaced rather than diffed. The form lets a user add,
+ * remove and reorder rows freely, so what arrives is the plan as it now stands;
+ * working out which rows moved would be more code and more ways to be wrong than
+ * writing the list the user is looking at. Both halves go in one transaction, so
+ * a plan is never left with one version of its activities and another of itself.
+ *
+ * Types are coerced first: the form initialises every field to '' and Prisma
+ * rejects that for DateTime columns — the fault that once made ទម្រង់ទី១
+ * unsaveable whenever an optional date was left blank.
+ */
+export default eventHandler(async (event) => {
+  const session = await getServerSession(event);
+  if (!session) {
+    return { status: "unauthenticated" };
+  }
+
+  const rawBody = await readBody(event);
+  const { data: body, missing } = normalisePayload(rawBody, CASE_PLAN_FIELDS);
+  if (missing.length) {
+    setResponseStatus(event, 400);
+    return { error: `Missing or invalid: ${missing.join(", ")}`, fields: missing };
+  }
+
+  if (!body?.clientId) {
+    setResponseStatus(event, 400);
+    return { error: "clientId is required" };
+  }
+
+  const data = {
+    clientId: body.clientId,
+    providerName: body.providerName || null,
+    socialWorkerName: body.socialWorkerName || null,
+    socialWorkerPhone: body.socialWorkerPhone || null,
+    referralReason: body.referralReason || null,
+    challenges: body.challenges || null,
+    situationAssessment: body.situationAssessment || null,
+    monitorDate: body.monitorDate ?? null,
+    monitorMethod: body.monitorMethod || null,
+    monitorResult: body.monitorResult || null,
+    nextMonitorDate: body.nextMonitorDate ?? null,
+    conclusion: body.conclusion || null,
+  };
+
+  /**
+   * A row with no service and no dates is an empty row the user added and never
+   * filled — dropped rather than stored, so the printed plan does not carry
+   * blank numbered lines. sortOrder comes from position, which is what the
+   * manual's ១, ២, ៣ numbering means.
+   */
+  const activities = (Array.isArray(rawBody?.activities) ? rawBody.activities : [])
+    .map((row: any) => {
+      const { data: r } = normalisePayload(row ?? {}, CASE_PLAN_ACTIVITY_FIELDS);
+      return {
+        serviceId: r.serviceId || null,
+        startDate: r.startDate ?? null,
+        endDate: r.endDate ?? null,
+      };
+    })
+    .filter((r: any) => r.serviceId || r.startDate || r.endDate)
+    .map((r: any, i: number) => ({ ...r, sortOrder: i }));
+
+  try {
+    const prisma = event.context.prisma;
+
+    const id = await prisma.$transaction(async (tx: any) => {
+      if (body?.id) {
+        await tx.casePlan.update({ where: { id: body.id }, data, select: { id: true } });
+        await tx.casePlanActivity.deleteMany({ where: { casePlanId: body.id } });
+        if (activities.length) {
+          await tx.casePlanActivity.createMany({
+            data: activities.map((a: any) => ({ ...a, casePlanId: body.id })),
+          });
+        }
+        return body.id;
+      }
+
+      const created = await tx.casePlan.create({
+        data: { ...data, activities: { create: activities } },
+        select: { id: true },
+      });
+      return created.id;
+    });
+
+    setResponseStatus(event, body?.id ? 200 : 201);
+    return { message: "saved", id };
+  } catch (e: any) {
+    if (e?.code === "P2025") {
+      setResponseStatus(event, 404);
+      return { error: "រកមិនឃើញផែនការនេះទេ" };
+    }
+    console.error("[client/case-plan/upsert]", e);
+    setResponseStatus(event, 412);
+    return { error: e?.message ?? "Could not save the case plan" };
+  }
+});

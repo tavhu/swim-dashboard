@@ -498,6 +498,7 @@ model Client_PersonalInformation {
   ClientHopelessMultiple     ClientHopelessMultiple[]
   services                   ServicesOnClients[]
   clientServices             ClientService[]
+  casePlans                  CasePlan[]
 
   // Propose → approve (ស្នើឡើង / អនុម័ត / បដិសេធ). Intake staff at a centre
   // submit a record; a ប្រធានមជ្ឈមណ្ឌល or ministry user approves or rejects it.
@@ -585,6 +586,12 @@ model CenterPlan {
 
 model Service {
   id                   String                     @id @default(cuid())
+  /// លេខកូដ. The manual writes every service reference as (លេខកូដ*, ឈ្មោះខ្មែរ,
+  /// ឈ្មោះអង់គ្លេស, បរិយាយ) and marks the code required, but this table was
+  /// keyed only by name. Filled from a sequence when left blank, as
+  /// ClientType.code and Client ReadableCode are, so an official ministry code
+  /// can still be typed in and kept.
+  code                 String                     @unique @default(dbgenerated("('SV'::text || lpad((nextval('service_code_seq'::regclass))::text, 3, '0'::text))"))
   nameKh               String                     @unique // ឈ្មោះសេវា
   providingInstitution String? // ក្រសួង/ស្ថាប័ន ផ្តល់សេវា
   purpose              String? // គោលបំណង នៃការផ្តល់សេវា
@@ -599,6 +606,7 @@ model Service {
   clients              ServicesOnClients[]
   clientServices       ClientService[]            @relation("ClientServiceCatalogue")
   followUpFor          ClientService[]            @relation("ClientServiceFollowUp")
+  casePlanActivities   CasePlanActivity[]         @relation("CasePlanActivityService")
   serviceCenters       ServicesOnServiceCenters[]
 
   @@map("services")
@@ -641,13 +649,13 @@ model ServicesOnServiceCenters {
 /// ប្រភេទអតិថិជន — the kind of person a case is about (orphan, juvenile in
 /// conflict with the law, trafficking victim, and so on).
 model ClientType {
-  id String @id @default(cuid())
+  id             String          @id @default(cuid())
   /// លេខកូដ. Entered by hand when the ministry has an official code for the
   /// category; otherwise left out and the database fills it from a sequence,
   /// the same way Client_PersonalInformation.ReadableCode works. Doing it in
   /// the default rather than in the handler keeps it race-free without a
   /// read-then-write.
-  code String @unique @default(dbgenerated("('CT'::text || lpad((nextval('client_type_code_seq'::regclass))::text, 3, '0'::text))"))
+  code           String          @unique @default(dbgenerated("('CT'::text || lpad((nextval('client_type_code_seq'::regclass))::text, 3, '0'::text))"))
   nameKh         String // ឈ្មោះ (ខ្មែរ)
   nameEn         String? // ឈ្មោះ (អង់គ្លេស)
   description    String? // បរិយាយ
@@ -789,4 +797,87 @@ model ClientService {
   @@index([clientId])
   @@index([approvalStatus])
   @@map("clientServices")
+}
+
+/// ទម្រង់ទី៣ ផែនការករណីរបស់អតិថិជន — the plan of services agreed for a client.
+///
+/// Many per client rather than one: a plan gets revised as a case develops, and
+/// a single row would mean overwriting what was agreed before.
+///
+/// Section ១ of the manual (code, name, gender, age, family phone, family
+/// address) is not stored here. Client_PersonalInformation already holds all of
+/// it, so it is read through the relation and shown on the form and the
+/// printout — a second copy could only disagree with the first.
+model CasePlan {
+  id       String                     @id @default(cuid())
+  clientId String
+  client   Client_PersonalInformation @relation(fields: [clientId], references: [id])
+
+  // ២. ផែនការ
+  providerName        String? // ស្ថាប័នទទួលផ្តល់សេវា
+  socialWorkerName    String? // ឈ្មោះបុគ្គលិកសង្គម
+  socialWorkerPhone   String? // លេខទំនាក់ទំនង ឬអ៊ីម៊ែល
+  referralReason      String? // មូលហេតុនៃការបញ្ជូនទទួលសេវា
+  challenges          String? // បញ្ហាប្រឈម
+  situationAssessment String? // ការវាយតម្លៃស្ថានភាពបច្ចុប្បន្ន
+
+  /// ក. សកម្មភាពសេវាកម្ម — the manual says អាចបន្ថែមច្រើនទៀត, so this is a child
+  /// table rather than a fixed set of columns.
+  activities CasePlanActivity[]
+
+  // ៣. កាលបរិច្ឆេទតាមដាន ត្រួតពិនិត្យ
+  //
+  // One set, not a list. The manual writes it once and ends it with a "next
+  // follow-up" date pointing forward; ទម្រង់ទី៥ តាមដាន និងវាយតម្លៃ is the form
+  // that records each follow-up as it happens.
+  monitorDate     DateTime? // កាលបរិច្ឆេទតាមដាន
+  monitorMethod   String? // សង្កេតពីចម្ងាយ / អង្កេត / សម្ភាសន៍ / របាយការណ៍អ្នកផ្តល់សេវា
+  monitorResult   String? // មិនប្រក្រតី / ផ្អាកដំណើការ / ដំណើការធម្មតា / ល្អប្រសើរជាងមុន
+  nextMonitorDate DateTime? // កាលបរិច្ឆេទតាមដានបន្ត
+
+  // ៤. សេចក្តីសន្និដ្ឋាន — the heading the manual gives the approval block. The
+  // free-text conclusion sits with it; the submit/approve fields below are the
+  // same shape every ទម្រង់ uses so one component serves them all.
+  conclusion String? // សេចក្តីសន្និដ្ឋាន
+
+  approvalStatus  ApprovalStatus @default(DRAFT)
+  submittedAt     DateTime?
+  submittedByID   String?
+  decidedAt       DateTime?
+  decidedByID     String?
+  rejectionReason String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([clientId])
+  @@index([approvalStatus])
+  @@map("casePlans")
+}
+
+/// One row of ក. សកម្មភាពសេវាកម្ម — a service from the /service catalogue with
+/// the dates it runs between.
+model CasePlanActivity {
+  id         String   @id @default(cuid())
+  casePlanId String
+  /// Cascade: these rows are part of the plan, not records in their own right.
+  /// Deleting a plan should take its activities, not leave them orphaned or
+  /// refuse the delete.
+  casePlan   CasePlan @relation(fields: [casePlanId], references: [id], onDelete: Cascade)
+
+  serviceId String? // (លេខកូដ, ឈ្មោះសេវា ខ្មែរ/អង់គ្លេស, បរិយាយ)
+  service   Service?  @relation("CasePlanActivityService", fields: [serviceId], references: [id])
+  startDate DateTime? // កាលបរិច្ឆេទចាប់ផ្តើម
+  endDate   DateTime? // កាលបរិច្ឆេទបញ្ចប់
+
+  /// The manual numbers the rows ១, ២, ៣ …, so their order is part of the plan
+  /// and cannot be left to whatever the database returns.
+  sortOrder Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([casePlanId, sortOrder])
+  @@index([serviceId])
+  @@map("casePlanActivities")
 }

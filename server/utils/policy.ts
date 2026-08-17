@@ -128,6 +128,20 @@ export const RULES: Rule[] = [
     resource: RESOURCE.client,
     action: "write",
   },
+  // ទម្រង់ទី៣ ផែនការករណី — a client's case file, so gated on `client` like the
+  // forms either side of it, and already covered by ENFORCED's /api/client/.
+  {
+    mode: "permission",
+    pattern: /^\/api\/client\/case-plan\/get\/?$/,
+    resource: RESOURCE.client,
+    action: "read",
+  },
+  {
+    mode: "permission",
+    pattern: /^\/api\/client\/case-plan\/(upsert|approve)\/?$/,
+    resource: RESOURCE.client,
+    action: "write",
+  },
 
   // --- roles & permissions --------------------------------------------------
   {
