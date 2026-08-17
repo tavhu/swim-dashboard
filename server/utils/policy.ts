@@ -155,6 +155,19 @@ export const RULES: Rule[] = [
     resource: RESOURCE.client,
     action: "write",
   },
+  // ទម្រង់ទី៥ តាមដាន និងវាយតម្លៃ — same reasoning as the forms either side.
+  {
+    mode: "permission",
+    pattern: /^\/api\/client\/follow-up\/get\/?$/,
+    resource: RESOURCE.client,
+    action: "read",
+  },
+  {
+    mode: "permission",
+    pattern: /^\/api\/client\/follow-up\/(upsert|approve)\/?$/,
+    resource: RESOURCE.client,
+    action: "write",
+  },
 
   // --- roles & permissions --------------------------------------------------
   {

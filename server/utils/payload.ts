@@ -58,6 +58,16 @@ export const REINTEGRATION_SERVICE_FIELDS: FieldSpec = {
   optionalDates: ["startDate", "endDate"],
 };
 
+/** FollowUp (ទម្រង់ទី៥). */
+export const FOLLOW_UP_FIELDS: FieldSpec = {
+  optionalDates: ["monitorDate", "nextMonitorDate"],
+};
+
+/** One row of ទម្រង់ទី៥'s section ២ service list. */
+export const FOLLOW_UP_SERVICE_FIELDS: FieldSpec = {
+  optionalDates: ["startDate", "endDate"],
+};
+
 /**
  * governStaff — the same defect. spouseDateOfBirth is optional in the schema
  * but StaffCanvasForm initialises it to '', so an unmarried staff member

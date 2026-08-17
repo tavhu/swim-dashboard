@@ -185,7 +185,11 @@ const CASE_FORMS = [
         to: (id: string) => `/client/reintegration/${id}`,
         create: (id: string) => `/client/reintegration/form?client=${id}`,
     },
-    { label: 'ទម្រង់(៥)', title: 'តាមដាន និងវាយតម្លៃស្ថានភាពអតិថិជន' },
+    {
+        label: 'ទម្រង់(៥)', title: 'តាមដាន និងវាយតម្លៃស្ថានភាពអតិថិជន',
+        to: (id: string) => `/client/follow-up/${id}`,
+        create: (id: string) => `/client/follow-up/form?client=${id}`,
+    },
     { label: 'ទម្រង់(៦)', title: 'បិទករណី' },
 ]
 

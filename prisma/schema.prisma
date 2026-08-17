@@ -500,6 +500,7 @@ model Client_PersonalInformation {
   clientServices             ClientService[]
   casePlans                  CasePlan[]
   reintegrations             Reintegration[]
+  followUps                  FollowUp[]
 
   // Propose → approve (ស្នើឡើង / អនុម័ត / បដិសេធ). Intake staff at a centre
   // submit a record; a ប្រធានមជ្ឈមណ្ឌល or ministry user approves or rejects it.
@@ -610,6 +611,7 @@ model Service {
   casePlanActivities     CasePlanActivity[]              @relation("CasePlanActivityService")
   reintegrationPast      ReintegrationPastService[]      @relation("ReintegrationPastService")
   reintegrationCommunity ReintegrationCommunityService[] @relation("ReintegrationCommunityService")
+  followUpServices       FollowUpService[]               @relation("FollowUpService")
   serviceCenters         ServicesOnServiceCenters[]
 
   @@map("services")
@@ -1003,4 +1005,88 @@ model ReintegrationCommunityService {
   @@index([reintegrationId, sortOrder])
   @@index([serviceId])
   @@map("reintegrationCommunityServices")
+}
+
+/// ទម្រង់ទី៥ តាមដាន និងវាយតម្លៃស្ថានភាពអតិថិជន — one follow-up visit.
+///
+/// Many per client: this is the form that records each follow-up as it happens,
+/// which is why ទម្រង់ទី៣ keeps only a single next-follow-up date pointing here.
+///
+/// The manual opens with ជ្រើសរើស (២)ឬ(៣) ដើម្បីបំពេញទិន្នន័យ — a visit is either
+/// one kind of follow-up or the other, never both. `stage` records which, so a
+/// printed form matches the paper instruction and "which kind of follow-up was
+/// this" stays a question the database can answer, rather than one inferred
+/// from which columns happen to be null.
+model FollowUp {
+  id       String                     @id @default(cuid())
+  clientId String
+  client   Client_PersonalInformation @relation(fields: [clientId], references: [id])
+
+  /// IN_CENTRE = section ២, POST_REINTEGRATION = section ៣.
+  stage FollowUpStage @default(IN_CENTRE)
+
+  // Asked by both sections, so held once rather than twice over.
+  monitorDate     DateTime? // កាលបរិច្ឆេទតាមដាន
+  monitorMethod   String? // វិធីសាស្រ្តតាមដាន
+  nextMonitorDate DateTime? // កាលបរិច្ឆេទតាមដានបន្ត
+  /// Upload ឯកសារពាក់ព័ន្ធបើមាន. One column: the manual puts an upload in each
+  /// section, but only one section is ever filled in, so a second column would
+  /// always be empty.
+  attachments     String?
+
+  // ២. ការអនុវត្តផែនការសកម្មភាពផ្តល់សេវាកម្ម — in-centre only.
+  services FollowUpService[]
+
+  // ៣. ក្រោយពេលធ្វើសមាហរណកម្មទៅសហគមន៍ — post-reintegration only.
+  /// អ្នកផ្តល់ព័តមាន — ជ្រើសរើសបានច្រើន, comma separated as ទម្រង់ទី៤ stores it.
+  informants    String?
+  /// លទ្ធផល for the visit as a whole. Section ២ records its outcome per service
+  /// instead, on the rows above.
+  monitorResult String?
+
+  // ៤. សិទ្ធិធ្វើសេចក្តីសន្និដ្ឋាន
+  conclusion String?
+
+  approvalStatus  ApprovalStatus @default(DRAFT)
+  submittedAt     DateTime?
+  submittedByID   String?
+  decidedAt       DateTime?
+  decidedByID     String?
+  rejectionReason String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([clientId])
+  @@index([approvalStatus])
+  @@map("followUps")
+}
+
+enum FollowUpStage {
+  IN_CENTRE
+  POST_REINTEGRATION
+}
+
+/// One row of ២ — a planned service, with how it is going.
+model FollowUpService {
+  id         String   @id @default(cuid())
+  followUpId String
+  followUp   FollowUp @relation(fields: [followUpId], references: [id], onDelete: Cascade)
+
+  serviceId String?
+  service   Service?  @relation("FollowUpService", fields: [serviceId], references: [id])
+  startDate DateTime?
+  endDate   DateTime?
+  /// លទ្ធផល. A third list again: five options here, where ទម្រង់ទី៤'s finished
+  /// services offer four without ដំណើការធម្មតា and the monitoring lists offer
+  /// four without សះស្បើយ. The manual writes all three separately.
+  outcome   String?
+
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([followUpId, sortOrder])
+  @@index([serviceId])
+  @@map("followUpServices")
 }
