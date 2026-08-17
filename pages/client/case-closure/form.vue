@@ -10,6 +10,7 @@ import { useToast } from "vue3-tailwind";
  * save — a decision taken with the user, not something the manual states.
  */
 const route = useRoute();
+const { t } = useI18n();
 const router = useRouter();
 const toast = useToast();
 const readOnly = checkIfPageReadOnly();
@@ -61,7 +62,7 @@ onMounted(async () => {
         method: "POST",
         body: { id: closureId.value },
       });
-      if (!rec?.id) throw new Error("រកមិនឃើញកំណត់ត្រានេះទេ");
+      if (!rec?.id) throw new Error(t('message.recordNotFound'));
 
       for (const k of Object.keys(form)) {
         if (k === "id") continue;
@@ -79,11 +80,11 @@ onMounted(async () => {
         method: "POST",
         body: { id: clientIdParam.value },
       });
-      if (!c?.id) throw new Error("រកមិនឃើញអតិថិជននេះទេ");
+      if (!c?.id) throw new Error(t('message.clientNotFound'));
       client.value = c;
     }
   } catch (e: any) {
-    error.value = e?.message || "មិនអាចទាញយកព័ត៌មានបានទេ";
+    error.value = e?.message || t('message.loadFailed');
   } finally {
     pending.value = false;
   }
@@ -99,10 +100,10 @@ async function submit() {
       method: "POST",
       body: { ...form, failureReasons: failureReasons.value },
     });
-    toast.success({ message: "ជោគជ័យ" });
+    toast.success({ message: t('message.saved') });
     router.push(`/client/case-closure/view/${saved.id}`);
   } catch (e: any) {
-    toast.error({ message: e?.data?.error ?? e?.message ?? "មិនជោគជ័យ" });
+    toast.error({ message: e?.data?.error ?? e?.message ?? t('message.notSaved') });
   } finally {
     saving.value = false;
   }

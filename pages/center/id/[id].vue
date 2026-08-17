@@ -3,6 +3,7 @@ import { TwFeather } from "vue3-tailwind";
 
 const config = useRuntimeConfig();
 const route = useRoute();
+const { t } = useI18n();
 
 const serviceCenter = ref<any>(null);
 const pending = ref(true);
@@ -106,7 +107,7 @@ onMounted(async () => {
   } catch (e: any) {
     // The old version logged to the console and left the loading text up
     // forever, so a failed request looked identical to a slow one.
-    error.value = e?.statusMessage || e?.message || "មិនអាចទាញយកព័ត៌មានបានទេ";
+    error.value = e?.statusMessage || e?.message || t('message.loadFailed');
   } finally {
     pending.value = false;
   }

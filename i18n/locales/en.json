@@ -61,5 +61,12 @@
     "failed": "Failed",
     "language": "Language",
     "total": "Total"
+  },
+  "message": {
+    "saved": "Saved",
+    "notSaved": "Could not save",
+    "loadFailed": "Could not load the information",
+    "clientNotFound": "Client not found",
+    "recordNotFound": "Record not found"
   }
 }

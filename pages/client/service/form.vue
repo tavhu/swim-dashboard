@@ -13,6 +13,7 @@ import Datepicker from "@vuepic/vue-datepicker";
  * from the client record through the relation, so it cannot drift.
  */
 const route = useRoute();
+const { t } = useI18n();
 const router = useRouter();
 const toast = useToast();
 const readOnly = checkIfPageReadOnly();
@@ -67,7 +68,7 @@ onMounted(async () => {
         method: "POST",
         body: { id: serviceId.value },
       });
-      if (!rec?.id) throw new Error("រកមិនឃើញកំណត់ត្រានេះទេ");
+      if (!rec?.id) throw new Error(t('message.recordNotFound'));
       Object.assign(form, {
         id: rec.id,
         clientId: rec.clientId,
@@ -92,7 +93,7 @@ onMounted(async () => {
         method: "POST",
         body: { id: clientIdParam.value },
       });
-      if (!c?.id) throw new Error("រកមិនឃើញអតិថិជននេះទេ");
+      if (!c?.id) throw new Error(t('message.clientNotFound'));
       client.value = c;
       // These three are already on record from ទម្រង់ទី១ — the centre the client
       // was registered under and the officer who interviewed them. Prefilled
@@ -106,7 +107,7 @@ onMounted(async () => {
       form.providerPhone = centre?.phoneNumber ?? "";
     }
   } catch (e: any) {
-    error.value = e?.message || "មិនអាចទាញយកព័ត៌មានបានទេ";
+    error.value = e?.message || t('message.loadFailed');
   } finally {
     pending.value = false;
   }
@@ -133,11 +134,11 @@ async function submit() {
       files.value = null;
     }
     const saved: any = await $fetch("/api/client/service/upsert", { method: "POST", body: { ...form } });
-    toast.success({ message: "ជោគជ័យ" });
+    toast.success({ message: t('message.saved') });
     router.push(`/client/service/view/${saved.id}`);
   } catch (e: any) {
     // Name what failed rather than reporting only that it did.
-    toast.error({ message: e?.data?.error ?? e?.message ?? "មិនជោគជ័យ" });
+    toast.error({ message: e?.data?.error ?? e?.message ?? t('message.notSaved') });
   } finally {
     saving.value = false;
   }

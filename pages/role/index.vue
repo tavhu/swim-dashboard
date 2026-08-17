@@ -16,6 +16,7 @@ const { data: userDataAuth } = useAuth()
 
 // import { useResource } from '~~/store/resource'
 const readOnly = checkIfPageReadOnly()
+const { t } = useI18n();
 // const resource = useResource()
 
 const { data: res } = await useFetch("/api/role/readResource", {
@@ -72,11 +73,11 @@ async function submit() {
 
   if (error.value?.statusCode) {
     toast.error({
-      message: "មិនជោគជ័យ",
+      message: t('message.notSaved'),
     });
   } else {
     toast.success({
-      message: "ជោគជ័យ",
+      message: t('message.saved'),
     });
     clear();
   }

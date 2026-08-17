@@ -18,6 +18,7 @@ const props = defineProps<{
 }>();
 
 const router = useRouter();
+const { t } = useI18n();
 const toast = useToast();
 
 const formName = "clientTypeForm";
@@ -73,7 +74,7 @@ onMounted(async () => {
     formData.description = row.description ?? "";
     formData.isActive = row.isActive ?? true;
   } catch (e: any) {
-    loadError.value = e?.statusMessage ?? e?.data?.statusMessage ?? e?.message ?? "មិនអាចទាញយកព័ត៌មានបានទេ";
+    loadError.value = e?.statusMessage ?? e?.data?.statusMessage ?? e?.message ?? t('message.loadFailed');
   } finally {
     loading.value = false;
   }
@@ -100,7 +101,7 @@ async function submit() {
       method: "POST",
       body: { id: props.id, ...formData },
     });
-    toast.success({ message: "ជោគជ័យ" });
+    toast.success({ message: t('message.saved') });
     router.push("/client-type");
   } catch (e: any) {
     // The handler answers a duplicate code with a 409 and a Khmer message

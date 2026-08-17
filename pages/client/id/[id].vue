@@ -7,6 +7,7 @@ import {
 
 const config = useRuntimeConfig();
 const route = useRoute();
+const { t } = useI18n();
 const readOnly = checkIfPageReadOnly();
 
 const client = ref<any>(null);
@@ -150,9 +151,9 @@ async function load() {
       method: "POST",
       body: { id: route.params.id },
     });
-    if (!client.value?.id) error.value = "រកមិនឃើញអតិថិជននេះទេ";
+    if (!client.value?.id) error.value = t('message.clientNotFound');
   } catch (e: any) {
-    error.value = e?.statusMessage || e?.message || "មិនអាចទាញយកព័ត៌មានបានទេ";
+    error.value = e?.statusMessage || e?.message || t('message.loadFailed');
   } finally {
     pending.value = false;
   }

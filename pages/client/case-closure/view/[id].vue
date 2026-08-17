@@ -9,6 +9,7 @@ import { TwFeather } from "vue3-tailwind";
  * text on every closure and is not stored.
  */
 const route = useRoute();
+const { t } = useI18n();
 const readOnly = checkIfPageReadOnly();
 
 const rec = ref<any>(null);
@@ -75,12 +76,12 @@ async function load() {
       body: { id: route.params.id },
     });
     if (!data?.id) {
-      error.value = "រកមិនឃើញកំណត់ត្រានេះទេ";
+      error.value = t('message.recordNotFound');
       return;
     }
     rec.value = data;
   } catch (e: any) {
-    error.value = e?.statusMessage || e?.message || "មិនអាចទាញយកព័ត៌មានបានទេ";
+    error.value = e?.statusMessage || e?.message || t('message.loadFailed');
   } finally {
     pending.value = false;
   }
@@ -198,12 +199,12 @@ onMounted(load);
             </div>
           </dl>
 
-          <div class="mt-6">
+          <dl class="mt-6">
             <dt class="text-sm text-gray-500 dark:text-gray-400">គ. គម្រោងអនាគតរបស់ជនរងគ្រោះគួទទួលបាន</dt>
             <dd class="mt-1 whitespace-pre-line break-words text-base leading-relaxed text-gray-800 dark:text-gray-100">
               {{ val(rec.futurePlan) }}
             </dd>
-          </div>
+          </dl>
         </section>
 
         <ApprovalPanel :record-id="rec.id" endpoint="/api/client/case-closure/approve" :status="rec.approvalStatus"

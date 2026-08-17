@@ -14,6 +14,7 @@ import { TwFeather, useToast } from "vue3-tailwind";
  * it elsewhere always came back undefined and fell through to allow.
  */
 const readOnly = checkIfPageReadOnly();
+const { t } = useI18n();
 const toast = useToast();
 const router = useRouter();
 
@@ -83,7 +84,7 @@ async function remove(id: string) {
     toast.success({
       message: res?.inUse
         ? `បានដកចេញ។ កំណត់ត្រា ${res.inUse} នៅតែប្រើប្រភេទនេះដដែល`
-        : "ជោគជ័យ",
+        : t('message.saved'),
     });
     refresh();
   } catch (e: any) {

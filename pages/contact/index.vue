@@ -4,6 +4,7 @@ import type { FormSubmitEvent } from '#ui/types'
 
 const reCaptcharKey = useRuntimeConfig().public.reCaptcha_Client_Key
 const toast = useToast()
+const { t } = useI18n();
 type Schema = z.output<typeof schema>
 definePageMeta({
   layout: "front",
@@ -86,7 +87,7 @@ const  onSubmit = async (event: FormSubmitEvent<any>) => {
                 // Do something with data
                 // console.log(data)
                 if(data.value){
-                  toast.add({ title : 'ជោគជ័យ',
+                  toast.add({ title : t('message.saved'),
                   icon : 'i-heroicons-envelope',    
                 })
                  

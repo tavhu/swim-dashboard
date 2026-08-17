@@ -5,6 +5,7 @@ import { TwFeather } from "vue3-tailwind";
  * A client's ទម្រង់ទី៤ records. Many per client, as the other episode forms are.
  */
 const route = useRoute();
+const { t } = useI18n();
 const readOnly = checkIfPageReadOnly();
 
 const clientId = computed(() => route.params.clientId as string);
@@ -31,11 +32,11 @@ onMounted(async () => {
       $fetch("/api/client/personalInformationGet", { method: "POST", body: { id: clientId.value } }),
       $fetch("/api/client/reintegration/get", { method: "POST", body: { clientId: clientId.value } }),
     ]);
-    if (!c?.id) throw new Error("រកមិនឃើញអតិថិជននេះទេ");
+    if (!c?.id) throw new Error(t('message.clientNotFound'));
     client.value = c;
     rows.value = list?.data ?? [];
   } catch (e: any) {
-    error.value = e?.message || "មិនអាចទាញយកព័ត៌មានបានទេ";
+    error.value = e?.message || t('message.loadFailed');
   } finally {
     pending.value = false;
   }

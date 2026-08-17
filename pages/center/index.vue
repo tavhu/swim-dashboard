@@ -24,6 +24,7 @@ useHead({
 
 let readOnly = checkIfPageReadOnly()
 const route = useRoute()
+const { t } = useI18n();
 const edit = route?.query?.id
 const showGoBackButton = ref(false);
 
@@ -163,11 +164,11 @@ const submit = async () => {
 
   if (error.value?.statusCode) {
     toast.error({
-      message: "មិនជោគជ័យ",
+      message: t('message.notSaved'),
     });
   } else {
     toast.success({
-      message: "ជោគជ័យ",
+      message: t('message.saved'),
     });
     showGoBackButton.value = true;
   }

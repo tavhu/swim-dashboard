@@ -27,6 +27,7 @@ const props = defineProps({
 const emit = defineEmits(["update:open"]);
 
 const toast = useToast();
+const { t } = useI18n();
 const composableForm = useForm();
 const formName = "organisation";
 const formData = reactive({
@@ -96,7 +97,7 @@ const submit = async () => {
       });
 
       if (uploadError.value) {
-        toast.error({ message: "មិនជោគជ័យ" });
+        toast.error({ message: t('message.notSaved') });
         return;
       }
 
@@ -111,11 +112,11 @@ const submit = async () => {
     });
 
     if (upsertError.value) {
-      toast.error({ message: "មិនជោគជ័យ" });
+      toast.error({ message: t('message.notSaved') });
       return;
     }
 
-    toast.success({ message: "ជោគជ័យ" });
+    toast.success({ message: t('message.saved') });
     emit("update:open", false);
     files.value = null;
   } catch (e) {

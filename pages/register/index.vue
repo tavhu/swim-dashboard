@@ -21,6 +21,7 @@ useHead({
 
 let readOnly = checkIfPageReadOnly()
 const route = useRoute()
+const { t } = useI18n();
 const edit = route?.query?.id
 
 const compute = computed(() => route?.query?.id)
@@ -156,11 +157,11 @@ const submit = async () => {
 
   if (error.value?.statusCode) {
     toast.error({
-      message: "មិនជោគជ័យ",
+      message: t('message.notSaved'),
     });
   } else {
     toast.success({
-      message: "ជោគជ័យ",
+      message: t('message.saved'),
     });
   }
 };

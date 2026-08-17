@@ -31,6 +31,7 @@ const props = defineProps<{
 const emit = defineEmits<{ (e: "changed"): void }>();
 
 const toast = useToast();
+const { t } = useI18n();
 const busy = ref(false);
 const showReject = ref(false);
 const reason = ref("");
@@ -59,12 +60,12 @@ async function act(action: "submit" | "approve" | "reject") {
       method: "POST",
       body: { id: props.recordId, action, reason: reason.value.trim() || undefined },
     });
-    toast.success({ message: "ជោគជ័យ" });
+    toast.success({ message: t('message.saved') });
     showReject.value = false;
     reason.value = "";
     emit("changed");
   } catch (e: any) {
-    toast.error({ message: e?.data?.error ?? e?.message ?? "មិនជោគជ័យ" });
+    toast.error({ message: e?.data?.error ?? e?.message ?? t('message.notSaved') });
   } finally {
     busy.value = false;
   }
@@ -76,7 +77,9 @@ async function act(action: "submit" | "approve" | "reject") {
     <h3 class="text-xl font-[Moul] text-primary">សិទ្ធិអនុម័ត</h3>
     <hr class="my-2 border dark:border-gray-700" />
 
-    <div class="flex flex-wrap items-center gap-x-8 gap-y-3">
+    <!-- A <dl>, because these are label/value pairs: <dt> and <dd> are only
+         valid inside one, and Vue warns about the hydration risk otherwise. -->
+    <dl class="flex flex-wrap items-center gap-x-8 gap-y-3">
       <div>
         <dt class="text-sm text-gray-500 dark:text-gray-400">ស្ថានភាព</dt>
         <dd class="mt-1">
@@ -98,7 +101,7 @@ async function act(action: "submit" | "approve" | "reject") {
           {{ decidedByName || '—' }}<span v-if="decidedAt" class="text-gray-500"> · {{ fmt(decidedAt) }}</span>
         </dd>
       </div>
-    </div>
+    </dl>
 
     <p v-if="status === 'REJECTED' && rejectionReason"
       class="mt-3 rounded-lg bg-red-50 p-3 text-base text-red-700 dark:bg-red-950/40 dark:text-red-300">

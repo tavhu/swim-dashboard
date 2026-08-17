@@ -11,6 +11,7 @@ import { TwFeather } from "vue3-tailwind";
  * cannot be edited here.
  */
 const route = useRoute();
+const { t } = useI18n();
 const readOnly = checkIfPageReadOnly();
 
 const rec = ref<any>(null);
@@ -91,7 +92,7 @@ async function load() {
     }
     rec.value = data;
   } catch (e: any) {
-    error.value = e?.statusMessage || e?.message || "មិនអាចទាញយកព័ត៌មានបានទេ";
+    error.value = e?.statusMessage || e?.message || t('message.loadFailed');
   } finally {
     pending.value = false;
   }

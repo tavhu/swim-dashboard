@@ -7,6 +7,7 @@ import { TwFeather } from "vue3-tailwind";
  * as PDF. The approval block is the shared panel, not a copy.
  */
 const route = useRoute();
+const { t } = useI18n();
 const readOnly = checkIfPageReadOnly();
 
 const rec = ref<any>(null);
@@ -73,10 +74,10 @@ async function load() {
       method: "POST",
       body: { id: route.params.id },
     });
-    if (!data?.id) { error.value = "រកមិនឃើញកំណត់ត្រានេះទេ"; return; }
+    if (!data?.id) { error.value = t('message.recordNotFound'); return; }
     rec.value = data;
   } catch (e: any) {
-    error.value = e?.statusMessage || e?.message || "មិនអាចទាញយកព័ត៌មានបានទេ";
+    error.value = e?.statusMessage || e?.message || t('message.loadFailed');
   } finally {
     pending.value = false;
   }

@@ -8,6 +8,7 @@ import {
 } from "vue3-tailwind";
 
 const readOnly = checkIfPageReadOnly()
+const { t } = useI18n();
 const { data: userDataAuth } = useAuth()
 const toast = useToast();
 useHead({
@@ -152,11 +153,11 @@ const deleteRecord = async (id: string) => {
 
   if (error.value?.statusCode) {
     toast.error({
-      message: "មិនជោគជ័យ",
+      message: t('message.notSaved'),
     });
   } else {
     toast.success({
-      message: "ជោគជ័យ",
+      message: t('message.saved'),
     });
   }
   //update change limit ref in order to refetch data

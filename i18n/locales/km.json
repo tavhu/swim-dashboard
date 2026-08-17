@@ -61,5 +61,12 @@
     "failed": "មិនជោគជ័យ",
     "language": "ភាសា",
     "total": "សរុប"
+  },
+  "message": {
+    "saved": "ជោគជ័យ",
+    "notSaved": "មិនជោគជ័យ",
+    "loadFailed": "មិនអាចទាញយកព័ត៌មានបានទេ",
+    "clientNotFound": "រកមិនឃើញអតិថិជននេះទេ",
+    "recordNotFound": "រកមិនឃើញកំណត់ត្រានេះទេ"
   }
 }

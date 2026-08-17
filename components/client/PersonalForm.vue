@@ -45,6 +45,7 @@ data.value?.data.forEach(ele => {
 const saving = ref(false)
 const config = useRuntimeConfig()
 const toast = useToast()
+const { t } = useI18n();
 const { uploadFiles } = useFileUpload()
 const composableForm = useForm()
 const formName = "clientPersonalInformation"
@@ -373,11 +374,11 @@ const submit = async () => {
     if (error.value?.statusCode) {
         ClientRegister.value = false
         toast.error({
-            message: "មិនជោគជ័យ",
+            message: t('message.notSaved'),
         });
     } else {
         toast.success({
-            message: "ជោគជ័យ",
+            message: t('message.saved'),
         });
         ClientRegister.value = true
     }

@@ -8,6 +8,7 @@ import { TwFeather } from "vue3-tailwind";
  * reader knows where those answers came from.
  */
 const route = useRoute();
+const { t } = useI18n();
 const readOnly = checkIfPageReadOnly();
 
 const rec = ref<any>(null);
@@ -90,12 +91,12 @@ async function load() {
       body: { id: route.params.id },
     });
     if (!data?.id) {
-      error.value = "រកមិនឃើញកំណត់ត្រានេះទេ";
+      error.value = t('message.recordNotFound');
       return;
     }
     rec.value = data;
   } catch (e: any) {
-    error.value = e?.statusMessage || e?.message || "មិនអាចទាញយកព័ត៌មានបានទេ";
+    error.value = e?.statusMessage || e?.message || t('message.loadFailed');
   } finally {
     pending.value = false;
   }
@@ -154,10 +155,12 @@ onMounted(load);
         <section class="print-block col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800">
           <h3 class="text-xl font-[Moul] text-primary">ស្ថានភាពបច្ចុប្បន្ន</h3>
           <hr class="my-2 border dark:border-gray-700" />
-          <dt class="text-sm text-gray-500 dark:text-gray-400">សេចក្តីពិគ្រោះយោបល់</dt>
-          <dd class="mt-1 whitespace-pre-line break-words text-base leading-relaxed text-gray-800 dark:text-gray-100">
-            {{ val(rec.consultation) }}
-          </dd>
+          <dl>
+            <dt class="text-sm text-gray-500 dark:text-gray-400">សេចក្តីពិគ្រោះយោបល់</dt>
+            <dd class="mt-1 whitespace-pre-line break-words text-base leading-relaxed text-gray-800 dark:text-gray-100">
+              {{ val(rec.consultation) }}
+            </dd>
+          </dl>
 
           <h4 class="mt-6 text-lg font-[Moul] text-primary">សេវាកម្មដែលបានទទួលកន្លងមក</h4>
           <hr class="my-2 border dark:border-gray-700" />
@@ -225,12 +228,12 @@ onMounted(load);
               </tbody>
             </table>
           </div>
-          <div class="mt-4">
+          <dl class="mt-4">
             <dt class="text-sm text-gray-500 dark:text-gray-400">គ. អង្គភាព/អង្គការមូលដ្ឋាន</dt>
             <dd class="mt-1 break-words text-base text-gray-800 dark:text-gray-100">
               {{ val(rec.localOrganisation) }}
             </dd>
-          </div>
+          </dl>
 
           <div v-if="goalFiles.length" class="mt-4">
             <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
