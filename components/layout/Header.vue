@@ -44,6 +44,10 @@ const config = useRuntimeConfig()
       </div>
     </transition>
     <div class="h-14  md:h-20 flex items-center w-full justify-end px-4 md:px-10 gap-3 font-[battambang]">
+      <!-- Beside the account, where a user looks for their own settings. -->
+      <ClientOnly>
+        <LayoutLanguageSwitcher />
+      </ClientOnly>
       <div class="">
         <ClientOnly>
           <!-- TODO: Add searchbar -->

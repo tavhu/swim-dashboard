@@ -167,18 +167,21 @@ export default [
   {
     isTitle: false,
     name: "Settings",
+    i18nKey: "menu.settings",
     url: "",
     icon: "settings",
     submenu: [
       {
         isTitle: false,
         name: "សេវា",
+        i18nKey: "menu.services",
         url: "",
         icon: "message-square",
         submenu: [
           {
             isTitle: false,
             name: "បញ្ចី",
+            i18nKey: "menu.list",
             url: "/service",
             icon: "",
             submenu: [],
@@ -186,6 +189,7 @@ export default [
           {
             isTitle: false,
             name: "បង្កើត",
+            i18nKey: "menu.create",
             url: "/service/register",
             icon: "",
             submenu: [],
@@ -198,12 +202,14 @@ export default [
       {
         isTitle: false,
         name: "ប្រភេទអតិថិជន",
+        i18nKey: "menu.clientTypes",
         url: "",
         icon: "tag",
         submenu: [
           {
             isTitle: false,
             name: "បញ្ចី",
+            i18nKey: "menu.list",
             url: "/client-type",
             icon: "",
             submenu: [],
@@ -211,6 +217,7 @@ export default [
           {
             isTitle: false,
             name: "បង្កើត",
+            i18nKey: "menu.create",
             url: "/client-type/register",
             icon: "",
             submenu: [],
@@ -220,12 +227,14 @@ export default [
       {
         isTitle: false,
         name: "ស្ថាប័ន",
+        i18nKey: "menu.organisations",
         url: "",
         icon: "home",
         submenu: [
           {
             isTitle: false,
             name: "ចុះឈ្មោះ",
+            i18nKey: "menu.register",
             url: "/organisation",
             icon: "",
             submenu: [],
@@ -235,12 +244,14 @@ export default [
       {
         isTitle: false,
         name: "មណ្ឌល",
+        i18nKey: "menu.centres",
         url: "",
         icon: "home",
         submenu: [
           {
             isTitle: false,
             name: "បញ្ជី",
+            i18nKey: "menu.list",
             url: "/center/list",
             icon: "",
             submenu: [],
@@ -248,6 +259,7 @@ export default [
           {
             isTitle: false,
             name: "ចុះឈ្មោះ",
+            i18nKey: "menu.register",
             url: "/center",
             icon: "",
             submenu: [],
@@ -255,6 +267,7 @@ export default [
           {
             isTitle: false,
             name: "បុគ្កលិកមណ្ឌល",
+            i18nKey: "menu.centreStaff",
             url: "/center/staff",
             icon: "",
             submenu: [],
@@ -262,6 +275,7 @@ export default [
           {
             isTitle: false,
             name: "ផែនការមជ្ឈមណ្ឌល",
+            i18nKey: "menu.centrePlan",
             url: "/center/plan",
             icon: "",
             submenu: [],
@@ -269,6 +283,7 @@ export default [
           {
             isTitle: false,
             name: "ឯកសារកាលប្បវត្តិ",
+            i18nKey: "menu.centreDocuments",
             url: "/center/centerdocumentation",
             icon: "",
             submenu: [],
@@ -278,12 +293,14 @@ export default [
       {
         isTitle: false,
         name: "គណនី",
+        i18nKey: "menu.accounts",
         url: "",
         icon: "lock",
         submenu: [
           {
             isTitle: false,
             name: "បញ្ជី",
+            i18nKey: "menu.list",
             url: "/register/account",
             icon: "",
             submenu: [],
@@ -291,6 +308,7 @@ export default [
           {
             isTitle: false,
             name: "ចុះឈ្មោះ",
+            i18nKey: "menu.register",
             url: "/register",
             icon: "",
             submenu: [],
@@ -298,6 +316,7 @@ export default [
           {
             isTitle: false,
             name: "តួនាទី និងការអនុញ្ញាត",
+            i18nKey: "menu.rolesPermissions",
             url: "/role",
             icon: "",
             submenu: [],
@@ -307,12 +326,14 @@ export default [
       {
         isTitle: false,
         name: "ប្រអប់សារ",
+        i18nKey: "menu.inbox",
         url: "",
         icon: "mail",
         submenu: [
           {
             isTitle: false,
             name: "បញ្ជី",
+            i18nKey: "menu.list",
             url: "/contact/list",
             icon: "",
             submenu: [],

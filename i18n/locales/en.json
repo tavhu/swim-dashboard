@@ -1,0 +1,65 @@
+{
+  "menu": {
+    "dashboard": "Dashboard",
+    "clients": "Clients",
+    "list": "List",
+    "register": "Register",
+    "create": "Create",
+    "reports": "Reports",
+    "monthly": "Monthly",
+    "quarterly": "Quarterly",
+    "yearly": "Yearly",
+    "accounts": "Accounts",
+    "accountManagement": "User accounts",
+    "rolesPermissions": "Roles and permissions",
+    "inbox": "Inbox",
+    "settings": "Settings",
+    "services": "Services",
+    "clientTypes": "Client types",
+    "organisations": "Organisations",
+    "centres": "Centres",
+    "centreStaff": "Centre staff",
+    "centrePlan": "Centre plan",
+    "centreDocuments": "Centre records"
+  },
+  "action": {
+    "save": "Save",
+    "back": "Back",
+    "edit": "Edit",
+    "delete": "Delete",
+    "view": "View",
+    "print": "Print",
+    "search": "Search",
+    "createNew": "Add new",
+    "refresh": "Refresh",
+    "download": "Download",
+    "addRow": "Add row",
+    "removeRow": "Remove row",
+    "selectOne": "Please select",
+    "all": "All"
+  },
+  "status": {
+    "draft": "Draft",
+    "submitted": "Submitted",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "form": {
+    "f1": "Form 1 — Client register",
+    "f2": "Form 2 — Service use",
+    "f3": "Form 3 — Case plan",
+    "f4": "Form 4 — Reintegration",
+    "f5": "Form 5 — Follow-up and evaluation",
+    "f6": "Form 6 — Case closure"
+  },
+  "common": {
+    "noData": "No data",
+    "loading": "Loading",
+    "success": "Saved",
+    "failed": "Failed",
+    "language": "Language",
+    "total": "Total"
+  }
+}

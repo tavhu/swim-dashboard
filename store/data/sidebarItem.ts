@@ -9,6 +9,7 @@ export default [
   {
     isTitle: false,
     name: "Dashboard",
+    i18nKey: "menu.dashboard",
     url: "/",
     icon: "trello",
     submenu: [],
@@ -181,6 +182,7 @@ export default [
   {
     isTitle: true,
     name: "គ្រប់គ្រងគណនីប្រើប្រាស់",
+    i18nKey: "menu.accountManagement",
     url: "",
     icon: "",
     submenu: [],
@@ -188,12 +190,14 @@ export default [
   {
     isTitle: false,
     name: "អ្នកទទួលសេវា",
+    i18nKey: "menu.clients",
     url: "",
     icon: "users",
     submenu: [
       {
         isTitle: false,
         name: "បញ្ជី",
+        i18nKey: "menu.list",
         url: "/client",
         icon: "",
         submenu: [],
@@ -201,6 +205,7 @@ export default [
       {
         isTitle: false,
         name: "ចុះឈ្មោះ",
+        i18nKey: "menu.register",
         url: "/client/register",
         icon: "",
         submenu: [],
@@ -210,6 +215,7 @@ export default [
   {
     isTitle: false,
     name: "របាយការណ៏",
+    i18nKey: "menu.reports",
     url: "/report",
     icon: "file-text",
     submenu: [],

@@ -31,6 +31,16 @@ const route = useRoute()
 
 const sidebarOpen = useSidebarOpenStore()
 const nodeKey = computed(() => `${props.parentKey}/${props.item.name}`)
+
+const { t, te } = useI18n()
+/**
+ * Menu labels come from store/data/sidebarItem*.ts. Entries carry an `i18nKey`;
+ * the leftover starter-template ones do not, so they fall back to their literal
+ * `name` rather than rendering a raw key at the user.
+ */
+const label = computed(() =>
+  props.item.i18nKey && te(props.item.i18nKey) ? t(props.item.i18nKey) : props.item.name
+)
 const isOpen = computed(() => sidebarOpen.isOpen(nodeKey.value))
 const toggleOpen = () => sidebarOpen.toggle(nodeKey.value)
 
@@ -83,7 +93,7 @@ onBeforeUnmount(() => unSub?.())
   <li v-if="item.isTitle" :item="item" />
 
   <li v-else-if="item.submenu.length === 0">
-    <div :aria-label="item.name">
+    <div :aria-label="label">
       <NuxtLink :to="item.url" v-if="
         permission?.find((element: any) => { return element?.Resource?.frontEndURL == item.url?.replace('/', '').replaceAll('/', '-') && element?.granted || (element?.Resource?.frontEndURL == item.url?.replace('/', '').replaceAll('/', '-') && element?.read) || item.url === '/' })
       "
@@ -93,18 +103,18 @@ onBeforeUnmount(() => unSub?.())
         @click="sidebarStore.mobileOpen = false">
         <TwFeather v-if="item.icon" :type="item.icon" :size="18" class="shrink-0" />
         <span v-else class="h-1.5 w-1.5 shrink-0 rounded-full bg-current opacity-40" />
-        <span class="select-none truncate">{{ item.name }}</span>
+        <span class="select-none truncate">{{ label }}</span>
       </NuxtLink>
     </div>
   </li>
 
   <li v-else>
-    <button type="button" :aria-label="item.name" :aria-expanded="isOpen"
+    <button type="button" :aria-label="label" :aria-expanded="isOpen"
       class="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors duration-150 hover:bg-gray-100 dark:hover:bg-gray-800"
       :class="[indent, isOpen ? 'text-primary' : 'text-gray-600 dark:text-gray-400']" @click="toggleOpen">
       <TwFeather v-if="item.icon" :type="item.icon" :size="18" class="shrink-0" />
       <span v-else class="h-1.5 w-1.5 shrink-0 rounded-full bg-current opacity-40" />
-      <span class="select-none truncate">{{ item.name }}</span>
+      <span class="select-none truncate">{{ label }}</span>
       <span v-if="item.name == 'ប្រអប់សារ' && items.length != 0"
         class="rounded-full bg-red-600 px-1.5 text-[10px] leading-4 text-white">
         {{ items.length }}

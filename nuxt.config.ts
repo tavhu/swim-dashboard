@@ -18,6 +18,30 @@ export default defineNuxtConfig({
   // calendar and clear icons as unstyled full-size SVGs.
   css: ["~/assets/css/main.css", "@vuepic/vue-datepicker/dist/main.css"],
 
+  // Khmer is the default and stays the default: this is a Cambodian ministry
+  // system and the six ទម្រង់ are national forms in Khmer. English is offered
+  // alongside for staff and partners who do not read Khmer.
+  //
+  // strategy "no_prefix" deliberately: every route in the app is already linked
+  // by path in dozens of places, and prefixing would rewrite all of them. The
+  // choice rides in a cookie instead, so it survives a reload without touching
+  // the URL.
+  i18n: {
+    locales: [
+      { code: "km", name: "ខ្មែរ", file: "km.json" },
+      { code: "en", name: "English", file: "en.json" },
+    ],
+    defaultLocale: "km",
+    strategy: "no_prefix",
+    langDir: "locales",
+    // Browser detection is OFF, not merely constrained. With it on, a laptop
+    // reporting Accept-Language: en opened the whole ministry system in English
+    // on first visit and wrote that to the cookie. Khmer is the system's
+    // language; English is a choice a user makes, never one inferred from their
+    // machine. setLocale still persists the choice.
+    detectBrowserLanguage: false,
+  },
+
   postcss: {
     plugins: {
       tailwindcss: {},
@@ -58,6 +82,7 @@ export default defineNuxtConfig({
   },
 
   modules: [
+    "@nuxtjs/i18n",
     "@pinia/nuxt",
     "nuxt-icon",
     "@pinia-plugin-persistedstate/nuxt",
