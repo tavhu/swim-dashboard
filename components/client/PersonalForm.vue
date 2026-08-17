@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import {
     TwForm,
-    TwButton,
-    TwFile,
     TwInput,
     useToast,
     useForm,
@@ -479,6 +477,22 @@ const ClientProgress = ref(Array({
     Details: '',
 }))
 
+// Removing the last row leaves nothing to type into and makes the section look
+// unavailable, so a blank one takes its place — the same rule ServiceRowsField
+// follows on ទម្រង់ទី៣-៦.
+const removeServeHistory = (index: number) => {
+    ClientServeHistory.value.splice(index, 1)
+    if (!ClientServeHistory.value.length) {
+        ClientServeHistory.value.push({ nameCenterorPrison: '', DateTimeServed: '' })
+    }
+}
+const removeProgress = (index: number) => {
+    ClientProgress.value.splice(index, 1)
+    if (!ClientProgress.value.length) {
+        ClientProgress.value.push({ NoteDateTime: '', Details: '' })
+    }
+}
+
 // if (prop.id) {
 //     userProfile.value = await useFetch('/api/client/personalInformationGet', {
 //         method: 'post',
@@ -730,28 +744,34 @@ watch(() => formData.communeBA, (newCommune) => {
 // --- END: Address Dropdown Logic (Corrected for Villages) ---
 </script>
 <template>
-    <div>
-        <div v-if="saving" class="loader"></div>
-        <h2 class="text-2xl font-[Moul] text-primary"> {{ prop.id ? `១. សំណុំឯកសារផ្ទាល់ខ្លួនរបស់អតិថិជន` : `១.
-            សំណុំឯកសារផ្ទាល់ខ្លួនរបស់អតិថិជន` }} </h2>
-        <TwButton variant="danger" class="font-[battambang]" v-if="readOnly" :disabled="true">
-            អ្ននគ្មានសិទ្ធកែប្រែ គណនីនេះទេ
-        </TwButton>
-        <hr class="my-2 border dark:border-gray-700" />
+    <div class="font-[Battambang]">
+        <div class="mt-5">
+            <!-- Same header row as ទម្រង់ទី២-៦: title left, the way back right. The
+                 spinner overlay is gone — the save button carries :loading, which is
+                 how every other form reports it. -->
+            <div class="flex items-start justify-between gap-4">
+                <h2 class="text-2xl font-[Moul] text-primary">
+                    {{ prop.id ? 'កែសម្រួលសំណុំឯកសារអតិថិជន' : 'ចុះឈ្មោះអតិថិជន' }}
+                </h2>
+                <NuxtLink :to="prop.id ? `/client/id/${prop.id}` : '/client'">
+                    <UButton color="gray" size="xl" type="button">
+                        <span class="font-[Moul] text-lg">ត្រឡប់ក្រោយ</span>
+                    </UButton>
+                </NuxtLink>
+            </div>
+            <hr class="my-2 border dark:border-gray-700" />
 
-        <div class="font-[Battambang]">
-            <TwForm :name="formName"
-                class="grid grid-cols-12 gap-2 bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded-lg p-2 shadow"
-                :class="{
-                    'tw-shake': isError,
-                }" :rules="formRules" @submit="submit" :custom-field-name="{
-                    roleName: 'ឈ្មោះតួនាទី',
-                    roleDescription: 'ពិពណ៌នាតួនាទី',
-                }">
-                <div class="col-span-12 flex justify-start  gap-3 mb-5">
-                    <TwFeather type="file-text" />
-                    <h1 class="text-lg"> ព័ត៌មានលំអិត </h1>
-                </div>
+            <p v-if="readOnly"
+                class="mb-4 rounded-lg bg-amber-50 px-4 py-3 text-base text-amber-800 dark:bg-amber-950/40 dark:text-amber-300">
+                អ្នកគ្មានសិទ្ធិកែប្រែទម្រង់នេះទេ។
+            </p>
+
+            <TwForm :name="formName" class="grid grid-cols-12 items-start gap-4" :class="{ 'tw-shake': isError }"
+                :rules="formRules" @submit="submit">
+                <section class="col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800">
+                    <h3 class="text-xl font-[Moul] text-primary">ព័ត៌មានលំអិត</h3>
+                    <hr class="my-2 border dark:border-gray-700" />
+                    <div class="grid grid-cols-12 gap-4">
                 <!-- <div class="col-span-12">
                     {{
                         formData }}
@@ -767,21 +787,32 @@ watch(() => formData.communeBA, (newCommune) => {
                         placeholder="សូមជ្រើសរើស" />
                     <CustomErrorMessage name="serviceCenterID" />
                 </div>
-                <div class="col-span-3">
-                </div>
-                <div class="col-span-12   lg:col-span-5">
-                    <div class="vt-relative vt-col-span-12 lg:col-span-6  vt-flex vt-items-center vt-justify-center">
-                        <div class="vt-relative vt-w-96">
-                            <img :src="config.public.origin + '/' + (formData.photo ? formData.photo : '')"
-                                :class="(files?.length > 0 ? ' hidden ' : ' ')" alt="">
+                <!-- The photo sits beside the two identifiers rather than under an
+                     empty spacer column, and uses the same picker as every other
+                     upload in the app — narrowed to images, single-valued, because
+                     a client has one photograph. TwFile is gone: its drop zone read
+                     "SELECT OR DROP FILE HERE" in English while ទម្រង់ទី២-៥ said it
+                     in Khmer. -->
+                <div class="col-span-12 lg:col-span-6">
+                    <span class="text-sm text-gray-500 dark:text-gray-400">រូបថត ៤x៦</span>
+                    <div class="mt-1 flex items-start gap-4">
+                        <img v-if="formData.photo && !(files?.length > 0)"
+                            :src="config.public.origin + '/' + formData.photo" alt=""
+                            class="h-28 w-24 shrink-0 rounded border object-cover dark:border-gray-700" />
+                        <div class="min-w-0 flex-1">
+                            <AttachmentField v-model:pending="files" :read-only="readOnly" label=""
+                                :multiple="false" accept="image/jpeg,image/png,image/webp,image/gif"
+                                accept-label="JPG, PNG, WEBP, GIF" />
                         </div>
                     </div>
-                    <TwFile v-model="files" label="រូបភាព ៤x៦" />
                 </div>
-                <div class="col-span-12 flex justify-start gap-3 mt-5 mb-5">
-                    <!-- <TwFeather type="map-pin" /> -->
-                    <h1 class="text-lg font-[moul]"> I. ព័ត៌មាន​ អំពីអតិថិជន និងគ្រួសារ</h1>
-                </div>
+                    </div>
+                </section>
+
+                <section class="col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800">
+                    <h3 class="text-xl font-[Moul] text-primary">I. ព័ត៌មាន​ អំពីអតិថិជន និងគ្រួសារ</h3>
+                    <hr class="my-2 border dark:border-gray-700" />
+                    <div class="grid grid-cols-12 gap-4">
                 <div class="col-span-12 lg:col-span-6">
                     <TwInput label="១.នាមត្រកូលនិងនាមខ្លួន" name="fullNameKH" v-model="formData.fullNameKH"
                         placeholder="នាមត្រកូលនិងនាមខ្លួន" type="text" />
@@ -798,23 +829,11 @@ watch(() => formData.communeBA, (newCommune) => {
                         placeholder="សូមជ្រើសរើស" />
                     <CustomErrorMessage name="Gender" />
                 </div>
-                <div class="col-span-12 lg:col-span-6">
-                    <label for=""> ថ្ងៃខែឆ្នាំកំណើត </label>
-                    <ClientOnly>
-                        <Datepicker v-model="formData.DOB" :dayNames="[
-                            'Mo',
-                            'Tu',
-                            'We',
-                            'Th',
-                            'Fr',
-                            'Sa',
-                            'Su',
-                        ]" position="left" required :maxDate="new Date()" :enableTimePicker="false" autoApply>
-                        </Datepicker>
-                    </ClientOnly>
-
-                    <CustomErrorMessage name="DateofBirth" />
-                </div>
+                <label class="col-span-12 block lg:col-span-6">
+                    <span class="text-sm text-gray-500 dark:text-gray-400">ថ្ងៃខែឆ្នាំកំណើត</span>
+                    <Datepicker v-model="formData.DOB" :disabled="readOnly" :maxDate="new Date()"
+                        :enableTimePicker="false" format="dd/MM/yyyy" autoApply class="mt-1" />
+                </label>
                 <div class="col-span-12 lg:col-span-6">
                     <TwInput label="ទីកន្លែងកំណើត" name="POB" v-model="formData.POB" placeholder="ទីកន្លែងកំណើត"
                         type="text" />
@@ -830,17 +849,16 @@ watch(() => formData.communeBA, (newCommune) => {
                         placeholder="មុខរបរ (បើមាន)" type="text" />
                     <CustomErrorMessage name="Occupation" />
                 </div>
-                <div class="col-span-12 lg:col-span-6">
-                    <label class="">កាលបរិច្ឆេទចូលមជ្ឈមណ្ឌល</label>
-                    <Datepicker v-model="formData.DateArrested" name="DateArrested" :enableTimePicker="false"
-                        format="dd/MM/yyyy" placeholder="កាលបរិច្ឆេទចូលមជ្ឈមណ្ឌល" autoApply />
-                    <CustomErrorMessage name="DateArrested" />
-                </div>
+                <label class="col-span-12 block lg:col-span-6">
+                    <span class="text-sm text-gray-500 dark:text-gray-400">កាលបរិច្ឆេទចូលមជ្ឈមណ្ឌល</span>
+                    <Datepicker v-model="formData.DateArrested" :disabled="readOnly" :enableTimePicker="false"
+                        format="dd/MM/yyyy" autoApply class="mt-1" />
+                </label>
                 <!-- START: Corrected Address Fields -->
-                <div class="col-span-12">
-                    <p class="font-bold text-lg mt-4">អាសយដ្ឋានបច្ចុប្បន្ន</p>
-                    <hr class="my-2 border dark:border-gray-700" />
-                </div>
+                    <div class="col-span-12">
+                        <h4 class="mt-2 text-lg font-[Moul] text-primary">អាសយដ្ឋានបច្ចុប្បន្ន</h4>
+                        <hr class="my-2 border dark:border-gray-700" />
+                    </div>
                 <div class="col-span-12 lg:col-span-6">
                     <TwInput label="ផ្ទះលេខ" name="homeBA" v-model="formData.homeBA" placeholder="ផ្ទះលេខ"
                         type="text" />
@@ -874,9 +892,13 @@ watch(() => formData.communeBA, (newCommune) => {
 
                 <!-- END: Corrected Address Fields -->
 
-                <div class="col-span-12 flex justify-start gap-3 mt-5 mb-5">
-                    <h1 class="text-lg"> 2. ស្ថានភាពគ្រួសាររបស់អតិថិជន</h1>
-                </div>
+                    </div>
+                </section>
+
+                <section class="col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800">
+                    <h3 class="text-xl font-[Moul] text-primary">២. ស្ថានភាពគ្រួសាររបស់អតិថិជន</h3>
+                    <hr class="my-2 border dark:border-gray-700" />
+                    <div class="grid grid-cols-12 gap-4">
                 <div class="col-span-12 lg:col-span-6">
                     <TwInput label="ឈ្មោះឪពុក-អ្នកថែទាំ" name="FatherOrChaperoneName"
                         v-model="formData.FatherOrChaperoneName" placeholder="ឈ្មោះឪពុក-អ្នកថែទាំ" type="text" />
@@ -887,40 +909,16 @@ watch(() => formData.communeBA, (newCommune) => {
                         v-model="formData.MotherOrChaperoneName" placeholder="ឈ្មោះម្តាយ-អ្នកថែទាំ" type="text" />
                     <CustomErrorMessage name="MotherOrChaperoneName" />
                 </div>
-                <div class="col-span-12 lg:col-span-6">
-                    <label for=""> ថ្ងៃខែឆ្នាំកំណើត </label>
-                    <ClientOnly>
-                        <Datepicker v-model="formData.FOCDOB" :dayNames="[
-                            'Mo',
-                            'Tu',
-                            'We',
-                            'Th',
-                            'Fr',
-                            'Sa',
-                            'Su',
-                        ]" position="left" required :maxDate="new Date()" :enableTimePicker="false" autoApply>
-                        </Datepicker>
-                    </ClientOnly>
-
-                    <CustomErrorMessage name="DateofBirth" />
-                </div>
-                <div class="col-span-12 lg:col-span-6">
-                    <label for=""> ថ្ងៃខែឆ្នាំកំណើត </label>
-                    <ClientOnly>
-                        <Datepicker v-model="formData.MOCDOB" :dayNames="[
-                            'Mo',
-                            'Tu',
-                            'We',
-                            'Th',
-                            'Fr',
-                            'Sa',
-                            'Su',
-                        ]" position="left" required :maxDate="new Date()" :enableTimePicker="false" autoApply>
-                        </Datepicker>
-                    </ClientOnly>
-
-                    <CustomErrorMessage name="DateofBirth" />
-                </div>
+                <label class="col-span-12 block lg:col-span-6">
+                    <span class="text-sm text-gray-500 dark:text-gray-400">ថ្ងៃខែឆ្នាំកំណើត (ឪពុក-អ្នកថែទាំ)</span>
+                    <Datepicker v-model="formData.FOCDOB" :disabled="readOnly" :maxDate="new Date()"
+                        :enableTimePicker="false" format="dd/MM/yyyy" autoApply class="mt-1" />
+                </label>
+                <label class="col-span-12 block lg:col-span-6">
+                    <span class="text-sm text-gray-500 dark:text-gray-400">ថ្ងៃខែឆ្នាំកំណើត (ម្តាយ-អ្នកថែទាំ)</span>
+                    <Datepicker v-model="formData.MOCDOB" :disabled="readOnly" :maxDate="new Date()"
+                        :enableTimePicker="false" format="dd/MM/yyyy" autoApply class="mt-1" />
+                </label>
                 <div class="col-span-12 lg:col-span-6">
                     <TwInput label="អាពាហ៍ពិពាហ៍" name="FOCMarried" v-model="formData.FOCMarried"
                         placeholder="អាពាហ៍ពិពាហ៍" type="text" />
@@ -951,9 +949,13 @@ watch(() => formData.communeBA, (newCommune) => {
                         placeholder="អាសយដ្ឋាន" type="text" />
                     <CustomErrorMessage name="MOCTelandAddress" />
                 </div>
-                <div class="col-span-12 flex justify-start gap-3 mt-5 mb-5">
-                    <h1 class="text-lg"> 3. សេចក្តីពណ៌នាអំពីអតិថិជន និងទំនាក់ទំនងជាមួយបុគ្គលនានា</h1>
-                </div>
+                    </div>
+                </section>
+
+                <section class="col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800">
+                    <h3 class="text-xl font-[Moul] text-primary">៣. សេចក្តីពណ៌នាអំពីអតិថិជន និងទំនាក់ទំនងជាមួយបុគ្គលនានា</h3>
+                    <hr class="my-2 border dark:border-gray-700" />
+                    <div class="grid grid-cols-12 gap-4">
                 <div class="col-span-12 lg:col-span-6">
                     <TwInput label="សមាជិកគ្រួសារដ៏ទៃផ្សេងទៀត" name="OtherFamilyMembers"
                         v-model="formData.OtherFamilyMembers" placeholder="សមាជិកគ្រួសារដ៏ទៃផ្សេងទៀត" type="text" />
@@ -964,9 +966,13 @@ watch(() => formData.communeBA, (newCommune) => {
                         placeholder="មិត្តភក្តជិតស្និត" type="text" />
                     <CustomErrorMessage name="CloseFriend" />
                 </div>
-                <div class="col-span-12 flex justify-start gap-3 mt-5 mb-5">
-                    <h1 class="text-lg font-[moul]"> II. ស្ថានភាពរបស់អតិថិជន</h1>
-                </div>
+                    </div>
+                </section>
+
+                <section class="col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800">
+                    <h3 class="text-xl font-[Moul] text-primary">II. ស្ថានភាពរបស់អតិថិជន</h3>
+                    <hr class="my-2 border dark:border-gray-700" />
+                    <div class="grid grid-cols-12 gap-4">
                 <div class="col-span-12 ">
                     <TwInput label="១.អតិថិជនត្រូវបានបញ្ជូនដោយ" name="ClientSendBy" v-model="formData.ClientSendBy"
                         placeholder="អតិថិជនត្រូវបានបញ្ជូនដោយ" type="text" />
@@ -996,10 +1002,11 @@ watch(() => formData.communeBA, (newCommune) => {
                     <CustomErrorMessage name="ReasonUseDrugOther" />
                 </div>
                 <div class="col-span-12">
-                    <label class="">តើអ្នកដឹងទេថា អំពើដែលអ្នកធ្វើជាអំពើដែលនាំមកនូវគ្រោះថ្នាក់និងខុសច្បាប់</label>
-                    <URadio class="font-[battambang] inline-flex ml-5 font-medium"
-                        v-for="(methods, index) of LegalConsequence" :key="index"
-                        v-model="formData.KnownLegalConsequence" v-bind="methods" />
+                    <span class="text-sm text-gray-500 dark:text-gray-400">តើអ្នកដឹងទេថា អំពើដែលអ្នកធ្វើជាអំពើដែលនាំមកនូវគ្រោះថ្នាក់និងខុសច្បាប់</span>
+                    <div class="mt-2 flex flex-wrap gap-x-6 gap-y-2">
+                        <URadio v-for="(opt, index) of LegalConsequence" :key="index" v-model="formData.KnownLegalConsequence"
+                            v-bind="opt" :disabled="readOnly" class="font-[Battambang]" />
+                    </div>
                 </div>
                 <div class="col-span-12 lg:col-span-6">
                     <TwSelect label="ប្រភេទគ្រឿងញៀនធ្លាប់ប្រើប្រាស់" name="typeDrugUsed" v-model="formData.typeDrugUsed"
@@ -1031,58 +1038,59 @@ watch(() => formData.communeBA, (newCommune) => {
                     <CustomErrorMessage name="DrugDurationUse" />
                 </div>
                 <div class="col-span-12">
-                    <label class="text-lg">៥. បរិស្ថាននៃការរស់នៅ</label>
-                    <URadio class="font-[battambang] inline-flex ml-5 font-medium"
-                        v-for="(methods, index) of LivingSituationOption" :key="index"
-                        v-model="formData.LivingSituation" v-bind="methods" />
+                    <span class="text-sm text-gray-500 dark:text-gray-400">៥. បរិស្ថាននៃការរស់នៅ</span>
+                    <div class="mt-2 flex flex-wrap gap-x-6 gap-y-2">
+                        <URadio v-for="(opt, index) of LivingSituationOption" :key="index" v-model="formData.LivingSituation"
+                            v-bind="opt" :disabled="readOnly" class="font-[Battambang]" />
+                    </div>
                 </div>
                 <div class="col-span-12">
-                    <h1 class="text-lg">៦. ការចូលមកស្នាក់នៅ</h1>
-                    <h1 class="text-lg"> តើអ្នកធ្លាប់បានរស់នៅក្នុងមជ្ឈមណ្ឌល ឬពន្ធនាគារណាខ្លះដែរឬទេ
-                        មុននឹងចូលមកមជ្ឈមណ្ឌលនេះ?
-                    </h1>
-                    <div class="col-span-12 grid  grid-cols-1 lg:grid-cols-3 gap-1  items-end "
-                        v-for="(child, index) in ClientServeHistory" :key="index">
-                        <div>
-                            <TwInput label="ឈ្មោះមជ្ឈមណ្ឌល ឬពន្ធនាគារ៖" name="nameCenterorPrison" required
-                                v-model="child.nameCenterorPrison" placeholder="ឈ្មោះមជ្ឈមណ្ឌល ឬពន្ធនាគារ៖"
-                                type="text" />
-                            <CustomErrorMessage name="nameCenterorPrison" />
-                        </div>
-                        <div>
-                            <label for="">ថ្ងៃខែ</label>
-                            <ClientOnly>
-                                <Datepicker v-model="child.DateTimeServed" :dayNames="[
-                                    'Mo',
-                                    'Tu',
-                                    'We',
-                                    'Th',
-                                    'Fr',
-                                    'Sa',
-                                    'Su',
-                                ]" position="left" required :maxDate="new Date()" :enableTimePicker="false" autoApply>
-                                </Datepicker>
-                            </ClientOnly>
-                        </div>
-                        <div>
-                            <div class="col-span-12">
-                                <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4"
-                                    @click="ClientServeHistory.splice(index, 1)"> លុបព័ត៌មានកូន </UButton>
+                    <h4 class="mt-2 text-lg font-[Moul] text-primary">៦. ការចូលមកស្នាក់នៅ</h4>
+                    <hr class="my-2 border dark:border-gray-700" />
+                    <p class="mb-3 text-base text-gray-600 dark:text-gray-300">
+                        តើអ្នកធ្លាប់បានរស់នៅក្នុងមជ្ឈមណ្ឌល ឬពន្ធនាគារណាខ្លះដែរឬទេ មុននឹងចូលមកមជ្ឈមណ្ឌលនេះ?
+                    </p>
+                    <div class="space-y-3">
+                        <div v-for="(child, index) in ClientServeHistory" :key="index"
+                            class="grid grid-cols-1 items-end gap-3 rounded-lg border p-3 dark:border-gray-700 sm:grid-cols-12">
+                            <div class="sm:col-span-1">
+                                <span class="text-sm text-gray-500 dark:text-gray-400">ល.រ</span>
+                                <p class="mt-1 h-10 text-base leading-10 text-gray-800 dark:text-gray-100">
+                                    {{ index + 1 }}
+                                </p>
+                            </div>
+                            <label class="block sm:col-span-6">
+                                <span class="text-sm text-gray-500 dark:text-gray-400">ឈ្មោះមជ្ឈមណ្ឌល ឬពន្ធនាគារ</span>
+                                <input v-model="child.nameCenterorPrison" :disabled="readOnly" type="text"
+                                    placeholder="ឈ្មោះមជ្ឈមណ្ឌល ឬពន្ធនាគារ"
+                                    class="mt-1 h-10 w-full rounded border px-2 text-base dark:border-gray-700 dark:bg-gray-900" />
+                            </label>
+                            <label class="block sm:col-span-3">
+                                <span class="text-sm text-gray-500 dark:text-gray-400">ថ្ងៃខែ</span>
+                                <Datepicker v-model="child.DateTimeServed" :disabled="readOnly" :maxDate="new Date()"
+                                    :enableTimePicker="false" format="dd/MM/yyyy" autoApply class="mt-1" />
+                            </label>
+                            <div class="sm:col-span-2">
+                                <UButton color="red" variant="soft" size="sm" type="button" :disabled="readOnly"
+                                    @click="removeServeHistory(index)">
+                                    <TwFeather type="trash-2" :size="16" class="mr-1" />
+                                    <span>លុបជួរ</span>
+                                </UButton>
                             </div>
                         </div>
                     </div>
-                    <div class="col-span-12 mt-2">
-                        <UButton color="primary" icon="i-heroicons-users" size="lg" class="px-4" @click="ClientServeHistory.push({
-                            nameCenterorPrison: '',
-                            DateTimeServed: '',
-                        })"> បន្ថែមព័ត៌មាន </UButton>
-                    </div>
+                    <UButton color="gray" size="sm" type="button" class="mt-3" :disabled="readOnly"
+                        @click="ClientServeHistory.push({ nameCenterorPrison: '', DateTimeServed: '' })">
+                        <TwFeather type="plus" :size="16" class="mr-1" />
+                        <span>បន្ថែមមជ្ឈមណ្ឌល</span>
+                    </UButton>
                 </div>
                 <div class="col-span-12">
-                    <label class="">ធ្លាប់ចូលមជ្ឈមណ្ឌល ឬទទួលសេវាប្រហាក់ប្រហែលពីមុន</label>
-                    <URadio class="font-[battambang] inline-flex ml-5 font-medium"
-                        v-for="(methods, index) of UsedtoRehabOption" :key="index" v-model="formData.UsedtoRehab"
-                        v-bind="methods" />
+                    <span class="text-sm text-gray-500 dark:text-gray-400">ធ្លាប់ចូលមជ្ឈមណ្ឌល ឬទទួលសេវាប្រហាក់ប្រហែលពីមុន</span>
+                    <div class="mt-2 flex flex-wrap gap-x-6 gap-y-2">
+                        <URadio v-for="(opt, index) of UsedtoRehabOption" :key="index" v-model="formData.UsedtoRehab"
+                            v-bind="opt" :disabled="readOnly" class="font-[Battambang]" />
+                    </div>
                 </div>
                 <div class="col-span-12 lg:col-span-6">
                     <TwInput label="តើអ្នកចូលមករស់នៅក្នុងមជ្ឈមណ្ឌលនេះលើកទីប៉ុន្មាន?" name="HowManyTimeHaveServed"
@@ -1094,9 +1102,10 @@ watch(() => formData.communeBA, (newCommune) => {
                         v-model="formData.ReasonComingtoCenter" placeholder="មូលហេតុ" type="text" />
                     <CustomErrorMessage name="ReasonComingtoCenter" />
                 </div>
-                <div class="col-span-12">
-                    <h1 class="text-lg "> ៧. រៀបរាប់ត្រួសៗ អំពីសម្មភាព និងកាលវិភាគប្រចាំថ្ងៃរបស់អតិថិជន៖</h1>
-                </div>
+                    <div class="col-span-12">
+                        <h4 class="mt-2 text-lg font-[Moul] text-primary">៧. រៀបរាប់ត្រួសៗ អំពីសម្មភាព និងកាលវិភាគប្រចាំថ្ងៃរបស់អតិថិជន</h4>
+                        <hr class="my-2 border dark:border-gray-700" />
+                    </div>
                 <div class="col-span-12">
                     <TwTextarea label="សកម្មភាពនៅក្នុងមណ្ឌល" name="DailyActivitiesInCenter" required class="h-[5rem]"
                         v-model="formData.DailyActivitiesInCenter" placeholder="" type="text" />
@@ -1112,9 +1121,10 @@ watch(() => formData.communeBA, (newCommune) => {
                         placeholder="" type="text" />
                     <CustomErrorMessage name="ClientTalent" />
                 </div>
-                <div class="col-span-12">
-                    <h1 class="text-lg "> ៨. ការទំនាក់ទំនង របស់អតិថិជនក្នុងមជ្ឈមណ្ឌល៖</h1>
-                </div>
+                    <div class="col-span-12">
+                        <h4 class="mt-2 text-lg font-[Moul] text-primary">៨. ការទំនាក់ទំនងរបស់អតិថិជនក្នុងមជ្ឈមណ្ឌល</h4>
+                        <hr class="my-2 border dark:border-gray-700" />
+                    </div>
                 <div class="col-span-12 lg:col-span-6">
                     <TwInput label="មិត្តភក្តិ៖" name="RelationshipWithFriends" required
                         v-model="formData.RelationshipWithFriends" placeholder="" type="text" />
@@ -1163,26 +1173,32 @@ watch(() => formData.communeBA, (newCommune) => {
                         required v-model="formData.FuturePlanforClientDetails" placeholder="រៀបរាប់លំអិត" type="text" />
                     <CustomErrorMessage name="FuturePlanforClientDetails" />
                 </div>
-                <div class="col-span-12">
-                    <h1 class="text-lg "> ១២.តើអតិថិជនរបស់អ្នកមានបញ្ហាអ្វីខ្លះ</h1>
-                </div>
+                    <div class="col-span-12">
+                        <h4 class="mt-2 text-lg font-[Moul] text-primary">១២. តើអតិថិជនរបស់អ្នកមានបញ្ហាអ្វីខ្លះ</h4>
+                        <hr class="my-2 border dark:border-gray-700" />
+                    </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <label class="">អតិថិជនធ្លាក់ទឹកចិត្តខ្លាំង (ឧ.ចង់ធ្វើឃាត ប្រើជាតិពុល ប្រើគ្រឿងញៀន ។ល។)</label>
-                    <URadio class="font-[battambang] inline-flex ml-5 font-medium"
-                        v-for="(methods, index) of ClientFeelsHopless" :key="index"
-                        v-model="formData.ClientFeelsHopless" v-bind="methods" />
+                    <span class="text-sm text-gray-500 dark:text-gray-400">អតិថិជនធ្លាក់ទឹកចិត្តខ្លាំង (ឧ.ចង់ធ្វើឃាត ប្រើជាតិពុល ប្រើគ្រឿងញៀន ។ល។)</span>
+                    <div class="mt-2 flex flex-wrap gap-x-6 gap-y-2">
+                        <URadio v-for="(opt, index) of ClientFeelsHopless" :key="index" v-model="formData.ClientFeelsHopless"
+                            v-bind="opt" :disabled="readOnly" class="font-[Battambang]" />
+                    </div>
                 </div>
                 <div v-if="formData.ClientFeelsHopless" class="col-span-12 lg:col-span-6">
                     <TwInput label="ពត៌មានបន្ថែម" name="ClientHoplessDetails" required
                         v-model="formData.ClientHoplessDetails" placeholder="រៀបរាប់លំអិត" type="text" />
                     <CustomErrorMessage name="ClientHoplessDetails" />
                 </div>
-                <clientOnly>
-                    <div class="col-span-12 mt-5 font-[battambang] inline-flex  gap-2 ml-5 text-lg">
-                        <UCheckbox v-for="(item, index) of ClientHopelessMultiple" :key="index" v-model="item.check"
-                            :name="item.value" :label="item.label" />
-                    </div>
-                </clientOnly>
+                <div class="col-span-12">
+                    <span class="text-sm text-gray-500 dark:text-gray-400">បញ្ហាដែលអតិថិជនជួបប្រទះ (ជ្រើសរើសបានច្រើន)</span>
+                    <ClientOnly>
+                        <div class="mt-2 flex flex-wrap gap-x-6 gap-y-2">
+                            <UCheckbox v-for="(item, index) of ClientHopelessMultiple" :key="index"
+                                v-model="item.check" :name="item.value" :label="item.label" :disabled="readOnly"
+                                class="font-[Battambang]" />
+                        </div>
+                    </ClientOnly>
+                </div>
                 <div class="col-span-12">
                     <TwTextarea
                         label="១៣. តាមរយៈការសំភាសន៍របស់អ្នកជាមួយអតិថិជន តើអ្នកយល់ឃើញដូចយ៉ាងណាអំពីស្ថានភាពរបស់អតិថិជន?"
@@ -1190,80 +1206,89 @@ watch(() => formData.communeBA, (newCommune) => {
                         placeholder="" type="text" />
                     <CustomErrorMessage name="InterviewerOpinoin" />
                 </div>
-                <div class="col-span-12 flex justify-start gap-3 mt-5 mb-5">
-                    <h1 class="text-lg font-[moul]"> III. កំណត់ត្រាអំពីការរីកចម្រើន</h1>
-                </div>
-                <div class="col-span-12 grid  grid-cols-1 lg:grid-cols-3 gap-1  items-end "
-                    v-for="(child, index) in ClientProgress" :key="index">
-                    <div>
-                        <label for="">កាលបរិច្ចេទ</label>
-                        <ClientOnly>
-                            <Datepicker v-model="child.NoteDateTime" :dayNames="[
-                                'Mo',
-                                'Tu',
-                                'We',
-                                'Th',
-                                'Fr',
-                                'Sa',
-                                'Su',
-                            ]" position="left" required :maxDate="new Date()" :enableTimePicker="false" autoApply>
-                            </Datepicker>
-                        </ClientOnly>
                     </div>
-                    <div>
-                        <TwInput label="ការអភិវឌ្ឍន៍សំខាន់ៗ/សេវាដែលបានផ្តល់ឱ្យអតិថិជន" name="nameCenterorPrison"
-                            required v-model="child.Details" placeholder="ការអភិវឌ្ឍន៍សំខាន់ៗ/សេវាដែលបានផ្តល់"
-                            type="text" />
-                        <CustomErrorMessage name="nameCenterorPrison" />
-                    </div>
-                    <div>
-                        <div class="col-span-12">
-                            <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4"
-                                @click="ClientProgress.splice(index, 1)"> លុបព័ត៌មានកូន </UButton>
+                </section>
+
+                <section class="col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800">
+                    <h3 class="text-xl font-[Moul] text-primary">III. កំណត់ត្រាអំពីការរីកចម្រើន</h3>
+                    <hr class="my-2 border dark:border-gray-700" />
+                    <div class="grid grid-cols-12 gap-4">
+                <div class="col-span-12">
+                    <div class="space-y-3">
+                        <div v-for="(child, index) in ClientProgress" :key="index"
+                            class="grid grid-cols-1 items-end gap-3 rounded-lg border p-3 dark:border-gray-700 sm:grid-cols-12">
+                            <div class="sm:col-span-1">
+                                <span class="text-sm text-gray-500 dark:text-gray-400">ល.រ</span>
+                                <p class="mt-1 h-10 text-base leading-10 text-gray-800 dark:text-gray-100">
+                                    {{ index + 1 }}
+                                </p>
+                            </div>
+                            <label class="block sm:col-span-3">
+                                <span class="text-sm text-gray-500 dark:text-gray-400">កាលបរិច្ឆេទ</span>
+                                <Datepicker v-model="child.NoteDateTime" :disabled="readOnly" :maxDate="new Date()"
+                                    :enableTimePicker="false" format="dd/MM/yyyy" autoApply class="mt-1" />
+                            </label>
+                            <label class="block sm:col-span-6">
+                                <span class="text-sm text-gray-500 dark:text-gray-400">
+                                    ការអភិវឌ្ឍន៍សំខាន់ៗ/សេវាដែលបានផ្តល់ឱ្យអតិថិជន
+                                </span>
+                                <input v-model="child.Details" :disabled="readOnly" type="text"
+                                    placeholder="ការអភិវឌ្ឍន៍សំខាន់ៗ/សេវាដែលបានផ្តល់"
+                                    class="mt-1 h-10 w-full rounded border px-2 text-base dark:border-gray-700 dark:bg-gray-900" />
+                            </label>
+                            <div class="sm:col-span-2">
+                                <UButton color="red" variant="soft" size="sm" type="button" :disabled="readOnly"
+                                    @click="removeProgress(index)">
+                                    <TwFeather type="trash-2" :size="16" class="mr-1" />
+                                    <span>លុបជួរ</span>
+                                </UButton>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-span-12 mt-2">
-                    <UButton color="primary" icon="i-heroicons-users" size="lg" class="px-4" @click="ClientProgress.push({
-                        NoteDateTime: '',
-                        Details: '',
-                    })"> បន្ថែមព័ត៌មាន </UButton>
+                    <UButton color="gray" size="sm" type="button" class="mt-3" :disabled="readOnly"
+                        @click="ClientProgress.push({ NoteDateTime: '', Details: '' })">
+                        <TwFeather type="plus" :size="16" class="mr-1" />
+                        <span>បន្ថែមកំណត់ត្រា</span>
+                    </UButton>
                 </div>
 
-                <div class="col-span-12 grid grid-cols-1 lg:grid-cols-2 gap-1  items-end">
-                    <div>
-                        ឈ្មោះមន្ត្រីឬបុគ្គលិកសង្គមកិច្ច៖ {{
-                            //@ts-ignored
-                            token.fullname
-                        }}
                     </div>
+                </section>
 
-                    <div>
-                        <TwInput label="ហត្ថលេខា៖" name="InterViewerSignature" required
-                            v-model="formData.InterViewerSignature" placeholder="ហត្ថលេខា" type="text" />
-                        <CustomErrorMessage name="InterViewerSignature" />
+                <!-- The interviewer's own details, a section of their own as on the
+                     other forms rather than four fields trailing the last one. -->
+                <section class="col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800">
+                    <h3 class="text-xl font-[Moul] text-primary">ការសម្ភាសន៍</h3>
+                    <hr class="my-2 border dark:border-gray-700" />
+                    <div class="grid grid-cols-12 gap-4">
+                        <div class="col-span-12 lg:col-span-6">
+                            <span class="text-sm text-gray-500 dark:text-gray-400">ឈ្មោះមន្ត្រីឬបុគ្គលិកសង្គមកិច្ច</span>
+                            <p class="mt-1 h-10 text-base leading-10 text-gray-800 dark:text-gray-100">
+                                {{
+                                    //@ts-ignored
+                                    token?.fullname || '—'
+                                }}
+                            </p>
+                        </div>
+                        <div class="col-span-12 lg:col-span-6">
+                            <TwInput label="ហត្ថលេខា" name="InterViewerSignature" required
+                                v-model="formData.InterViewerSignature" placeholder="ហត្ថលេខា" type="text"
+                                :disabled="readOnly" />
+                            <CustomErrorMessage name="InterViewerSignature" />
+                        </div>
+                        <div class="col-span-12 lg:col-span-6">
+                            <TwInput label="តួនាទី" name="InterviewerPosition" required
+                                v-model="formData.InterviewerPosition" placeholder="តួនាទី" type="text"
+                                :disabled="readOnly" />
+                            <CustomErrorMessage name="InterviewerPosition" />
+                        </div>
+                        <label class="col-span-12 block lg:col-span-6">
+                            <span class="text-sm text-gray-500 dark:text-gray-400">កាលបរិច្ឆេទសម្ភាសន៍</span>
+                            <Datepicker v-model="formData.InterViewDate" :disabled="readOnly" :maxDate="new Date()"
+                                :enableTimePicker="false" format="dd/MM/yyyy" autoApply class="mt-1" />
+                        </label>
                     </div>
-                    <div>
-                        <TwInput label="តួនាទី" name="InterviewerPosition" required
-                            v-model="formData.InterviewerPosition" placeholder="តួនាទី" type="text" />
-                        <CustomErrorMessage name="InterviewerPosition" />
-                    </div>
-                    <div>
-                        <label for="">កាលបរិច្ចេទ</label>
-                        <ClientOnly>
-                            <Datepicker v-model="formData.InterViewDate" :dayNames="[
-                                'Mo',
-                                'Tu',
-                                'We',
-                                'Th',
-                                'Fr',
-                                'Sa',
-                                'Su',
-                            ]" position="left" required :maxDate="new Date()" :enableTimePicker="false" autoApply>
-                            </Datepicker>
-                        </ClientOnly>
-                    </div>
-                </div>
+                </section>
                 <!-- Same pair as ទម្រង់ទី២: back beside save, no reset. -->
                 <div class="col-span-12 flex justify-end gap-2">
                     <NuxtLink :to="prop.id ? `/client/id/${prop.id}` : '/client'">

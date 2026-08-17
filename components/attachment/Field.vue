@@ -25,9 +25,28 @@ const props = withDefaults(
     label?: string;
     hint?: string;
     readOnly?: boolean;
+    /** Narrow the picker — e.g. "image/*" for a photograph. Defaults to
+     *  everything the server accepts. */
+    accept?: string;
+    /** false for a single-valued field like a client photograph. */
+    multiple?: boolean;
+    /** Shown instead of the accepted-types line when the caller has narrowed it. */
+    acceptLabel?: string;
   }>(),
-  { modelValue: "", pending: null, label: "ឯកសារពាក់ព័ន្ធ", hint: "", readOnly: false }
+  {
+    modelValue: "",
+    pending: null,
+    label: "ឯកសារពាក់ព័ន្ធ",
+    hint: "",
+    readOnly: false,
+    accept: undefined,
+    multiple: true,
+    acceptLabel: undefined,
+  }
 );
+
+const acceptAttr = computed(() => props.accept ?? ACCEPTED_UPLOAD_MIME);
+const acceptText = computed(() => props.acceptLabel ?? ACCEPTED_UPLOAD_LABEL);
 
 const emit = defineEmits<{
   (e: "update:modelValue", v: string): void;
@@ -62,6 +81,12 @@ function addFiles(list: FileList | File[] | null) {
   if (!list || props.readOnly) return;
   const incoming = Array.from(list);
   if (!incoming.length) return;
+  // Single-valued fields replace: a client has one photograph, and picking a
+  // second one means "use this one instead", not "keep both".
+  if (!props.multiple) {
+    emit("update:pending", [incoming[0]]);
+    return;
+  }
   const merged = [...chosen.value];
   for (const f of incoming) {
     // Same name and size twice over is the user picking the same file again.
@@ -92,7 +117,7 @@ const removeStored = (path: string) => {
   emit("update:modelValue", stored.value.filter((p) => p !== path).join(","));
 };
 
-const tooMany = computed(() => stored.value.length + chosen.value.length > MAX_UPLOAD_FILES);
+const tooMany = computed(() => props.multiple && stored.value.length + chosen.value.length > MAX_UPLOAD_FILES);
 const oversized = computed(() => chosen.value.filter((f) => f.size > MAX_UPLOAD_MB * 1024 * 1024));
 </script>
 
@@ -129,7 +154,7 @@ const oversized = computed(() => chosen.value.filter((f) => f.size > MAX_UPLOAD_
 
     <!-- Picker -->
     <div v-if="!readOnly" class="mt-2">
-      <input :id="inputId" type="file" multiple :accept="ACCEPTED_UPLOAD_MIME" class="sr-only" @change="onPick" />
+      <input :id="inputId" type="file" :multiple="multiple" :accept="acceptAttr" class="sr-only" @change="onPick" />
       <label :for="inputId"
         class="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed px-4 py-6 text-center transition-colors"
         :class="dragging ? 'border-primary bg-primary/5' : 'border-gray-300 hover:border-primary dark:border-gray-700'"
@@ -137,7 +162,7 @@ const oversized = computed(() => chosen.value.filter((f) => f.size > MAX_UPLOAD_
         <TwFeather type="upload-cloud" :size="24" class="text-gray-400" />
         <span class="mt-2 text-sm text-gray-600 dark:text-gray-300">ជ្រើសរើស ឬទម្លាក់ឯកសារនៅទីនេះ</span>
         <span class="mt-1 text-xs text-gray-400">
-          {{ ACCEPTED_UPLOAD_LABEL }} · អតិបរមា {{ MAX_UPLOAD_MB }}MB ក្នុងមួយឯកសារ
+          {{ acceptText }} · អតិបរមា {{ MAX_UPLOAD_MB }}MB ក្នុងមួយឯកសារ
         </span>
       </label>
       <p v-if="hint" class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ hint }}</p>
