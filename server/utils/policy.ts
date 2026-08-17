@@ -131,9 +131,13 @@ export const RULES: Rule[] = [
     resource: RESOURCE.client,
     action: "write",
   },
+  // Deleting one ទម្រង់ទី២-៦ record is gated as a write on `client`, the same as
+  // editing one: both change a client's case file, and a user who can rewrite a
+  // record's every field can already destroy its contents. Removing the *client*
+  // is a separate rule above.
   {
     mode: "permission",
-    pattern: /^\/api\/client\/service\/approve\/?$/,
+    pattern: /^\/api\/client\/service\/(approve|delete)\/?$/,
     resource: RESOURCE.client,
     action: "write",
   },
@@ -147,7 +151,7 @@ export const RULES: Rule[] = [
   },
   {
     mode: "permission",
-    pattern: /^\/api\/client\/case-plan\/(upsert|approve)\/?$/,
+    pattern: /^\/api\/client\/case-plan\/(upsert|approve|delete)\/?$/,
     resource: RESOURCE.client,
     action: "write",
   },
@@ -160,7 +164,7 @@ export const RULES: Rule[] = [
   },
   {
     mode: "permission",
-    pattern: /^\/api\/client\/reintegration\/(upsert|approve)\/?$/,
+    pattern: /^\/api\/client\/reintegration\/(upsert|approve|delete)\/?$/,
     resource: RESOURCE.client,
     action: "write",
   },
@@ -173,7 +177,7 @@ export const RULES: Rule[] = [
   },
   {
     mode: "permission",
-    pattern: /^\/api\/client\/follow-up\/(upsert|approve)\/?$/,
+    pattern: /^\/api\/client\/follow-up\/(upsert|approve|delete)\/?$/,
     resource: RESOURCE.client,
     action: "write",
   },
@@ -186,7 +190,7 @@ export const RULES: Rule[] = [
   },
   {
     mode: "permission",
-    pattern: /^\/api\/client\/case-closure\/(upsert|approve)\/?$/,
+    pattern: /^\/api\/client\/case-closure\/(upsert|approve|delete)\/?$/,
     resource: RESOURCE.client,
     action: "write",
   },

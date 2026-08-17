@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { TwFeather } from "vue3-tailwind";
+import { TwFeather, useToast } from "vue3-tailwind";
 
 /**
  * A client's ទម្រង់ទី៥ visits. Many per client — this is the form that records
@@ -8,6 +8,7 @@ import { TwFeather } from "vue3-tailwind";
 const route = useRoute();
 const { t } = useI18n();
 const readOnly = checkIfPageReadOnly();
+const toast = useToast();
 
 const clientId = computed(() => route.params.clientId as string);
 const client = ref<any>(null);
@@ -45,6 +46,29 @@ onMounted(async () => {
     pending.value = false;
   }
 });
+
+/**
+ * Removes one ទម្រង់ទី៥ record. The row is the whole episode — the shared endpoint
+ * takes its approval history and its uploaded files with it, so the confirmation
+ * says as much rather than asking a bare "are you sure?".
+ *
+ * $fetch, not useFetch: this runs from a click handler, where useFetch is
+ * unreliable, and the response body is wanted for the toast.
+ */
+const removeRecord = async (r: any, i: number) => {
+  if (readOnly) return;
+  if (!(await confirmDelete(
+    `លុបកំណត់ត្រាការតាមដាន ថ្ងៃទី ${fmt(r.monitorDate)} រួមទាំងបញ្ជីសេវា និងឯកសារភ្ជាប់។`
+  ))) return;
+
+  try {
+    await $fetch("/api/client/follow-up/delete", { method: "POST", body: { id: r.id } });
+    rows.value.splice(i, 1);
+    toast.success({ message: t('message.saved') });
+  } catch (e: any) {
+    toast.error({ message: e?.data?.error ?? e?.message ?? t('message.notSaved') });
+  }
+};
 </script>
 
 <template>
@@ -119,6 +143,10 @@ onMounted(async () => {
                         កែសម្រួល
                       </UButton>
                     </NuxtLink>
+                    <UButton color="red" icon="i-heroicons-trash" size="sm" :disabled="readOnly"
+                      @click="removeRecord(r, i)">
+                      លុបចេញ
+                    </UButton>
                   </div>
                 </td>
               </tr>
