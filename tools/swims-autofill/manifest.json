@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "SWIMS Autofill",
+  "version": "1.0.0",
+  "description": "Fills SWIMS forms with plausible Khmer test data in one click, so a full data-entry pass does not mean typing seventy fields by hand.",
+  "permissions": ["activeTab", "scripting", "storage"],
+  "host_permissions": ["http://localhost/*", "http://127.0.0.1/*"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "SWIMS Autofill"
+  },
+  "icons": { "128": "icon.png" }
+}

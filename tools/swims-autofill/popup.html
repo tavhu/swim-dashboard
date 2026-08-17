@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <style>
+    body { font: 13px/1.45 system-ui, sans-serif; width: 260px; margin: 0; padding: 14px; color: #111; }
+    h1 { font-size: 14px; margin: 0 0 2px; }
+    p.sub { margin: 0 0 12px; color: #666; font-size: 11px; }
+    label { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 8px; cursor: pointer; }
+    label span { flex: 1; }
+    label small { display: block; color: #777; font-size: 11px; }
+    button { width: 100%; padding: 9px; font-size: 13px; font-weight: 600; color: #fff;
+             background: #16a34a; border: 0; border-radius: 6px; cursor: pointer; }
+    button:disabled { background: #9ca3af; cursor: default; }
+    #out { margin-top: 10px; font-size: 11px; color: #444; white-space: pre-line; }
+    .warn { margin-top: 10px; padding: 7px; background: #fef3c7; color: #92400e;
+            border-radius: 5px; font-size: 11px; }
+  </style>
+</head>
+<body>
+  <h1>SWIMS Autofill</h1>
+  <p class="sub">Fills the form on this page with Khmer test data.</p>
+
+  <label><input type="checkbox" id="overwrite" />
+    <span>Overwrite filled fields<small>Off: only empty ones are touched</small></span></label>
+
+  <label><input type="checkbox" id="uploads" />
+    <span>Attach a test file<small>Adds a small PNG to upload fields</small></span></label>
+
+  <button id="go">Fill this page</button>
+  <div id="out"></div>
+  <div class="warn">Writes test data. Use on localhost, never on production.</div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
