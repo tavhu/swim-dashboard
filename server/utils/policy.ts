@@ -341,6 +341,17 @@ export const RULES: Rule[] = [
     action: "write",
   },
 
+  // --- dashboard ------------------------------------------------------------
+  // Counts of client records, so gated on the same resource the records are.
+  // Nothing here returns a row — only totals — but "how many clients does this
+  // centre have" is still client information.
+  {
+    mode: "permission",
+    pattern: /^\/api\/dashboard\/summary\/?$/,
+    resource: RESOURCE.client,
+    action: "read",
+  },
+
   // --- contact messages -----------------------------------------------------
   {
     mode: "permission",
