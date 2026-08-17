@@ -8,8 +8,30 @@
  * ministry overview asks "how many", and a client row carries national IDs,
  * drug histories and family contacts that a count does not need.
  */
+import { getAuthUser } from "../../utils/authorize";
+
 export default eventHandler(async (event) => {
   const prisma = event.context.prisma;
+
+  /**
+   * Centre scope.
+   *
+   * The client list is scoped to the caller's centre; this was not, so a centre
+   * user saw "2 total clients" over a list holding one — the tile disagreed with
+   * the page it links to. Worse than the arithmetic, the recent-activity table
+   * was showing other centres' approvals, with the officer's name and their
+   * stated reason on each row.
+   *
+   * A user with no centre (the ministry view) sees everything, exactly as
+   * before. `centerScopeFilter` is the same helper the list endpoints use.
+   */
+  const user = await getAuthUser(event);
+  const centreId = user?.serviceCenterID ?? null;
+
+  /** For queries on Client_PersonalInformation itself. */
+  const clientWhere: any = centreId ? { serviceCenterID: centreId } : {};
+  /** For ទម្រង់ទី២-៦, which reach the centre through their client. */
+  const viaClient: any = centreId ? { client: { serviceCenterID: centreId } } : {};
 
   /**
    * The six forms, in the order a case moves through them.
@@ -50,26 +72,34 @@ export default eventHandler(async (event) => {
       recentEvents,
       actors,
     ] = await Promise.all([
-      prisma.client_PersonalInformation.count(),
-      prisma.serviceCenter.count(),
-      prisma.service.count({ where: { isActive: true } }),
-      prisma.client_PersonalInformation.count({ where: { caseClosures: { some: {} } } }),
-      prisma.client_PersonalInformation.count({ where: { clientServices: { some: {} } } }),
-      prisma.client_PersonalInformation.count({ where: { casePlans: { some: {} } } }),
-      prisma.client_PersonalInformation.count({ where: { reintegrations: { some: {} } } }),
-      prisma.client_PersonalInformation.count({ where: { followUps: { some: {} } } }),
-      prisma.client_PersonalInformation.groupBy({ by: ["Gender"], _count: { _all: true } }),
-      prisma.client_PersonalInformation.groupBy({ by: ["cityProBA"], _count: { _all: true } }),
-      prisma.client_PersonalInformation.groupBy({ by: ["serviceCenterID"], _count: { _all: true } }),
-      prisma.caseClosure.groupBy({ by: ["outcome"], _count: { _all: true } }),
+      prisma.client_PersonalInformation.count({ where: clientWhere }),
+      // A centre user counts their own centre, not the country's.
+      prisma.serviceCenter.count(centreId ? { where: { id: centreId } } : undefined),
+      // Services offered by the centre; the whole active catalogue nationally.
+      prisma.service.count({
+        where: centreId
+          ? { isActive: true, serviceCenters: { some: { serviceCenterID: centreId } } }
+          : { isActive: true },
+      }),
+      prisma.client_PersonalInformation.count({ where: { ...clientWhere, caseClosures: { some: {} } } }),
+      prisma.client_PersonalInformation.count({ where: { ...clientWhere, clientServices: { some: {} } } }),
+      prisma.client_PersonalInformation.count({ where: { ...clientWhere, casePlans: { some: {} } } }),
+      prisma.client_PersonalInformation.count({ where: { ...clientWhere, reintegrations: { some: {} } } }),
+      prisma.client_PersonalInformation.count({ where: { ...clientWhere, followUps: { some: {} } } }),
+      prisma.client_PersonalInformation.groupBy({ by: ["Gender"], where: clientWhere, _count: { _all: true } }),
+      prisma.client_PersonalInformation.groupBy({ by: ["cityProBA"], where: clientWhere, _count: { _all: true } }),
+      prisma.client_PersonalInformation.groupBy({ by: ["serviceCenterID"], where: clientWhere, _count: { _all: true } }),
+      prisma.caseClosure.groupBy({ by: ["outcome"], where: viaClient, _count: { _all: true } }),
       // Only the column needed for the trend, not the rows.
-      prisma.client_PersonalInformation.findMany({ select: { InterViewDate: true } }),
-      prisma.client_PersonalInformation.findMany({ select: { DOB: true } }),
+      prisma.client_PersonalInformation.findMany({ where: clientWhere, select: { InterViewDate: true } }),
+      prisma.client_PersonalInformation.findMany({ where: clientWhere, select: { DOB: true } }),
       prisma.serviceCenter.findMany({ select: { id: true, nameKH: true } }),
+      // Filtered below by the record ids this caller may see: ApprovalEvent
+      // holds recordId as a plain string, so it cannot be joined to a centre.
       prisma.approvalEvent.findMany({
         orderBy: { createdAt: "desc" },
-        take: 8,
-        select: { recordType: true, fromStatus: true, toStatus: true, createdAt: true, actorID: true, reason: true },
+        take: centreId ? 200 : 8,
+        select: { recordType: true, recordId: true, fromStatus: true, toStatus: true, createdAt: true, actorID: true, reason: true },
       }),
       prisma.user.findMany({ select: { id: true, firstname: true, lastname: true, username: true } }),
     ]);
@@ -79,6 +109,9 @@ export default eventHandler(async (event) => {
       FORMS.map(async (f) => {
         const rows = await (f.delegate as any).groupBy({
           by: ["approvalStatus"],
+          // ទម្រង់ទី១ is the client, so it scopes on its own column; the rest
+          // reach the centre through theirs.
+          where: f.key === "CLIENT" ? clientWhere : viaClient,
           _count: { _all: true },
         });
         const of = (s: string) => rows.find((r: any) => r.approvalStatus === s)?._count?._all ?? 0;
@@ -145,6 +178,32 @@ export default eventHandler(async (event) => {
       else ageUnknown++;
     }
 
+    /**
+     * Which approval events this caller may see.
+     *
+     * ApprovalEvent.recordId is a plain string rather than a foreign key, so
+     * there is no join to a centre — the ids have to be gathered and matched.
+     * Without this a centre user read every other centre's approval history,
+     * including who decided and the reason they gave.
+     *
+     * Only for a centre user; the ministry view keeps the unfiltered list.
+     */
+    let visibleEvents = recentEvents;
+    if (centreId) {
+      const [cIds, sIds, pIds, rIds, fIds, xIds] = await Promise.all([
+        prisma.client_PersonalInformation.findMany({ where: clientWhere, select: { id: true } }),
+        prisma.clientService.findMany({ where: viaClient, select: { id: true } }),
+        prisma.casePlan.findMany({ where: viaClient, select: { id: true } }),
+        prisma.reintegration.findMany({ where: viaClient, select: { id: true } }),
+        prisma.followUp.findMany({ where: viaClient, select: { id: true } }),
+        prisma.caseClosure.findMany({ where: viaClient, select: { id: true } }),
+      ]);
+      const mine = new Set(
+        [cIds, sIds, pIds, rIds, fIds, xIds].flat().map((r: any) => r.id)
+      );
+      visibleEvents = recentEvents.filter((e: any) => mine.has(e.recordId)).slice(0, 8);
+    }
+
     const centreName = new Map(centres.map((c) => [c.id, c.nameKH]));
     const actorName = new Map(
       actors.map((u) => [u.id, [u.firstname, u.lastname].filter(Boolean).join(" ") || u.username])
@@ -194,7 +253,7 @@ export default eventHandler(async (event) => {
         successful: closureOutcomes.find((o: any) => o.outcome === "SUCCESSFUL")?._count?._all ?? 0,
         unsuccessful: closureOutcomes.find((o: any) => o.outcome === "UNSUCCESSFUL")?._count?._all ?? 0,
       },
-      recentEvents: recentEvents.map((e) => ({
+      recentEvents: visibleEvents.map((e: any) => ({
         recordType: e.recordType,
         fromStatus: e.fromStatus,
         toStatus: e.toStatus,
