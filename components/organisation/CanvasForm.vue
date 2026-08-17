@@ -72,56 +72,67 @@ const formRules = {
 }
 
 const isError = ref(false);
+const saving = ref(false);
+const { uploadFiles } = useFileUpload();
+
+/** The validator's own message is just "1 error occured", which names nothing. */
+const FIELD_LABELS: Record<string, string> = {
+  name: "ឈ្មោះស្ថាប័ន",
+};
 const form = computed(() => composableForm.getForm(formName));
 const validator = computed(() => form.value.validator);
 
 const submit = async () => {
+  if (saving.value) return;
   try {
-
-    // const validation = await composableForm.getForm(formName).validator.validate();
-
-    if (validator.value.fail()) {
-      toast.error({ message: validator.value.getErrorMessage() });
-      return;
-    }
-
-    let logo = formData.logo;
-    if (files.value && files.value.length > 0) {
-      const fd = new FormData();
-      Array.from(files.value).forEach((file, index) => {
-        fd.append(String(index), file as Blob);
-      });
-      const { data: uploadedFiles, error: uploadError } = await useFetch("/api/user/upload", {
-        method: "POST",
-        body: fd,
-      });
-
-      if (uploadError.value) {
-        toast.error({ message: t('message.notSaved') });
+    // validate() was commented out while fail() was still being read, so the
+    // check ran against a validator that had never been given anything to
+    // validate — it reported "1 error occured" however complete the form was,
+    // and the organisation form could not be submitted at all. Clear, validate,
+    // then ask.
+    if (validator.value) {
+      validator.value.clearErrors();
+      await validator.value.validate();
+      if (validator.value.fail()) {
+        const failed: string[] = validator.value.getFailedFields?.() ?? [];
+        toast.error({
+          message: failed.length
+            ? "សូមបំពេញ៖ " + failed.map((f) => FIELD_LABELS[f] ?? f).join(" / ")
+            : validator.value.getErrorMessage(),
+        });
         return;
       }
-
-      if (uploadedFiles.value) {
-        logo = (uploadedFiles.value as string[])[0];
-      }
     }
 
-    const { error: upsertError } = await useFetch("/api/organisation/upsert", {
+    saving.value = true;
+
+    let logo = formData.logo;
+    if (files.value?.length) {
+      // Upload first, and let a failure stop the save: storing the record with
+      // the previous logo while reporting success is how the client form used
+      // to lose photographs.
+      const uploaded = await uploadFiles(files.value);
+      if (uploaded) logo = (Object.values(uploaded) as string[])[0];
+    }
+
+    // $fetch, not useFetch. useFetch is a setup-only composable: called from an
+    // event handler it silently never fires, so even once validation passed no
+    // request would have left the browser. Same fault as the ទម្រង់ទី១ edit page.
+    await $fetch("/api/organisation/upsert", {
       method: "POST",
-      body: JSON.stringify({ ...formData, logo }),
+      body: { ...formData, logo },
     });
-
-    if (upsertError.value) {
-      toast.error({ message: t('message.notSaved') });
-      return;
-    }
 
     toast.success({ message: t('message.saved') });
     emit("update:open", false);
     files.value = null;
-  } catch (e) {
-    console.log(e)
-    toast.error({ message: "មានបញ្ហាអ្វីមួយកើតឡើង" });
+  } catch (e: any) {
+    // Name what failed rather than reporting only that it did.
+    toast.error({
+      message: e?.data?.statusMessage ?? e?.data?.error ?? e?.message ?? t('message.notSaved'),
+    });
+  } finally {
+    saving.value = false;
   }
 };
 
