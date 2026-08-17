@@ -5,9 +5,16 @@ node_modules
 .cache
 .output
 # Every env file except the placeholder template. The old tracked "example env"
-# held live production credentials — database, Firebase service account, SMTP
-# and reCAPTCHA — in plaintext; all were rotated. Only .env.example belongs in
-# git, and it must contain placeholders only.
+# held live production credentials in plaintext — database, Firebase service
+# account, SMTP, reCAPTCHA, the GitHub OAuth secret and NUXT_SECRET.
+#
+# They have NOT all been rotated. Audited 2026-08-17: nine of the eleven values
+# are still byte-identical to the ones in git history, and the reCAPTCHA secret
+# and the Firebase service-account key were both confirmed still live against
+# Google. The file is untracked from HEAD but history was left intact, so anyone
+# who can clone the repository can still read them.
+#
+# Only .env.example belongs in git, and it must contain placeholders only.
 .env
 .env.*
 !.env.example
