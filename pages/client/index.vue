@@ -19,7 +19,7 @@ const toast = useToast();
 const config = useRuntimeConfig();
 const table = ref<any>(null);
 
-useHead({ title: "បញ្ចីអតិថិជន" });
+useHead(() => ({ title: t("title.clients") }));
 
 const columns = [
   { key: "ReadableCode", label: "លេខសំគាល់", sortable: true, class: "w-[110px]" },
@@ -75,9 +75,7 @@ const deleteRecord = async (row: any) => {
   if (readOnly) return;
   const who = [row?.ReadableCode, row?.fullNameKH].filter(Boolean).join(" · ");
   if (
-    !(await confirmDelete(
-      `លុបអតិថិជន ${who} និងទិន្នន័យពាក់ព័ន្ធទាំងអស់ (ទម្រង់ទី១-៦, កំណត់ត្រា, រូបថត និងឯកសារភ្ជាប់)។`
-    ))
+    !(await confirmDelete(t("confirm.deleteClient", { who })))
   )
     return;
 
@@ -86,7 +84,9 @@ const deleteRecord = async (row: any) => {
     const d = res?.deleted;
     const forms = d ? d.services + d.casePlans + d.reintegrations + d.followUps + d.closures : 0;
     toast.success({
-      message: d ? `បានលុប។ ទម្រង់ ${forms} និងឯកសារ ${d.filesRemoved}` : t("message.saved"),
+      message: d
+        ? t("deleted.withForms", { forms, files: d.filesRemoved })
+        : t("message.saved"),
     });
   } catch (e: any) {
     toast.error({ message: e?.data?.error ?? e?.message ?? t("message.notSaved") });
@@ -161,8 +161,8 @@ const actionItems = (row: any) => {
         :fetcher="fetcher"
         sort-by="ReadableCode"
         sort-type="desc"
-        search-placeholder="ស្វែងរកតាមឈ្មោះ, លេខសំគាល់, ទីកន្លែង..."
-        empty-text="មិនទាន់មានអតិថិជននៅឡើយទេ។"
+        :search-placeholder="$t('table.searchPlaceholder')"
+        
       >
         <template #client-data="{ row }">
           <div class="flex items-center gap-3">

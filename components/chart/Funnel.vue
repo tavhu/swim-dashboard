@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * How far cases get through the six ទម្រង់.
+ * How far cases get through the six forms.
  *
  * The one view this system can give that a generic dashboard cannot: each stage
  * counts *clients* who reached it, so a drop between two stages is cases
@@ -34,12 +34,12 @@ const rows = computed(() =>
 
 <template>
   <p v-if="!first" class="py-8 text-center text-base text-gray-500 dark:text-gray-400">
-    មិនទាន់មានអតិថិជនចុះឈ្មោះនៅឡើយទេ
+    {{ $t('chart.noClientsYet') }}
   </p>
 
   <div v-else class="space-y-2">
     <div v-for="(r, i) in rows" :key="r.label" class="rounded-lg p-2 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/40"
-      :title="`${r.form} — ${r.label}: ${r.count} អតិថិជន`">
+      :title="`${r.form} — ${r.label}: ${r.count} ${$t('chart.clients')}`">
       <div class="flex items-baseline justify-between gap-3">
         <span class="min-w-0 flex-1 truncate text-sm text-gray-700 dark:text-gray-200">
           <span class="text-gray-400">{{ i + 1 }}.</span> {{ r.label }}

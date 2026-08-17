@@ -31,11 +31,15 @@ export const confirmDialog = async (opts?: {
   // It rides on the shared ref above instead, set just before firing.
   confirmDialogDanger.value = opts?.danger ?? false;
 
+  // $i18n rather than useI18n(): this runs from click handlers, outside a
+  // component setup, where useI18n() throws.
+  const { t } = useNuxtApp().$i18n as any;
+
   const isConfirmed = await dialog.fire({
-    title: opts?.title ?? "តើអ្នកប្រាកដទេថាអ្នកចង់ដាក់បញ្ជូន?",
-    description: opts?.description ?? "សកម្មភាពនេះគឺមិនអាចត្រឡប់វិញបានទេ។",
-    acceptText: opts?.acceptText ?? "យល់ព្រម",
-    rejectText: "បោះបង់",
+    title: opts?.title ?? t("dialog.submitTitle"),
+    description: opts?.description ?? t("dialog.irreversible"),
+    acceptText: opts?.acceptText ?? t("action.confirm"),
+    rejectText: t("action.cancel"),
     ...(opts?.icon ? { icon: opts.icon } : {}),
   } as any);
 
@@ -48,20 +52,25 @@ export const confirmDialog = async (opts?: {
 };
 
 /**
- * Deleting a client removes the whole case file — all six ទម្រង់, the progress
+ * Deleting a client removes the whole case file — all six forms, the progress
  * notes, the previous centres, the photograph and every attachment. Saying so
  * is the difference between a confirmation and a formality.
+ *
+ * `what` is passed in already translated by the caller, since only the caller
+ * knows what is being removed.
  */
-export const confirmDelete = async (what?: string) =>
-  confirmDialog({
-    title: "លុបចេញ?",
+export const confirmDelete = async (what?: string) => {
+  const { t } = useNuxtApp().$i18n as any;
+  return confirmDialog({
+    title: t("dialog.deleteTitle"),
     description: what
-      ? `${what}<br /><span class="text-sm">សកម្មភាពនេះមិនអាចត្រឡប់វិញបានទេ។</span>`
-      : "សកម្មភាពនេះមិនអាចត្រឡប់វិញបានទេ។",
-    acceptText: "លុបចេញ",
+      ? `${what}<br /><span class="text-sm">${t("dialog.irreversible")}</span>`
+      : t("dialog.irreversible"),
+    acceptText: t("action.delete"),
     danger: true,
     icon: "alert-triangle",
   });
+};
 
 export const userPermission = async () => {
   const { data } = useAuth();
@@ -100,7 +109,16 @@ export const checkIfPageReadOnly = () => {
   return test;
 };
 
+/**
+ * useTimeAgo() returns English ("2 hours ago"); this renders it in Khmer.
+ *
+ * In the English locale there is nothing to do — it used to convert regardless
+ * of the language picker, so an English page showed Khmer relative times.
+ */
 export const timeagoInKhmer = (timeAgoEn: string) => {
+  const i18n = useNuxtApp().$i18n as any;
+  if (i18n?.locale?.value === "en") return timeAgoEn;
+
   return timeAgoEn
     .replace("hours", "ម៉ោង")
     .replace("hour", "ម៉ោង")

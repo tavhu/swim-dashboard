@@ -17,7 +17,7 @@ const { t } = useI18n();
 const toast = useToast();
 const table = ref<any>(null);
 
-useHead({ title: "បញ្ចីប្រអប់សារ" });
+useHead(() => ({ title: t("title.inbox") }));
 
 const columns = [
   { key: "createdAt", label: "កាលបរិច្ឆេទ", sortable: true, class: "w-[150px]" },
@@ -42,7 +42,7 @@ const fetcher = (q: any) =>
 const deleteRecord = async (row: any) => {
   if (readOnly) return;
   const who = [row?.name, row?.email].filter(Boolean).join(" · ");
-  if (!(await confirmDelete(`លុបសាររបស់ ${who}។`))) return;
+  if (!(await confirmDelete(t("confirm.deleteMessage", { who })))) return;
 
   try {
     await $fetch("/api/contact/delete", { method: "POST", body: { id: row.id } });
@@ -83,8 +83,6 @@ watch(messNOtificationNumber, () => {
         :fetcher="fetcher"
         sort-by="createdAt"
         sort-type="desc"
-        search-placeholder="ស្វែងរកតាមឈ្មោះ, អុីមែល, គោលបំណង..."
-        empty-text="មិនទាន់មានសារនៅឡើយទេ។"
       >
         <template #createdAt-data="{ row }">
           <span class="text-gray-800 dark:text-gray-100">

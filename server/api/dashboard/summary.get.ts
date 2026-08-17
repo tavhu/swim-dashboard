@@ -11,14 +11,20 @@
 export default eventHandler(async (event) => {
   const prisma = event.context.prisma;
 
-  /** The six ទម្រង់, in the order a case moves through them. */
+  /**
+   * The six forms, in the order a case moves through them.
+   *
+   * `formKey` is the translation key the page looks up (form.f1 … form.f6);
+   * `key` stays the ApprovalRecordType value, which is what the approval rows
+   * are grouped by.
+   */
   const FORMS = [
-    { key: "CLIENT", label: "ទម្រង់ទី១ បញ្ជីអតិថិជន", delegate: prisma.client_PersonalInformation },
-    { key: "CLIENT_SERVICE", label: "ទម្រង់ទី២ ការប្រើសេវាកម្ម", delegate: prisma.clientService },
-    { key: "CASE_PLAN", label: "ទម្រង់ទី៣ ផែនការករណី", delegate: prisma.casePlan },
-    { key: "REINTEGRATION", label: "ទម្រង់ទី៤ សមាហរណកម្ម", delegate: prisma.reintegration },
-    { key: "FOLLOW_UP", label: "ទម្រង់ទី៥ តាមដាន និងវាយតម្លៃ", delegate: prisma.followUp },
-    { key: "CASE_CLOSURE", label: "ទម្រង់ទី៦ បិទករណី", delegate: prisma.caseClosure },
+    { key: "CLIENT", formKey: "f1", delegate: prisma.client_PersonalInformation },
+    { key: "CLIENT_SERVICE", formKey: "f2", delegate: prisma.clientService },
+    { key: "CASE_PLAN", formKey: "f3", delegate: prisma.casePlan },
+    { key: "REINTEGRATION", formKey: "f4", delegate: prisma.reintegration },
+    { key: "FOLLOW_UP", formKey: "f5", delegate: prisma.followUp },
+    { key: "CASE_CLOSURE", formKey: "f6", delegate: prisma.caseClosure },
   ];
 
   try {
@@ -78,7 +84,7 @@ export default eventHandler(async (event) => {
         const of = (s: string) => rows.find((r: any) => r.approvalStatus === s)?._count?._all ?? 0;
         return {
           key: f.key,
-          label: f.label,
+          formKey: f.formKey,
           DRAFT: of("DRAFT"),
           SUBMITTED: of("SUBMITTED"),
           APPROVED: of("APPROVED"),
@@ -91,12 +97,16 @@ export default eventHandler(async (event) => {
 
     /** Twelve months back including this one, so an empty month still shows. */
     const now = new Date();
-    const months: { key: string; label: string; count: number }[] = [];
+    // Year and month only. The month name was formatted here with a fixed
+    // en-GB locale, which left the trend axis in English whatever the language
+    // picker said; the page formats it now.
+    const months: { key: string; year: number; month: number; count: number }[] = [];
     for (let i = 11; i >= 0; i--) {
       const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
       months.push({
         key: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`,
-        label: d.toLocaleDateString("en-GB", { month: "short" }),
+        year: d.getFullYear(),
+        month: d.getMonth(),
         count: 0,
       });
     }
@@ -110,16 +120,19 @@ export default eventHandler(async (event) => {
     }
 
     /** Age bands, derived from DOB — the schema stores no age, correctly. */
+    // Keys, not text: the band reads "០-៥" in Khmer and "0–5" in English, and
+    // which one is a decision for the page, not for the query. Everything this
+    // endpoint labels itself would otherwise be frozen in one language.
     const BANDS = [
-      { label: "០-៥", min: 0, max: 5 },
-      { label: "៦-១២", min: 6, max: 12 },
-      { label: "១៣-១៧", min: 13, max: 17 },
-      { label: "១៨-២៥", min: 18, max: 25 },
-      { label: "២៦-៤០", min: 26, max: 40 },
-      { label: "៤១-៦០", min: 41, max: 60 },
-      { label: "៦០+", min: 61, max: 200 },
+      { key: "b0_5", min: 0, max: 5 },
+      { key: "b6_12", min: 6, max: 12 },
+      { key: "b13_17", min: 13, max: 17 },
+      { key: "b18_25", min: 18, max: 25 },
+      { key: "b26_40", min: 26, max: 40 },
+      { key: "b41_60", min: 41, max: 60 },
+      { key: "b61plus", min: 61, max: 200 },
     ];
-    const ageBands = BANDS.map((b) => ({ label: b.label, count: 0 }));
+    const ageBands = BANDS.map((b) => ({ key: b.key, count: 0 }));
     let ageUnknown = 0;
     for (const row of dobs) {
       if (!row.DOB) { ageUnknown++; continue; }
@@ -149,29 +162,34 @@ export default eventHandler(async (event) => {
         awaitingApproval,
       },
       funnel: [
-        { label: "ចុះឈ្មោះ", form: "ទម្រង់ទី១", count: totalClients },
-        { label: "ប្រើសេវាកម្ម", form: "ទម្រង់ទី២", count: reachedService },
-        { label: "ផែនការករណី", form: "ទម្រង់ទី៣", count: reachedPlan },
-        { label: "សមាហរណកម្ម", form: "ទម្រង់ទី៤", count: reachedReintegration },
-        { label: "តាមដាន", form: "ទម្រង់ទី៥", count: reachedFollowUp },
-        { label: "បិទករណី", form: "ទម្រង់ទី៦", count: closedClients },
+        { key: "register", form: "f1", count: totalClients },
+        { key: "service", form: "f2", count: reachedService },
+        { key: "plan", form: "f3", count: reachedPlan },
+        { key: "reintegration", form: "f4", count: reachedReintegration },
+        { key: "followUp", form: "f5", count: reachedFollowUp },
+        { key: "closure", form: "f6", count: closedClients },
       ],
       approval,
       intakeByMonth: months,
+      // The sex itself is a field value and is passed through as stored. Only
+      // the stand-in for a missing one is a label, so only that is a key.
       gender: byGender
-        .map((g: any) => ({ label: g.Gender || "មិនបានបញ្ជាក់", count: g._count._all }))
-        .sort((a, b) => b.count - a.count),
+        .map((g: any) => ({ label: g.Gender || null, labelKey: g.Gender ? null : "common.unspecified", count: g._count._all }))
+        .sort((a: any, b: any) => b.count - a.count),
       ageBands,
       ageUnknown,
       provinces: byProvince
         .map((p: any) => ({ code: p.cityProBA, count: p._count._all }))
         .sort((a, b) => b.count - a.count),
+      // Centre names are entity names — field values — so they are not
+      // translated; only the stand-in for an unassigned one is.
       centres: byCentre
         .map((c: any) => ({
-          label: centreName.get(c.serviceCenterID) ?? "មិនបានកំណត់",
+          label: centreName.get(c.serviceCenterID) ?? null,
+          labelKey: centreName.get(c.serviceCenterID) ? null : "common.unassigned",
           count: c._count._all,
         }))
-        .sort((a, b) => b.count - a.count),
+        .sort((a: any, b: any) => b.count - a.count),
       closureOutcomes: {
         successful: closureOutcomes.find((o: any) => o.outcome === "SUCCESSFUL")?._count?._all ?? 0,
         unsuccessful: closureOutcomes.find((o: any) => o.outcome === "UNSUCCESSFUL")?._count?._all ?? 0,
@@ -187,6 +205,7 @@ export default eventHandler(async (event) => {
     };
   } catch (e: any) {
     console.error("[dashboard/summary]", e);
-    throw createError({ statusCode: 500, statusMessage: "មិនអាចទាញយកទិន្នន័យផ្ទាំងគ្រប់គ្រងបានទេ" });
+    // The page shows its own translated message; this is for the log.
+    throw createError({ statusCode: 500, statusMessage: "Could not build the dashboard summary" });
   }
 });

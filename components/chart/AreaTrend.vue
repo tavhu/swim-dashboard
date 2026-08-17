@@ -61,11 +61,11 @@ const onMove = (e: MouseEvent) => {
 <template>
   <div>
     <p v-if="!hasData" class="py-8 text-center text-base text-gray-500 dark:text-gray-400">
-      មិនទាន់មានការចុះឈ្មោះក្នុង១២ខែចុងក្រោយ
+      {{ $t('chart.noIntake12m') }}
     </p>
 
     <svg v-else :viewBox="`0 0 ${W} ${H}`" class="w-full" role="img"
-      aria-label="ការចុះឈ្មោះអតិថិជនក្នុង១២ខែចុងក្រោយ" @mousemove="onMove" @mouseleave="hover = null">
+      :aria-label="$t('chart.intakeAria')" @mousemove="onMove" @mouseleave="hover = null">
       <!-- Solid hairline grid, one shade off the surface. Never dashed. -->
       <g>
         <line v-for="t in yTicks" :key="`g${t}`" :x1="PAD.left" :x2="W - PAD.right" :y1="yOf(t)" :y2="yOf(t)"

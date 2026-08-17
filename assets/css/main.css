@@ -111,3 +111,39 @@ label {
     max-width: 100% !important;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Latin fallbacks for the Khmer display fonts.
+
+   The whole UI is set in Moul (headings) and Battambang (body). Both are Khmer
+   typefaces: Moul has no real Latin design at all, so an English heading
+   rendered in it comes out as a browser-substituted face at Moul's metrics —
+   heavy, wide and badly spaced. Rather than rewrite `font-[Moul]` at several
+   hundred call sites, the classes are redefined for the English locale.
+
+   @nuxtjs/i18n sets <html lang>, so this switches with the language picker and
+   needs no JavaScript.
+   --------------------------------------------------------------------------- */
+html[lang="en"] .font-\[Moul\],
+html[lang="en"] .font-\[moul\] {
+  font-family: 'Roboto', 'Segoe UI', system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+html[lang="en"] .font-\[Battambang\],
+html[lang="en"] .font-\[battambang\] {
+  font-family: 'Roboto', 'Segoe UI', system-ui, sans-serif;
+}
+
+/* Khmer has no lower case, so Moul headings carry no case information. Latin
+   ones do, and left as-is they inherit nothing — this keeps them from looking
+   like a different design language from the rest of the page. */
+html[lang="en"] h1.font-\[Moul\],
+html[lang="en"] h2.font-\[Moul\],
+html[lang="en"] h3.font-\[Moul\],
+html[lang="en"] h1.font-\[moul\],
+html[lang="en"] h2.font-\[moul\],
+html[lang="en"] h3.font-\[moul\] {
+  line-height: 1.3;
+}

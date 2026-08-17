@@ -7,6 +7,7 @@ import { usePermissionStore } from '~/stores/permission';
 const router = useRouter();
 const toast = useToast();
 const permissionStore = usePermissionStore();
+const { t } = useI18n();
 
 useHead({
   title: "ឯកសារកាលប្បវត្តិ",
@@ -86,7 +87,7 @@ const actionItems = (row: any) => [
 
 async function deletePlan(row: any) {
   const what = [row?.ServiceCenter?.nameKH, row?.yearPlan].filter(Boolean).join(' · ');
-  if (!(await confirmDelete(`លុបផែនការ ${what}។`))) return;
+  if (!(await confirmDelete(t("confirm.deletePlan", { what })))) return;
 
   try {
     await $fetch('/api/center/plan/delete', { method: 'POST', body: { id: row.id } });
@@ -116,8 +117,6 @@ async function deletePlan(row: any) {
       :fetcher="fetcher"
       sort-by="yearPlan"
       sort-type="desc"
-      search-placeholder="ស្វែងរកតាមមជ្ឈមណ្ឌល, ឆ្នាំ, កំណត់ចំណាំ..."
-      empty-text="មិនទាន់មានផែនការនៅឡើយទេ។"
     >
       <template #ServiceCenter.nameKH-data="{ row }">
         <UTooltip :text="row.ServiceCenter?.nameKH || '—'">

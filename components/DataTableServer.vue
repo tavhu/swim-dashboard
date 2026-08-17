@@ -16,6 +16,8 @@
  */
 import { useDebounceFn } from "@vueuse/core";
 
+const { t } = useI18n();
+
 type SortDirection = "asc" | "desc";
 
 const props = withDefaults(
@@ -38,8 +40,10 @@ const props = withDefaults(
   }>(),
   {
     sortType: "desc",
-    searchPlaceholder: "ស្វែងរក...",
-    emptyText: "គ្មានទិន្នន័យ",
+    // Empty means "use the shared default", which has to be resolved in the
+    // template — a default here would be evaluated before the locale is known.
+    searchPlaceholder: "",
+    emptyText: "",
     pageSizes: () => [10, 25, 50, 100],
   }
 );
@@ -84,7 +88,7 @@ const load = async () => {
     if (mine !== requestId) return;
     rows.value = [];
     total.value = 0;
-    failed.value = e?.data?.error ?? e?.message ?? "មិនអាចទាញយកទិន្នន័យបានទេ";
+    failed.value = e?.data?.error ?? e?.message ?? t("table.loadFailed");
   } finally {
     if (mine === requestId) pending.value = false;
   }
@@ -143,13 +147,13 @@ defineExpose({ refresh: load });
   <div class="w-full min-w-0 font-[Battambang]">
     <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
       <div class="flex items-center gap-2">
-        <span class="text-sm text-gray-500 dark:text-gray-400">បង្ហាញ</span>
+        <span class="text-sm text-gray-500 dark:text-gray-400">{{ $t('table.show') }}</span>
         <USelect v-model="limit" :options="pageSizes" size="sm" class="w-20" />
-        <span class="text-sm text-gray-500 dark:text-gray-400">ជួរ</span>
+        <span class="text-sm text-gray-500 dark:text-gray-400">{{ $t('table.rows') }}</span>
       </div>
       <UInput
         v-model="searchInput"
-        :placeholder="searchPlaceholder"
+        :placeholder="searchPlaceholder || $t('table.searchPlaceholder')"
         icon="i-heroicons-magnifying-glass-20-solid"
         size="md"
         class="w-full sm:w-80"
@@ -191,11 +195,11 @@ defineExpose({ refresh: load });
             <p v-if="failed" class="text-base text-red-600 dark:text-red-400">{{ failed }}</p>
             <template v-else-if="searching">
               <p class="text-base text-gray-500 dark:text-gray-400">
-                រកមិនឃើញលទ្ធផលសម្រាប់ «{{ search }}»
+                {{ $t('table.noResultsFor', { term: search }) }}
               </p>
-              <UButton color="gray" size="sm" @click="clearSearch">សម្អាតការស្វែងរក</UButton>
+              <UButton color="gray" size="sm" @click="clearSearch">{{ $t('action.clearSearch') }}</UButton>
             </template>
-            <p v-else class="text-base text-gray-500 dark:text-gray-400">{{ emptyText }}</p>
+            <p v-else class="text-base text-gray-500 dark:text-gray-400">{{ emptyText || $t('common.noData') }}</p>
           </div>
         </template>
       </UTable>
@@ -204,8 +208,8 @@ defineExpose({ refresh: load });
     <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
       <div class="text-sm text-gray-500 dark:text-gray-400">
         <template v-if="total">
-          បង្ហាញ {{ from }}–{{ to }} ក្នុងចំណោម {{ total }}
-          <span v-if="searching">ដែលត្រូវនឹងការស្វែងរក</span>
+          {{ $t('table.showing', { from, to, total }) }}
+          <span v-if="searching">{{ $t('table.matchingSearch') }}</span>
         </template>
       </div>
       <UPagination v-if="total > limit" v-model="page" :page-count="limit" :total="total" />

@@ -16,7 +16,7 @@ const toast = useToast();
 const config = useRuntimeConfig();
 const table = ref<any>(null);
 
-useHead({ title: "បញ្ចីគណនី" });
+useHead(() => ({ title: t("title.accounts") }));
 
 const columns = [
   { key: "account", label: "គណនី", sortable: false },
@@ -47,7 +47,7 @@ const deleteRecord = async (row: any) => {
   const who = [row?.username, [row?.lastname, row?.firstname].filter(Boolean).join(" ")]
     .filter(Boolean)
     .join(" · ");
-  if (!(await confirmDelete(`លុបគណនី ${who}។`))) return;
+  if (!(await confirmDelete(t("confirm.deleteAccount", { who })))) return;
 
   try {
     await $fetch("/api/user/delete", { method: "POST", body: { id: row.id } });
@@ -94,8 +94,6 @@ const canDelete = (row: any) =>
         :fetcher="fetcher"
         sort-by="username"
         sort-type="asc"
-        search-placeholder="ស្វែងរកតាមឈ្មោះ ឬឈ្មោះគណនី..."
-        empty-text="មិនទាន់មានគណនីនៅឡើយទេ។"
       >
         <template #account-data="{ row }">
           <div class="flex items-center gap-3">

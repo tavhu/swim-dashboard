@@ -17,7 +17,7 @@ const toast = useToast();
 const config = useRuntimeConfig();
 const table = ref<any>(null);
 
-useHead({ title: "បញ្ចីមណ្ឌល" });
+useHead(() => ({ title: t("title.centres") }));
 
 const columns = [
   { key: "center", label: "មណ្ឌល", sortable: false },
@@ -45,7 +45,7 @@ const logoUrl = (row: any) =>
 
 const deleteRecord = async (row: any) => {
   if (readOnly) return;
-  if (!(await confirmDelete(`លុបមណ្ឌល ${row?.nameKH ?? ""}។`))) return;
+  if (!(await confirmDelete(t("confirm.deleteCentre", { name: row?.nameKH ?? "" })))) return;
 
   try {
     await $fetch("/api/center/delete", { method: "POST", body: { id: row.id } });
@@ -118,8 +118,6 @@ const actionItems = (row: any) => [
         :fetcher="fetcher"
         sort-by="nameKH"
         sort-type="asc"
-        search-placeholder="ស្វែងរកតាមឈ្មោះ, ប្រភេទ, ប្រធានមណ្ឌល..."
-        empty-text="មិនទាន់មានមណ្ឌលនៅឡើយទេ។"
       >
         <template #center-data="{ row }">
           <div class="flex items-center gap-3">

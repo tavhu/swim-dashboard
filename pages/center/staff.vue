@@ -20,10 +20,11 @@ import { useToast } from "vue3-tailwind";
  *     other's table entirely.
  */
 const readOnly = checkIfPageReadOnly();
+const { t } = useI18n();
 const toast = useToast();
 const typeEmployee = ref("Contract");
 
-useHead({ title: "បុគ្គលិកមណ្ឌល" });
+useHead(() => ({ title: t("title.centreStaff") }));
 
 const contractTable = ref<any>(null);
 const officialTable = ref<any>(null);
@@ -76,7 +77,7 @@ const deleteRecord = async (row: any, kind: "Contract" | "Official") => {
     kind === "Contract"
       ? [row?.lastName, row?.firstName].filter(Boolean).join(" ")
       : [row?.lastNameKH, row?.firstNameKH].filter(Boolean).join(" ");
-  if (!(await confirmDelete(`លុបបុគ្គលិក ${who}។`))) return;
+  if (!(await confirmDelete(t("confirm.deleteStaff", { name: who })))) return;
 
   try {
     await $fetch("/api/center/staff/delete", {
@@ -123,8 +124,6 @@ const openRegisterForm = (kind: string) => {
         :fetcher="fetchContract"
         sort-by="firstName"
         sort-type="asc"
-        search-placeholder="ស្វែងរកតាមឈ្មោះ, តួនាទី, ទូរស័ព្ទ..."
-        empty-text="មិនទាន់មានមន្ត្រីកិច្ចសន្យានៅឡើយទេ។"
       >
         <template #name-data="{ row }">
           <span class="text-gray-800 dark:text-gray-100">
@@ -171,8 +170,6 @@ const openRegisterForm = (kind: string) => {
         :fetcher="fetchOfficial"
         sort-by="firstNameKH"
         sort-type="asc"
-        search-placeholder="ស្វែងរកតាមឈ្មោះ, ឋានៈ, ទូរស័ព្ទ..."
-        empty-text="មិនទាន់មានមន្ត្រីរាជការនៅឡើយទេ។"
       >
         <template #name-data="{ row }">
           <span class="text-gray-800 dark:text-gray-100">

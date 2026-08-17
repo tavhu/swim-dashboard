@@ -10,6 +10,17 @@ const isDangerous = confirmDialogDanger;
 
 const { status } = useAuth();
 
+/**
+ * Keep <html lang> on the chosen language.
+ *
+ * It sat at "en" while the whole system rendered in Khmer. That is wrong for
+ * screen readers and for the browser's own text handling, and it is what the
+ * Latin font fallbacks in assets/css/main.css key off — without this, Khmer
+ * headings were being served the Latin substitute for Moul.
+ */
+const { locale } = useI18n();
+useHead({ htmlAttrs: { lang: computed(() => locale.value) } });
+
 // IMPORTANT: This logic MUST run only on the client.
 // On the server, this code doesn't have the user's session cookie, which causes a 401 error.
 if (process.client) {

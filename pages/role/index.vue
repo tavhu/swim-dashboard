@@ -193,7 +193,7 @@ const fetcher = (q: any) =>
 
 const deleteRecord = async (row: any) => {
   if (readOnly) return;
-  if (!(await confirmDelete(`លុបតួនាទី ${row?.name ?? ""}។`))) return;
+  if (!(await confirmDelete(t("confirm.deleteRole", { name: row?.name ?? "" })))) return;
 
   try {
     await $fetch("/api/role/delete", { method: "POST", body: { id: row.id } });
@@ -311,8 +311,6 @@ const { data: readRoleToResource, refresh } = await useFetch(
         :fetcher="fetcher"
         sort-by="name"
         sort-type="asc"
-        search-placeholder="ស្វែងរកតាមឈ្មោះ ឬការពិពណ៌នា..."
-        empty-text="មិនទាន់មានតួនាទីនៅឡើយទេ។"
       >
         <template #name-data="{ row }">
           <span class="text-gray-800 dark:text-gray-100">{{ row.name }}</span>

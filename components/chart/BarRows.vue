@@ -3,7 +3,7 @@
  * Horizontal bars with the label outside the bar and the value at its end.
  *
  * Horizontal rather than vertical because every label here is Khmer prose —
- * "មជ្ឈមណ្ឌលថែទាំនិងស្តារនីតិសម្បទាជនវីបល្លាសស្មារតី" cannot be a readable x-axis
+ * A long Khmer centre name cannot be a readable x-axis
  * tick at any width. Bars, not a donut, wherever values may be close: a donut
  * only reads part-to-whole at a glance.
  *
@@ -11,17 +11,20 @@
  * adjacent bars. Values sit outside the bar end, so nothing is ever clipped by a
  * short bar.
  */
+const { t } = useI18n();
+
 const props = withDefaults(
   defineProps<{
     rows: { label: string; count: number }[];
     /** Which categorical slot. Bars in one chart share a colour: the label
      *  carries identity, so hue is not encoding anything. */
     color?: string;
-    /** Cap the list and fold the rest into "ផ្សេងទៀត", per the ~7-class limit. */
+    /** Cap the list and fold the rest into one "other" row, per the ~7-class limit. */
     max?: number;
+    /** Defaults to the shared "no data yet" line when a caller gives none. */
     emptyText?: string;
   }>(),
-  { color: "var(--series-1)", max: 8, emptyText: "មិនទាន់មានទិន្នន័យ" }
+  { color: "var(--series-1)", max: 8, emptyText: "" }
 );
 
 const shown = computed(() => {
@@ -29,7 +32,7 @@ const shown = computed(() => {
   if (sorted.length <= props.max) return sorted;
   const head = sorted.slice(0, props.max - 1);
   const rest = sorted.slice(props.max - 1).reduce((n, r) => n + r.count, 0);
-  return [...head, { label: "ផ្សេងទៀត", count: rest }];
+  return [...head, { label: t("chart.other"), count: rest }];
 });
 
 const peak = computed(() => Math.max(1, ...shown.value.map((r) => r.count)));
@@ -39,7 +42,7 @@ const pct = (n: number) => (total.value ? Math.round((n / total.value) * 100) : 
 
 <template>
   <p v-if="!shown.length" class="py-8 text-center text-base text-gray-500 dark:text-gray-400">
-    {{ emptyText }}
+    {{ emptyText || $t('chart.noData') }}
   </p>
 
   <div v-else class="space-y-3">

@@ -24,8 +24,15 @@ const config = useRuntimeConfig()
       <div>
         <NuxtLink to="/" class="flex items-center align-middle font-[moul] gap-3 nowrap text-sm md:text-xl ">
           <img src="/Logo.png" alt="" class="w-10 h-10 md:h-[4.3rem] md:w-[4.3rem] rounded-full  ">
-          <span class="dark:text-white text-blue-900 "> ប្រព័ន្ធគ្រប់គ្រងព័ត៌មាន<span class="text-primary">សុខុមាលភាពសង្គម
-            </span> </span>
+          <!-- Two halves so the second can carry the accent colour, as the Khmer
+               original did. The split falls in a different place in each
+               language, so both halves are translated rather than sliced. -->
+          <!-- The separator is an explicit entity: Vue strips the leading
+               whitespace inside the second span, which ran the two halves
+               together as "Social WelfareInformation Management System". -->
+          <span class="dark:text-white text-blue-900">
+            {{ $t('app.namePart1') }}&nbsp;<span class="text-primary">{{ $t('app.namePart2') }}</span>
+          </span>
         </NuxtLink>
       </div>
 
