@@ -190,7 +190,11 @@ const CASE_FORMS = [
         to: (id: string) => `/client/follow-up/${id}`,
         create: (id: string) => `/client/follow-up/form?client=${id}`,
     },
-    { label: 'ទម្រង់(៦)', title: 'បិទករណី' },
+    {
+        label: 'ទម្រង់(៦)', title: 'បិទករណី',
+        to: (id: string) => `/client/case-closure/${id}`,
+        create: (id: string) => `/client/case-closure/form?client=${id}`,
+    },
 ]
 
 /**

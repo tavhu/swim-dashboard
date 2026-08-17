@@ -168,6 +168,19 @@ export const RULES: Rule[] = [
     resource: RESOURCE.client,
     action: "write",
   },
+  // ទម្រង់ទី៦ បិទករណី — the last of the six, same reasoning as the rest.
+  {
+    mode: "permission",
+    pattern: /^\/api\/client\/case-closure\/get\/?$/,
+    resource: RESOURCE.client,
+    action: "read",
+  },
+  {
+    mode: "permission",
+    pattern: /^\/api\/client\/case-closure\/(upsert|approve)\/?$/,
+    resource: RESOURCE.client,
+    action: "write",
+  },
 
   // --- roles & permissions --------------------------------------------------
   {

@@ -501,6 +501,7 @@ model Client_PersonalInformation {
   casePlans                  CasePlan[]
   reintegrations             Reintegration[]
   followUps                  FollowUp[]
+  caseClosures               CaseClosure[]
 
   // Propose → approve (ស្នើឡើង / អនុម័ត / បដិសេធ). Intake staff at a centre
   // submit a record; a ប្រធានមជ្ឈមណ្ឌល or ministry user approves or rejects it.
@@ -1089,4 +1090,74 @@ model FollowUpService {
   @@index([followUpId, sortOrder])
   @@index([serviceId])
   @@map("followUpServices")
+}
+
+/// ទម្រង់ទី៦ បិទករណី — closing a client's case.
+///
+/// Many per client, as the other episode forms are: a case closing is terminal
+/// for that episode, but a client can be re-admitted and closed again.
+///
+/// Closing does not touch the client record. Nothing in the manual says a
+/// closure retires a client from the active register, so it does not — if that
+/// is wanted it should be a deliberate decision, not a side effect of filing
+/// this form.
+model CaseClosure {
+  id       String                     @id @default(cuid())
+  clientId String
+  client   Client_PersonalInformation @relation(fields: [clientId], references: [id])
+
+  // ២. មូលហេតុនៃការបិទករណី ឬបញ្ចេញពីមជ្ឈមណ្ឌល
+  //
+  // The manual lists ក.សមាហរណកម្មជោគជ័យ and ខ.សមាហរណកម្មមិនជោគជ័យ one after the
+  // other without saying to pick one, but they contradict each other: a case
+  // closed successfully cannot also have absconding as its reason. `outcome`
+  // records which of the two this closure was, so a record cannot hold both and
+  // "how many closed successfully" is a query rather than a guess at which
+  // columns are null. Unlike ទម្រង់ទី៥'s stage this is not stated in the manual
+  // — it is a decision taken with the user.
+  outcome ClosureOutcome @default(SUCCESSFUL)
+
+  /// ក. One of three, single choice. The third is ផ្សេងទៀត, whose text goes in
+  /// successReasonOther.
+  successReason      String?
+  successReasonOther String? // បញ្ជាក់ for ផ្សេងទៀត
+
+  /// ខ. ជ្រើសរើសបានច្រើន — comma separated, as the other multi-selects store it.
+  failureReasons String?
+
+  // ៣. កំណត់សម្គាល់ is not stored. It is the manual's own definition of a stable
+  // reintegration, identical on every form, so it is rendered as guidance and
+  // printed with the record rather than copied into every row.
+
+  // ៤. សេចក្តីសង្ខេបសន្និដ្ឋាន
+  // ក. ករណីសិក្សាមណ្ឌល
+  centreStrengths          String? // ចំណុចខ្លាំងនៃសេវាកម្មបានផ្តល់
+  centreWeaknesses         String? // ចំណុចខ្សោយនៃសេវាកម្មបានផ្តល់
+  centreVulnerabilities    String? // ភាពងាយរងគ្រោះនានាអាចកើត
+  // ខ. ករណីសិក្សានៅសហគមន៍
+  communityStrengths       String?
+  communityWeaknesses      String?
+  communityVulnerabilities String?
+  // គ. គម្រោងអនាគតរបស់ជនរងគ្រោះគួទទួលបាន
+  futurePlan               String?
+
+  // ៥. សិទ្ធិធ្វើសេចក្តីសន្និដ្ឋាន
+  approvalStatus  ApprovalStatus @default(DRAFT)
+  submittedAt     DateTime?
+  submittedByID   String?
+  decidedAt       DateTime?
+  decidedByID     String?
+  rejectionReason String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([clientId])
+  @@index([approvalStatus])
+  @@map("caseClosures")
+}
+
+enum ClosureOutcome {
+  SUCCESSFUL
+  UNSUCCESSFUL
 }
