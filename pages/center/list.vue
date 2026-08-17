@@ -71,12 +71,12 @@ const actionItems = (row: any) => [
     {
       label: "មើលព័ត៌មានលំអិត",
       icon: "i-heroicons-eye",
-      to: `${config.public.origin}/center/id/${row.id}`,
+      to: `/center/id/${row.id}`,
     },
     {
       label: "កែសម្រួល",
       icon: "i-heroicons-pencil-square",
-      to: `${config.public.origin}/center?id=${row.id}`,
+      to: `/center?id=${row.id}`,
       disabled: readOnly,
     },
     {
@@ -104,7 +104,7 @@ const actionItems = (row: any) => [
     <div class="mt-5">
       <div class="flex items-center justify-between gap-4">
         <h2 class="text-2xl font-[Moul] text-primary">បញ្ចីមណ្ឌល</h2>
-        <NuxtLink :to="config.public.origin + '/center'">
+        <NuxtLink to="/center">
           <UButton color="primary" size="xl" :disabled="readOnly">
             <span class="font-[Moul] text-xl">ចុះឈ្មោះមណ្ឌល</span>
           </UButton>

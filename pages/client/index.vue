@@ -147,7 +147,7 @@ const actionItems = (row: any) => {
     <div class="mt-5">
       <div class="flex items-center justify-between gap-4">
         <h2 class="text-2xl font-[Moul] text-primary">បញ្ចីអតិថិជន</h2>
-        <NuxtLink :to="config.public.origin + '/client/register'">
+        <NuxtLink to="/client/register">
           <UButton color="primary" size="xl" :disabled="readOnly">
             <span class="font-[Moul] text-lg">ចុះឈ្មោះអតិថិជន</span>
           </UButton>

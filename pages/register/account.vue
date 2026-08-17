@@ -80,7 +80,7 @@ const canDelete = (row: any) =>
     <div class="mt-5">
       <div class="flex items-center justify-between gap-4">
         <h2 class="text-sm font-[Moul] text-primary lg:text-xl">បញ្ចីគណនី</h2>
-        <NuxtLink :to="config.public.origin + '/register'">
+        <NuxtLink to="/register">
           <UButton color="primary" size="xl" :disabled="readOnly">
             <span class="font-[Moul] text-sm lg:text-xl">បង្កើតគណនី</span>
           </UButton>
@@ -122,7 +122,7 @@ const canDelete = (row: any) =>
 
         <template #actions-data="{ row }">
           <div class="flex gap-2">
-            <NuxtLink :to="config.public.origin + '/register?id=' + row.id">
+            <NuxtLink :to="`/register?id=${row.id}`">
               <UButton color="primary" icon="i-heroicons-pencil-square" size="sm" :disabled="readOnly">
                 កែសម្រួល
               </UButton>

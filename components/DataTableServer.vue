@@ -118,14 +118,29 @@ const from = computed(() => (total.value === 0 ? 0 : (page.value - 1) * limit.va
 const to = computed(() => Math.min(page.value * limit.value, total.value));
 const searching = computed(() => search.value.length > 0);
 
-onMounted(load);
+/**
+ * A page restored from the back/forward cache does not run onMounted again — it
+ * comes back as a frozen DOM snapshot, and if that snapshot was taken while the
+ * page was being torn down for the outgoing navigation, it can come back with a
+ * collapsed layout and stale rows. Reloading on restore re-renders the table
+ * from scratch, which fixes both.
+ */
+const onPageShow = (e: PageTransitionEvent) => {
+  if (e.persisted) load();
+};
+
+onMounted(() => {
+  load();
+  window.addEventListener("pageshow", onPageShow);
+});
+onBeforeUnmount(() => window.removeEventListener("pageshow", onPageShow));
 
 // So a page can refresh after its own delete or save.
 defineExpose({ refresh: load });
 </script>
 
 <template>
-  <div class="font-[Battambang]">
+  <div class="w-full min-w-0 font-[Battambang]">
     <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
       <div class="flex items-center gap-2">
         <span class="text-sm text-gray-500 dark:text-gray-400">បង្ហាញ</span>
@@ -152,7 +167,10 @@ defineExpose({ refresh: load });
       </UInput>
     </div>
 
-    <UCard :ui="{ body: { padding: 'px-0 sm:p-0' } }">
+    <!-- w-full is explicit: a block child of a flex or grid parent can be
+         sized to its content rather than the row, which collapses the card to
+         the width of its first column. -->
+    <UCard class="w-full" :ui="{ body: { padding: 'px-0 sm:p-0' } }">
       <UTable
         :loading="pending"
         :columns="columns"
@@ -160,7 +178,7 @@ defineExpose({ refresh: load });
         :sort="sort"
         sort-mode="manual"
         @update:sort="onSort"
-        :ui="{ th: { font: 'font-normal' } }"
+        :ui="{ th: { font: 'font-normal' }, base: 'min-w-full' }"
       >
         <!-- Forward every cell slot the page defines, so pages keep control of
              their own rendering exactly as they would with a bare UTable. -->
