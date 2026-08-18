@@ -21,20 +21,20 @@ import gazetteers from "~~/store/data/gazetteers";
  * correct Khmer document via Save as PDF.
  */
 const toast = useToast();
-useHead({ title: tr("របាយការណ៍") });
+useHead(() => ({ title: tr("របាយការណ៍") }));
 
 /** Must match the keys in server/utils/reports.ts. */
-const REPORTS = [
-  { key: "clients", title: tr("បញ្ជីអតិថិជន"), hint: "អតិថិជនទាំងអស់ និងវឌ្ឍនភាពតាមទម្រង់", icon: "users", filters: ["date", "centre", "province"] },
-  { key: "summary", title: tr("សង្ខេបតាមកាលបរិច្ឆេទ"), hint: "តួលេខសម្រាប់ដាក់ជូនថ្នាក់លើ", icon: "bar-chart-2", filters: ["date", "centre"] },
-  { key: "approval", title: tr("ស្ថានភាពការអនុម័ត"), hint: "អ្វីដែលកំពុងរង់ចាំ និងរង់ចាំយូរប៉ុណ្ណា", icon: "clock", filters: ["centre"] },
-  { key: "outcomes", title: tr("លទ្ធផលបិទករណី"), hint: "ជោគជ័យ ឬមិនជោគជ័យ និងមូលហេតុ", icon: "check-circle", filters: ["date", "centre"] },
-  { key: "services", title: tr("សេវាកម្មដែលបានផ្តល់"), hint: "សេវាកម្មនីមួយៗ និងចំនួនដង", icon: "layers", filters: ["date"] },
-  { key: "centres", title: tr("មជ្ឈមណ្ឌល"), hint: "អតិថិជន បុគ្គលិក និងករណីបានបិទ", icon: "home", filters: [] },
-] as const;
+const REPORTS = computed(() => [
+  { key: "clients", title: tr("បញ្ជីអតិថិជន"), hint: tr("អតិថិជនទាំងអស់ និងវឌ្ឍនភាពតាមទម្រង់"), icon: "users", filters: ["date", "centre", "province"] },
+  { key: "summary", title: tr("សង្ខេបតាមកាលបរិច្ឆេទ"), hint: tr("តួលេខសម្រាប់ដាក់ជូនថ្នាក់លើ"), icon: "bar-chart-2", filters: ["date", "centre"] },
+  { key: "approval", title: tr("ស្ថានភាពការអនុម័ត"), hint: tr("អ្វីដែលកំពុងរង់ចាំ និងរង់ចាំយូរប៉ុណ្ណា"), icon: "clock", filters: ["centre"] },
+  { key: "outcomes", title: tr("លទ្ធផលបិទករណី"), hint: tr("ជោគជ័យ ឬមិនជោគជ័យ និងមូលហេតុ"), icon: "check-circle", filters: ["date", "centre"] },
+  { key: "services", title: tr("សេវាកម្មដែលបានផ្តល់"), hint: tr("សេវាកម្មនីមួយៗ និងចំនួនដង"), icon: "layers", filters: ["date"] },
+  { key: "centres", title: tr("មជ្ឈមណ្ឌល"), hint: tr("អតិថិជន បុគ្គលិក និងករណីបានបិទ"), icon: "home", filters: [] },
+]) as const;
 
 const selected = ref<string>("clients");
-const def = computed(() => REPORTS.find((r) => r.key === selected.value)!);
+const def = computed(() => REPORTS.value.find((r) => r.key === selected.value)!);
 const shows = (f: string) => (def.value.filters as readonly string[]).includes(f);
 
 const dateFrom = ref<Date | string>("");
@@ -156,8 +156,8 @@ onMounted(run);
               <TwFeather :type="r.icon" :size="18"
                 :class="selected === r.key ? 'mt-0.5 shrink-0 text-primary' : 'mt-0.5 shrink-0 text-gray-400'" />
               <span class="min-w-0">
-                <span class="block text-base text-gray-800 dark:text-gray-100">{{ r.title }}</span>
-                <span class="block text-xs text-gray-500 dark:text-gray-400">{{ r.hint }}</span>
+                <span class="block text-base text-gray-800 dark:text-gray-100">{{ tr(r.title) }}</span>
+                <span class="block text-xs text-gray-500 dark:text-gray-400">{{ tr(r.hint) }}</span>
               </span>
             </button>
           </div>
@@ -227,8 +227,8 @@ onMounted(run);
 
           <!-- The preview, and the thing that gets printed -->
           <section class="print-block col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800">
-            <h3 class="text-xl font-[Moul] text-primary">{{ report?.title ?? def.title }}</h3>
-            <p v-if="report" class="text-sm text-gray-500 dark:text-gray-400">{{ report.description }}</p>
+            <h3 class="text-xl font-[Moul] text-primary">{{ tr(report?.title ?? def.title) }}</h3>
+            <p v-if="report" class="text-sm text-gray-500 dark:text-gray-400">{{ tr(report.description) }}</p>
             <p v-if="report" class="mt-1 text-xs text-gray-400">
               ចំនួន {{ report.total }} កំណត់ត្រា · បង្កើតនៅ
               {{ new Date(report.generatedAt).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' }) }}
@@ -252,7 +252,7 @@ onMounted(run);
                     <th class="py-2 pr-3 font-normal">{{ tr('ល.រ') }}</th>
                     <th v-for="c in report.columns" :key="c.key" class="py-2 pr-3 font-normal"
                       :class="c.numeric ? 'text-right' : ''">
-                      {{ c.label }}
+                      {{ tr(c.label) }}
                     </th>
                   </tr>
                 </thead>
