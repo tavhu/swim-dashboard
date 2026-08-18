@@ -31,7 +31,7 @@ export default eventHandler(async (event) => {
     if (!userCan(caller, RESOURCE.userCreate, "write")) {
       throw createError({
         statusCode: 403,
-        statusMessage: encodeURI("អ្នកមិនមានសិទ្ធិគ្រប់គ្រងគណនីអ្នកប្រើប្រាស់ទេ"),
+        statusMessage: errorMessage(event, "អ្នកមិនមានសិទ្ធិគ្រប់គ្រងគណនីអ្នកប្រើប្រាស់ទេ"),
       });
     }
   }
@@ -64,7 +64,8 @@ export default eventHandler(async (event) => {
   if (typeof username !== "string" || !/^[A-Za-z0-9._-]+$/.test(username)) {
     throw createError({
       statusCode: 400,
-      statusMessage: encodeURI(
+      statusMessage: errorMessage(
+        event,
         "ឈ្មោះគណនីត្រូវប្រើអក្សរឡាតាំង លេខ និងសញ្ញា . _ - ប៉ុណ្ណោះ ដោយគ្មានចន្លោះ"
       ),
     });
@@ -95,7 +96,7 @@ export default eventHandler(async (event) => {
       if (!exists) {
         throw createError({
           statusCode: 404,
-          statusMessage: encodeURI("រកមិនឃើញគណនីនេះទេ"),
+          statusMessage: errorMessage(event, "រកមិនឃើញគណនីនេះទេ"),
         });
       }
 
@@ -114,7 +115,7 @@ export default eventHandler(async (event) => {
       if (!body?.password) {
         throw createError({
           statusCode: 400,
-          statusMessage: encodeURI("សូមបញ្ចូលលេខសំងាត់"),
+          statusMessage: errorMessage(event, "សូមបញ្ចូលលេខសំងាត់"),
         });
       }
       await event.context.prisma.user.create({
@@ -129,7 +130,7 @@ export default eventHandler(async (event) => {
     // P2002 = unique constraint; the only one on User is `username`.
     if (e?.code === "P2002") {
       setResponseStatus(event, 409);
-      return { error: encodeURI("ឈ្មោះអ្នកប្រើប្រាស់នេះមានរួចហើយ") };
+      return { error: errorMessage(event, "ឈ្មោះអ្នកប្រើប្រាស់នេះមានរួចហើយ") };
     }
     console.error("[user/upsert]", e);
     setResponseStatus(event, 412);

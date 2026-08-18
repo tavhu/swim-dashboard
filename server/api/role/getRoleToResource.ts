@@ -7,7 +7,7 @@ import { assertRoleAdmin } from "../../utils/roleGuard";
  */
 export default eventHandler(async (event) => {
   const caller = await requireAuth(event);
-  assertRoleAdmin(caller);
+  assertRoleAdmin(event, caller);
 
   try {
     const data = await event.context.prisma.roleToResource.findMany({

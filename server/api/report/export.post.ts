@@ -56,7 +56,12 @@ export default eventHandler(async (event) => {
         }))?.nameKH ?? null
       : null;
 
-    const subtitle = describeFilters(filters, centreName);
+    // The caller's language, from the swims_locale cookie the browser already
+    // sends. Without this an officer reading the app in English still received a
+    // Khmer spreadsheet.
+    const tr = labelTranslator(event);
+
+    const subtitle = describeFilters(filters, centreName, tr);
     const stamp = new Date().toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" });
 
     if (format === "xlsx") {
@@ -68,7 +73,7 @@ export default eventHandler(async (event) => {
       const lastCol = def.columns.length;
       const merge = (r: number) => ws.mergeCells(r, 1, r, lastCol);
 
-      ws.addRow([def.title]);
+      ws.addRow([tr(def.title)]);
       merge(1);
       ws.getCell(1, 1).font = { name: KH_FONT, size: 14, bold: true };
       ws.getCell(1, 1).alignment = { horizontal: "center" };
@@ -85,7 +90,7 @@ export default eventHandler(async (event) => {
 
       ws.addRow([]);
 
-      const head = ws.addRow(def.columns.map((c) => c.label));
+      const head = ws.addRow(def.columns.map((c) => tr(c.label)));
       head.eachCell((cell) => {
         cell.font = { name: KH_FONT, size: 11, bold: true, color: { argb: "FFFFFFFF" } };
         cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF16A34A" } };
@@ -159,7 +164,7 @@ export default eventHandler(async (event) => {
               children: [
                 new Paragraph({
                   alignment: AlignmentType.CENTER,
-                  children: [new TextRun({ text: c.label, font: KH_FONT, size: 18, bold: true, color: "FFFFFF" })],
+                  children: [new TextRun({ text: tr(c.label), font: KH_FONT, size: 18, bold: true, color: "FFFFFF" })],
                 }),
               ],
             })
@@ -175,7 +180,7 @@ export default eventHandler(async (event) => {
 
     const doc = new Document({
       creator: "SWIMS",
-      title: def.title,
+      title: tr(def.title),
       sections: [
         {
           // Landscape: these registers are wider than they are tall.

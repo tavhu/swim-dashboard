@@ -17,7 +17,7 @@ import { APP_RESOURCES } from "../../utils/appResources";
  */
 export default eventHandler(async (event) => {
   const caller = await requireAuth(event);
-  assertRoleAdmin(caller);
+  assertRoleAdmin(event, caller);
 
   try {
     const [rows, roles] = await Promise.all([

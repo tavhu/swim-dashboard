@@ -131,7 +131,7 @@ export async function requireAuth(event: H3Event): Promise<AuthUser> {
   if (!user.status) {
     throw createError({
       statusCode: 403,
-      statusMessage: encodeURI("គណនីត្រូវបានបិទ! សូមទំនាក់ទំនងអ្នកគ្រប់គ្រង"),
+      statusMessage: errorMessage(event, "គណនីត្រូវបានបិទ! សូមទំនាក់ទំនងអ្នកគ្រប់គ្រង"),
     });
   }
   return user;
@@ -147,7 +147,7 @@ export async function requirePermission(
   if (!userCan(user, resource, action)) {
     throw createError({
       statusCode: 403,
-      statusMessage: encodeURI("អ្នកមិនមានសិទ្ធិសម្រាប់សកម្មភាពនេះទេ"),
+      statusMessage: errorMessage(event, "អ្នកមិនមានសិទ្ធិសម្រាប់សកម្មភាពនេះទេ"),
     });
   }
   return user;
@@ -187,7 +187,7 @@ export async function assertCanAssignRole(
   if (canAssignRole(user.grants, roleId, await gatedRoleIds(event))) return;
   throw createError({
     statusCode: 403,
-    statusMessage: encodeURI("អ្នកមិនមានសិទ្ធិផ្តល់តួនាទីនេះទេ"),
+    statusMessage: errorMessage(event, "អ្នកមិនមានសិទ្ធិផ្តល់តួនាទីនេះទេ"),
   });
 }
 
@@ -196,13 +196,14 @@ export async function assertCanAssignRole(
  * belonging to that centre; `null` is unscoped (ministry level).
  */
 export function assertCenterScope(
+  event: H3Event,
   user: AuthUser,
   targetCenterId: string | null | undefined
 ): void {
   if (isInCenterScope(user.serviceCenterID, targetCenterId)) return;
   throw createError({
     statusCode: 403,
-    statusMessage: encodeURI("អ្នកមិនមានសិទ្ធិលើមជ្ឈមណ្ឌលនេះទេ"),
+    statusMessage: errorMessage(event, "អ្នកមិនមានសិទ្ធិលើមជ្ឈមណ្ឌលនេះទេ"),
   });
 }
 

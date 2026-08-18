@@ -17,7 +17,7 @@ export default eventHandler(async (event) => {
     const inUse = await event.context.prisma.user.count({ where: { userRoleID: body?.id } });
     if (inUse > 0) {
       setResponseStatus(event, 409);
-      return { error: encodeURI(`តួនាទីនេះកំពុងប្រើដោយគណនី ${inUse}`) };
+      return { error: errorMessage(event, `តួនាទីនេះកំពុងប្រើដោយគណនី ${inUse}`) };
     }
 
     await event.context.prisma.roleToResource.deleteMany({ where: { roleID: body?.id } });

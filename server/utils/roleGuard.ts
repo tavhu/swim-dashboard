@@ -29,11 +29,11 @@ export function isSuperAdmin(user: AuthUser): boolean {
 }
 
 /** Throws 403 unless the caller may administer roles at all. */
-export function assertRoleAdmin(user: AuthUser): void {
+export function assertRoleAdmin(event: H3Event, user: AuthUser): void {
   if (isSuperAdmin(user)) return;
   throw createError({
     statusCode: 403,
-    statusMessage: encodeURI("មានតែ Super Admin ប៉ុណ្ណោះដែលអាចកែតួនាទី និងសិទ្ធិបាន"),
+    statusMessage: errorMessage(event, "មានតែ Super Admin ប៉ុណ្ណោះដែលអាចកែតួនាទី និងសិទ្ធិបាន"),
   });
 }
 
@@ -51,14 +51,14 @@ export async function assertMayAdministerRole(
   targetRoleId: string | null | undefined,
   opts: { allowSelf?: boolean } = {}
 ): Promise<void> {
-  assertRoleAdmin(user);
+  assertRoleAdmin(event, user);
 
   if (!targetRoleId) return;
 
   if (targetRoleId === user.roleId && !opts.allowSelf) {
     throw createError({
       statusCode: 403,
-      statusMessage: encodeURI("មិនអាចកែតួនាទីរបស់ខ្លួនឯងបានទេ"),
+      statusMessage: errorMessage(event, "មិនអាចកែតួនាទីរបស់ខ្លួនឯងបានទេ"),
     });
   }
 
@@ -67,14 +67,14 @@ export async function assertMayAdministerRole(
     select: { name: true },
   });
   if (!target) {
-    throw createError({ statusCode: 404, statusMessage: encodeURI("រកមិនឃើញតួនាទីនេះទេ") });
+    throw createError({ statusCode: 404, statusMessage: errorMessage(event, "រកមិនឃើញតួនាទីនេះទេ") });
   }
 
   // Belt and braces: even if (1) is relaxed later, Super Admin stays reserved.
   if (target.name === SUPER_ADMIN_ROLE && !isSuperAdmin(user)) {
     throw createError({
       statusCode: 403,
-      statusMessage: encodeURI("មិនអាចកែតួនាទី Super Admin បានទេ"),
+      statusMessage: errorMessage(event, "មិនអាចកែតួនាទី Super Admin បានទេ"),
     });
   }
 }

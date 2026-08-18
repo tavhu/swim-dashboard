@@ -54,7 +54,7 @@ export default eventHandler(async (event) => {
   if (!user.status) {
     return refuse(
       403,
-      encodeURI("គណនីត្រូវបានបិទ! សូមទំនាក់ទំនងអ្នកគ្រប់គ្រង"),
+      errorMessage(event, "គណនីត្រូវបានបិទ! សូមទំនាក់ទំនងអ្នកគ្រប់គ្រង"),
       `account disabled (${user.username})`
     );
   }
@@ -64,7 +64,7 @@ export default eventHandler(async (event) => {
   if (!userCan(user, rule.resource, rule.action)) {
     return refuse(
       403,
-      encodeURI("អ្នកមិនមានសិទ្ធិសម្រាប់សកម្មភាពនេះទេ"),
+      errorMessage(event, "អ្នកមិនមានសិទ្ធិសម្រាប់សកម្មភាពនេះទេ"),
       `user=${user.username} role=${user.roleName ?? "none"} needs ${rule.resource}/${rule.action}`
     );
   }

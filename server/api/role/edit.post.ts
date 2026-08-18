@@ -14,11 +14,11 @@ export default eventHandler(async (event) => {
   const name = String(body?.roleName ?? "").trim();
   if (!name) {
     setResponseStatus(event, 400);
-    return { error: encodeURI("សូមបញ្ចូលឈ្មោះតួនាទី") };
+    return { error: errorMessage(event, "សូមបញ្ចូលឈ្មោះតួនាទី") };
   }
   if (name.toLowerCase() === SUPER_ADMIN_ROLE.toLowerCase()) {
     setResponseStatus(event, 403);
-    return { error: encodeURI("ឈ្មោះតួនាទី Super Admin ត្រូវបានបម្រុងទុក") };
+    return { error: errorMessage(event, "ឈ្មោះតួនាទី Super Admin ត្រូវបានបម្រុងទុក") };
   }
 
   try {
@@ -31,7 +31,7 @@ export default eventHandler(async (event) => {
   } catch (e: any) {
     if (e?.code === "P2002") {
       setResponseStatus(event, 409);
-      return { error: encodeURI("ឈ្មោះតួនាទីនេះមានរួចហើយ") };
+      return { error: errorMessage(event, "ឈ្មោះតួនាទីនេះមានរួចហើយ") };
     }
     console.error("[role/edit]", e);
     setResponseStatus(event, 412);

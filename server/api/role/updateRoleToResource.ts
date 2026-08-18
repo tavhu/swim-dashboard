@@ -29,7 +29,7 @@ export default eventHandler(async (event) => {
   });
   if (target?.name === SUPER_ADMIN_ROLE) {
     setResponseStatus(event, 403);
-    return { error: encodeURI("សិទ្ធិរបស់ Super Admin មិនអាចកែបានទេ") };
+    return { error: errorMessage(event, "សិទ្ធិរបស់ Super Admin មិនអាចកែបានទេ") };
   }
 
   const granted = body?.granted === true;

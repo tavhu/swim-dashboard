@@ -414,12 +414,26 @@ export function reportFilename(def: ReportDefinition, ext: string) {
 }
 
 /** Human-readable description of the filters, printed on every export. */
-export function describeFilters(f: ReportFilters, centreName?: string | null) {
+/**
+ * The filter line printed under a report's title.
+ *
+ * `tr` is passed in rather than imported so this stays free of h3 — the caller
+ * has the request and therefore the language; this function only has strings.
+ * Defaults to identity, which is Khmer, so an existing caller is unaffected.
+ */
+export function describeFilters(
+  f: ReportFilters,
+  centreName?: string | null,
+  tr: (s: string) => string = (s) => s
+) {
   const bits: string[] = [];
   if (f.dateFrom || f.dateTo) {
-    bits.push(`កាលបរិច្ឆេទ៖ ${f.dateFrom ? fmtDate(f.dateFrom) : "ដើមគ្រា"} — ${f.dateTo ? fmtDate(f.dateTo) : "បច្ចុប្បន្ន"}`);
+    const from = f.dateFrom ? fmtDate(f.dateFrom) : tr("ដើមគ្រា");
+    const to = f.dateTo ? fmtDate(f.dateTo) : tr("បច្ចុប្បន្ន");
+    bits.push(`${tr("កាលបរិច្ឆេទ៖")} ${from} — ${to}`);
   }
-  if (centreName) bits.push(`មជ្ឈមណ្ឌល៖ ${centreName}`);
-  if (f.provinceCode) bits.push(`ខេត្ត៖ ${provinceName(f.provinceCode)}`);
-  return bits.length ? bits.join(" · ") : "គ្មានការកំណត់ (ទិន្នន័យទាំងអស់)";
+  // Centre and province names are data and stay as recorded.
+  if (centreName) bits.push(`${tr("មជ្ឈមណ្ឌល៖")} ${centreName}`);
+  if (f.provinceCode) bits.push(`${tr("ខេត្ត៖")} ${provinceName(f.provinceCode)}`);
+  return bits.length ? bits.join(" · ") : tr("គ្មានការកំណត់ (ទិន្នន័យទាំងអស់)");
 }
