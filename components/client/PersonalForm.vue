@@ -237,6 +237,34 @@ const formRules = {
     serviceCenterID: ['required'],
 }
 
+/**
+ * ហត្ថលេខា — the interviewing officer signs their own name.
+ *
+ * A signature block that accepts any text is not a signature. The rule is that
+ * what is typed matches the name on the account doing the typing, so the signed
+ * form and the audit trail agree about who filled it in.
+ *
+ * Compared case-insensitively and with surrounding and repeated spaces
+ * collapsed: a name retyped with a double space between its parts is the same
+ * name, and refusing it would teach people to copy and paste rather than sign.
+ */
+const signerName = computed(() => String((token.value as any)?.fullname ?? '').trim())
+const normalise = (s: unknown) => String(s ?? '').trim().replace(/\s+/g, ' ').toLowerCase()
+
+/** Empty counts as invalid — it is a required field — but see signatureMismatch. */
+const signatureValid = computed(
+    () => !!signerName.value && normalise(formData.InterViewerSignature) === normalise(signerName.value)
+)
+
+/**
+ * Only true once something has been typed. Used for the live red highlight, so
+ * a field the user has not reached yet is not already marked wrong; the submit
+ * path uses signatureValid, which does treat empty as a failure.
+ */
+const signatureMismatch = computed(
+    () => !!String(formData.InterViewerSignature ?? '').trim() && !signatureValid.value
+)
+
 const isError = ref(false);
 const form = computed(() => composableForm.getForm(formName));
 const validator = computed(() => form.value.validator);
@@ -285,8 +313,19 @@ const submit = async () => {
     // if (readOnly) return;
     // console.log('123')
     if (!(await confirmDialog())) return;
-    // Fields the validator cannot see — see the note on formRules. Checked
-    // against formData directly so the message names what is actually missing.
+
+    /**
+     * Everything that can stop a save, gathered before anything is reported.
+     *
+     * These three checks used to run in sequence, each returning on the first
+     * failure, so a form with a missing radio *and* six empty text fields told
+     * the user about the radio, and only after they fixed it about the rest.
+     * They run together now: one message, naming every field at fault.
+     */
+    const problems: { field: string; label: string }[] = []
+
+    // 1. Fields the validator cannot see — see the note on formRules. `false` is
+    //    a valid answer on the radios, so only null/undefined/'' are unanswered.
     const unregisteredRequired: Record<string, string> = {
         KnownLegalConsequence: 'តើអ្នកដឹងទេថា អំពើដែលអ្នកធ្វើជាអំពើដែលនាំមកនូវគ្រោះថ្នាក់និងខុសច្បាប់',
         LivingSituation: 'បរិស្ថាននៃការរស់នៅ',
@@ -294,37 +333,39 @@ const submit = async () => {
         InterViewDate: 'កាលបរិច្ឆេទសម្ភាសន៍',
         InterviewerID: 'មន្ត្រីសម្ភាសន៍ (ចូលប្រើប្រាស់ម្តងទៀត)',
     }
-    // `false` is a valid answer on the radios, so only null/undefined/'' count
-    // as unanswered.
-    const unanswered = Object.entries(unregisteredRequired)
-        .filter(([field]) => {
-            const v = formData[field]
-            return v === null || v === undefined || v === ''
-        })
-        .map(([, label]) => label)
-
-    if (unanswered.length) {
-        toast.error({ message: 'សូមបំពេញ៖ ' + unanswered.join(' / ') });
-        isError.value = true;
-        setTimeout(() => { isError.value = false; }, 1000);
-        return;
+    for (const [field, label] of Object.entries(unregisteredRequired)) {
+        const v = formData[field]
+        if (v === null || v === undefined || v === '') problems.push({ field, label: tr(label) })
     }
 
+    // 2. The signature must be the signer's own name — see signatureValid.
+    if (!signatureValid.value) {
+        problems.push({ field: 'InterViewerSignature', label: tr('ហត្ថលេខា') })
+    }
+
+    // 3. The validator's own fields. Run even when the checks above already
+    //    failed, so its data-error marks appear in the same pass.
     validator.value.clearErrors();
     await validator.value.validate();
     if (validator.value.fail()) {
         const failed: string[] = validator.value.getFailedFields?.() ?? [];
+        for (const f of failed) problems.push({ field: f, label: FIELD_LABELS.value[f] ?? f })
+    }
+
+    if (problems.length) {
         toast.error({
-            message: failed.length
-                ? t('message.fillIn', { fields: failed.map((f) => FIELD_LABELS.value[f] ?? f).join(' / ') })
-                : validator.value.getErrorMessage(),
+            message: t('message.fillIn', { fields: problems.map((p) => p.label).join(' / ') }),
         });
         isError.value = true;
-        setTimeout(() => {
-            isError.value = false;
-        }, 1000);
+        setTimeout(() => { isError.value = false; }, 1000);
+        // The library sets data-error on its own controls asynchronously; wait
+        // for that before deciding which field is highest on the page.
+        await nextTick()
+        markFieldErrors(problems.map((p) => p.field))
         return true;
     }
+
+    clearFieldErrors()
     saving.value = true
     const oldImageURL = formData.photo
     let image: any
@@ -821,7 +862,15 @@ watch(() => formData.communeBA, (newCommune) => {
                 {{ tr('អ្នកគ្មានសិទ្ធិកែប្រែទម្រង់នេះទេ។') }}
             </p>
 
-            <TwForm :name="formName" class="grid grid-cols-12 items-start gap-4" :class="{ 'tw-shake': isError }"
+            <!-- novalidate: `required` on the controls is there to mark the field
+                 as required — it draws the red star and tells assistive software.
+                 Left to the browser it also *enforces*, and the browser enforces
+                 differently and worse: it stops at the first empty field, shows a
+                 bubble in the browser's own language rather than Khmer, and never
+                 lets @submit run, so the app's own check — which names every
+                 missing field at once and scrolls to the first — never happened.
+                 One validator, and it is this form's. -->
+            <TwForm novalidate :name="formName" class="grid grid-cols-12 items-start gap-4" :class="{ 'tw-shake': isError }"
                 :rules="formRules" @submit="submit">
                 <section class="col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800">
                     <h3 class="text-xl font-[Moul] text-primary">{{ tr('ព័ត៌មានលំអិត') }}</h3>
@@ -870,12 +919,12 @@ watch(() => formData.communeBA, (newCommune) => {
                     <hr class="my-2 border dark:border-gray-700" />
                     <div class="grid grid-cols-12 gap-4">
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput :label="tr('១.នាមត្រកូលនិងនាមខ្លួន')" name="fullNameKH" v-model="formData.fullNameKH"
+                    <TwInput :label="tr('១.នាមត្រកូលនិងនាមខ្លួន')" name="fullNameKH" required v-model="formData.fullNameKH"
                         :placeholder="tr('នាមត្រកូលនិងនាមខ្លួន')" type="text" />
                     <CustomErrorMessage name="fullNameKH" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput :label="tr('ឈ្មោះហៅក្រៅ')" name="nickName" v-model="formData.nickName" :placeholder="tr('ឈ្មោះហៅក្រៅ')"
+                    <TwInput :label="tr('ឈ្មោះហៅក្រៅ')" name="nickName" required v-model="formData.nickName" :placeholder="tr('ឈ្មោះហៅក្រៅ')"
                         type="text" />
                     <CustomErrorMessage name="nickName" />
                 </div>
@@ -891,7 +940,7 @@ watch(() => formData.communeBA, (newCommune) => {
                         :enableTimePicker="false" :close-on-auto-apply="false" autoApply format="dd/MM/yyyy" class="mt-1" />
                 </label>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput :label="tr('ទីកន្លែងកំណើត')" name="POB" v-model="formData.POB" :placeholder="tr('ទីកន្លែងកំណើត')"
+                    <TwInput :label="tr('ទីកន្លែងកំណើត')" name="POB" required v-model="formData.POB" :placeholder="tr('ទីកន្លែងកំណើត')"
                         type="text" />
                     <CustomErrorMessage name="POB" />
                 </div>
@@ -916,12 +965,12 @@ watch(() => formData.communeBA, (newCommune) => {
                         <hr class="my-2 border dark:border-gray-700" />
                     </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput :label="tr('ផ្ទះលេខ')" name="homeBA" v-model="formData.homeBA" :placeholder="tr('ផ្ទះលេខ')"
+                    <TwInput :label="tr('ផ្ទះលេខ')" name="homeBA" required v-model="formData.homeBA" :placeholder="tr('ផ្ទះលេខ')"
                         type="text" />
                     <CustomErrorMessage name="homeBA" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput :label="tr('ផ្លូវលេខ')" name="StreetBA" v-model="formData.StreetBA" :placeholder="tr('ផ្លូវលេខ')"
+                    <TwInput :label="tr('ផ្លូវលេខ')" name="StreetBA" required v-model="formData.StreetBA" :placeholder="tr('ផ្លូវលេខ')"
                         type="text" />
                     <CustomErrorMessage name="StreetBA" />
                 </div>
@@ -1030,17 +1079,17 @@ watch(() => formData.communeBA, (newCommune) => {
                     <hr class="my-2 border dark:border-gray-700" />
                     <div class="grid grid-cols-12 gap-4">
                 <div class="col-span-12 ">
-                    <TwInput :label="tr('១.អតិថិជនត្រូវបានបញ្ជូនដោយ')" name="ClientSendBy" v-model="formData.ClientSendBy"
+                    <TwInput :label="tr('១.អតិថិជនត្រូវបានបញ្ជូនដោយ')" name="ClientSendBy" required v-model="formData.ClientSendBy"
                         :placeholder="tr('អតិថិជនត្រូវបានបញ្ជូនដោយ')" type="text" />
                     <CustomErrorMessage name="ClientSendBy" />
                 </div>
                 <div class="col-span-12 ">
-                    <TwInput :label="tr('២.បញ្ហាប្រឈមដោយសំខាន់ៗ')" name="ImportantChallenge"
+                    <TwInput :label="tr('២.បញ្ហាប្រឈមដោយសំខាន់ៗ')" name="ImportantChallenge" required
                         v-model="formData.ImportantChallenge" :placeholder="tr('បញ្ហាប្រឈមដោយសំខាន់ៗ')" type="text" />
                     <CustomErrorMessage name="ImportantChallenge" />
                 </div>
                 <div class="col-span-12 ">
-                    <TwInput :label="tr('៣.សកម្មភាពធ្លាប់បានប្រព្រឹត្ត')" name="PastActivities"
+                    <TwInput :label="tr('៣.សកម្មភាពធ្លាប់បានប្រព្រឹត្ត')" name="PastActivities" required
                         v-model="formData.PastActivities" :placeholder="tr('សកម្មភាពធ្លាប់បានប្រព្រឹត្ត')" type="text" />
                     <CustomErrorMessage name="PastActivities" />
                 </div>
@@ -1057,7 +1106,7 @@ watch(() => formData.communeBA, (newCommune) => {
                         v-model="formData.ReasonUseDrugOther" :placeholder="tr('មូលហេតុផ្សេង')" type="text" />
                     <CustomErrorMessage name="ReasonUseDrugOther" />
                 </div>
-                <div class="col-span-12">
+                <div class="col-span-12" data-field="KnownLegalConsequence">
                     <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('តើអ្នកដឹងទេថា អំពើដែលអ្នកធ្វើជាអំពើដែលនាំមកនូវគ្រោះថ្នាក់និងខុសច្បាប់') }}</span>
                     <div class="mt-2 flex flex-wrap gap-x-6 gap-y-2">
                         <URadio v-for="(opt, index) of LegalConsequence" :key="index" v-model="formData.KnownLegalConsequence"
@@ -1093,7 +1142,7 @@ watch(() => formData.communeBA, (newCommune) => {
                         :placeholder="tr('រយៈពេលប្រើប្រាស់')" type="text" />
                     <CustomErrorMessage name="DrugDurationUse" />
                 </div>
-                <div class="col-span-12">
+                <div class="col-span-12" data-field="LivingSituation">
                     <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('៥. បរិស្ថាននៃការរស់នៅ') }}</span>
                     <div class="mt-2 flex flex-wrap gap-x-6 gap-y-2">
                         <URadio v-for="(opt, index) of LivingSituationOption" :key="index" v-model="formData.LivingSituation"
@@ -1141,7 +1190,7 @@ watch(() => formData.communeBA, (newCommune) => {
                         <span>{{ tr('បន្ថែមមជ្ឈមណ្ឌល') }}</span>
                     </UButton>
                 </div>
-                <div class="col-span-12">
+                <div class="col-span-12" data-field="UsedtoRehab">
                     <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('ធ្លាប់ចូលមជ្ឈមណ្ឌល ឬទទួលសេវាប្រហាក់ប្រហែលពីមុន') }}</span>
                     <div class="mt-2 flex flex-wrap gap-x-6 gap-y-2">
                         <URadio v-for="(opt, index) of UsedtoRehabOption" :key="index" v-model="formData.UsedtoRehab"
@@ -1326,10 +1375,21 @@ watch(() => formData.communeBA, (newCommune) => {
                                 }}
                             </p>
                         </div>
-                        <div class="col-span-12 lg:col-span-6">
+                        <!-- data-field lets the submit handler point at this one:
+                             the rule is ours, not the validator's, so it sets no
+                             data-error of its own. -->
+                        <div class="col-span-12 lg:col-span-6" data-field="InterViewerSignature"
+                            :class="{ 'field-invalid': signatureMismatch }">
                             <TwInput :label="tr('ហត្ថលេខា')" name="InterViewerSignature" required
-                                v-model="formData.InterViewerSignature" :placeholder="tr('ហត្ថលេខា')" type="text"
+                                v-model="formData.InterViewerSignature"
+                                :placeholder="signerName || tr('ហត្ថលេខា')" type="text"
                                 :disabled="readOnly" />
+                            <!-- Says what to type, and what was typed instead —
+                                 "invalid" on a signature field otherwise reads as
+                                 a rejected signature rather than a typo. -->
+                            <p v-if="signatureMismatch" class="mt-1 text-sm text-red-600 font-[battambang]">
+                                {{ tr('ហត្ថលេខាត្រូវតែជាឈ្មោះពេញរបស់អ្នក') }}: {{ signerName }}
+                            </p>
                             <CustomErrorMessage name="InterViewerSignature" />
                         </div>
                         <div class="col-span-12 lg:col-span-6">
@@ -1338,7 +1398,7 @@ watch(() => formData.communeBA, (newCommune) => {
                                 :disabled="readOnly" />
                             <CustomErrorMessage name="InterviewerPosition" />
                         </div>
-                        <label class="col-span-12 block lg:col-span-6">
+                        <label class="col-span-12 block lg:col-span-6" data-field="InterViewDate">
                             <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('កាលបរិច្ឆេទសម្ភាសន៍') }}</span>
                             <Datepicker :flow="['year', 'month', 'calendar']" :text-input="true" v-model="formData.InterViewDate" :disabled="readOnly" :maxDate="new Date()"
                                 :enableTimePicker="false" :close-on-auto-apply="false" autoApply format="dd/MM/yyyy" class="mt-1" />

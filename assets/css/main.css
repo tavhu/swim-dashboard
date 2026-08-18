@@ -147,3 +147,79 @@ html[lang="en"] h2.font-\[moul\],
 html[lang="en"] h3.font-\[moul\] {
   line-height: 1.3;
 }
+
+/* ---------------------------------------------------------------------------
+   Required fields, invalid fields, and the toast lifetime bar.
+
+   All three are done here rather than at the call sites: there are 173 required
+   controls across 14 files, and a rule that has to be remembered at every new
+   field is a rule that will be missed at some of them.
+   --------------------------------------------------------------------------- */
+
+/* A red star before the label of every required field.
+
+   `required` reaches the DOM on the control itself — vue3-tailwind forwards it,
+   and the forms that use plain <input> set it directly — so :has() can find the
+   label belonging to a required control without any marker being added by hand.
+   Both shapes are covered: the library wraps its control in a <div> after the
+   label, the plain forms put the control directly beside it.
+
+   ::before, not ::after: the request was for the star to come first, and in both
+   Khmer and English the field name reads left to right. */
+label:has(~ div :is(input, select, textarea)[required])::before,
+label:has(~ :is(input, select, textarea)[required])::before {
+  content: "* ";
+  color: #dc2626;
+  font-weight: 700;
+}
+
+/* A field that failed validation.
+
+   vue3-tailwind already flips data-error on the control when its own validator
+   rejects it, so the highlight comes free for every field the validator knows
+   about. `.field-invalid` is for the ones it does not — radio groups, date
+   pickers and the signature check — applied to the field's wrapper by
+   composables/formErrors.ts.
+
+   The ring is drawn with box-shadow rather than by changing the border, so the
+   control does not change size when it turns red and the layout does not shift
+   as errors appear and clear. */
+:is(input, select, textarea)[data-error="true"],
+.field-invalid :is(input, select, textarea, button) {
+  border-color: #dc2626 !important;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.18) !important;
+}
+
+.field-invalid > label,
+.field-invalid label:first-of-type {
+  color: #dc2626;
+}
+
+/* The toast lifetime bar, running left to right.
+
+   The library's bar is width: N% where N counts down from 100 to 0, so it
+   shrank away to the left. Rather than fork the component, the bar is made
+   transparent and pinned to the right, and its ::before paints everything to
+   its left — so what the eye follows is the coloured part growing rightward as
+   the toast ages. The wrapper clips the overhang. */
+.vt-h-\[0\.35rem\] {
+  background: transparent !important;
+  left: auto !important;
+  right: 0;
+}
+
+.vt-h-\[0\.35rem\]::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 100%;
+  width: 100vw;
+  background: currentColor;
+  opacity: 0.45;
+}
+
+/* Needed so the 100vw overhang above does not paint across the page. */
+.vt-relative:has(> .vt-h-\[0\.35rem\]) {
+  overflow: hidden;
+}

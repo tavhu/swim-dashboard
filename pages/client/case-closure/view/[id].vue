@@ -209,6 +209,7 @@ onMounted(load);
 
         <ApprovalPanel :record-id="rec.id" endpoint="/api/client/case-closure/approve" :status="rec.approvalStatus"
           :submitted-at="rec.submittedAt" :decided-at="rec.decidedAt" :rejection-reason="rec.rejectionReason"
+          :submitted-by-name="rec.submittedByName" :decided-by-name="rec.decidedByName"
           :can-decide="true" :read-only="readOnly" @changed="load" />
       </div>
     </div>

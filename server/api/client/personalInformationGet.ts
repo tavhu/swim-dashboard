@@ -143,7 +143,9 @@ export default eventHandler(async (event) => {
 
     setResponseStatus(event, 201);
     return body?.id
-      ? data
+      ? // Who submitted and who decided, resolved the same way and for the same
+        // reason as the interviewer above.
+        await withApproverNames(event, data as any)
       : { data: list, total: totalCount, error: "", status: "authenticated" };
   } catch (e: any) {
     // Was `return { error: e }` — a Prisma error serialises to `{}`, so the

@@ -339,7 +339,8 @@ onMounted(load);
              signed off. Same shared panel as ទម្រង់ទី២-៦. -->
         <ApprovalPanel :record-id="client.id" endpoint="/api/client/approve" :status="client.approvalStatus"
           :submitted-at="client.submittedAt" :decided-at="client.decidedAt"
-          :rejection-reason="client.rejectionReason" :can-decide="true" :read-only="readOnly" @changed="load" />
+          :rejection-reason="client.rejectionReason"
+          :submitted-by-name="client.submittedByName" :decided-by-name="client.decidedByName" :can-decide="true" :read-only="readOnly" @changed="load" />
       </div>
     </div>
   </div>

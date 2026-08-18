@@ -818,5 +818,11 @@
   "រកមិនឃើញបុគ្គលិកនេះទេ": "No such staff member",
   "សូមជ្រើសរើសមជ្ឈមណ្ឌល": "Please choose a centre",
   "អ្នកមិនមានសិទ្ធិលុបមជ្ឈមណ្ឌលទេ": "You do not have permission to delete a centre",
-  "អ្នកអាចបង្កើតគណនីសម្រាប់មជ្ឈមណ្ឌលរបស់ខ្លួនប៉ុណ្ណោះ": "You may only create accounts for your own centre"
+  "អ្នកអាចបង្កើតគណនីសម្រាប់មជ្ឈមណ្ឌលរបស់ខ្លួនប៉ុណ្ណោះ": "You may only create accounts for your own centre",
+  "ហត្ថលេខាត្រូវតែជាឈ្មោះពេញរបស់អ្នក": "The signature must be your own full name",
+  "ត្រូវការបំពេញ": "This field is required",
+  "ត្រូវតែជាលេខ": "Must be a number",
+  "អាសយដ្ឋានអ៊ីមែលមិនត្រឹមត្រូវ": "Not a valid email address",
+  "ខ្លីជាងកំណត់": "Too short",
+  "វែងជាងកំណត់": "Too long"
 }

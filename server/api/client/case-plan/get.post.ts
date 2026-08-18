@@ -68,7 +68,8 @@ export default eventHandler(async (event) => {
         include,
       });
       setResponseStatus(event, 200);
-      return data;
+      // submittedByID/decidedByID are plain columns, so the names need a lookup.
+      return await withApproverNames(event, data);
     }
 
     if (body?.clientId) {
