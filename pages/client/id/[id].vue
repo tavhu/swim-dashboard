@@ -35,102 +35,102 @@ const address = computed(() => {
 const personal = computed(() => {
   const c = client.value; if (!c) return [];
   return [
-    { label: "ភេទ", value: label(GENDER, c.Gender) },
-    { label: "ថ្ងៃខែឆ្នាំកំណើត", value: fmtDate(c.DOB) },
-    { label: "ទីកន្លែងកំណើត", value: val(c.POB) },
-    { label: "កម្រិតវប្បធម៌", value: val(c.EducationLevel) },
-    { label: "មុខរបរ", value: val(c.Occupation) },
-    { label: "កាលបរិច្ឆេទចូលមជ្ឈមណ្ឌល", value: fmtDate(c.DateArrested) },
+    { label: tr("ភេទ"), value: label(GENDER, c.Gender) },
+    { label: tr("ថ្ងៃខែឆ្នាំកំណើត"), value: fmtDate(c.DOB) },
+    { label: tr("ទីកន្លែងកំណើត"), value: val(c.POB) },
+    { label: tr("កម្រិតវប្បធម៌"), value: val(c.EducationLevel) },
+    { label: tr("មុខរបរ"), value: val(c.Occupation) },
+    { label: tr("កាលបរិច្ឆេទចូលមជ្ឈមណ្ឌល"), value: fmtDate(c.DateArrested) },
   ];
 });
 
 const addressFields = computed(() => {
   const c = client.value; if (!c) return [];
   return [
-    { label: "ផ្ទះលេខ", value: val(c.homeBA) },
-    { label: "ផ្លូវលេខ", value: val(c.StreetBA) },
-    { label: "រាជធានី/ខេត្ត", value: address.value.province },
-    { label: "ស្រុក-ខណ្ឌ", value: address.value.district },
-    { label: "ឃុំ/សង្កាត់", value: address.value.commune },
-    { label: "ភូមិ-ក្រុម", value: address.value.village },
+    { label: tr("ផ្ទះលេខ"), value: val(c.homeBA) },
+    { label: tr("ផ្លូវលេខ"), value: val(c.StreetBA) },
+    { label: tr("រាជធានី/ខេត្ត"), value: address.value.province },
+    { label: tr("ស្រុក-ខណ្ឌ"), value: address.value.district },
+    { label: tr("ឃុំ/សង្កាត់"), value: address.value.commune },
+    { label: tr("ភូមិ-ក្រុម"), value: address.value.village },
   ];
 });
 
 const family = computed(() => {
   const c = client.value; if (!c) return [];
   return [
-    { label: "ឈ្មោះឪពុក-អ្នកថែទាំ", value: val(c.FatherOrChaperoneName) },
-    { label: "ថ្ងៃខែឆ្នាំកំណើត", value: fmtDate(c.FOCDOB) },
-    { label: "អាពាហ៍ពិពាហ៍", value: val(c.FOCMarried) },
-    { label: "លេខទូរស័ព្ទ", value: val(c.FOCTel) },
-    { label: "អាសយដ្ឋាន", value: val(c.FOCTelandAddress) },
-    { label: "ឈ្មោះម្តាយ-អ្នកថែទាំ", value: val(c.MotherOrChaperoneName) },
-    { label: "ថ្ងៃខែឆ្នាំកំណើត", value: fmtDate(c.MOCDOB) },
-    { label: "អាពាហ៍ពិពាហ៍", value: val(c.MOCMarried) },
-    { label: "លេខទូរស័ព្ទ", value: val(c.MOCTel) },
-    { label: "អាសយដ្ឋាន", value: val(c.MOCTelandAddress) },
-    { label: "សមាជិកគ្រួសារដទៃទៀត", value: val(c.OtherFamilyMembers), wide: true },
-    { label: "មិត្តភក្ដិជិតស្និទ្ធ", value: val(c.CloseFriend), wide: true },
+    { label: tr("ឈ្មោះឪពុក-អ្នកថែទាំ"), value: val(c.FatherOrChaperoneName) },
+    { label: tr("ថ្ងៃខែឆ្នាំកំណើត"), value: fmtDate(c.FOCDOB) },
+    { label: tr("អាពាហ៍ពិពាហ៍"), value: val(c.FOCMarried) },
+    { label: tr("លេខទូរស័ព្ទ"), value: val(c.FOCTel) },
+    { label: tr("អាសយដ្ឋាន"), value: val(c.FOCTelandAddress) },
+    { label: tr("ឈ្មោះម្តាយ-អ្នកថែទាំ"), value: val(c.MotherOrChaperoneName) },
+    { label: tr("ថ្ងៃខែឆ្នាំកំណើត"), value: fmtDate(c.MOCDOB) },
+    { label: tr("អាពាហ៍ពិពាហ៍"), value: val(c.MOCMarried) },
+    { label: tr("លេខទូរស័ព្ទ"), value: val(c.MOCTel) },
+    { label: tr("អាសយដ្ឋាន"), value: val(c.MOCTelandAddress) },
+    { label: tr("សមាជិកគ្រួសារដទៃទៀត"), value: val(c.OtherFamilyMembers), wide: true },
+    { label: tr("មិត្តភក្ដិជិតស្និទ្ធ"), value: val(c.CloseFriend), wide: true },
   ];
 });
 
 const situation = computed(() => {
   const c = client.value; if (!c) return [];
   return [
-    { label: "អតិថិជនត្រូវបានបញ្ជូនដោយ", value: val(c.ClientSendBy) },
-    { label: "បញ្ហាប្រឈមដោយសំខាន់ៗ", value: val(c.ImportantChallenge) },
-    { label: "សកម្មភាពធ្លាប់បានប្រព្រឹត្ត", value: val(c.PastActivities) },
-    { label: "បរិស្ថាននៃការរស់នៅ", value: label(LIVING_SITUATION, c.LivingSituation) },
+    { label: tr("អតិថិជនត្រូវបានបញ្ជូនដោយ"), value: val(c.ClientSendBy) },
+    { label: tr("បញ្ហាប្រឈមដោយសំខាន់ៗ"), value: val(c.ImportantChallenge) },
+    { label: tr("សកម្មភាពធ្លាប់បានប្រព្រឹត្ត"), value: val(c.PastActivities) },
+    { label: tr("បរិស្ថាននៃការរស់នៅ"), value: label(LIVING_SITUATION, c.LivingSituation) },
   ];
 });
 
 const drugUse = computed(() => {
   const c = client.value; if (!c) return [];
   return [
-    { label: "ហេតុដែលនាំមានការប្រើប្រាស់", value: label(REASON_USE_DRUG, c.ReasonUseDrug) },
-    { label: "មូលហេតុផ្សេង", value: val(c.ReasonUseDrugOther) },
-    { label: "ប្រភេទគ្រឿងញៀន", value: label(TYPE_DRUG_USED, c.typeDrugUsed) },
-    { label: "ប្រភេទផ្សេង", value: val(c.typeDrugUsedOther) },
-    { label: "បរិមាណប្រើប្រាស់", value: val(c.DrugVolumeUsed) },
-    { label: "ភាពញឹកញាប់", value: val(c.DrugRequecyUse) },
-    { label: "រយៈពេលប្រើប្រាស់", value: val(c.DrugDurationUse) },
-    { label: "ដឹងថាខុសច្បាប់", value: yesNo(c.KnownLegalConsequence, "ដឹង", "មិនដឹង") },
-    { label: "ធ្លាប់ចូលមជ្ឈមណ្ឌលពីមុន", value: yesNo(c.UsedtoRehab, "ធ្លាប់", "មិនធ្លាប់") },
-    { label: "ចំនួនលើក", value: val(c.HowManyTimeHaveServed) },
-    { label: "មូលហេតុនៃការនាំចូល", value: val(c.ReasonComingtoCenter), wide: true },
+    { label: tr("ហេតុដែលនាំមានការប្រើប្រាស់"), value: label(REASON_USE_DRUG, c.ReasonUseDrug) },
+    { label: tr("មូលហេតុផ្សេង"), value: val(c.ReasonUseDrugOther) },
+    { label: tr("ប្រភេទគ្រឿងញៀន"), value: label(TYPE_DRUG_USED, c.typeDrugUsed) },
+    { label: tr("ប្រភេទផ្សេង"), value: val(c.typeDrugUsedOther) },
+    { label: tr("បរិមាណប្រើប្រាស់"), value: val(c.DrugVolumeUsed) },
+    { label: tr("ភាពញឹកញាប់"), value: val(c.DrugRequecyUse) },
+    { label: tr("រយៈពេលប្រើប្រាស់"), value: val(c.DrugDurationUse) },
+    { label: tr("ដឹងថាខុសច្បាប់"), value: yesNo(c.KnownLegalConsequence, tr("ដឹង"), tr("មិនដឹង")) },
+    { label: tr("ធ្លាប់ចូលមជ្ឈមណ្ឌលពីមុន"), value: yesNo(c.UsedtoRehab, tr("ធ្លាប់"), tr("មិនធ្លាប់")) },
+    { label: tr("ចំនួនលើក"), value: val(c.HowManyTimeHaveServed) },
+    { label: tr("មូលហេតុនៃការនាំចូល"), value: val(c.ReasonComingtoCenter), wide: true },
   ];
 });
 
 const inCentre = computed(() => {
   const c = client.value; if (!c) return [];
   return [
-    { label: "សកម្មភាពប្រចាំថ្ងៃ", value: val(c.DailyActivitiesInCenter), wide: true },
-    { label: "សកម្មភាពដែលចូលចិត្ត", value: val(c.ActivitiesThatClientLike) },
-    { label: "ទេពកោសល្យ", value: val(c.ClientTalent) },
-    { label: "ទំនាក់ទំនងជាមួយមិត្តភក្ដិ", value: val(c.RelationshipWithFriends) },
-    { label: "ទំនាក់ទំនងជាមួយបុគ្គលិក", value: val(c.RelationshipWithStaff) },
-    { label: "ទំនាក់ទំនងជាមួយគ្រូ", value: val(c.RelationshipWithTeacher) },
-    { label: "ទំនាក់ទំនងផ្សេងៗ", value: val(c.RelationshipWithOther) },
+    { label: tr("សកម្មភាពប្រចាំថ្ងៃ"), value: val(c.DailyActivitiesInCenter), wide: true },
+    { label: tr("សកម្មភាពដែលចូលចិត្ត"), value: val(c.ActivitiesThatClientLike) },
+    { label: tr("ទេពកោសល្យ"), value: val(c.ClientTalent) },
+    { label: tr("ទំនាក់ទំនងជាមួយមិត្តភក្ដិ"), value: val(c.RelationshipWithFriends) },
+    { label: tr("ទំនាក់ទំនងជាមួយបុគ្គលិក"), value: val(c.RelationshipWithStaff) },
+    { label: tr("ទំនាក់ទំនងជាមួយគ្រូ"), value: val(c.RelationshipWithTeacher) },
+    { label: tr("ទំនាក់ទំនងផ្សេងៗ"), value: val(c.RelationshipWithOther) },
   ];
 });
 
 const future = computed(() => {
   const c = client.value; if (!c) return [];
   return [
-    { label: "ការព្រួយបារម្ភ", value: val(c.ConcernForClientFuture), wide: true },
-    { label: "ក្តីសង្ឃឹម", value: val(c.HopeForClientFuture), wide: true },
-    { label: "ផែនការអនាគត", value: label(FUTURE_PLAN, c.FuturePlanforClient) },
-    { label: "លម្អិត", value: val(c.FuturePlanforClientDetails) },
+    { label: tr("ការព្រួយបារម្ភ"), value: val(c.ConcernForClientFuture), wide: true },
+    { label: tr("ក្តីសង្ឃឹម"), value: val(c.HopeForClientFuture), wide: true },
+    { label: tr("ផែនការអនាគត"), value: label(FUTURE_PLAN, c.FuturePlanforClient) },
+    { label: tr("លម្អិត"), value: val(c.FuturePlanforClientDetails) },
   ];
 });
 
 const interview = computed(() => {
   const c = client.value; if (!c) return [];
   return [
-    { label: "កាលបរិច្ឆេទសម្ភាសន៍", value: fmtDate(c.InterViewDate) },
-    { label: "ឈ្មោះមន្ត្រីឬបុគ្គលិកសង្គមកិច្ច", value: val(c.interviewerName) },
-    { label: "តួនាទី", value: val(c.InterviewerPosition) },
-    { label: "យោបល់អ្នកសម្ភាសន៍", value: val(c.InterviewerOpinoin), wide: true },
+    { label: tr("កាលបរិច្ឆេទសម្ភាសន៍"), value: fmtDate(c.InterViewDate) },
+    { label: tr("ឈ្មោះមន្ត្រីឬបុគ្គលិកសង្គមកិច្ច"), value: val(c.interviewerName) },
+    { label: tr("តួនាទី"), value: val(c.InterviewerPosition) },
+    { label: tr("យោបល់អ្នកសម្ភាសន៍"), value: val(c.InterviewerOpinoin), wide: true },
   ];
 });
 
@@ -142,7 +142,7 @@ const hopelessChecked = computed(() =>
 const progress = computed(() => client.value?.ClientProgress ?? []);
 const serveHistory = computed(() => client.value?.ClientServeHistory ?? []);
 
-useHead(() => ({ title: client.value?.fullNameKH || "អតិថិជន" }));
+useHead(() => ({ title: client.value?.fullNameKH || tr("អតិថិជន") }));
 
 /** Named so ApprovalPanel can reload the record after a decision. */
 async function load() {
@@ -169,9 +169,7 @@ onMounted(load);
 
     <div class="mt-5">
       <div class="flex items-start justify-between gap-4">
-        <h2 class="text-2xl font-[Moul] text-primary">
-          សំណុំឯកសារអតិថិជន
-        </h2>
+        <h2 class="text-2xl font-[Moul] text-primary">{{ tr('សំណុំឯកសារអតិថិជន') }}</h2>
         <div class="no-print flex shrink-0 gap-2">
           <NuxtLink v-if="client" :to="`/client/register/${client.id}`">
             <UButton color="gray" size="xl" :disabled="readOnly">
@@ -208,7 +206,7 @@ onMounted(load);
             <div>
               <h3 class="text-lg leading-loose text-gray-800 dark:text-gray-100">{{ client.fullNameKH }}</h3>
               <p v-if="client.nickName" class="mt-1 text-base text-gray-500 dark:text-gray-400">
-                ហៅ {{ client.nickName }}
+                {{ tr('ហៅ') }} {{ client.nickName }}
               </p>
             </div>
             <span class="rounded-full bg-primary/10 px-3 py-1 text-base text-primary">
@@ -218,14 +216,14 @@ onMounted(load);
               ? 'bg-primary/10 text-primary'
               : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'">
               <span class="h-2 w-2 rounded-full bg-current" />
-              {{ client.status ? 'ដំណើការ' : 'បិទដំណើការ' }}
+              {{ client.status ? tr('ដំណើការ') : tr('បិទដំណើការ') }}
             </span>
           </div>
         </section>
 
         <!-- Personal -->
         <section class="print-block col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800 xl:col-span-8">
-          <h3 class="text-xl font-[Moul] text-primary">ព័ត៌មានផ្ទាល់ខ្លួន</h3>
+          <h3 class="text-xl font-[Moul] text-primary">{{ tr('ព័ត៌មានផ្ទាល់ខ្លួន') }}</h3>
           <hr class="my-2 border dark:border-gray-700" />
           <dl class="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2 2xl:grid-cols-3">
             <div v-for="f in personal" :key="f.label">
@@ -237,7 +235,7 @@ onMounted(load);
 
         <!-- Address -->
         <section class="print-block col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800">
-          <h3 class="text-xl font-[Moul] text-primary">អាសយដ្ឋានកំណើត</h3>
+          <h3 class="text-xl font-[Moul] text-primary">{{ tr('អាសយដ្ឋានកំណើត') }}</h3>
           <hr class="my-2 border dark:border-gray-700" />
           <dl class="grid grid-cols-2 gap-x-8 gap-y-4 lg:grid-cols-3 2xl:grid-cols-6">
             <div v-for="f in addressFields" :key="f.label">
@@ -249,12 +247,12 @@ onMounted(load);
 
         <!-- The remaining field groups share one shape. -->
         <section v-for="group in [
-          { title: 'ព័ត៌មានគ្រួសារ', fields: family },
-          { title: 'ស្ថានភាពអតិថិជន', fields: situation },
-          { title: 'ការប្រើប្រាស់គ្រឿងញៀន', fields: drugUse },
-          { title: 'ជីវភាពក្នុងមជ្ឈមណ្ឌល', fields: inCentre },
-          { title: 'អនាគតរបស់អតិថិជន', fields: future },
-          { title: 'ការសម្ភាសន៍', fields: interview },
+          { title: tr('ព័ត៌មានគ្រួសារ'), fields: family },
+          { title: tr('ស្ថានភាពអតិថិជន'), fields: situation },
+          { title: tr('ការប្រើប្រាស់គ្រឿងញៀន'), fields: drugUse },
+          { title: tr('ជីវភាពក្នុងមជ្ឈមណ្ឌល'), fields: inCentre },
+          { title: tr('អនាគតរបស់អតិថិជន'), fields: future },
+          { title: tr('ការសម្ភាសន៍'), fields: interview },
         ]" :key="group.title"
           class="print-block col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800 2xl:col-span-6">
           <h3 class="text-xl font-[Moul] text-primary">{{ group.title }}</h3>
@@ -271,10 +269,10 @@ onMounted(load);
 
         <!-- Difficulties -->
         <section class="print-block col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800 2xl:col-span-6">
-          <h3 class="text-xl font-[Moul] text-primary">បញ្ហាដែលអតិថិជនជួបប្រទះ</h3>
+          <h3 class="text-xl font-[Moul] text-primary">{{ tr('បញ្ហាដែលអតិថិជនជួបប្រទះ') }}</h3>
           <hr class="my-2 border dark:border-gray-700" />
           <p class="mb-3 text-base text-gray-800 dark:text-gray-100">
-            {{ yesNo(client.ClientFeelsHopless, 'បាក់ទឹកចិត្ត', 'ធម្មតា') }}
+            {{ yesNo(client.ClientFeelsHopless, tr('បាក់ទឹកចិត្ត'), tr('ធម្មតា')) }}
             <span v-if="client.ClientHoplessDetails" class="text-gray-500"> — {{ client.ClientHoplessDetails }}</span>
           </p>
           <ul v-if="hopelessChecked.length" class="list-inside list-disc space-y-1">
@@ -288,15 +286,15 @@ onMounted(load);
         <!-- Previous centres -->
         <section v-if="serveHistory.length"
           class="print-block col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800 2xl:col-span-6">
-          <h3 class="text-xl font-[Moul] text-primary">ប្រវត្តិចូលមជ្ឈមណ្ឌល</h3>
+          <h3 class="text-xl font-[Moul] text-primary">{{ tr('ប្រវត្តិចូលមជ្ឈមណ្ឌល') }}</h3>
           <hr class="my-2 border dark:border-gray-700" />
           <div class="overflow-x-auto">
             <table class="w-full text-left text-base">
               <thead class="border-b text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400">
                 <tr>
-                  <th class="py-3 pr-4 font-normal">ល.រ</th>
-                  <th class="py-3 pr-4 font-normal">មជ្ឈមណ្ឌល ឬពន្ធនាគារ</th>
-                  <th class="py-3 font-normal">កាលបរិច្ឆេទ</th>
+                  <th class="py-3 pr-4 font-normal">{{ tr('ល.រ') }}</th>
+                  <th class="py-3 pr-4 font-normal">{{ tr('មជ្ឈមណ្ឌល ឬពន្ធនាគារ') }}</th>
+                  <th class="py-3 font-normal">{{ tr('កាលបរិច្ឆេទ') }}</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
@@ -313,15 +311,15 @@ onMounted(load);
         <!-- Case notes -->
         <section v-if="progress.length"
           class="print-block col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800">
-          <h3 class="text-xl font-[Moul] text-primary">កំណត់ត្រាវឌ្ឍនភាព</h3>
+          <h3 class="text-xl font-[Moul] text-primary">{{ tr('កំណត់ត្រាវឌ្ឍនភាព') }}</h3>
           <hr class="my-2 border dark:border-gray-700" />
           <div class="overflow-x-auto">
             <table class="w-full text-left text-base">
               <thead class="border-b text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400">
                 <tr>
-                  <th class="py-3 pr-4 font-normal">ល.រ</th>
-                  <th class="py-3 pr-4 font-normal">កាលបរិច្ឆេទ</th>
-                  <th class="py-3 font-normal">លម្អិត</th>
+                  <th class="py-3 pr-4 font-normal">{{ tr('ល.រ') }}</th>
+                  <th class="py-3 pr-4 font-normal">{{ tr('កាលបរិច្ឆេទ') }}</th>
+                  <th class="py-3 font-normal">{{ tr('លម្អិត') }}</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-100 dark:divide-gray-700">

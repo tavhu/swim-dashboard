@@ -37,10 +37,10 @@ const showReject = ref(false);
 const reason = ref("");
 
 const STATUS = {
-  DRAFT: { label: "ព្រាង", classes: "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300" },
-  SUBMITTED: { label: "បានស្នើសុំ", classes: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300" },
-  APPROVED: { label: "បានអនុម័ត", classes: "bg-primary/10 text-primary" },
-  REJECTED: { label: "បានបដិសេធ", classes: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300" },
+  DRAFT: { label: tr("ព្រាង"), classes: "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300" },
+  SUBMITTED: { label: tr("បានស្នើសុំ"), classes: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300" },
+  APPROVED: { label: tr("បានអនុម័ត"), classes: "bg-primary/10 text-primary" },
+  REJECTED: { label: tr("បានបដិសេធ"), classes: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300" },
 } as const;
 
 const current = computed(() => STATUS[props.status] ?? STATUS.DRAFT);
@@ -51,7 +51,7 @@ const fmt = (d?: string | null) =>
 async function act(action: "submit" | "approve" | "reject") {
   if (props.readOnly || busy.value) return;
   if (action === "reject" && !reason.value.trim()) {
-    toast.error({ message: "សូមបញ្ជាក់មូលហេតុនៃការបដិសេធ" });
+    toast.error({ message: tr("សូមបញ្ជាក់មូលហេតុនៃការបដិសេធ") });
     return;
   }
   busy.value = true;
@@ -74,14 +74,14 @@ async function act(action: "submit" | "approve" | "reject") {
 
 <template>
   <section class="print-block col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800">
-    <h3 class="text-xl font-[Moul] text-primary">សិទ្ធិអនុម័ត</h3>
+    <h3 class="text-xl font-[Moul] text-primary">{{ tr('សិទ្ធិអនុម័ត') }}</h3>
     <hr class="my-2 border dark:border-gray-700" />
 
     <!-- A <dl>, because these are label/value pairs: <dt> and <dd> are only
          valid inside one, and Vue warns about the hydration risk otherwise. -->
     <dl class="flex flex-wrap items-center gap-x-8 gap-y-3">
       <div>
-        <dt class="text-sm text-gray-500 dark:text-gray-400">ស្ថានភាព</dt>
+        <dt class="text-sm text-gray-500 dark:text-gray-400">{{ tr('ស្ថានភាព') }}</dt>
         <dd class="mt-1">
           <span class="inline-flex items-center gap-2 rounded-full px-3 py-1 text-base" :class="current.classes">
             <span class="h-2 w-2 rounded-full bg-current" />
@@ -90,13 +90,13 @@ async function act(action: "submit" | "approve" | "reject") {
         </dd>
       </div>
       <div>
-        <dt class="text-sm text-gray-500 dark:text-gray-400">ស្នើឡើងដោយ</dt>
+        <dt class="text-sm text-gray-500 dark:text-gray-400">{{ tr('ស្នើឡើងដោយ') }}</dt>
         <dd class="mt-1 text-base text-gray-800 dark:text-gray-100">
           {{ submittedByName || '—' }}<span v-if="submittedAt" class="text-gray-500"> · {{ fmt(submittedAt) }}</span>
         </dd>
       </div>
       <div>
-        <dt class="text-sm text-gray-500 dark:text-gray-400">សម្រេចដោយ</dt>
+        <dt class="text-sm text-gray-500 dark:text-gray-400">{{ tr('សម្រេចដោយ') }}</dt>
         <dd class="mt-1 text-base text-gray-800 dark:text-gray-100">
           {{ decidedByName || '—' }}<span v-if="decidedAt" class="text-gray-500"> · {{ fmt(decidedAt) }}</span>
         </dd>
@@ -105,7 +105,7 @@ async function act(action: "submit" | "approve" | "reject") {
 
     <p v-if="status === 'REJECTED' && rejectionReason"
       class="mt-3 rounded-lg bg-red-50 p-3 text-base text-red-700 dark:bg-red-950/40 dark:text-red-300">
-      មូលហេតុ៖ {{ rejectionReason }}
+      {{ tr('មូលហេតុ៖') }} {{ rejectionReason }}
     </p>
 
     <!-- Controls are interface, not part of the printed record. -->
@@ -113,27 +113,27 @@ async function act(action: "submit" | "approve" | "reject") {
       <UButton v-if="status === 'DRAFT' || status === 'REJECTED'" color="primary" :loading="busy"
         @click="act('submit')">
         <TwFeather type="send" :size="16" class="mr-1" />
-        <span class="font-[Moul]">ស្នើសុំ</span>
+        <span class="font-[Moul]">{{ tr('ស្នើសុំ') }}</span>
       </UButton>
 
       <template v-if="canDecide && status === 'SUBMITTED'">
         <UButton color="primary" :loading="busy" @click="act('approve')">
           <TwFeather type="check" :size="16" class="mr-1" />
-          <span class="font-[Moul]">អនុម័ត</span>
+          <span class="font-[Moul]">{{ tr('អនុម័ត') }}</span>
         </UButton>
         <UButton color="red" :loading="busy" @click="showReject = !showReject">
           <TwFeather type="x" :size="16" class="mr-1" />
-          <span class="font-[Moul]">បដិសេធ</span>
+          <span class="font-[Moul]">{{ tr('បដិសេធ') }}</span>
         </UButton>
       </template>
     </div>
 
     <!-- A rejection without a reason tells the officer nothing, so it is required. -->
     <div v-if="showReject" class="no-print mt-3 flex flex-col gap-2 sm:flex-row">
-      <input v-model="reason" type="text" placeholder="មូលហេតុនៃការបដិសេធ"
+      <input v-model="reason" type="text" :placeholder="tr('មូលហេតុនៃការបដិសេធ')"
         class="w-full rounded-lg border border-gray-300 px-3 py-2 text-base dark:border-gray-700 dark:bg-gray-900" />
       <UButton color="red" :loading="busy" class="shrink-0" @click="act('reject')">
-        <span class="font-[Moul]">បញ្ជាក់</span>
+        <span class="font-[Moul]">{{ tr('បញ្ជាក់') }}</span>
       </UButton>
     </div>
   </section>
