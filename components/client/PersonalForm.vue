@@ -145,27 +145,32 @@ watchEffect(() => {
 // Field names as they read on screen. The validator's own message is just
 // "1 error occured", which tells the interviewer nothing about which of the
 // seventy-odd fields to look at.
-const FIELD_LABELS: Record<string, string> = {
-    fullNameKH: '១.នាមត្រកូលនិងនាមខ្លួន',
-    nickName: 'ឈ្មោះហៅក្រៅ',
-    Gender: 'ភេទ',
-    POB: 'ទីកន្លែងកំណើត',
-    homeBA: 'ផ្ទះលេខ',
-    StreetBA: 'ផ្លូវលេខ',
-    villageBA: 'ភូមិ-ក្រុម',
-    districtBA: 'ស្រុក-ខណ្ឌ',
-    communeBA: 'ឃុំ/សង្កាត់',
-    cityProBA: 'រាជធានី/ខេត្ត',
-    ClientSendBy: '១.អតិថិជនត្រូវបានបញ្ជូនដោយ',
-    ImportantChallenge: '២.បញ្ហាប្រឈមដោយសំខាន់ៗ',
-    PastActivities: '៣.សកម្មភាពធ្លាប់បានប្រព្រឹត្ត',
-    ReasonUseDrug: 'ហេតុដែលនាំមានការប្រើប្រាស់គ្រឿងញៀន',
-    typeDrugUsed: 'ប្រភេទគ្រឿងញៀនធ្លាប់ប្រើប្រាស់',
-    DrugVolumeUsed: 'បរិមាណប្រើប្រាស់',
-    DrugRequecyUse: 'ភាពញឹកញាប់',
-    DrugDurationUse: 'រយៈពេលប្រើប្រាស់',
-    serviceCenterID: 'មជ្ឈមណ្ឌលព្យាបាលនិងស្តារនីតិសម្បទា',
-}
+/**
+ * Read at the moment validation fails, not once at import: a computed keeps the
+ * names in step with the language picker, where a plain object would freeze
+ * whichever language happened to be active when the module first loaded.
+ */
+const FIELD_LABELS = computed<Record<string, string>>(() => ({
+    fullNameKH: tr('១.នាមត្រកូលនិងនាមខ្លួន'),
+    nickName: tr('ឈ្មោះហៅក្រៅ'),
+    Gender: tr('ភេទ'),
+    POB: tr('ទីកន្លែងកំណើត'),
+    homeBA: tr('ផ្ទះលេខ'),
+    StreetBA: tr('ផ្លូវលេខ'),
+    villageBA: tr('ភូមិ-ក្រុម'),
+    districtBA: tr('ស្រុក-ខណ្ឌ'),
+    communeBA: tr('ឃុំ/សង្កាត់'),
+    cityProBA: tr('រាជធានី/ខេត្ត'),
+    ClientSendBy: tr('១.អតិថិជនត្រូវបានបញ្ជូនដោយ'),
+    ImportantChallenge: tr('២.បញ្ហាប្រឈមដោយសំខាន់ៗ'),
+    PastActivities: tr('៣.សកម្មភាពធ្លាប់បានប្រព្រឹត្ត'),
+    ReasonUseDrug: tr('ហេតុដែលនាំមានការប្រើប្រាស់គ្រឿងញៀន'),
+    typeDrugUsed: tr('ប្រភេទគ្រឿងញៀនធ្លាប់ប្រើប្រាស់'),
+    DrugVolumeUsed: tr('បរិមាណប្រើប្រាស់'),
+    DrugRequecyUse: tr('ភាពញឹកញាប់'),
+    DrugDurationUse: tr('រយៈពេលប្រើប្រាស់'),
+    serviceCenterID: tr('មជ្ឈមណ្ឌលព្យាបាលនិងស្តារនីតិសម្បទា'),
+}));
 
 const formRules = {
     fullNameKH: ['required'],
@@ -193,6 +198,9 @@ const isError = ref(false);
 const form = computed(() => composableForm.getForm(formName));
 const validator = computed(() => form.value.validator);
 
+// Khmer kept as the data and translated where it is rendered — see the
+// :label binding below. A tr() here runs once, when the ref is created, and
+// freezes whichever language was active at that moment.
 const ClientHopelessMultiple = ref(Array(
     {
         value: 'signDepression',
@@ -265,7 +273,7 @@ const submit = async () => {
         const failed: string[] = validator.value.getFailedFields?.() ?? [];
         toast.error({
             message: failed.length
-                ? 'សូមបំពេញ៖ ' + failed.map((f) => FIELD_LABELS[f] ?? f).join(' / ')
+                ? t('message.fillIn', { fields: failed.map((f) => FIELD_LABELS.value[f] ?? f).join(' / ') })
                 : validator.value.getErrorMessage(),
         });
         isError.value = true;
@@ -398,72 +406,72 @@ const handleImageUpload = async () => {
 const userProfile = ref()
 const currentUser = ref(false)
 
-const LegalConsequence = [{
+const LegalConsequence = computed(() => [{
     value: false,
-    label: 'មិនដឹង',
+    label: tr('មិនដឹង'),
 },
 {
     value: true,
-    label: 'ដឹង',
+    label: tr('ដឹង'),
 },
-]
+]);
 // UsedtoRehab is a required Boolean in the schema but had no control anywhere
 // in the template, so every record saved with whatever the initial value was.
 // The manual asks for it explicitly: ធ្លាប់ចូលមជ្ឈមណ្ឌល ឬទទួលសេវាប្រហាក់ប្រហែលពីមុន.
-const UsedtoRehabOption = [{
+const UsedtoRehabOption = computed(() => [{
     value: false,
-    label: 'មិនធ្លាប់',
+    label: tr('មិនធ្លាប់'),
 },
 {
     value: true,
-    label: 'ធ្លាប់',
+    label: tr('ធ្លាប់'),
 },
-]
-const ClientFeelsHopless = [{
+]);
+const ClientFeelsHopless = computed(() => [{
     value: false,
-    label: 'ធម្មតា',
+    label: tr('ធម្មតា'),
 },
 {
     value: true,
-    label: 'បាក់ទឹកចិត្ត',
+    label: tr('បាក់ទឹកចិត្ត'),
 },
-]
+]);
 
-const LivingSituationOption = ref(Array({
+const LivingSituationOption = computed(() => Array({
     value: 'rural',
-    label: 'ជនបទ',
+    label: tr('ជនបទ'),
 },
     {
         value: 'Anarchy',
-        label: 'តំបន់អនាធិបតេយ្យ',
+        label: tr('តំបន់អនាធិបតេយ្យ'),
     },
     {
         value: 'Crowded',
-        label: 'ទីប្រជុំជន',
+        label: tr('ទីប្រជុំជន'),
     },
     {
         value: 'thief',
-        label: 'តំបន់ចោរកម្ម',
+        label: tr('តំបន់ចោរកម្ម'),
     },
     {
         value: 'frequentviolent',
-        label: 'តបន់អំពើហឹង្សាញឹកញាប់',
+        label: tr('តបន់អំពើហឹង្សាញឹកញាប់'),
     },
     {
         value: 'gangArea',
-        label: 'តំបន់ ក្រុមបងធំ',
+        label: tr('តំបន់ ក្រុមបងធំ'),
     },
     {
         value: 'DrugArea',
-        label: 'តំបន់ប្រើប្រាស់គ្រឿងញៀន',
+        label: tr('តំបន់ប្រើប្រាស់គ្រឿងញៀន'),
     },
     {
         value: 'wealthy',
-        label: 'តំបន់អ្នកមាន',
+        label: tr('តំបន់អ្នកមាន'),
     },
     {
         value: 'PoorArea',
-        label: 'តំបន់ក្រីក្រ',
+        label: tr('តំបន់ក្រីក្រ'),
     }
 ))
 
@@ -826,7 +834,7 @@ watch(() => formData.communeBA, (newCommune) => {
                 </div>
                 <div class="col-span-12 lg:col-span-6">
                     <TwSelect label="ភេទ" name="Gender" v-model="formData.Gender" required
-                        :items="[{ value: 'ប្រុស', label: 'ប្រុស' }, { value: 'ស្រី', label: 'ស្រី' }, { value: 'ផ្សេងៗ', label: 'ផ្សេងៗ' }]"
+                        :items="[{ value: 'ប្រុស', label: tr('ប្រុស') }, { value: 'ស្រី', label: tr('ស្រី') }, { value: 'ផ្សេងៗ', label: tr('ផ្សេងៗ') }]"
                         placeholder="សូមជ្រើសរើស" />
                     <CustomErrorMessage name="Gender" />
                 </div>
@@ -991,9 +999,9 @@ watch(() => formData.communeBA, (newCommune) => {
                 </div>
                 <div class="col-span-12 lg:col-span-6">
                     <TwSelect label="ហេតុដែលនាំមានការប្រើប្រាស់គ្រឿងញៀន" name="ReasonUseDrug"
-                        v-model="formData.ReasonUseDrug" required :items="[{ value: 'Fun', label: 'ដើម្បីសប្បាយ' }, { value: 'followFriend', label: 'ធ្វើតាមមិត្តភក្តិ' },
-                        { value: 'forceUse', label: 'មានគេបង្ខំ' }, { value: 'try', label: 'ចង់សាក' }, { value: 'familyBroken', label: 'បែកបាក់គ្រួសារ' },
-                        { value: 'other', label: 'មូលហេតុផ្សេង' }
+                        v-model="formData.ReasonUseDrug" required :items="[{ value: 'Fun', label: tr('ដើម្បីសប្បាយ') }, { value: 'followFriend', label: tr('ធ្វើតាមមិត្តភក្តិ') },
+                        { value: 'forceUse', label: tr('មានគេបង្ខំ') }, { value: 'try', label: tr('ចង់សាក') }, { value: 'familyBroken', label: tr('បែកបាក់គ្រួសារ') },
+                        { value: 'other', label: tr('មូលហេតុផ្សេង') }
                         ]" placeholder="សូមជ្រើសរើស" />
                     <CustomErrorMessage name="ReasonUseDrug" />
                 </div>
@@ -1011,9 +1019,9 @@ watch(() => formData.communeBA, (newCommune) => {
                 </div>
                 <div class="col-span-12 lg:col-span-6">
                     <TwSelect label="ប្រភេទគ្រឿងញៀនធ្លាប់ប្រើប្រាស់" name="typeDrugUsed" v-model="formData.typeDrugUsed"
-                        required :items="[{ value: 'SmileGlue', label: 'ហិតកាវ' }, { value: 'yama', label: 'យ៉ាមា-យ៉ាបា' },
-                        { value: 'heroin', label: 'ហេរ៉ូអុីន' }, { value: 'cocain', label: 'កូកាអុីន' }, { value: 'smoking', label: 'ជក់បារី' },
-                        { value: 'drinking', label: 'ផឹកស្រា' }, { value: 'other', label: 'ផ្សេង' }
+                        required :items="[{ value: 'SmileGlue', label: tr('ហិតកាវ') }, { value: 'yama', label: tr('យ៉ាមា-យ៉ាបា') },
+                        { value: 'heroin', label: tr('ហេរ៉ូអុីន') }, { value: 'cocain', label: tr('កូកាអុីន') }, { value: 'smoking', label: tr('ជក់បារី') },
+                        { value: 'drinking', label: tr('ផឹកស្រា') }, { value: 'other', label: tr('ផ្សេង') }
                         ]" placeholder="សូមជ្រើសរើស" />
                     <CustomErrorMessage name="typeDrugUsed" />
                 </div>
@@ -1162,9 +1170,9 @@ watch(() => formData.communeBA, (newCommune) => {
                 <div class="col-span-12 lg:col-span-6">
                     <TwSelect label="១១. ផែនការក្នុងអនាគតដែលបានស្នើឡើង៖" name="FuturePlanforClient"
                         v-model="formData.FuturePlanforClient" required :items="[
-                            { value: 'sentClientTo', label: 'បញ្ជូនអតិថិជនទៅ' }, { value: 'Educated', label: 'អប់រំ ឬបណ្តុះបណ្តាលវិជ្ជាជីវៈ៖' },
-                            { value: 'consultant', label: 'ផ្តល់ការពិគ្រោះបញ្ហា/ពិគ្រោះយោបល់៖' }, { value: 'sentToHospital', label: 'បញ្ចូនទៅសេវាព្យាបាល៖' },
-                            { value: 'other', label: 'ផែនការផ្សេងៗទៀត' },
+                            { value: 'sentClientTo', label: tr('បញ្ជូនអតិថិជនទៅ') }, { value: 'Educated', label: tr('អប់រំ ឬបណ្តុះបណ្តាលវិជ្ជាជីវៈ៖') },
+                            { value: 'consultant', label: tr('ផ្តល់ការពិគ្រោះបញ្ហា/ពិគ្រោះយោបល់៖') }, { value: 'sentToHospital', label: tr('បញ្ចូនទៅសេវាព្យាបាល៖') },
+                            { value: 'other', label: tr('ផែនការផ្សេងៗទៀត') },
 
                         ]" placeholder="សូមជ្រើសរើស" />
                     <CustomErrorMessage name="FuturePlanforClient" />
@@ -1195,7 +1203,7 @@ watch(() => formData.communeBA, (newCommune) => {
                     <ClientOnly>
                         <div class="mt-2 flex flex-wrap gap-x-6 gap-y-2">
                             <UCheckbox v-for="(item, index) of ClientHopelessMultiple" :key="index"
-                                v-model="item.check" :name="item.value" :label="item.label" :disabled="readOnly"
+                                v-model="item.check" :name="item.value" :label="tr(item.label)" :disabled="readOnly"
                                 class="font-[Battambang]" />
                         </div>
                     </ClientOnly>
