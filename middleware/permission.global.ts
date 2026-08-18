@@ -1,54 +1,62 @@
-export default defineNuxtRouteMiddleware(async (to, from) => {
-  // const result = await useFetch('')
+/**
+ * Client-side route guard.
+ *
+ * It used to refuse a route only when a permission row existed saying so:
+ *
+ *     if (row.frontEndURL === to.name && !row.granted && !row.read) block
+ *
+ * A route with no row therefore fell through and was allowed. Only nineteen
+ * pages had rows, so the ទម្រង់ទី២-៦ screens, the client and centre detail
+ * pages and the dashboard were open to every signed-in account regardless of
+ * role. Now the default is deny: a route that is gated must be granted.
+ *
+ * This is a convenience, not the enforcement. The server checks every request
+ * independently — see server/middleware/authorize.ts. A guard that runs in the
+ * browser can be skipped by anyone willing to open the console.
+ */
+import { ALWAYS_ALLOWED_ROUTES, APP_RESOURCE_ROUTES, LANDING_ORDER } from "~/shared/appResources";
+
+export default defineNuxtRouteMiddleware(async (to) => {
+  const routeName = String(to.name ?? "");
+  if (!routeName) return;
+
+  // Public pages and a user's own profile are never gated.
+  if (ALWAYS_ALLOWED_ROUTES.has(routeName)) return;
 
   const data = await userPermission();
   const { data: currentUser } = useAuth();
+  const grants = data.readRoleToResource.value?.data?.Role?.resource ?? [];
 
-  useState(
-    "userPermission",
-    () => data.readRoleToResource.value?.data?.Role?.resource
-  );
+  useState("userPermission", () => grants);
 
-  // console.log(to.fullPath)
-  let test = false;
-  //@ts-ignore
-  data.readRoleToResource.value?.data?.Role?.resource?.forEach(
-    (element: any) => {
-      //  console.log(element)
-      if (
-        element?.Resource?.frontEndURL === to.name &&
-        !element?.granted &&
-        !element?.read
-      ) {
-        console.log(element);
-        test = true;
-      }
-    }
-  );
+  const grantFor = (name: string) =>
+    grants.find((g: any) => g?.Resource?.frontEndURL === name) ?? null;
 
-  if (test) {
-    //@ts-ignore
-    if (to.name == "register" && to.query?.id === currentUser.value?.sub) {
-      //allow to edit profile if user try to edit their own profile
-      return true;
-    }
-    // navigateTo('/login')
-    return abortNavigation("/");
-    // return navigateTo('/')
+  // Editing your own account is always allowed, whatever the grid says about
+  // the register page — otherwise a user cannot change their own password.
+  if (routeName === "register" && to.query?.id === (currentUser.value as any)?.sub) {
+    return;
   }
 
-  // if (to.query.id === '1') {
-  //   // console.log('123')
-  //   return abortNavigation()
-  // }
+  // A route the app does not gate at all (a component demo, say) is left alone
+  // rather than being denied by default, which would break pages that were
+  // never part of the permission model.
+  if (!APP_RESOURCE_ROUTES.has(routeName)) return;
 
-  // console.log(data.readRoleToResource.value?.data?.Role?.resource)
+  const g = grantFor(routeName);
+  if (g && (g.granted === true || g.read === true)) return;
 
-  // In a real app you would probably not redirect every route to `/`
-  // however it is important to check `to.path` before redirecting or you
-  // might get an infinite redirect loop
+  // Denied. Send them to the first page they can actually open rather than
+  // bouncing off "/" — which they may also be denied, and which would leave the
+  // app looping on a page it will not show.
+  const landing = LANDING_ORDER.find(({ route }) => {
+    const lg = grantFor(route);
+    return !!lg && (lg.granted === true || lg.read === true);
+  });
 
-  // if (to.path !== '/') {
-  //   return navigateTo('/')
-  // }
+  if (landing && landing.route !== routeName) {
+    return navigateTo(landing.path);
+  }
+
+  return abortNavigation();
 });

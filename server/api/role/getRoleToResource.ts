@@ -1,25 +1,23 @@
-import { getServerSession } from "#auth";
+import { assertRoleAdmin } from "../../utils/roleGuard";
 
+/**
+ * Every (role, resource) grant, which is what the permission grid renders.
+ *
+ * Guarded: this returned the whole access-control map to any signed-in account.
+ */
 export default eventHandler(async (event) => {
-  const session = await getServerSession(event);
-  const body = await readBody(event);
-
-  // console.log(body)
-
-  if (!session) {
-    return { status: "unauthenticated" };
-  }
+  const caller = await requireAuth(event);
+  assertRoleAdmin(caller);
 
   try {
-    const data = await event.context.prisma.roleToResource.findMany({});
-
-    // console.log(data)
-    //@ts-ignored
-    setResponseStatus(event, 201);
-    return { data: data };
+    const data = await event.context.prisma.roleToResource.findMany({
+      select: { roleID: true, resourceID: true, granted: true, read: true },
+    });
+    setResponseStatus(event, 200);
+    return { data };
   } catch (e: any) {
-    //@ts-ignored
+    console.error("[role/getRoleToResource]", e);
     setResponseStatus(event, 412);
-    return { error: e?.message ?? "Request failed" };
+    return { data: [], error: e?.message ?? "Request failed" };
   }
 });

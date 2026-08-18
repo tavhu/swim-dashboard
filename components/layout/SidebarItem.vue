@@ -59,8 +59,6 @@ watch(
   { immediate: true }
 )
 
-const permission = <any>useState('userPermission')
-
 // Nested levels are set in by padding rather than by a stack of left borders,
 // which is what made the expanded menu look cluttered. Spelled out rather than
 // built from `level` because Tailwind only keeps classes it can find as literal
@@ -94,9 +92,11 @@ onBeforeUnmount(() => unSub?.())
 
   <li v-else-if="item.submenu.length === 0">
     <div :aria-label="label">
-      <NuxtLink :to="item.url" v-if="
-        permission?.find((element: any) => { return element?.Resource?.frontEndURL == item.url?.replace('/', '').replaceAll('/', '-') && element?.granted || (element?.Resource?.frontEndURL == item.url?.replace('/', '').replaceAll('/', '-') && element?.read) || item.url === '/' })
-      "
+      <!-- No permission test here any more. The list is pruned before it is
+           rendered (composables/menuPermission.ts), so anything reaching this
+           component is already permitted — and the old inline check hard-allowed
+           "/" , which meant the dashboard could not be denied to anyone. -->
+      <NuxtLink :to="item.url"
         class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-gray-600 transition-colors duration-150 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white"
         :class="indent"
         exact-active-class="!bg-primary/10 !text-primary font-semibold"
