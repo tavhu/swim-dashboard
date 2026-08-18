@@ -9,6 +9,15 @@
  * original permission grid was built (organisation, service, centre plans)
  * have endpoints but no resource row.
  *
+ * SUPERSEDED by scripts/bootstrap.mjs.
+ *
+ * This script carries its own hardcoded list of resources, written before
+ * shared/appResources.json became the single source of truth. Two lists of the
+ * same thing drift, and the one that drifts silently is the one that decides
+ * who can open which page. Use bootstrap.mjs, which reads the shared file;
+ * this is kept only for the --corrections path, which reduces one specific
+ * historical grant and has no equivalent there.
+ *
  * Non-destructive by default:
  *   - reports what it would do and changes nothing unless `--apply`
  *   - creates rows only; never edits an existing resource or grant

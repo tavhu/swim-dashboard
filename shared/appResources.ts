@@ -36,63 +36,18 @@ export interface AppResource {
   readOnlyPage?: boolean;
 }
 
-export const APP_RESOURCES: AppResource[] = [
-  { route: "index", group: "dashboard", nameKh: "ផ្ទាំងគ្រប់គ្រង", readOnlyPage: true },
+/**
+ * The list itself lives in appResources.json beside this file.
+ *
+ * It is data, and it has three consumers with different module systems: this
+ * TypeScript module for the app, and the provisioning scripts under scripts/,
+ * which are plain .mjs and cannot import a .ts file. A JSON file is the one
+ * shape all of them can read, so the list cannot drift into two copies — which
+ * is what had already happened to scripts/seed-permissions.mjs.
+ */
+import raw from "./appResources.json";
 
-  // --- អតិថិជន, and the six national forms hanging off a client ------------
-  { route: "client", group: "client", nameKh: "បញ្ជី អតិថិជន" },
-  { route: "client-register", group: "client", nameKh: "ចុះឈ្មោះ អតិថិជន" },
-  { route: "client-register-id", group: "client", nameKh: "កែសម្រួល អតិថិជន" },
-  { route: "client-id-id", group: "client", nameKh: "ទម្រង់ទី១ ព័ត៌មានអតិថិជន" },
-
-  { route: "client-service-clientId", group: "client", nameKh: "ទម្រង់ទី២ បញ្ជីការប្រើសេវាកម្ម" },
-  { route: "client-service-form", group: "client", nameKh: "ទម្រង់ទី២ បញ្ចូល/កែសម្រួល" },
-  { route: "client-service-view-id", group: "client", nameKh: "ទម្រង់ទី២ មើលលម្អិត", readOnlyPage: true },
-
-  { route: "client-case-plan-clientId", group: "client", nameKh: "ទម្រង់ទី៣ បញ្ជីផែនការករណី" },
-  { route: "client-case-plan-form", group: "client", nameKh: "ទម្រង់ទី៣ បញ្ចូល/កែសម្រួល" },
-  { route: "client-case-plan-view-id", group: "client", nameKh: "ទម្រង់ទី៣ មើលលម្អិត", readOnlyPage: true },
-
-  { route: "client-reintegration-clientId", group: "client", nameKh: "ទម្រង់ទី៤ បញ្ជីសមាហរណកម្ម" },
-  { route: "client-reintegration-form", group: "client", nameKh: "ទម្រង់ទី៤ បញ្ចូល/កែសម្រួល" },
-  { route: "client-reintegration-view-id", group: "client", nameKh: "ទម្រង់ទី៤ មើលលម្អិត", readOnlyPage: true },
-
-  { route: "client-follow-up-clientId", group: "client", nameKh: "ទម្រង់ទី៥ បញ្ជីការតាមដាន" },
-  { route: "client-follow-up-form", group: "client", nameKh: "ទម្រង់ទី៥ បញ្ចូល/កែសម្រួល" },
-  { route: "client-follow-up-view-id", group: "client", nameKh: "ទម្រង់ទី៥ មើលលម្អិត", readOnlyPage: true },
-
-  { route: "client-case-closure-clientId", group: "client", nameKh: "ទម្រង់ទី៦ បញ្ជីការបិទករណី" },
-  { route: "client-case-closure-form", group: "client", nameKh: "ទម្រង់ទី៦ បញ្ចូល/កែសម្រួល" },
-  { route: "client-case-closure-view-id", group: "client", nameKh: "ទម្រង់ទី៦ មើលលម្អិត", readOnlyPage: true },
-
-  // --- សេវា និងប្រភេទអតិថិជន ------------------------------------------------
-  { route: "service", group: "service", nameKh: "បញ្ចី សេវា" },
-  { route: "service-register", group: "service", nameKh: "បង្កើត សេវា" },
-  { route: "service-edit-id", group: "service", nameKh: "កែសម្រួល សេវា" },
-  { route: "client-type", group: "service", nameKh: "បញ្ចី ប្រភេទអតិថិជន" },
-  { route: "client-type-register", group: "service", nameKh: "បង្កើត ប្រភេទអតិថិជន" },
-  { route: "client-type-edit-id", group: "service", nameKh: "កែសម្រួល ប្រភេទអតិថិជន" },
-
-  // --- មណ្ឌល ----------------------------------------------------------------
-  { route: "center-list", group: "centre", nameKh: "បញ្ជី មណ្ឌល" },
-  { route: "center", group: "centre", nameKh: "ចុះឈ្មោះមណ្ឌល" },
-  { route: "center-id-id", group: "centre", nameKh: "ព័ត៌មានលម្អិត មណ្ឌល", readOnlyPage: true },
-  { route: "center-staff", group: "centre", nameKh: "បុគ្គលិកមណ្ឌល" },
-  { route: "center-plan", group: "centre", nameKh: "ផែនការមជ្ឈមណ្ឌល" },
-  { route: "center-centerdocumentation", group: "centre", nameKh: "ឯកសារកាលប្បវត្តិ មណ្ឌល" },
-
-  // --- ស្ថាប័ន ---------------------------------------------------------------
-  { route: "organisation", group: "organisation", nameKh: "អង្គភាព" },
-
-  // --- គណនី និងសិទ្ធិ --------------------------------------------------------
-  { route: "register-account", group: "account", nameKh: "បញ្ជី គណនី" },
-  { route: "register", group: "account", nameKh: "ចុះឈ្មោះ គណនី" },
-  { route: "role", group: "account", nameKh: "តួនាទី និងការអនុញ្ញាត" },
-  { route: "contact-list", group: "account", nameKh: "បញ្ជី ប្រអប់សារ" },
-
-  // --- របាយការណ៍ -------------------------------------------------------------
-  { route: "report", group: "report", nameKh: "របាយការណ៏", readOnlyPage: true },
-];
+export const APP_RESOURCES: AppResource[] = raw as AppResource[];
 
 /** Fast membership test for "is this route something we gate at all?". */
 export const APP_RESOURCE_ROUTES = new Set(APP_RESOURCES.map((r) => r.route));

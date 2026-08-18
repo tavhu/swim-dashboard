@@ -13,7 +13,10 @@
     "prisma:migrate:generate": "npx prisma migrate generate",
     "prisma:studio": "npx prisma studio",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "bootstrap": "node scripts/bootstrap.mjs",
+    "bootstrap:apply": "node scripts/bootstrap.mjs --apply",
+    "setup:fresh": "prisma migrate deploy && node scripts/bootstrap.mjs --apply --admin"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.3.0",
