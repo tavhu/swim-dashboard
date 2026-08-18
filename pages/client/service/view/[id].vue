@@ -26,15 +26,15 @@ const yesNo = (v: boolean | null | undefined, yes: string, no: string) =>
 const diagnosis = computed(() => {
   const r = rec.value; if (!r) return [];
   return [
-    { label: "ប្រភេទអតិថិជន", value: val(r.clientType?.nameKh) },
-    { label: "មូលហេតុ", value: val(r.reason) },
+    { label: tr("ប្រភេទអតិថិជន"), value: val(r.clientType?.nameKh) },
+    { label: tr("មូលហេតុ"), value: val(r.reason) },
     // The manual asks these two here. They are answered on ទម្រង់ទី១, so they
     // are shown from there rather than asked again — marked so a reader knows
     // where the answer came from.
-    { label: "ធ្លាប់ទទួលសេវាពីមុន", value: yesNo(r.client?.UsedtoRehab, "ធ្លាប់", "មិនធ្លាប់"), fromForm1: true },
-    { label: "ចំនួនលើករួមទាំងលើកនេះ", value: val(r.client?.HowManyTimeHaveServed), fromForm1: true },
-    { label: "អនុម័តរោគវិនិច្ឆ័យដោយ", value: val(r.diagnosisApprovedBy) },
-    { label: "សន្និដ្ឋាន", value: val(r.conclusion), wide: true },
+    { label: tr("ធ្លាប់ទទួលសេវាពីមុន"), value: yesNo(r.client?.UsedtoRehab, "ធ្លាប់", "មិនធ្លាប់"), fromForm1: true },
+    { label: tr("ចំនួនលើករួមទាំងលើកនេះ"), value: val(r.client?.HowManyTimeHaveServed), fromForm1: true },
+    { label: tr("អនុម័តរោគវិនិច្ឆ័យដោយ"), value: val(r.diagnosisApprovedBy) },
+    { label: tr("សន្និដ្ឋាន"), value: val(r.conclusion), wide: true },
   ];
 });
 
@@ -44,8 +44,8 @@ const previousCentres = computed(() => rec.value?.client?.ClientServeHistory ?? 
 const service = computed(() => {
   const r = rec.value; if (!r) return [];
   return [
-    { label: "ថ្ងៃខែឆ្នាំមកទទួលសេវាកម្ម", value: fmt(r.serviceDate) },
-    { label: "សេវាកម្ម", value: val(r.service?.nameKh) },
+    { label: tr("ថ្ងៃខែឆ្នាំមកទទួលសេវាកម្ម"), value: fmt(r.serviceDate) },
+    { label: tr("សេវាកម្ម"), value: val(r.service?.nameKh) },
   ];
 });
 
@@ -57,12 +57,12 @@ const attachments = computed(() =>
 const provider = computed(() => {
   const r = rec.value; if (!r) return [];
   return [
-    { label: "ឈ្មោះស្ថាប័នផ្តល់សេវា", value: val(r.providerName) },
-    { label: "ទីតាំងផ្តល់សេវា", value: val(r.providerLocation) },
-    { label: "ឈ្មោះភ្នាក់ងារផ្តល់សេវា", value: val(r.providerAgent) },
-    { label: "លេខទំនាក់ទំនង", value: val(r.providerPhone) },
-    { label: "ស្ថានភាពអតិថិជនបច្ចុប្បន្ន", value: val(r.currentStatus) },
-    { label: "តម្រូវការសេវាបន្ត", value: val(r.followUpService?.nameKh) },
+    { label: tr("ឈ្មោះស្ថាប័នផ្តល់សេវា"), value: val(r.providerName) },
+    { label: tr("ទីតាំងផ្តល់សេវា"), value: val(r.providerLocation) },
+    { label: tr("ឈ្មោះភ្នាក់ងារផ្តល់សេវា"), value: val(r.providerAgent) },
+    { label: tr("លេខទំនាក់ទំនង"), value: val(r.providerPhone) },
+    { label: tr("ស្ថានភាពអតិថិជនបច្ចុប្បន្ន"), value: val(r.currentStatus) },
+    { label: tr("តម្រូវការសេវាបន្ត"), value: val(r.followUpService?.nameKh) },
   ];
 });
 
@@ -89,7 +89,7 @@ onMounted(load);
   <div class="font-[Battambang]">
     <div class="mt-5">
       <div class="flex items-start justify-between gap-4">
-        <h2 class="text-2xl font-[Moul] text-primary">ការប្រើសេវាកម្មរបស់អតិថិជន</h2>
+        <h2 class="text-2xl font-[Moul] text-primary">{{ tr('ការប្រើសេវាកម្មរបស់អតិថិជន') }}</h2>
         <div class="no-print flex shrink-0 gap-2">
           <NuxtLink v-if="rec" :to="`/client/service/form?id=${rec.id}`">
             <UButton color="gray" size="xl" :disabled="readOnly">
@@ -119,19 +119,19 @@ onMounted(load);
       <div v-else-if="rec" class="grid grid-cols-12 items-start gap-4">
         <!-- Client header, read through the relation -->
         <section class="print-block col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800">
-          <h3 class="text-xl font-[Moul] text-primary">ព័ត៌មានអតិថិជន</h3>
+          <h3 class="text-xl font-[Moul] text-primary">{{ tr('ព័ត៌មានអតិថិជន') }}</h3>
           <hr class="my-2 border dark:border-gray-700" />
           <dl class="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-3">
             <div>
-              <dt class="text-sm text-gray-500 dark:text-gray-400">លេខកូដអតិថិជន</dt>
+              <dt class="text-sm text-gray-500 dark:text-gray-400">{{ tr('លេខកូដអតិថិជន') }}</dt>
               <dd class="mt-1 text-base text-gray-800 dark:text-gray-100">{{ val(rec.client?.ReadableCode) }}</dd>
             </div>
             <div>
-              <dt class="text-sm text-gray-500 dark:text-gray-400">ឈ្មោះអតិថិជន</dt>
+              <dt class="text-sm text-gray-500 dark:text-gray-400">{{ tr('ឈ្មោះអតិថិជន') }}</dt>
               <dd class="mt-1 text-base text-gray-800 dark:text-gray-100">{{ val(rec.client?.fullNameKH) }}</dd>
             </div>
             <div>
-              <dt class="text-sm text-gray-500 dark:text-gray-400">លេខទំនាក់ទំនងគ្រួសារ</dt>
+              <dt class="text-sm text-gray-500 dark:text-gray-400">{{ tr('លេខទំនាក់ទំនងគ្រួសារ') }}</dt>
               <dd class="mt-1 text-base text-gray-800 dark:text-gray-100">
                 {{ val(rec.client?.FOCTel || rec.client?.MOCTel) }}
               </dd>
@@ -141,19 +141,18 @@ onMounted(load);
 
         <section v-if="previousCentres.length || attachments.length"
           class="print-block col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800">
-          <h3 class="text-xl font-[Moul] text-primary">មជ្ឈមណ្ឌលពីមុន និងឯកសារពាក់ព័ន្ធ</h3>
+          <h3 class="text-xl font-[Moul] text-primary">{{ tr('មជ្ឈមណ្ឌលពីមុន និងឯកសារពាក់ព័ន្ធ') }}</h3>
           <hr class="my-2 border dark:border-gray-700" />
 
           <div v-if="previousCentres.length" class="mb-4">
-            <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
-              បើធ្លាប់ តើមជ្ឈមណ្ឌលណាខ្លះ <span class="text-xs text-gray-400">(ទម្រង់ទី១)</span>
+            <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">{{ tr('បើធ្លាប់ តើមជ្ឈមណ្ឌលណាខ្លះ') }}<span class="text-xs text-gray-400">{{ tr('(ទម្រង់ទី១)') }}</span>
             </p>
             <table class="w-full text-left text-base">
               <thead class="border-b text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400">
                 <tr>
-                  <th class="py-2 pr-4 font-normal">ល.រ</th>
-                  <th class="py-2 pr-4 font-normal">មជ្ឈមណ្ឌល ឬពន្ធនាគារ</th>
-                  <th class="py-2 font-normal">កាលបរិច្ឆេទ</th>
+                  <th class="py-2 pr-4 font-normal">{{ tr('ល.រ') }}</th>
+                  <th class="py-2 pr-4 font-normal">{{ tr('មជ្ឈមណ្ឌល ឬពន្ធនាគារ') }}</th>
+                  <th class="py-2 font-normal">{{ tr('កាលបរិច្ឆេទ') }}</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
@@ -167,7 +166,7 @@ onMounted(load);
           </div>
 
           <div v-if="attachments.length">
-            <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">ឯកសារពាក់ព័ន្ធ</p>
+            <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">{{ tr('ឯកសារពាក់ព័ន្ធ') }}</p>
             <ul class="space-y-1">
               <li v-for="path in attachments" :key="path">
                 <a :href="`/${path}`" target="_blank" rel="noopener"
@@ -178,9 +177,9 @@ onMounted(load);
         </section>
 
         <section v-for="group in [
-          { title: 'ព័ត៌មានរោគឬសញ្ញាណវិនិច្ឆ័យ', fields: diagnosis },
-          { title: 'ព័ត៌មានសេវាកម្មដែលត្រូវការប្រើ', fields: service },
-          { title: 'អ្នកផ្តល់សេវា និងស្ថានភាពបច្ចុប្បន្ន', fields: provider },
+          { title: tr('ព័ត៌មានរោគឬសញ្ញាណវិនិច្ឆ័យ'), fields: diagnosis },
+          { title: tr('ព័ត៌មានសេវាកម្មដែលត្រូវការប្រើ'), fields: service },
+          { title: tr('អ្នកផ្តល់សេវា និងស្ថានភាពបច្ចុប្បន្ន'), fields: provider },
         ]" :key="group.title"
           class="print-block col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800 2xl:col-span-6">
           <h3 class="text-xl font-[Moul] text-primary">{{ group.title }}</h3>
@@ -188,8 +187,8 @@ onMounted(load);
           <dl class="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2">
             <div v-for="f in group.fields" :key="f.label" :class="(f as any).wide ? 'sm:col-span-2' : ''">
               <dt class="text-sm text-gray-500 dark:text-gray-400">
-                {{ f.label }}
-                <span v-if="(f as any).fromForm1" class="ml-1 text-xs text-gray-400">(ទម្រង់ទី១)</span>
+                {{ tr(f.label) }}
+                <span v-if="(f as any).fromForm1" class="ml-1 text-xs text-gray-400">{{ tr('(ទម្រង់ទី១)') }}</span>
               </dt>
               <dd class="mt-1 whitespace-pre-line break-words text-base leading-relaxed text-gray-800 dark:text-gray-100">
                 {{ f.value }}

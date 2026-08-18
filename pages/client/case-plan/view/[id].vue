@@ -38,17 +38,17 @@ const familyAddress = computed(() => {
 const clientFields = computed(() => {
   const c = rec.value?.client;
   if (!c) return [];
-  const nameWithDetail = [c.Gender, clientAge.value !== null ? `${clientAge.value} ឆ្នាំ` : null]
+  const nameWithDetail = [c.Gender, clientAge.value !== null ? `${clientAge.value} ${tr('ឆ្នាំ')}` : null]
     .filter(Boolean)
     .join(", ");
   return [
-    { label: "លេខកូដអតិថិជន", value: val(c.ReadableCode) },
+    { label: tr("លេខកូដអតិថិជន"), value: val(c.ReadableCode) },
     {
-      label: "ឈ្មោះអតិថិជន (ភេទ, អាយុ)",
+      label: tr("ឈ្មោះអតិថិជន (ភេទ, អាយុ)"),
       value: nameWithDetail ? `${val(c.fullNameKH)} (${nameWithDetail})` : val(c.fullNameKH),
     },
-    { label: "លេខទំនាក់ទំនងគ្រួសារ", value: val(c.FOCTel || c.MOCTel) },
-    { label: "អាសយដ្ឋានគ្រួសារ", value: familyAddress.value },
+    { label: tr("លេខទំនាក់ទំនងគ្រួសារ"), value: val(c.FOCTel || c.MOCTel) },
+    { label: tr("អាសយដ្ឋានគ្រួសារ"), value: familyAddress.value },
   ];
 });
 
@@ -56,12 +56,12 @@ const plan = computed(() => {
   const r = rec.value;
   if (!r) return [];
   return [
-    { label: "ស្ថាប័នទទួលផ្តល់សេវា", value: val(r.providerName) },
-    { label: "ឈ្មោះបុគ្គលិកសង្គម", value: val(r.socialWorkerName) },
-    { label: "លេខទំនាក់ទំនង ឬអ៊ីម៊ែល", value: val(r.socialWorkerPhone) },
-    { label: "មូលហេតុនៃការបញ្ជូនទទួលសេវា", value: val(r.referralReason), wide: true },
-    { label: "បញ្ហាប្រឈម", value: val(r.challenges), wide: true },
-    { label: "ការវាយតម្លៃស្ថានភាពបច្ចុប្បន្ន", value: val(r.situationAssessment), wide: true },
+    { label: tr("ស្ថាប័នទទួលផ្តល់សេវា"), value: val(r.providerName) },
+    { label: tr("ឈ្មោះបុគ្គលិកសង្គម"), value: val(r.socialWorkerName) },
+    { label: tr("លេខទំនាក់ទំនង ឬអ៊ីម៊ែល"), value: val(r.socialWorkerPhone) },
+    { label: tr("មូលហេតុនៃការបញ្ជូនទទួលសេវា"), value: val(r.referralReason), wide: true },
+    { label: tr("បញ្ហាប្រឈម"), value: val(r.challenges), wide: true },
+    { label: tr("ការវាយតម្លៃស្ថានភាពបច្ចុប្បន្ន"), value: val(r.situationAssessment), wide: true },
   ];
 });
 
@@ -71,10 +71,10 @@ const monitoring = computed(() => {
   const r = rec.value;
   if (!r) return [];
   return [
-    { label: "កាលបរិច្ឆេទតាមដាន", value: fmt(r.monitorDate) },
-    { label: "វិធីសាស្រ្តតាមដាន", value: val(r.monitorMethod) },
-    { label: "លទ្ធផល", value: val(r.monitorResult) },
-    { label: "កាលបរិច្ឆេទតាមដានបន្ត", value: fmt(r.nextMonitorDate) },
+    { label: tr("កាលបរិច្ឆេទតាមដាន"), value: fmt(r.monitorDate) },
+    { label: tr("វិធីសាស្រ្តតាមដាន"), value: val(r.monitorMethod) },
+    { label: tr("លទ្ធផល"), value: val(r.monitorResult) },
+    { label: tr("កាលបរិច្ឆេទតាមដានបន្ត"), value: fmt(r.nextMonitorDate) },
   ];
 });
 
@@ -104,7 +104,7 @@ onMounted(load);
   <div class="font-[Battambang]">
     <div class="mt-5">
       <div class="flex items-start justify-between gap-4">
-        <h2 class="text-2xl font-[Moul] text-primary">ផែនការករណីរបស់អតិថិជន</h2>
+        <h2 class="text-2xl font-[Moul] text-primary">{{ tr('ផែនការករណីរបស់អតិថិជន') }}</h2>
         <div class="no-print flex shrink-0 gap-2">
           <NuxtLink v-if="rec" :to="`/client/case-plan/form?id=${rec.id}`">
             <UButton color="gray" size="xl" :disabled="readOnly">
@@ -135,13 +135,13 @@ onMounted(load);
       <div v-else-if="rec" class="grid grid-cols-12 items-start gap-4">
         <!-- ១. ព័ត៌មានអតិថិជន -->
         <section class="print-block col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800">
-          <h3 class="text-xl font-[Moul] text-primary">ព័ត៌មានអតិថិជន</h3>
+          <h3 class="text-xl font-[Moul] text-primary">{{ tr('ព័ត៌មានអតិថិជន') }}</h3>
           <hr class="my-2 border dark:border-gray-700" />
           <dl class="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2 lg:grid-cols-4">
             <div v-for="f in clientFields" :key="f.label">
               <dt class="text-sm text-gray-500 dark:text-gray-400">
-                {{ f.label }}
-                <span class="ml-1 text-xs text-gray-400">(ទម្រង់ទី១)</span>
+                {{ tr(f.label) }}
+                <span class="ml-1 text-xs text-gray-400">{{ tr('(ទម្រង់ទី១)') }}</span>
               </dt>
               <dd class="mt-1 break-words text-base text-gray-800 dark:text-gray-100">{{ f.value }}</dd>
             </div>
@@ -150,11 +150,11 @@ onMounted(load);
 
         <!-- ២. ផែនការ -->
         <section class="print-block col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800">
-          <h3 class="text-xl font-[Moul] text-primary">ផែនការ</h3>
+          <h3 class="text-xl font-[Moul] text-primary">{{ tr('ផែនការ') }}</h3>
           <hr class="my-2 border dark:border-gray-700" />
           <dl class="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-3">
             <div v-for="f in plan" :key="f.label" :class="(f as any).wide ? 'sm:col-span-3' : ''">
-              <dt class="text-sm text-gray-500 dark:text-gray-400">{{ f.label }}</dt>
+              <dt class="text-sm text-gray-500 dark:text-gray-400">{{ tr(f.label) }}</dt>
               <dd class="mt-1 whitespace-pre-line break-words text-base leading-relaxed text-gray-800 dark:text-gray-100">
                 {{ f.value }}
               </dd>
@@ -162,20 +162,18 @@ onMounted(load);
           </dl>
 
           <!-- ក. សកម្មភាពសេវាកម្ម — numbered as the manual numbers them -->
-          <h4 class="mt-6 text-lg font-[Moul] text-primary">ក. សកម្មភាពសេវាកម្ម</h4>
+          <h4 class="mt-6 text-lg font-[Moul] text-primary">{{ tr('ក. សកម្មភាពសេវាកម្ម') }}</h4>
           <hr class="my-2 border dark:border-gray-700" />
-          <p v-if="!activities.length" class="py-2 text-base text-gray-500 dark:text-gray-400">
-            មិនទាន់មានសកម្មភាពសេវាកម្មនៅឡើយទេ។
-          </p>
+          <p v-if="!activities.length" class="py-2 text-base text-gray-500 dark:text-gray-400">{{ tr('មិនទាន់មានសកម្មភាពសេវាកម្មនៅឡើយទេ។') }}</p>
           <div v-else class="overflow-x-auto">
             <table class="w-full text-left text-base">
               <thead class="border-b text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400">
                 <tr>
-                  <th class="py-2 pr-4 font-normal">ល.រ</th>
-                  <th class="py-2 pr-4 font-normal">លេខកូដ</th>
-                  <th class="py-2 pr-4 font-normal">ឈ្មោះសេវា</th>
-                  <th class="py-2 pr-4 font-normal">កាលបរិច្ឆេទចាប់ផ្តើម</th>
-                  <th class="py-2 font-normal">កាលបរិច្ឆេទបញ្ចប់</th>
+                  <th class="py-2 pr-4 font-normal">{{ tr('ល.រ') }}</th>
+                  <th class="py-2 pr-4 font-normal">{{ tr('លេខកូដ') }}</th>
+                  <th class="py-2 pr-4 font-normal">{{ tr('ឈ្មោះសេវា') }}</th>
+                  <th class="py-2 pr-4 font-normal">{{ tr('កាលបរិច្ឆេទចាប់ផ្តើម') }}</th>
+                  <th class="py-2 font-normal">{{ tr('កាលបរិច្ឆេទបញ្ចប់') }}</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
@@ -193,11 +191,11 @@ onMounted(load);
 
         <!-- ៣. កាលបរិច្ឆេទតាមដាន ត្រួតពិនិត្យ -->
         <section class="print-block col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800 2xl:col-span-6">
-          <h3 class="text-xl font-[Moul] text-primary">កាលបរិច្ឆេទតាមដាន ត្រួតពិនិត្យ</h3>
+          <h3 class="text-xl font-[Moul] text-primary">{{ tr('កាលបរិច្ឆេទតាមដាន ត្រួតពិនិត្យ') }}</h3>
           <hr class="my-2 border dark:border-gray-700" />
           <dl class="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2">
             <div v-for="f in monitoring" :key="f.label">
-              <dt class="text-sm text-gray-500 dark:text-gray-400">{{ f.label }}</dt>
+              <dt class="text-sm text-gray-500 dark:text-gray-400">{{ tr(f.label) }}</dt>
               <dd class="mt-1 break-words text-base text-gray-800 dark:text-gray-100">{{ f.value }}</dd>
             </div>
           </dl>
@@ -205,7 +203,7 @@ onMounted(load);
 
         <!-- ៤. សេចក្តីសន្និដ្ឋាន -->
         <section class="print-block col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800 2xl:col-span-6">
-          <h3 class="text-xl font-[Moul] text-primary">សេចក្តីសន្និដ្ឋាន</h3>
+          <h3 class="text-xl font-[Moul] text-primary">{{ tr('សេចក្តីសន្និដ្ឋាន') }}</h3>
           <hr class="my-2 border dark:border-gray-700" />
           <p class="whitespace-pre-line break-words text-base leading-relaxed text-gray-800 dark:text-gray-100">
             {{ val(rec.conclusion) }}

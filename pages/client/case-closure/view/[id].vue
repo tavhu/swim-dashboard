@@ -38,12 +38,12 @@ const familyAddress = computed(() => {
 const clientFields = computed(() => {
   const c = rec.value?.client;
   if (!c) return [];
-  const detail = [c.Gender, clientAge.value !== null ? `${clientAge.value} ឆ្នាំ` : null].filter(Boolean).join(", ");
+  const detail = [c.Gender, clientAge.value !== null ? `${clientAge.value} ${tr('ឆ្នាំ')}` : null].filter(Boolean).join(", ");
   return [
-    { label: "លេខកូដអតិថិជន", value: val(c.ReadableCode) },
-    { label: "ឈ្មោះអតិថិជន (ភេទ, អាយុ)", value: detail ? `${val(c.fullNameKH)} (${detail})` : val(c.fullNameKH) },
-    { label: "លេខទូរស័ព្ទទំនាក់ទំនងគ្រួសារ", value: val(c.FOCTel || c.MOCTel) },
-    { label: "អាសយដ្ឋានគ្រួសារ", value: familyAddress.value },
+    { label: tr("លេខកូដអតិថិជន"), value: val(c.ReadableCode) },
+    { label: tr("ឈ្មោះអតិថិជន (ភេទ, អាយុ)"), value: detail ? `${val(c.fullNameKH)} (${detail})` : val(c.fullNameKH) },
+    { label: tr("លេខទូរស័ព្ទទំនាក់ទំនងគ្រួសារ"), value: val(c.FOCTel || c.MOCTel) },
+    { label: tr("អាសយដ្ឋានគ្រួសារ"), value: familyAddress.value },
   ];
 });
 
@@ -93,7 +93,7 @@ onMounted(load);
   <div class="font-[Battambang]">
     <div class="mt-5">
       <div class="flex items-start justify-between gap-4">
-        <h2 class="text-2xl font-[Moul] text-primary">បិទករណី</h2>
+        <h2 class="text-2xl font-[Moul] text-primary">{{ tr('បិទករណី') }}</h2>
         <div class="no-print flex shrink-0 gap-2">
           <NuxtLink v-if="rec" :to="`/client/case-closure/form?id=${rec.id}`">
             <UButton color="gray" size="xl" :disabled="readOnly">
@@ -124,12 +124,12 @@ onMounted(load);
       <div v-else-if="rec" class="grid grid-cols-12 items-start gap-4">
         <!-- ១. ព័ត៌មានអតិថិជន -->
         <section class="print-block col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800">
-          <h3 class="text-xl font-[Moul] text-primary">ព័ត៌មានអតិថិជន</h3>
+          <h3 class="text-xl font-[Moul] text-primary">{{ tr('ព័ត៌មានអតិថិជន') }}</h3>
           <hr class="my-2 border dark:border-gray-700" />
           <dl class="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2 lg:grid-cols-4">
             <div v-for="f in clientFields" :key="f.label">
               <dt class="text-sm text-gray-500 dark:text-gray-400">
-                {{ f.label }} <span class="ml-1 text-xs text-gray-400">(ទម្រង់ទី១)</span>
+                {{ tr(f.label) }} <span class="ml-1 text-xs text-gray-400">{{ tr('(ទម្រង់ទី១)') }}</span>
               </dt>
               <dd class="mt-1 break-words text-base text-gray-800 dark:text-gray-100">{{ f.value }}</dd>
             </div>
@@ -138,15 +138,15 @@ onMounted(load);
 
         <!-- ២. មូលហេតុនៃការបិទករណី -->
         <section class="print-block col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800">
-          <h3 class="text-xl font-[Moul] text-primary">មូលហេតុនៃការបិទករណី ឬបញ្ចេញពីមជ្ឈមណ្ឌល</h3>
+          <h3 class="text-xl font-[Moul] text-primary">{{ tr('មូលហេតុនៃការបិទករណី ឬបញ្ចេញពីមជ្ឈមណ្ឌល') }}</h3>
           <hr class="my-2 border dark:border-gray-700" />
           <dl class="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-3">
             <div>
-              <dt class="text-sm text-gray-500 dark:text-gray-400">លទ្ធផល</dt>
+              <dt class="text-sm text-gray-500 dark:text-gray-400">{{ tr('លទ្ធផល') }}</dt>
               <dd class="mt-1 text-base text-gray-800 dark:text-gray-100">{{ outcome?.label ?? '—' }}</dd>
             </div>
             <div class="sm:col-span-2">
-              <dt class="text-sm text-gray-500 dark:text-gray-400">មូលហេតុ</dt>
+              <dt class="text-sm text-gray-500 dark:text-gray-400">{{ tr('មូលហេតុ') }}</dt>
               <dd v-if="successful" class="mt-1 break-words text-base text-gray-800 dark:text-gray-100">
                 {{ successReasonText }}
               </dd>
@@ -164,35 +164,35 @@ onMounted(load);
 
         <!-- ៣. កំណត់សម្គាល់ — the manual's words, part of the printed form -->
         <section class="print-block col-span-12 rounded-lg border-l-4 border-primary bg-primary/5 p-4">
-          <h3 class="text-xl font-[Moul] text-primary">កំណត់សម្គាល់</h3>
+          <h3 class="text-xl font-[Moul] text-primary">{{ tr('កំណត់សម្គាល់') }}</h3>
           <p class="mt-2 text-base text-gray-700 dark:text-gray-200">{{ CLOSURE_STABILITY_NOTE.intro }}</p>
           <ul class="mt-2 list-inside list-disc space-y-1">
             <li v-for="(p, i) in CLOSURE_STABILITY_NOTE.points" :key="i"
               class="text-base leading-relaxed text-gray-700 dark:text-gray-200">
-              {{ p }}
+              {{ tr(p) }}
             </li>
           </ul>
         </section>
 
         <!-- ៤. សេចក្តីសង្ខេបសន្និដ្ឋាន -->
         <section class="print-block col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800">
-          <h3 class="text-xl font-[Moul] text-primary">សេចក្តីសង្ខេបសន្និដ្ឋាន</h3>
+          <h3 class="text-xl font-[Moul] text-primary">{{ tr('សេចក្តីសង្ខេបសន្និដ្ឋាន') }}</h3>
           <hr class="my-2 border dark:border-gray-700" />
 
-          <h4 class="text-lg font-[Moul] text-primary">ក. ករណីសិក្សាមណ្ឌល</h4>
+          <h4 class="text-lg font-[Moul] text-primary">{{ tr('ក. ករណីសិក្សាមណ្ឌល') }}</h4>
           <dl class="mt-2 grid grid-cols-1 gap-x-8 gap-y-4 2xl:grid-cols-3">
             <div v-for="f in centreSummary" :key="f.label">
-              <dt class="text-sm text-gray-500 dark:text-gray-400">{{ f.label }}</dt>
+              <dt class="text-sm text-gray-500 dark:text-gray-400">{{ tr(f.label) }}</dt>
               <dd class="mt-1 whitespace-pre-line break-words text-base leading-relaxed text-gray-800 dark:text-gray-100">
                 {{ f.value }}
               </dd>
             </div>
           </dl>
 
-          <h4 class="mt-6 text-lg font-[Moul] text-primary">ខ. ករណីសិក្សានៅសហគមន៍</h4>
+          <h4 class="mt-6 text-lg font-[Moul] text-primary">{{ tr('ខ. ករណីសិក្សានៅសហគមន៍') }}</h4>
           <dl class="mt-2 grid grid-cols-1 gap-x-8 gap-y-4 2xl:grid-cols-3">
             <div v-for="f in communitySummary" :key="f.label">
-              <dt class="text-sm text-gray-500 dark:text-gray-400">{{ f.label }}</dt>
+              <dt class="text-sm text-gray-500 dark:text-gray-400">{{ tr(f.label) }}</dt>
               <dd class="mt-1 whitespace-pre-line break-words text-base leading-relaxed text-gray-800 dark:text-gray-100">
                 {{ f.value }}
               </dd>
@@ -200,7 +200,7 @@ onMounted(load);
           </dl>
 
           <dl class="mt-6">
-            <dt class="text-sm text-gray-500 dark:text-gray-400">គ. គម្រោងអនាគតរបស់ជនរងគ្រោះគួទទួលបាន</dt>
+            <dt class="text-sm text-gray-500 dark:text-gray-400">{{ tr('គ. គម្រោងអនាគតរបស់ជនរងគ្រោះគួទទួលបាន') }}</dt>
             <dd class="mt-1 whitespace-pre-line break-words text-base leading-relaxed text-gray-800 dark:text-gray-100">
               {{ val(rec.futurePlan) }}
             </dd>

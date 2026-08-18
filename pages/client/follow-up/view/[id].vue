@@ -38,12 +38,12 @@ const familyAddress = computed(() => {
 const clientFields = computed(() => {
   const c = rec.value?.client;
   if (!c) return [];
-  const detail = [c.Gender, clientAge.value !== null ? `${clientAge.value} ឆ្នាំ` : null].filter(Boolean).join(", ");
+  const detail = [c.Gender, clientAge.value !== null ? `${clientAge.value} ${tr('ឆ្នាំ')}` : null].filter(Boolean).join(", ");
   return [
-    { label: "លេខកូដអតិថិជន", value: val(c.ReadableCode) },
-    { label: "ឈ្មោះអតិថិជន (ភេទ, អាយុ)", value: detail ? `${val(c.fullNameKH)} (${detail})` : val(c.fullNameKH) },
-    { label: "លេខទូរស័ព្ទទំនាក់ទំនងគ្រួសារ", value: val(c.FOCTel || c.MOCTel) },
-    { label: "អាសយដ្ឋានគ្រួសារ", value: familyAddress.value },
+    { label: tr("លេខកូដអតិថិជន"), value: val(c.ReadableCode) },
+    { label: tr("ឈ្មោះអតិថិជន (ភេទ, អាយុ)"), value: detail ? `${val(c.fullNameKH)} (${detail})` : val(c.fullNameKH) },
+    { label: tr("លេខទូរស័ព្ទទំនាក់ទំនងគ្រួសារ"), value: val(c.FOCTel || c.MOCTel) },
+    { label: tr("អាសយដ្ឋានគ្រួសារ"), value: familyAddress.value },
   ];
 });
 
@@ -51,15 +51,15 @@ const monitoring = computed(() => {
   const r = rec.value;
   if (!r) return [];
   const rows = [
-    { label: "កាលបរិច្ឆេទតាមដាន", value: fmt(r.monitorDate) },
-    { label: "វិធីសាស្រ្តតាមដាន", value: val(r.monitorMethod) },
-    { label: "កាលបរិច្ឆេទតាមដានបន្ត", value: fmt(r.nextMonitorDate) },
+    { label: tr("កាលបរិច្ឆេទតាមដាន"), value: fmt(r.monitorDate) },
+    { label: tr("វិធីសាស្រ្តតាមដាន"), value: val(r.monitorMethod) },
+    { label: tr("កាលបរិច្ឆេទតាមដានបន្ត"), value: fmt(r.nextMonitorDate) },
   ];
   // Section ៣ carries a result for the visit; section ២ records one per service.
   if (!inCentre.value) {
-    rows.splice(2, 0, { label: "លទ្ធផល", value: val(r.monitorResult) });
+    rows.splice(2, 0, { label: tr("លទ្ធផល"), value: val(r.monitorResult) });
     rows.push({
-      label: "អ្នកផ្តល់ព័តមាន",
+      label: tr("អ្នកផ្តល់ព័តមាន"),
       value: val(String(r.informants ?? "").split(",").filter(Boolean).join(", ")),
     });
   }
@@ -96,7 +96,7 @@ onMounted(load);
   <div class="font-[Battambang]">
     <div class="mt-5">
       <div class="flex items-start justify-between gap-4">
-        <h2 class="text-2xl font-[Moul] text-primary">តាមដាន និងវាយតម្លៃស្ថានភាពអតិថិជន</h2>
+        <h2 class="text-2xl font-[Moul] text-primary">{{ tr('តាមដាន និងវាយតម្លៃស្ថានភាពអតិថិជន') }}</h2>
         <div class="no-print flex shrink-0 gap-2">
           <NuxtLink v-if="rec" :to="`/client/follow-up/form?id=${rec.id}`">
             <UButton color="gray" size="xl" :disabled="readOnly">
@@ -127,12 +127,12 @@ onMounted(load);
       <div v-else-if="rec" class="grid grid-cols-12 items-start gap-4">
         <!-- ១. ព័ត៌មានអតិថិជន -->
         <section class="print-block col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800">
-          <h3 class="text-xl font-[Moul] text-primary">ព័ត៌មានអតិថិជន</h3>
+          <h3 class="text-xl font-[Moul] text-primary">{{ tr('ព័ត៌មានអតិថិជន') }}</h3>
           <hr class="my-2 border dark:border-gray-700" />
           <dl class="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2 lg:grid-cols-4">
             <div v-for="f in clientFields" :key="f.label">
               <dt class="text-sm text-gray-500 dark:text-gray-400">
-                {{ f.label }} <span class="ml-1 text-xs text-gray-400">(ទម្រង់ទី១)</span>
+                {{ tr(f.label) }} <span class="ml-1 text-xs text-gray-400">{{ tr('(ទម្រង់ទី១)') }}</span>
               </dt>
               <dd class="mt-1 break-words text-base text-gray-800 dark:text-gray-100">{{ f.value }}</dd>
             </div>
@@ -146,27 +146,25 @@ onMounted(load);
           <hr class="my-2 border dark:border-gray-700" />
           <dl class="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2 lg:grid-cols-4">
             <div v-for="f in monitoring" :key="f.label">
-              <dt class="text-sm text-gray-500 dark:text-gray-400">{{ f.label }}</dt>
+              <dt class="text-sm text-gray-500 dark:text-gray-400">{{ tr(f.label) }}</dt>
               <dd class="mt-1 break-words text-base text-gray-800 dark:text-gray-100">{{ f.value }}</dd>
             </div>
           </dl>
 
           <template v-if="inCentre">
-            <h4 class="mt-6 text-lg font-[Moul] text-primary">សេវាកម្មដែលកំពុងតាមដាន</h4>
+            <h4 class="mt-6 text-lg font-[Moul] text-primary">{{ tr('សេវាកម្មដែលកំពុងតាមដាន') }}</h4>
             <hr class="my-2 border dark:border-gray-700" />
-            <p v-if="!rec.services?.length" class="py-2 text-base text-gray-500 dark:text-gray-400">
-              មិនទាន់មានទេ។
-            </p>
+            <p v-if="!rec.services?.length" class="py-2 text-base text-gray-500 dark:text-gray-400">{{ tr('មិនទាន់មានទេ។') }}</p>
             <div v-else class="overflow-x-auto">
               <table class="w-full text-left text-base">
                 <thead class="border-b text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400">
                   <tr>
-                    <th class="py-2 pr-4 font-normal">ល.រ</th>
-                    <th class="py-2 pr-4 font-normal">លេខកូដ</th>
-                    <th class="py-2 pr-4 font-normal">ឈ្មោះសេវា</th>
-                    <th class="py-2 pr-4 font-normal">ចាប់ផ្តើម</th>
-                    <th class="py-2 pr-4 font-normal">បញ្ចប់</th>
-                    <th class="py-2 font-normal">លទ្ធផល</th>
+                    <th class="py-2 pr-4 font-normal">{{ tr('ល.រ') }}</th>
+                    <th class="py-2 pr-4 font-normal">{{ tr('លេខកូដ') }}</th>
+                    <th class="py-2 pr-4 font-normal">{{ tr('ឈ្មោះសេវា') }}</th>
+                    <th class="py-2 pr-4 font-normal">{{ tr('ចាប់ផ្តើម') }}</th>
+                    <th class="py-2 pr-4 font-normal">{{ tr('បញ្ចប់') }}</th>
+                    <th class="py-2 font-normal">{{ tr('លទ្ធផល') }}</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
@@ -184,7 +182,7 @@ onMounted(load);
           </template>
 
           <div v-if="attachments.length" class="mt-4">
-            <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">ឯកសារពាក់ព័ន្ធ</p>
+            <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">{{ tr('ឯកសារពាក់ព័ន្ធ') }}</p>
             <ul class="space-y-1">
               <li v-for="path in attachments" :key="path">
                 <a :href="`/${path}`" target="_blank" rel="noopener"
@@ -196,7 +194,7 @@ onMounted(load);
 
         <!-- ៤. សេចក្តីសន្និដ្ឋាន -->
         <section class="print-block col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800">
-          <h3 class="text-xl font-[Moul] text-primary">សេចក្តីសន្និដ្ឋាន</h3>
+          <h3 class="text-xl font-[Moul] text-primary">{{ tr('សេចក្តីសន្និដ្ឋាន') }}</h3>
           <hr class="my-2 border dark:border-gray-700" />
           <p class="whitespace-pre-line break-words text-base leading-relaxed text-gray-800 dark:text-gray-100">
             {{ val(rec.conclusion) }}

@@ -177,7 +177,7 @@ async function submit() {
     <div class="mt-5">
       <div class="flex items-start justify-between gap-4">
         <h2 class="text-2xl font-[Moul] text-primary">
-          {{ recordId ? 'កែសម្រួលសមាហរណកម្ម' : 'បង្កើតសមាហរណកម្ម' }}
+          {{ recordId ? tr('កែសម្រួលសមាហរណកម្ម') : tr('បង្កើតសមាហរណកម្ម') }}
         </h2>
         <NuxtLink v-if="client" :to="`/client/reintegration/${client.id}`">
           <UButton color="gray" size="xl">
@@ -199,141 +199,141 @@ async function submit() {
       <form v-else class="grid grid-cols-12 items-start gap-4" @submit.prevent="submit">
         <!-- ១. ព័ត៌មានអតិថិជន -->
         <section class="col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800">
-          <h3 class="text-xl font-[Moul] text-primary">ព័ត៌មានអតិថិជន</h3>
+          <h3 class="text-xl font-[Moul] text-primary">{{ tr('ព័ត៌មានអតិថិជន') }}</h3>
           <hr class="my-2 border dark:border-gray-700" />
           <dl class="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2 lg:grid-cols-4">
             <div>
-              <dt class="text-sm text-gray-500 dark:text-gray-400">លេខកូដអតិថិជន</dt>
+              <dt class="text-sm text-gray-500 dark:text-gray-400">{{ tr('លេខកូដអតិថិជន') }}</dt>
               <dd class="mt-1 text-base text-gray-800 dark:text-gray-100">{{ client?.ReadableCode || '—' }}</dd>
             </div>
             <div>
-              <dt class="text-sm text-gray-500 dark:text-gray-400">ឈ្មោះអតិថិជន (ភេទ, អាយុ)</dt>
+              <dt class="text-sm text-gray-500 dark:text-gray-400">{{ tr('ឈ្មោះអតិថិជន (ភេទ, អាយុ)') }}</dt>
               <dd class="mt-1 text-base text-gray-800 dark:text-gray-100">
                 {{ client?.fullNameKH || '—' }}
                 <span v-if="client?.Gender || clientAge !== null" class="text-gray-500">
-                  ({{ [client?.Gender, clientAge !== null ? clientAge + ' ឆ្នាំ' : null].filter(Boolean).join(', ') }})
+                  ({{ [client?.Gender, clientAge !== null ? clientAge + ' ' + tr('ឆ្នាំ') : null].filter(Boolean).join(', ') }})
                 </span>
               </dd>
             </div>
             <div>
-              <dt class="text-sm text-gray-500 dark:text-gray-400">លេខទំនាក់ទំនងគ្រួសារ</dt>
+              <dt class="text-sm text-gray-500 dark:text-gray-400">{{ tr('លេខទំនាក់ទំនងគ្រួសារ') }}</dt>
               <dd class="mt-1 text-base text-gray-800 dark:text-gray-100">
                 {{ client?.FOCTel || client?.MOCTel || '—' }}
               </dd>
             </div>
             <div>
-              <dt class="text-sm text-gray-500 dark:text-gray-400">អាសយដ្ឋានគ្រួសារ</dt>
+              <dt class="text-sm text-gray-500 dark:text-gray-400">{{ tr('អាសយដ្ឋានគ្រួសារ') }}</dt>
               <dd class="mt-1 text-base text-gray-800 dark:text-gray-100">{{ familyAddress }}</dd>
             </div>
           </dl>
-          <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">ព័ត៌មាននេះទាញពីទម្រង់ទី១ ដោយស្វ័យប្រវត្តិ។</p>
+          <p class="mt-3 text-sm text-gray-500 dark:text-gray-400">{{ tr('ព័ត៌មាននេះទាញពីទម្រង់ទី១ ដោយស្វ័យប្រវត្តិ។') }}</p>
         </section>
 
         <!-- ២. ស្ថានភាពបច្ចុប្បន្ន -->
         <section class="col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800">
-          <h3 class="text-xl font-[Moul] text-primary">ស្ថានភាពបច្ចុប្បន្ន</h3>
+          <h3 class="text-xl font-[Moul] text-primary">{{ tr('ស្ថានភាពបច្ចុប្បន្ន') }}</h3>
           <hr class="my-2 border dark:border-gray-700" />
           <label class="block">
-            <span class="text-sm text-gray-500 dark:text-gray-400">សេចក្តីពិគ្រោះយោបល់</span>
+            <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('សេចក្តីពិគ្រោះយោបល់') }}</span>
             <textarea v-model="form.consultation" :disabled="readOnly" rows="3"
               class="mt-1 w-full rounded border px-2 py-1 text-base dark:border-gray-700 dark:bg-gray-900" />
           </label>
 
-          <h4 class="mt-6 text-lg font-[Moul] text-primary">សេវាកម្មដែលបានទទួលកន្លងមក</h4>
+          <h4 class="mt-6 text-lg font-[Moul] text-primary">{{ tr('សេវាកម្មដែលបានទទួលកន្លងមក') }}</h4>
           <hr class="my-2 border dark:border-gray-700" />
           <ServiceRowsField v-model="pastServices" :services="services" :outcomes="SERVICE_OUTCOME"
-            :read-only="readOnly" add-label="បន្ថែមសេវាកម្ម" />
+            :read-only="readOnly" add-:label="tr('បន្ថែមសេវាកម្ម')" />
         </section>
 
         <!-- ៣. គោលដៅ -->
         <section class="col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800">
-          <h3 class="text-xl font-[Moul] text-primary">គោលដៅ</h3>
+          <h3 class="text-xl font-[Moul] text-primary">{{ tr('គោលដៅ') }}</h3>
           <hr class="my-2 border dark:border-gray-700" />
           <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 2xl:grid-cols-4">
             <label class="block">
-              <span class="text-sm text-gray-500 dark:text-gray-400">កាលបរិច្ឆេទទទួល</span>
+              <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('កាលបរិច្ឆេទទទួល') }}</span>
               <Datepicker v-model="form.handoverDate" :disabled="readOnly" :enableTimePicker="false"
                 format="dd/MM/yyyy" autoApply class="mt-1" />
             </label>
             <label class="block">
-              <span class="text-sm text-gray-500 dark:text-gray-400">អ្នកទទួល</span>
+              <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('អ្នកទទួល') }}</span>
               <select v-model="form.recipient" :disabled="readOnly"
                 class="mt-1 h-10 w-full rounded border px-2 text-base dark:border-gray-700 dark:bg-gray-900">
                 <option value="">{{ $t('action.selectOne') }}</option>
-                <option v-for="r in RECIPIENT" :key="r" :value="r">{{ r }}</option>
+                <option v-for="r in RECIPIENT" :key="r" :value="r">{{ tr(r) }}</option>
               </select>
             </label>
             <label class="block">
-              <span class="text-sm text-gray-500 dark:text-gray-400">លេខទូរស័ព្ទទំនាក់ទំនង ១</span>
+              <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('លេខទូរស័ព្ទទំនាក់ទំនង ១') }}</span>
               <input v-model="form.recipientPhone1" :disabled="readOnly" type="text"
                 class="mt-1 h-10 w-full rounded border px-2 text-base dark:border-gray-700 dark:bg-gray-900" />
             </label>
             <label class="block">
-              <span class="text-sm text-gray-500 dark:text-gray-400">លេខទូរស័ព្ទទំនាក់ទំនង ២</span>
+              <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('លេខទូរស័ព្ទទំនាក់ទំនង ២') }}</span>
               <input v-model="form.recipientPhone2" :disabled="readOnly" type="text"
                 class="mt-1 h-10 w-full rounded border px-2 text-base dark:border-gray-700 dark:bg-gray-900" />
             </label>
           </div>
 
-          <h4 class="mt-6 text-lg font-[Moul] text-primary">អភិបាលកិច្ចសហគមន៍</h4>
+          <h4 class="mt-6 text-lg font-[Moul] text-primary">{{ tr('អភិបាលកិច្ចសហគមន៍') }}</h4>
           <hr class="my-2 border dark:border-gray-700" />
           <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 2xl:grid-cols-4">
             <label class="block 2xl:col-span-4">
-              <span class="text-sm font-medium text-gray-600 dark:text-gray-300">ក. មេឃុំ ចៅសង្កាត់</span>
+              <span class="text-sm font-medium text-gray-600 dark:text-gray-300">{{ tr('ក. មេឃុំ ចៅសង្កាត់') }}</span>
             </label>
             <label class="block">
-              <span class="text-sm text-gray-500 dark:text-gray-400">ឈ្មោះ</span>
+              <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('ឈ្មោះ') }}</span>
               <input v-model="form.communeChiefName" :disabled="readOnly" type="text"
                 class="mt-1 h-10 w-full rounded border px-2 text-base dark:border-gray-700 dark:bg-gray-900" />
             </label>
             <label class="block">
-              <span class="text-sm text-gray-500 dark:text-gray-400">ភេទ</span>
+              <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('ភេទ') }}</span>
               <select v-model="form.communeChiefSex" :disabled="readOnly"
                 class="mt-1 h-10 w-full rounded border px-2 text-base dark:border-gray-700 dark:bg-gray-900">
                 <option value="">{{ $t('action.selectOne') }}</option>
-                <option v-for="s in OFFICIAL_SEX" :key="s" :value="s">{{ s }}</option>
+                <option v-for="s in OFFICIAL_SEX" :key="s" :value="s">{{ tr(s) }}</option>
               </select>
             </label>
             <label class="block">
-              <span class="text-sm text-gray-500 dark:text-gray-400">អាយុ</span>
+              <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('អាយុ') }}</span>
               <input v-model="form.communeChiefAge" :disabled="readOnly" type="number" min="1" max="149"
                 class="mt-1 h-10 w-full rounded border px-2 text-base dark:border-gray-700 dark:bg-gray-900" />
             </label>
             <label class="block">
-              <span class="text-sm text-gray-500 dark:text-gray-400">លេខទូរស័ព្ទទំនាក់ទំនង</span>
+              <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('លេខទូរស័ព្ទទំនាក់ទំនង') }}</span>
               <input v-model="form.communeChiefPhone" :disabled="readOnly" type="text"
                 class="mt-1 h-10 w-full rounded border px-2 text-base dark:border-gray-700 dark:bg-gray-900" />
             </label>
 
             <label class="block 2xl:col-span-4">
-              <span class="text-sm font-medium text-gray-600 dark:text-gray-300">ខ. មេភូមិ</span>
+              <span class="text-sm font-medium text-gray-600 dark:text-gray-300">{{ tr('ខ. មេភូមិ') }}</span>
             </label>
             <label class="block">
-              <span class="text-sm text-gray-500 dark:text-gray-400">ឈ្មោះ</span>
+              <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('ឈ្មោះ') }}</span>
               <input v-model="form.villageChiefName" :disabled="readOnly" type="text"
                 class="mt-1 h-10 w-full rounded border px-2 text-base dark:border-gray-700 dark:bg-gray-900" />
             </label>
             <label class="block">
-              <span class="text-sm text-gray-500 dark:text-gray-400">ភេទ</span>
+              <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('ភេទ') }}</span>
               <select v-model="form.villageChiefSex" :disabled="readOnly"
                 class="mt-1 h-10 w-full rounded border px-2 text-base dark:border-gray-700 dark:bg-gray-900">
                 <option value="">{{ $t('action.selectOne') }}</option>
-                <option v-for="s in OFFICIAL_SEX" :key="s" :value="s">{{ s }}</option>
+                <option v-for="s in OFFICIAL_SEX" :key="s" :value="s">{{ tr(s) }}</option>
               </select>
             </label>
             <label class="block">
-              <span class="text-sm text-gray-500 dark:text-gray-400">អាយុ</span>
+              <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('អាយុ') }}</span>
               <input v-model="form.villageChiefAge" :disabled="readOnly" type="number" min="1" max="149"
                 class="mt-1 h-10 w-full rounded border px-2 text-base dark:border-gray-700 dark:bg-gray-900" />
             </label>
             <label class="block">
-              <span class="text-sm text-gray-500 dark:text-gray-400">លេខទូរស័ព្ទទំនាក់ទំនង</span>
+              <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('លេខទូរស័ព្ទទំនាក់ទំនង') }}</span>
               <input v-model="form.villageChiefPhone" :disabled="readOnly" type="text"
                 class="mt-1 h-10 w-full rounded border px-2 text-base dark:border-gray-700 dark:bg-gray-900" />
             </label>
 
             <label class="block 2xl:col-span-4">
-              <span class="text-sm text-gray-500 dark:text-gray-400">គ. អង្គភាព/អង្គការមូលដ្ឋាន</span>
+              <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('គ. អង្គភាព/អង្គការមូលដ្ឋាន') }}</span>
               <input v-model="form.localOrganisation" :disabled="readOnly" type="text"
                 class="mt-1 h-10 w-full rounded border px-2 text-base dark:border-gray-700 dark:bg-gray-900" />
             </label>
@@ -341,64 +341,64 @@ async function submit() {
 
           <div class="mt-4">
             <AttachmentField v-model="form.goalAttachments" v-model:pending="goalFiles" :read-only="readOnly"
-              label="កិច្ចសន្យា ការផ្តល់សេវាកម្មនៅសហគមន៍ និងឯកសារពាក់ព័ន្ធ" />
+              :label="tr('កិច្ចសន្យា ការផ្តល់សេវាកម្មនៅសហគមន៍ និងឯកសារពាក់ព័ន្ធ')" />
           </div>
         </section>
 
         <!-- ៤. សេវាកម្មនៅសហគមន៍ត្រូវផ្តល់បន្ត -->
         <section class="col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800">
-          <h3 class="text-xl font-[Moul] text-primary">សេវាកម្មនៅសហគមន៍ត្រូវផ្តល់បន្ត</h3>
+          <h3 class="text-xl font-[Moul] text-primary">{{ tr('សេវាកម្មនៅសហគមន៍ត្រូវផ្តល់បន្ត') }}</h3>
           <hr class="my-2 border dark:border-gray-700" />
           <ServiceRowsField v-model="communityServices" :services="services" :read-only="readOnly"
-            add-label="បន្ថែមសេវាកម្ម" />
+            add-:label="tr('បន្ថែមសេវាកម្ម')" />
           <div class="mt-4">
             <AttachmentField v-model="form.communityAttachments" v-model:pending="communityFiles"
-              :read-only="readOnly" label="កិច្ចសន្យា គ្រួសារ ឬអ្នកថែទាំបន្ត" />
+              :read-only="readOnly" :label="tr('កិច្ចសន្យា គ្រួសារ ឬអ្នកថែទាំបន្ត')" />
           </div>
         </section>
 
         <!-- ៥. ការតាមដាន និងវាយតម្លៃ -->
         <section class="col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800">
-          <h3 class="text-xl font-[Moul] text-primary">ការតាមដាន និងវាយតម្លៃ</h3>
+          <h3 class="text-xl font-[Moul] text-primary">{{ tr('ការតាមដាន និងវាយតម្លៃ') }}</h3>
           <hr class="my-2 border dark:border-gray-700" />
           <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <label class="block">
-              <span class="text-sm text-gray-500 dark:text-gray-400">កាលបរិច្ឆេទតាមដាន</span>
+              <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('កាលបរិច្ឆេទតាមដាន') }}</span>
               <Datepicker v-model="form.monitorDate" :disabled="readOnly" :enableTimePicker="false" format="dd/MM/yyyy"
                 autoApply class="mt-1" />
             </label>
             <label class="block">
-              <span class="text-sm text-gray-500 dark:text-gray-400">កាលបរិច្ឆេទតាមដានបន្ត</span>
+              <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('កាលបរិច្ឆេទតាមដានបន្ត') }}</span>
               <Datepicker v-model="form.nextMonitorDate" :disabled="readOnly" :enableTimePicker="false"
                 format="dd/MM/yyyy" autoApply class="mt-1" />
             </label>
 
             <!-- ជ្រើសរើសបានច្រើន, so checkboxes rather than a select -->
             <div class="sm:col-span-2">
-              <span class="text-sm text-gray-500 dark:text-gray-400">អ្នកផ្តល់ព័តមាន (ជ្រើសរើសបានច្រើន)</span>
+              <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('អ្នកផ្តល់ព័តមាន (ជ្រើសរើសបានច្រើន)') }}</span>
               <div class="mt-2 flex flex-wrap gap-x-6 gap-y-2">
                 <label v-for="i in INFORMANT" :key="i" class="flex items-center gap-2">
                   <input v-model="informants" :value="i" :disabled="readOnly" type="checkbox"
                     class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary" />
-                  <span class="text-base text-gray-800 dark:text-gray-100">{{ i }}</span>
+                  <span class="text-base text-gray-800 dark:text-gray-100">{{ tr(i) }}</span>
                 </label>
               </div>
             </div>
 
             <label class="block">
-              <span class="text-sm text-gray-500 dark:text-gray-400">វិធីសាស្រ្តតាមដាន</span>
+              <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('វិធីសាស្រ្តតាមដាន') }}</span>
               <select v-model="form.monitorMethod" :disabled="readOnly"
                 class="mt-1 h-10 w-full rounded border px-2 text-base dark:border-gray-700 dark:bg-gray-900">
                 <option value="">{{ $t('action.selectOne') }}</option>
-                <option v-for="m in MONITOR_METHOD" :key="m" :value="m">{{ m }}</option>
+                <option v-for="m in MONITOR_METHOD" :key="m" :value="m">{{ tr(m) }}</option>
               </select>
             </label>
             <label class="block">
-              <span class="text-sm text-gray-500 dark:text-gray-400">លទ្ធផល</span>
+              <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('លទ្ធផល') }}</span>
               <select v-model="form.monitorResult" :disabled="readOnly"
                 class="mt-1 h-10 w-full rounded border px-2 text-base dark:border-gray-700 dark:bg-gray-900">
                 <option value="">{{ $t('action.selectOne') }}</option>
-                <option v-for="r in MONITOR_RESULT" :key="r" :value="r">{{ r }}</option>
+                <option v-for="r in MONITOR_RESULT" :key="r" :value="r">{{ tr(r) }}</option>
               </select>
             </label>
           </div>
@@ -406,13 +406,11 @@ async function submit() {
 
         <!-- ៦. សិទ្ធិធ្វើសេចក្តីសន្និដ្ឋាន -->
         <section class="col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800">
-          <h3 class="text-xl font-[Moul] text-primary">សេចក្តីសន្និដ្ឋាន</h3>
+          <h3 class="text-xl font-[Moul] text-primary">{{ tr('សេចក្តីសន្និដ្ឋាន') }}</h3>
           <hr class="my-2 border dark:border-gray-700" />
           <textarea v-model="form.conclusion" :disabled="readOnly" rows="5"
             class="w-full rounded border px-2 py-1 text-base dark:border-gray-700 dark:bg-gray-900" />
-          <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
-            ការស្នើសុំ និងការអនុម័ត ធ្វើនៅទំព័រមើលកំណត់ត្រា។
-          </p>
+          <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">{{ tr('ការស្នើសុំ និងការអនុម័ត ធ្វើនៅទំព័រមើលកំណត់ត្រា។') }}</p>
         </section>
 
         <div class="col-span-12 flex justify-end gap-2">

@@ -34,13 +34,13 @@ const fmt = (d?: string | null) =>
   d ? new Date(d).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : "—";
 
 const STATUS: Record<string, { label: string; classes: string }> = {
-  DRAFT: { label: "ព្រាង", classes: "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300" },
-  SUBMITTED: { label: "បានស្នើសុំ", classes: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300" },
-  APPROVED: { label: "បានអនុម័ត", classes: "bg-primary/10 text-primary" },
-  REJECTED: { label: "បានបដិសេធ", classes: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300" },
+  DRAFT: { label: tr("ព្រាង"), classes: "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300" },
+  SUBMITTED: { label: tr("បានស្នើសុំ"), classes: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300" },
+  APPROVED: { label: tr("បានអនុម័ត"), classes: "bg-primary/10 text-primary" },
+  REJECTED: { label: tr("បានបដិសេធ"), classes: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300" },
 };
 
-useHead(() => ({ title: "ការបិទករណី" }));
+useHead(() => ({ title: tr("ការបិទករណី") }));
 
 onMounted(async () => {
   try {
@@ -87,7 +87,7 @@ const removeRecord = async (r: any, i: number) => {
     <div class="mt-5">
       <div class="flex items-start justify-between gap-4">
         <div>
-          <h2 class="text-2xl font-[Moul] text-primary">ការបិទករណី</h2>
+          <h2 class="text-2xl font-[Moul] text-primary">{{ tr('ការបិទករណី') }}</h2>
           <p v-if="client" class="mt-1 text-base text-gray-500 dark:text-gray-400">
             {{ client.ReadableCode }} · {{ client.fullNameKH }}
           </p>
@@ -111,21 +111,19 @@ const removeRecord = async (r: any, i: number) => {
       </div>
 
       <div v-else class="rounded-lg bg-white p-4 shadow dark:bg-gray-800">
-        <p v-if="!rows.length" class="py-8 text-center text-base text-gray-500 dark:text-gray-400">
-          មិនទាន់មានការបិទករណីនៅឡើយទេ។
-        </p>
+        <p v-if="!rows.length" class="py-8 text-center text-base text-gray-500 dark:text-gray-400">{{ tr('មិនទាន់មានការបិទករណីនៅឡើយទេ។') }}</p>
         <div v-else class="overflow-x-auto">
           <table class="w-full text-left text-base">
             <thead class="border-b text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400">
               <tr>
-                <th class="py-3 pr-4 font-normal">ល.រ</th>
-                <th class="py-3 pr-4 font-normal">កាលបរិច្ឆេទបង្កើត</th>
-                <th class="py-3 pr-4 font-normal">កាលបរិច្ឆេទបិទ</th>
+                <th class="py-3 pr-4 font-normal">{{ tr('ល.រ') }}</th>
+                <th class="py-3 pr-4 font-normal">{{ tr('កាលបរិច្ឆេទបង្កើត') }}</th>
+                <th class="py-3 pr-4 font-normal">{{ tr('កាលបរិច្ឆេទបិទ') }}</th>
                 <!-- Which of the manual's two reason groups this closure was. -->
-                <th class="py-3 pr-4 font-normal">លទ្ធផល</th>
-                <th class="py-3 pr-4 font-normal">មូលហេតុ</th>
-                <th class="py-3 pr-4 font-normal">ស្ថានភាព</th>
-                <th class="py-3 font-normal">សកម្មភាព</th>
+                <th class="py-3 pr-4 font-normal">{{ tr('លទ្ធផល') }}</th>
+                <th class="py-3 pr-4 font-normal">{{ tr('មូលហេតុ') }}</th>
+                <th class="py-3 pr-4 font-normal">{{ tr('ស្ថានភាព') }}</th>
+                <th class="py-3 font-normal">{{ tr('សកម្មភាព') }}</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
@@ -148,14 +146,10 @@ const removeRecord = async (r: any, i: number) => {
                       <UButton color="gray" icon="i-heroicons-eye" size="sm">{{ $t('action.view') }}</UButton>
                     </NuxtLink>
                     <NuxtLink :to="`/client/case-closure/form?id=${r.id}`">
-                      <UButton color="primary" icon="i-heroicons-pencil-square" size="sm" :disabled="readOnly">
-                        កែសម្រួល
-                      </UButton>
+                      <UButton color="primary" icon="i-heroicons-pencil-square" size="sm" :disabled="readOnly">{{ tr('កែសម្រួល') }}</UButton>
                     </NuxtLink>
                     <UButton color="red" icon="i-heroicons-trash" size="sm" :disabled="readOnly"
-                      @click="removeRecord(r, i)">
-                      លុបចេញ
-                    </UButton>
+                      @click="removeRecord(r, i)">{{ tr('លុបចេញ') }}</UButton>
                   </div>
                 </td>
               </tr>
