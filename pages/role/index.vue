@@ -6,6 +6,7 @@ import {
   TwForm,
   TwTextarea,
   useToast,
+  TwFeather,
   TwOffcanvas,
 } from "vue3-tailwind";
 
@@ -16,14 +17,39 @@ const readOnly = checkIfPageReadOnly()
 const { t } = useI18n();
 // const resource = useResource()
 
-const { data: res } = await useFetch("/api/role/readResource", {
-  method: "POST", query: {
-    //@ts-ignored
-    userID: userDataAuth.value?.sub
+/**
+ * Every page the grid can grant, plus the role-assignment gates.
+ *
+ * This used to be filtered to the resources the caller could already read,
+ * which is the wrong set for an editor — a page you cannot see is exactly the
+ * one you may need to grant to someone else.
+ */
+const { data: res, refresh: refreshResources } = await useFetch<any>("/api/role/readResource");
+const resource = computed<any[]>(() => res.value?.data ?? []);
+const roleGates = computed<any[]>(() => res.value?.roleGates ?? []);
+
+/** Group headings, in the order the menu presents them. */
+const GROUP_LABELS: Record<string, string> = {
+  dashboard: "ផ្ទាំងគ្រប់គ្រង",
+  client: "អតិថិជន និងទម្រង់ទី១-៦",
+  service: "សេវា និងប្រភេទអតិថិជន",
+  centre: "មណ្ឌល",
+  organisation: "ស្ថាប័ន",
+  account: "គណនី និងសិទ្ធិ",
+  report: "របាយការណ៍",
+};
+const groupedResources = computed(() => {
+  const out: { key: string; label: string; rows: any[] }[] = [];
+  for (const r of resource.value) {
+    let g = out.find((x) => x.key === r.group);
+    if (!g) {
+      g = { key: r.group, label: GROUP_LABELS[r.group] ?? r.group, rows: [] };
+      out.push(g);
+    }
+    g.rows.push(r);
   }
+  return out;
 });
-//@ts-ignore
-const resource: any = res.value?.data;
 
 const toast = useToast();
 const composableForm = useForm();
@@ -229,42 +255,50 @@ const AddPermission = (clickPermissionID: string) => {
 const headers = useRequestHeaders(["cookie"]) as HeadersInit;
 const { data: token } = await useFetch("/api/token", { headers });
 
-const grantedResourceToRole = async (resourceID: string, granted: boolean, read: boolean) => {
-  // console.log refClickRoleID.value, resourceID);
+/** The three states the grid offers, derived from the two stored booleans. */
+type Access = "write" | "read" | "none";
 
-  const { error } = await useFetch("/api/role/updateRoleToResource", {
-    method: "POST",
-    body: JSON.stringify({
-      roleID: refClickRoleID.value,
-      resourceID: resourceID,
-      granted: granted,
-      read: read
-    }),
-  });
+const stateOf = (resourceID: string): Access => {
+  const row = (readRoleToResource.value?.data ?? []).find(
+    (e: any) => e.resourceID === resourceID && e.roleID === refClickRoleID.value
+  );
+  if (!row) return "none";
+  if (row.granted) return "write";
+  return row.read ? "read" : "none";
+};
 
-  if (error.value?.statusCode) {
-    PopUPPermission.value.closeOffCanvas();
-    toast.error({
-      message: "មិនឈោកជ័យ",
+/** Super Admin's grid is fixed at full access — see the endpoint for why. */
+const editingSuperAdmin = computed(() =>
+  globalData.value?.data?.find((r: any) => r.id === refClickRoleID.value)?.name === "Super Admin"
+);
+
+const saving = ref<string | null>(null);
+
+const setAccess = async (resourceID: string, next: Access) => {
+  if (readOnly || editingSuperAdmin.value) return;
+  saving.value = resourceID;
+  try {
+    // $fetch from a click handler, and the grid is refetched rather than
+    // patched locally so what is on screen is what the server stored.
+    await $fetch("/api/role/updateRoleToResource", {
+      method: "POST",
+      body: {
+        roleID: refClickRoleID.value,
+        resourceID,
+        granted: next === "write",
+        read: next !== "none",
+      },
     });
+    await refresh();
+  } catch (e: any) {
+    toast.error({ message: apiErrorMessage(e, t("message.notSaved")) });
+    await refresh();
+  } finally {
+    saving.value = null;
   }
-  //  else {
-  //   toast.success({
-  //     message: "ជោកជ័យ",
-  //   });
-  // }
 }
 
-const { data: readRoleToResource, refresh } = await useFetch(
-  "/api/role/getRoleToResource",
-  {
-    method: "POST",
-    body: JSON.stringify({
-      //@ts-ignored
-      userID: userDataAuth.value?.sub
-    }),
-  }
-);
+const { data: readRoleToResource, refresh } = await useFetch<any>("/api/role/getRoleToResource");
 
 </script>
 
@@ -378,84 +412,95 @@ const { data: readRoleToResource, refresh } = await useFetch(
           refClickRoleID)?.name}} </span></template>
       <div class="p-4 overflow-auto font-[battambang]">
         <div>
-          <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-            <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-              <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                <tr>
-                  <th scope="col" class="px-6 py-3 text-sm md:text-md lg:text-lg">
-                    ព័ត៌មានលម្អិតអំពីការអនុញ្ញាត
-                  </th>
-                  <th scope="col" class="px-6 py-3 text-sm md:text-md lg:text-lg text-center">
-                    អនុញ្ញាត
-                  </th>
-                  <th scope="col" class="px-6 py-3 text-sm md:text-md lg:text-lg text-center">
-                    បានត្រឹមមើល
-                  </th>
-                  <th scope="col" class="px-6 py-3 text-sm md:text-md lg:text-lg text-center">
-                    មិនអនុញ្ញាត
-                  </th>
+          <!-- Locked, with the reason said out loud. The permission screen is
+               itself a permission: a Super Admin who denied themselves `role`
+               could not grant it back, and no other role may. -->
+          <div v-if="editingSuperAdmin"
+            class="mb-4 flex items-start gap-2 rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
+            <TwFeather type="lock" :size="18" class="mt-0.5 shrink-0" />
+            <span>សិទ្ធិរបស់ Super Admin ត្រូវបានកំណត់ជាការអនុញ្ញាតពេញលេញ ហើយមិនអាចកែបានទេ។</span>
+          </div>
 
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(item, index) in resource" :key="item?.id" :class="index % 2 == 0
-                  ? 'bg-white border-b dark:bg-gray-900 dark:border-gray-700'
-                  : 'border-b bg-gray-50 dark:bg-gray-800 dark:border-gray-700'
-                  ">
-                  <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                    {{ item?.name }}
-                  </th>
-                  <td class="px-6 py-4 text-center">
-                    <URadio :name="'bordered-checkbox' + item?.id" @click="grantedResourceToRole(item?.id, true, true)"
-                      :checked="
-                        //@ts-ignore
-                        readRoleToResource?.data?.find(
-                          (e: any) =>
-                            e.resourceID == item?.id &&
-                            refClickRoleID == e.roleID
-                          //@ts-ignore                        
-                        )?.granted && readRoleToResource?.data?.find(
-                          (e: any) =>
-                            e.resourceID == item?.id &&
-                            refClickRoleID == e.roleID
-                        )?.read
-                        " />
-                  </td>
-                  <td class="px-6 py-4 text-center">
-                    <URadio :name="'bordered-checkbox' + item?.id" @click="grantedResourceToRole(item?.id, false, true)"
-                      :checked="
-                        //@ts-ignore
-                        !readRoleToResource?.data?.find(
-                          (e: any) =>
-                            e.resourceID == item?.id &&
-                            refClickRoleID == e.roleID
-                          //@ts-ignore              
-                        )?.granted && readRoleToResource?.data?.find(
-                          (e: any) =>
-                            e.resourceID == item?.id &&
-                            refClickRoleID == e.roleID
-                        )?.read
-                        " />
-                  </td>
-                  <td class="text-center ">
-                    <URadio :name="'bordered-checkbox' + item?.id"
-                      @click="grantedResourceToRole(item?.id, false, false)" :checked="
-                        //@ts-ignore
-                        !readRoleToResource?.data?.find(
-                          (e: any) =>
-                            e.resourceID == item?.id &&
-                            refClickRoleID == e.roleID
-                          //@ts-ignore               
-                        )?.granted && !readRoleToResource?.data?.find(
-                          (e: any) =>
-                            e.resourceID == item?.id &&
-                            refClickRoleID == e.roleID
-                        )?.read
-                        " />
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+          <div class="space-y-5">
+            <section v-for="group in groupedResources" :key="group.key"
+              class="overflow-hidden rounded-lg border dark:border-gray-700">
+              <h4 class="bg-gray-50 px-4 py-2 font-[Moul] text-primary dark:bg-gray-900/50">
+                {{ group.label }}
+              </h4>
+              <table class="w-full text-left text-sm">
+                <thead class="border-b text-xs text-gray-500 dark:border-gray-700 dark:text-gray-400">
+                  <tr>
+                    <th class="px-4 py-2 font-normal">ព័ត៌មានលម្អិតអំពីការអនុញ្ញាត</th>
+                    <th class="w-28 px-2 py-2 text-center font-normal">អនុញ្ញាត</th>
+                    <th class="w-28 px-2 py-2 text-center font-normal">បានត្រឹមមើល</th>
+                    <th class="w-28 px-2 py-2 text-center font-normal">មិនអនុញ្ញាត</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                  <tr v-for="item in group.rows" :key="item.id"
+                    :class="saving === item.id ? 'opacity-50' : ''">
+                    <td class="px-4 py-2.5 text-gray-800 dark:text-gray-100">
+                      {{ item.name }}
+                      <!-- A page that only displays cannot be "write", so the
+                           option is not offered rather than offered and ignored. -->
+                      <span v-if="item.readOnlyPage" class="ml-1 text-xs text-gray-400">
+                        (មើលតែប៉ុណ្ណោះ)
+                      </span>
+                    </td>
+                    <td class="px-2 py-2.5 text-center">
+                      <URadio v-if="!item.readOnlyPage" :name="`acc-${item.id}`"
+                        :checked="stateOf(item.id) === 'write'"
+                        :disabled="readOnly || editingSuperAdmin || saving === item.id"
+                        @change="setAccess(item.id, 'write')" />
+                      <span v-else class="text-gray-300 dark:text-gray-600">—</span>
+                    </td>
+                    <td class="px-2 py-2.5 text-center">
+                      <URadio :name="`acc-${item.id}`" :checked="stateOf(item.id) === 'read'"
+                        :disabled="readOnly || editingSuperAdmin || saving === item.id"
+                        @change="setAccess(item.id, 'read')" />
+                    </td>
+                    <td class="px-2 py-2.5 text-center">
+                      <URadio :name="`acc-${item.id}`" :checked="stateOf(item.id) === 'none'"
+                        :disabled="readOnly || editingSuperAdmin || saving === item.id"
+                        @change="setAccess(item.id, 'none')" />
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+
+            <!-- Not pages. A Resources row whose frontEndURL is a role id means
+                 "may hand out this role", which is what stops an Admin creating
+                 a Super Admin. Shown apart so it is not read as a screen. -->
+            <section v-if="roleGates.length" class="overflow-hidden rounded-lg border dark:border-gray-700">
+              <h4 class="bg-gray-50 px-4 py-2 font-[Moul] text-primary dark:bg-gray-900/50">
+                សិទ្ធិផ្តល់តួនាទី
+              </h4>
+              <table class="w-full text-left text-sm">
+                <thead class="border-b text-xs text-gray-500 dark:border-gray-700 dark:text-gray-400">
+                  <tr>
+                    <th class="px-4 py-2 font-normal">តួនាទីដែលអាចផ្តល់ឲ្យបាន</th>
+                    <th class="w-28 px-2 py-2 text-center font-normal">អនុញ្ញាត</th>
+                    <th class="w-28 px-2 py-2 text-center font-normal">មិនអនុញ្ញាត</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                  <tr v-for="gate in roleGates" :key="gate.id" :class="saving === gate.id ? 'opacity-50' : ''">
+                    <td class="px-4 py-2.5 text-gray-800 dark:text-gray-100">{{ gate.name }}</td>
+                    <td class="px-2 py-2.5 text-center">
+                      <URadio :name="`gate-${gate.id}`" :checked="stateOf(gate.id) === 'write'"
+                        :disabled="readOnly || editingSuperAdmin || saving === gate.id"
+                        @change="setAccess(gate.id, 'write')" />
+                    </td>
+                    <td class="px-2 py-2.5 text-center">
+                      <URadio :name="`gate-${gate.id}`" :checked="stateOf(gate.id) !== 'write'"
+                        :disabled="readOnly || editingSuperAdmin || saving === gate.id"
+                        @change="setAccess(gate.id, 'none')" />
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
           </div>
         </div>
       </div>

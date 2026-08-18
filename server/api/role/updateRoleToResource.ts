@@ -9,11 +9,28 @@
  * because no other role may, and there would otherwise be no way back from a
  * mistake.
  */
+import { SUPER_ADMIN_ROLE } from "../../utils/roleGuard";
+
 export default eventHandler(async (event) => {
   const caller = await requireAuth(event);
   const body = await readBody(event);
 
   await assertMayAdministerRole(event, caller, body?.roleID, { allowSelf: true });
+
+  // Super Admin's grid is fixed at full access.
+  //
+  // Not paternalism: the permission screen is itself a permission. A Super Admin
+  // who denies themselves `role` cannot grant it back, and no other role may —
+  // the system would be left with no account able to administer it and no way to
+  // recover short of editing the database.
+  const target = await event.context.prisma.role.findUnique({
+    where: { id: body?.roleID },
+    select: { name: true },
+  });
+  if (target?.name === SUPER_ADMIN_ROLE) {
+    setResponseStatus(event, 403);
+    return { error: encodeURI("សិទ្ធិរបស់ Super Admin មិនអាចកែបានទេ") };
+  }
 
   const granted = body?.granted === true;
   // Write implies read: a cell that can be edited can be seen, and storing the
