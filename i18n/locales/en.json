@@ -254,5 +254,10 @@
     "centres": "Centres",
     "clients": "Clients",
     "inbox": "Inbox"
+  },
+  "upload": {
+    "maxPerFile": "max {mb}MB per file",
+    "tooLarge": "Files too large: {files}",
+    "tooMany": "Too many files — {max} at a time."
   }
 }

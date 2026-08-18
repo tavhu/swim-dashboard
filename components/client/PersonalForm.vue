@@ -760,7 +760,7 @@ watch(() => formData.communeBA, (newCommune) => {
                  how every other form reports it. -->
             <div class="flex items-start justify-between gap-4">
                 <h2 class="text-2xl font-[Moul] text-primary">
-                    {{ prop.id ? 'កែសម្រួលសំណុំឯកសារអតិថិជន' : 'ចុះឈ្មោះអតិថិជន' }}
+                    {{ prop.id ? tr('កែសម្រួលសំណុំឯកសារអតិថិជន') : tr('ចុះឈ្មោះអតិថិជន') }}
                 </h2>
                 <NuxtLink :to="prop.id ? `/client/id/${prop.id}` : '/client'">
                     <UButton color="gray" size="xl" type="button">
@@ -772,13 +772,13 @@ watch(() => formData.communeBA, (newCommune) => {
 
             <p v-if="readOnly"
                 class="mb-4 rounded-lg bg-amber-50 px-4 py-3 text-base text-amber-800 dark:bg-amber-950/40 dark:text-amber-300">
-                អ្នកគ្មានសិទ្ធិកែប្រែទម្រង់នេះទេ។
+                {{ tr('អ្នកគ្មានសិទ្ធិកែប្រែទម្រង់នេះទេ។') }}
             </p>
 
             <TwForm :name="formName" class="grid grid-cols-12 items-start gap-4" :class="{ 'tw-shake': isError }"
                 :rules="formRules" @submit="submit">
                 <section class="col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800">
-                    <h3 class="text-xl font-[Moul] text-primary">ព័ត៌មានលំអិត</h3>
+                    <h3 class="text-xl font-[Moul] text-primary">{{ tr('ព័ត៌មានលំអិត') }}</h3>
                     <hr class="my-2 border dark:border-gray-700" />
                     <div class="grid grid-cols-12 gap-4">
                 <!-- <div class="col-span-12">
@@ -786,14 +786,14 @@ watch(() => formData.communeBA, (newCommune) => {
                         formData }}
                 </div> -->
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput label="លេខសំគាល់" name="ReadableCode" v-model="formData.ReadableCode" disabled
-                        :placeholder="prop.id ? '' : 'បង្កើតដោយប្រព័ន្ធ'" type="text" />
+                    <TwInput :label="tr('លេខសំគាល់')" name="ReadableCode" v-model="formData.ReadableCode" disabled
+                        :placeholder="prop.id ? '' : tr('បង្កើតដោយប្រព័ន្ធ')" type="text" />
                     <CustomErrorMessage name="ReadableCode" />
                 </div>
                 <div class="col-span-12">
-                    <TwSelect label="មជ្ឈមណ្ឌលព្យាបាលនិងស្តារនីតិសម្បទា" name="serviceCenterID"
+                    <TwSelect :label="tr('មជ្ឈមណ្ឌលព្យាបាលនិងស្តារនីតិសម្បទា')" name="serviceCenterID"
                         v-model="formData.serviceCenterID" required :items="serviceCenterList"
-                        placeholder="សូមជ្រើសរើស" />
+                        :placeholder="tr('សូមជ្រើសរើស')" />
                     <CustomErrorMessage name="serviceCenterID" />
                 </div>
                 <!-- The photo sits beside the two identifiers rather than under an
@@ -803,7 +803,7 @@ watch(() => formData.communeBA, (newCommune) => {
                      "SELECT OR DROP FILE HERE" in English while ទម្រង់ទី២-៥ said it
                      in Khmer. -->
                 <div class="col-span-12 lg:col-span-6">
-                    <span class="text-sm text-gray-500 dark:text-gray-400">រូបថត ៤x៦</span>
+                    <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('រូបថត ៤x៦') }}</span>
                     <div class="mt-1 flex items-start gap-4">
                         <img v-if="formData.photo && !(files?.length > 0)"
                             :src="config.public.origin + '/' + formData.photo" alt=""
@@ -819,83 +819,83 @@ watch(() => formData.communeBA, (newCommune) => {
                 </section>
 
                 <section class="col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800">
-                    <h3 class="text-xl font-[Moul] text-primary">I. ព័ត៌មាន​ អំពីអតិថិជន និងគ្រួសារ</h3>
+                    <h3 class="text-xl font-[Moul] text-primary">{{ tr('I. ព័ត៌មាន​ អំពីអតិថិជន និងគ្រួសារ') }}</h3>
                     <hr class="my-2 border dark:border-gray-700" />
                     <div class="grid grid-cols-12 gap-4">
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput label="១.នាមត្រកូលនិងនាមខ្លួន" name="fullNameKH" v-model="formData.fullNameKH"
-                        placeholder="នាមត្រកូលនិងនាមខ្លួន" type="text" />
+                    <TwInput :label="tr('១.នាមត្រកូលនិងនាមខ្លួន')" name="fullNameKH" v-model="formData.fullNameKH"
+                        :placeholder="tr('នាមត្រកូលនិងនាមខ្លួន')" type="text" />
                     <CustomErrorMessage name="fullNameKH" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput label="ឈ្មោះហៅក្រៅ" name="nickName" v-model="formData.nickName" placeholder="ឈ្មោះហៅក្រៅ"
+                    <TwInput :label="tr('ឈ្មោះហៅក្រៅ')" name="nickName" v-model="formData.nickName" :placeholder="tr('ឈ្មោះហៅក្រៅ')"
                         type="text" />
                     <CustomErrorMessage name="nickName" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwSelect label="ភេទ" name="Gender" v-model="formData.Gender" required
+                    <TwSelect :label="tr('ភេទ')" name="Gender" v-model="formData.Gender" required
                         :items="[{ value: 'ប្រុស', label: tr('ប្រុស') }, { value: 'ស្រី', label: tr('ស្រី') }, { value: 'ផ្សេងៗ', label: tr('ផ្សេងៗ') }]"
-                        placeholder="សូមជ្រើសរើស" />
+                        :placeholder="tr('សូមជ្រើសរើស')" />
                     <CustomErrorMessage name="Gender" />
                 </div>
                 <label class="col-span-12 block lg:col-span-6">
-                    <span class="text-sm text-gray-500 dark:text-gray-400">ថ្ងៃខែឆ្នាំកំណើត</span>
+                    <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('ថ្ងៃខែឆ្នាំកំណើត') }}</span>
                     <Datepicker v-model="formData.DOB" :disabled="readOnly" :maxDate="new Date()"
                         :enableTimePicker="false" format="dd/MM/yyyy" autoApply class="mt-1" />
                 </label>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput label="ទីកន្លែងកំណើត" name="POB" v-model="formData.POB" placeholder="ទីកន្លែងកំណើត"
+                    <TwInput :label="tr('ទីកន្លែងកំណើត')" name="POB" v-model="formData.POB" :placeholder="tr('ទីកន្លែងកំណើត')"
                         type="text" />
                     <CustomErrorMessage name="POB" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput label="កំរិតវប្បធម៌ថ្នាកទី" name="EducationLevel" v-model="formData.EducationLevel"
-                        placeholder="កំរិតវប្បធម៌ថ្នាកទី" type="text" />
+                    <TwInput :label="tr('កំរិតវប្បធម៌ថ្នាកទី')" name="EducationLevel" v-model="formData.EducationLevel"
+                        :placeholder="tr('កំរិតវប្បធម៌ថ្នាកទី')" type="text" />
                     <CustomErrorMessage name="EducationLevel" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput label="មុខរបរ (បើមាន)" name="Occupation" v-model="formData.Occupation"
-                        placeholder="មុខរបរ (បើមាន)" type="text" />
+                    <TwInput :label="tr('មុខរបរ (បើមាន)')" name="Occupation" v-model="formData.Occupation"
+                        :placeholder="tr('មុខរបរ (បើមាន)')" type="text" />
                     <CustomErrorMessage name="Occupation" />
                 </div>
                 <label class="col-span-12 block lg:col-span-6">
-                    <span class="text-sm text-gray-500 dark:text-gray-400">កាលបរិច្ឆេទចូលមជ្ឈមណ្ឌល</span>
+                    <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('កាលបរិច្ឆេទចូលមជ្ឈមណ្ឌល') }}</span>
                     <Datepicker v-model="formData.DateArrested" :disabled="readOnly" :enableTimePicker="false"
                         format="dd/MM/yyyy" autoApply class="mt-1" />
                 </label>
                 <!-- START: Corrected Address Fields -->
                     <div class="col-span-12">
-                        <h4 class="mt-2 text-lg font-[Moul] text-primary">អាសយដ្ឋានបច្ចុប្បន្ន</h4>
+                        <h4 class="mt-2 text-lg font-[Moul] text-primary">{{ tr('អាសយដ្ឋានបច្ចុប្បន្ន') }}</h4>
                         <hr class="my-2 border dark:border-gray-700" />
                     </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput label="ផ្ទះលេខ" name="homeBA" v-model="formData.homeBA" placeholder="ផ្ទះលេខ"
+                    <TwInput :label="tr('ផ្ទះលេខ')" name="homeBA" v-model="formData.homeBA" :placeholder="tr('ផ្ទះលេខ')"
                         type="text" />
                     <CustomErrorMessage name="homeBA" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput label="ផ្លូវលេខ" name="StreetBA" v-model="formData.StreetBA" placeholder="ផ្លូវលេខ"
+                    <TwInput :label="tr('ផ្លូវលេខ')" name="StreetBA" v-model="formData.StreetBA" :placeholder="tr('ផ្លូវលេខ')"
                         type="text" />
                     <CustomErrorMessage name="StreetBA" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwSelect :disabled="readOnly" label="រាជធានី/ខេត្ត" name="cityProBA" v-model="formData.cityProBA"
-                        :items="provinceList" placeholder="សូមជ្រើសរើស" required />
+                    <TwSelect :disabled="readOnly" :label="tr('រាជធានី/ខេត្ត')" name="cityProBA" v-model="formData.cityProBA"
+                        :items="provinceList" :placeholder="tr('សូមជ្រើសរើស')" required />
                     <CustomErrorMessage name="cityProBA" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwSelect :disabled="readOnly || !formData.cityProBA" label="ស្រុក-ខណ្ឌ" name="districtBA"
-                        v-model="formData.districtBA" :items="districtList" placeholder="សូមជ្រើសរើស" required />
+                    <TwSelect :disabled="readOnly || !formData.cityProBA" :label="tr('ស្រុក-ខណ្ឌ')" name="districtBA"
+                        v-model="formData.districtBA" :items="districtList" :placeholder="tr('សូមជ្រើសរើស')" required />
                     <CustomErrorMessage name="districtBA" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwSelect :disabled="readOnly || !formData.districtBA" label="ឃុំ/សង្កាត់" name="communeBA"
-                        v-model="formData.communeBA" :items="communeList" placeholder="សូមជ្រើសរើស" required />
+                    <TwSelect :disabled="readOnly || !formData.districtBA" :label="tr('ឃុំ/សង្កាត់')" name="communeBA"
+                        v-model="formData.communeBA" :items="communeList" :placeholder="tr('សូមជ្រើសរើស')" required />
                     <CustomErrorMessage name="communeBA" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwSelect :disabled="readOnly || !formData.communeBA" label="ភូមិ-ក្រុម" name="villageBA"
-                        v-model="formData.villageBA" :items="villageList" placeholder="សូមជ្រើសរើស" required />
+                    <TwSelect :disabled="readOnly || !formData.communeBA" :label="tr('ភូមិ-ក្រុម')" name="villageBA"
+                        v-model="formData.villageBA" :items="villageList" :placeholder="tr('សូមជ្រើសរើស')" required />
                     <CustomErrorMessage name="villageBA" />
                 </div>
 
@@ -905,177 +905,177 @@ watch(() => formData.communeBA, (newCommune) => {
                 </section>
 
                 <section class="col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800">
-                    <h3 class="text-xl font-[Moul] text-primary">២. ស្ថានភាពគ្រួសាររបស់អតិថិជន</h3>
+                    <h3 class="text-xl font-[Moul] text-primary">{{ tr('២. ស្ថានភាពគ្រួសាររបស់អតិថិជន') }}</h3>
                     <hr class="my-2 border dark:border-gray-700" />
                     <div class="grid grid-cols-12 gap-4">
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput label="ឈ្មោះឪពុក-អ្នកថែទាំ" name="FatherOrChaperoneName"
-                        v-model="formData.FatherOrChaperoneName" placeholder="ឈ្មោះឪពុក-អ្នកថែទាំ" type="text" />
+                    <TwInput :label="tr('ឈ្មោះឪពុក-អ្នកថែទាំ')" name="FatherOrChaperoneName"
+                        v-model="formData.FatherOrChaperoneName" :placeholder="tr('ឈ្មោះឪពុក-អ្នកថែទាំ')" type="text" />
                     <CustomErrorMessage name="FatherOrChaperoneName" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput label="ឈ្មោះម្តាយ-អ្នកថែទាំ" name="MotherOrChaperoneName"
-                        v-model="formData.MotherOrChaperoneName" placeholder="ឈ្មោះម្តាយ-អ្នកថែទាំ" type="text" />
+                    <TwInput :label="tr('ឈ្មោះម្តាយ-អ្នកថែទាំ')" name="MotherOrChaperoneName"
+                        v-model="formData.MotherOrChaperoneName" :placeholder="tr('ឈ្មោះម្តាយ-អ្នកថែទាំ')" type="text" />
                     <CustomErrorMessage name="MotherOrChaperoneName" />
                 </div>
                 <label class="col-span-12 block lg:col-span-6">
-                    <span class="text-sm text-gray-500 dark:text-gray-400">ថ្ងៃខែឆ្នាំកំណើត (ឪពុក-អ្នកថែទាំ)</span>
+                    <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('ថ្ងៃខែឆ្នាំកំណើត (ឪពុក-អ្នកថែទាំ)') }}</span>
                     <Datepicker v-model="formData.FOCDOB" :disabled="readOnly" :maxDate="new Date()"
                         :enableTimePicker="false" format="dd/MM/yyyy" autoApply class="mt-1" />
                 </label>
                 <label class="col-span-12 block lg:col-span-6">
-                    <span class="text-sm text-gray-500 dark:text-gray-400">ថ្ងៃខែឆ្នាំកំណើត (ម្តាយ-អ្នកថែទាំ)</span>
+                    <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('ថ្ងៃខែឆ្នាំកំណើត (ម្តាយ-អ្នកថែទាំ)') }}</span>
                     <Datepicker v-model="formData.MOCDOB" :disabled="readOnly" :maxDate="new Date()"
                         :enableTimePicker="false" format="dd/MM/yyyy" autoApply class="mt-1" />
                 </label>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput label="អាពាហ៍ពិពាហ៍" name="FOCMarried" v-model="formData.FOCMarried"
-                        placeholder="អាពាហ៍ពិពាហ៍" type="text" />
+                    <TwInput :label="tr('អាពាហ៍ពិពាហ៍')" name="FOCMarried" v-model="formData.FOCMarried"
+                        :placeholder="tr('អាពាហ៍ពិពាហ៍')" type="text" />
                     <CustomErrorMessage name="FOCMarried" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput label="អាពាហ៍ពិពាហ៍" name="MOCMarried" v-model="formData.MOCMarried"
-                        placeholder="អាពាហ៍ពិពាហ៍" type="text" />
+                    <TwInput :label="tr('អាពាហ៍ពិពាហ៍')" name="MOCMarried" v-model="formData.MOCMarried"
+                        :placeholder="tr('អាពាហ៍ពិពាហ៍')" type="text" />
                     <CustomErrorMessage name="MOCMarried" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput label="លេខទូរស័ព្ទ" name="FOCTel" v-model="formData.FOCTel" placeholder="លេខទូរស័ព្ទ"
+                    <TwInput :label="tr('លេខទូរស័ព្ទ')" name="FOCTel" v-model="formData.FOCTel" :placeholder="tr('លេខទូរស័ព្ទ')"
                         type="text" />
                     <CustomErrorMessage name="FOCTel" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput label="លេខទូរស័ព្ទ" name="FOCTelandAddress" v-model="formData.MOCTel"
-                        placeholder="លេខទូរស័ព្ទ" type="text" />
+                    <TwInput :label="tr('លេខទូរស័ព្ទ')" name="FOCTelandAddress" v-model="formData.MOCTel"
+                        :placeholder="tr('លេខទូរស័ព្ទ')" type="text" />
                     <CustomErrorMessage name="FOCTelandAddress" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput label="អាសយដ្ឋាន" name="FOCTel" v-model="formData.FOCTelandAddress" placeholder="អាសយដ្ឋាន"
+                    <TwInput :label="tr('អាសយដ្ឋាន')" name="FOCTel" v-model="formData.FOCTelandAddress" :placeholder="tr('អាសយដ្ឋាន')"
                         type="text" />
                     <CustomErrorMessage name="FOCTel" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput label="អាសយដ្ឋាន" name="MOCTelandAddress" v-model="formData.MOCTelandAddress"
-                        placeholder="អាសយដ្ឋាន" type="text" />
+                    <TwInput :label="tr('អាសយដ្ឋាន')" name="MOCTelandAddress" v-model="formData.MOCTelandAddress"
+                        :placeholder="tr('អាសយដ្ឋាន')" type="text" />
                     <CustomErrorMessage name="MOCTelandAddress" />
                 </div>
                     </div>
                 </section>
 
                 <section class="col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800">
-                    <h3 class="text-xl font-[Moul] text-primary">៣. សេចក្តីពណ៌នាអំពីអតិថិជន និងទំនាក់ទំនងជាមួយបុគ្គលនានា</h3>
+                    <h3 class="text-xl font-[Moul] text-primary">{{ tr('៣. សេចក្តីពណ៌នាអំពីអតិថិជន និងទំនាក់ទំនងជាមួយបុគ្គលនានា') }}</h3>
                     <hr class="my-2 border dark:border-gray-700" />
                     <div class="grid grid-cols-12 gap-4">
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput label="សមាជិកគ្រួសារដ៏ទៃផ្សេងទៀត" name="OtherFamilyMembers"
-                        v-model="formData.OtherFamilyMembers" placeholder="សមាជិកគ្រួសារដ៏ទៃផ្សេងទៀត" type="text" />
+                    <TwInput :label="tr('សមាជិកគ្រួសារដ៏ទៃផ្សេងទៀត')" name="OtherFamilyMembers"
+                        v-model="formData.OtherFamilyMembers" :placeholder="tr('សមាជិកគ្រួសារដ៏ទៃផ្សេងទៀត')" type="text" />
                     <CustomErrorMessage name="OtherFamilyMembers" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput label="មិត្តភក្តជិតស្និត" name="CloseFriend" v-model="formData.CloseFriend"
-                        placeholder="មិត្តភក្តជិតស្និត" type="text" />
+                    <TwInput :label="tr('មិត្តភក្តជិតស្និត')" name="CloseFriend" v-model="formData.CloseFriend"
+                        :placeholder="tr('មិត្តភក្តជិតស្និត')" type="text" />
                     <CustomErrorMessage name="CloseFriend" />
                 </div>
                     </div>
                 </section>
 
                 <section class="col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800">
-                    <h3 class="text-xl font-[Moul] text-primary">II. ស្ថានភាពរបស់អតិថិជន</h3>
+                    <h3 class="text-xl font-[Moul] text-primary">{{ tr('II. ស្ថានភាពរបស់អតិថិជន') }}</h3>
                     <hr class="my-2 border dark:border-gray-700" />
                     <div class="grid grid-cols-12 gap-4">
                 <div class="col-span-12 ">
-                    <TwInput label="១.អតិថិជនត្រូវបានបញ្ជូនដោយ" name="ClientSendBy" v-model="formData.ClientSendBy"
-                        placeholder="អតិថិជនត្រូវបានបញ្ជូនដោយ" type="text" />
+                    <TwInput :label="tr('១.អតិថិជនត្រូវបានបញ្ជូនដោយ')" name="ClientSendBy" v-model="formData.ClientSendBy"
+                        :placeholder="tr('អតិថិជនត្រូវបានបញ្ជូនដោយ')" type="text" />
                     <CustomErrorMessage name="ClientSendBy" />
                 </div>
                 <div class="col-span-12 ">
-                    <TwInput label="២.បញ្ហាប្រឈមដោយសំខាន់ៗ" name="ImportantChallenge"
-                        v-model="formData.ImportantChallenge" placeholder="បញ្ហាប្រឈមដោយសំខាន់ៗ" type="text" />
+                    <TwInput :label="tr('២.បញ្ហាប្រឈមដោយសំខាន់ៗ')" name="ImportantChallenge"
+                        v-model="formData.ImportantChallenge" :placeholder="tr('បញ្ហាប្រឈមដោយសំខាន់ៗ')" type="text" />
                     <CustomErrorMessage name="ImportantChallenge" />
                 </div>
                 <div class="col-span-12 ">
-                    <TwInput label="៣.សកម្មភាពធ្លាប់បានប្រព្រឹត្ត" name="PastActivities"
-                        v-model="formData.PastActivities" placeholder="សកម្មភាពធ្លាប់បានប្រព្រឹត្ត" type="text" />
+                    <TwInput :label="tr('៣.សកម្មភាពធ្លាប់បានប្រព្រឹត្ត')" name="PastActivities"
+                        v-model="formData.PastActivities" :placeholder="tr('សកម្មភាពធ្លាប់បានប្រព្រឹត្ត')" type="text" />
                     <CustomErrorMessage name="PastActivities" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwSelect label="ហេតុដែលនាំមានការប្រើប្រាស់គ្រឿងញៀន" name="ReasonUseDrug"
+                    <TwSelect :label="tr('ហេតុដែលនាំមានការប្រើប្រាស់គ្រឿងញៀន')" name="ReasonUseDrug"
                         v-model="formData.ReasonUseDrug" required :items="[{ value: 'Fun', label: tr('ដើម្បីសប្បាយ') }, { value: 'followFriend', label: tr('ធ្វើតាមមិត្តភក្តិ') },
                         { value: 'forceUse', label: tr('មានគេបង្ខំ') }, { value: 'try', label: tr('ចង់សាក') }, { value: 'familyBroken', label: tr('បែកបាក់គ្រួសារ') },
                         { value: 'other', label: tr('មូលហេតុផ្សេង') }
-                        ]" placeholder="សូមជ្រើសរើស" />
+                        ]" :placeholder="tr('សូមជ្រើសរើស')" />
                     <CustomErrorMessage name="ReasonUseDrug" />
                 </div>
                 <div v-if="formData.ReasonUseDrug == 'other'" class="col-span-12 lg:col-span-6">
-                    <TwInput label="មូលហេតុផ្សេង" name="ReasonUseDrugOther" required
-                        v-model="formData.ReasonUseDrugOther" placeholder="មូលហេតុផ្សេង" type="text" />
+                    <TwInput :label="tr('មូលហេតុផ្សេង')" name="ReasonUseDrugOther" required
+                        v-model="formData.ReasonUseDrugOther" :placeholder="tr('មូលហេតុផ្សេង')" type="text" />
                     <CustomErrorMessage name="ReasonUseDrugOther" />
                 </div>
                 <div class="col-span-12">
-                    <span class="text-sm text-gray-500 dark:text-gray-400">តើអ្នកដឹងទេថា អំពើដែលអ្នកធ្វើជាអំពើដែលនាំមកនូវគ្រោះថ្នាក់និងខុសច្បាប់</span>
+                    <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('តើអ្នកដឹងទេថា អំពើដែលអ្នកធ្វើជាអំពើដែលនាំមកនូវគ្រោះថ្នាក់និងខុសច្បាប់') }}</span>
                     <div class="mt-2 flex flex-wrap gap-x-6 gap-y-2">
                         <URadio v-for="(opt, index) of LegalConsequence" :key="index" v-model="formData.KnownLegalConsequence"
                             v-bind="opt" :disabled="readOnly" class="font-[Battambang]" />
                     </div>
                 </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwSelect label="ប្រភេទគ្រឿងញៀនធ្លាប់ប្រើប្រាស់" name="typeDrugUsed" v-model="formData.typeDrugUsed"
+                    <TwSelect :label="tr('ប្រភេទគ្រឿងញៀនធ្លាប់ប្រើប្រាស់')" name="typeDrugUsed" v-model="formData.typeDrugUsed"
                         required :items="[{ value: 'SmileGlue', label: tr('ហិតកាវ') }, { value: 'yama', label: tr('យ៉ាមា-យ៉ាបា') },
                         { value: 'heroin', label: tr('ហេរ៉ូអុីន') }, { value: 'cocain', label: tr('កូកាអុីន') }, { value: 'smoking', label: tr('ជក់បារី') },
                         { value: 'drinking', label: tr('ផឹកស្រា') }, { value: 'other', label: tr('ផ្សេង') }
-                        ]" placeholder="សូមជ្រើសរើស" />
+                        ]" :placeholder="tr('សូមជ្រើសរើស')" />
                     <CustomErrorMessage name="typeDrugUsed" />
                 </div>
                 <div v-if="formData.typeDrugUsed == 'other'" class="col-span-12 lg:col-span-6">
-                    <TwInput label="ប្រភេទគ្រឿងញៀនធ្លាប់ប្រើប្រាស់ផ្សេង" name="typeDrugUsedOther" required
-                        v-model="formData.typeDrugUsedOther" placeholder="ប្រភេទគ្រឿងញៀនធ្លាប់ប្រើប្រាស់ផ្សេង"
+                    <TwInput :label="tr('ប្រភេទគ្រឿងញៀនធ្លាប់ប្រើប្រាស់ផ្សេង')" name="typeDrugUsedOther" required
+                        v-model="formData.typeDrugUsedOther" :placeholder="tr('ប្រភេទគ្រឿងញៀនធ្លាប់ប្រើប្រាស់ផ្សេង')"
                         type="text" />
                     <CustomErrorMessage name="typeDrugUsedOther" />
                 </div>
                 <div class="col-span-12 lg:col-span-4">
-                    <TwInput label="បរិមាណប្រើប្រាស់" name="DrugVolumeUsed" required v-model="formData.DrugVolumeUsed"
-                        placeholder="បរិមាណប្រើប្រាស់" type="text" />
+                    <TwInput :label="tr('បរិមាណប្រើប្រាស់')" name="DrugVolumeUsed" required v-model="formData.DrugVolumeUsed"
+                        :placeholder="tr('បរិមាណប្រើប្រាស់')" type="text" />
                     <CustomErrorMessage name="DrugVolumeUsed" />
                 </div>
                 <div class="col-span-12 lg:col-span-4">
-                    <TwInput label="ភាពញឹកញាប់" name="DrugRequecyUse" required v-model="formData.DrugRequecyUse"
-                        placeholder="ភាពញឹកញាប់" type="text" />
+                    <TwInput :label="tr('ភាពញឹកញាប់')" name="DrugRequecyUse" required v-model="formData.DrugRequecyUse"
+                        :placeholder="tr('ភាពញឹកញាប់')" type="text" />
                     <CustomErrorMessage name="DrugRequecyUse" />
                 </div>
                 <div class="col-span-12 lg:col-span-4">
-                    <TwInput label="រយៈពេលប្រើប្រាស់" name="DrugDurationUse" required v-model="formData.DrugDurationUse"
-                        placeholder="រយៈពេលប្រើប្រាស់" type="text" />
+                    <TwInput :label="tr('រយៈពេលប្រើប្រាស់')" name="DrugDurationUse" required v-model="formData.DrugDurationUse"
+                        :placeholder="tr('រយៈពេលប្រើប្រាស់')" type="text" />
                     <CustomErrorMessage name="DrugDurationUse" />
                 </div>
                 <div class="col-span-12">
-                    <span class="text-sm text-gray-500 dark:text-gray-400">៥. បរិស្ថាននៃការរស់នៅ</span>
+                    <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('៥. បរិស្ថាននៃការរស់នៅ') }}</span>
                     <div class="mt-2 flex flex-wrap gap-x-6 gap-y-2">
                         <URadio v-for="(opt, index) of LivingSituationOption" :key="index" v-model="formData.LivingSituation"
                             v-bind="opt" :disabled="readOnly" class="font-[Battambang]" />
                     </div>
                 </div>
                 <div class="col-span-12">
-                    <h4 class="mt-2 text-lg font-[Moul] text-primary">៦. ការចូលមកស្នាក់នៅ</h4>
+                    <h4 class="mt-2 text-lg font-[Moul] text-primary">{{ tr('៦. ការចូលមកស្នាក់នៅ') }}</h4>
                     <hr class="my-2 border dark:border-gray-700" />
                     <p class="mb-3 text-base text-gray-600 dark:text-gray-300">
-                        តើអ្នកធ្លាប់បានរស់នៅក្នុងមជ្ឈមណ្ឌល ឬពន្ធនាគារណាខ្លះដែរឬទេ មុននឹងចូលមកមជ្ឈមណ្ឌលនេះ?
+                        {{ tr('តើអ្នកធ្លាប់បានរស់នៅក្នុងមជ្ឈមណ្ឌល ឬពន្ធនាគារណាខ្លះដែរឬទេ មុននឹងចូលមកមជ្ឈមណ្ឌលនេះ?') }}
                     </p>
                     <div class="space-y-3">
                         <div v-for="(child, index) in ClientServeHistory" :key="index"
                             class="grid grid-cols-1 items-end gap-3 rounded-lg border p-3 dark:border-gray-700 sm:grid-cols-12">
                             <div class="sm:col-span-1">
-                                <span class="text-sm text-gray-500 dark:text-gray-400">ល.រ</span>
+                                <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('ល.រ') }}</span>
                                 <p class="mt-1 h-10 text-base leading-10 text-gray-800 dark:text-gray-100">
                                     {{ index + 1 }}
                                 </p>
                             </div>
                             <label class="block sm:col-span-6">
-                                <span class="text-sm text-gray-500 dark:text-gray-400">ឈ្មោះមជ្ឈមណ្ឌល ឬពន្ធនាគារ</span>
+                                <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('ឈ្មោះមជ្ឈមណ្ឌល ឬពន្ធនាគារ') }}</span>
                                 <input v-model="child.nameCenterorPrison" :disabled="readOnly" type="text"
-                                    placeholder="ឈ្មោះមជ្ឈមណ្ឌល ឬពន្ធនាគារ"
+                                    :placeholder="tr('ឈ្មោះមជ្ឈមណ្ឌល ឬពន្ធនាគារ')"
                                     class="mt-1 h-10 w-full rounded border px-2 text-base dark:border-gray-700 dark:bg-gray-900" />
                             </label>
                             <label class="block sm:col-span-3">
-                                <span class="text-sm text-gray-500 dark:text-gray-400">ថ្ងៃខែ</span>
+                                <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('ថ្ងៃខែ') }}</span>
                                 <Datepicker v-model="child.DateTimeServed" :disabled="readOnly" :maxDate="new Date()"
                                     :enableTimePicker="false" format="dd/MM/yyyy" autoApply class="mt-1" />
                             </label>
@@ -1091,115 +1091,115 @@ watch(() => formData.communeBA, (newCommune) => {
                     <UButton color="gray" size="sm" type="button" class="mt-3" :disabled="readOnly"
                         @click="ClientServeHistory.push({ nameCenterorPrison: '', DateTimeServed: '' })">
                         <TwFeather type="plus" :size="16" class="mr-1" />
-                        <span>បន្ថែមមជ្ឈមណ្ឌល</span>
+                        <span>{{ tr('បន្ថែមមជ្ឈមណ្ឌល') }}</span>
                     </UButton>
                 </div>
                 <div class="col-span-12">
-                    <span class="text-sm text-gray-500 dark:text-gray-400">ធ្លាប់ចូលមជ្ឈមណ្ឌល ឬទទួលសេវាប្រហាក់ប្រហែលពីមុន</span>
+                    <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('ធ្លាប់ចូលមជ្ឈមណ្ឌល ឬទទួលសេវាប្រហាក់ប្រហែលពីមុន') }}</span>
                     <div class="mt-2 flex flex-wrap gap-x-6 gap-y-2">
                         <URadio v-for="(opt, index) of UsedtoRehabOption" :key="index" v-model="formData.UsedtoRehab"
                             v-bind="opt" :disabled="readOnly" class="font-[Battambang]" />
                     </div>
                 </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput label="តើអ្នកចូលមករស់នៅក្នុងមជ្ឈមណ្ឌលនេះលើកទីប៉ុន្មាន?" name="HowManyTimeHaveServed"
-                        required v-model="formData.HowManyTimeHaveServed" placeholder="ចំនួន" type="text" />
+                    <TwInput :label="tr('តើអ្នកចូលមករស់នៅក្នុងមជ្ឈមណ្ឌលនេះលើកទីប៉ុន្មាន?')" name="HowManyTimeHaveServed"
+                        required v-model="formData.HowManyTimeHaveServed" :placeholder="tr('ចំនួន')" type="text" />
                     <CustomErrorMessage name="HowManyTimeHaveServed" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput label="មូលហេតុនៃការនាំចូលមករស់នៅក្នុងមជ្ឈមណ្ឌល៖" name="ReasonComingtoCenter" required
-                        v-model="formData.ReasonComingtoCenter" placeholder="មូលហេតុ" type="text" />
+                    <TwInput :label="tr('មូលហេតុនៃការនាំចូលមករស់នៅក្នុងមជ្ឈមណ្ឌល៖')" name="ReasonComingtoCenter" required
+                        v-model="formData.ReasonComingtoCenter" :placeholder="tr('មូលហេតុ')" type="text" />
                     <CustomErrorMessage name="ReasonComingtoCenter" />
                 </div>
                     <div class="col-span-12">
-                        <h4 class="mt-2 text-lg font-[Moul] text-primary">៧. រៀបរាប់ត្រួសៗ អំពីសម្មភាព និងកាលវិភាគប្រចាំថ្ងៃរបស់អតិថិជន</h4>
+                        <h4 class="mt-2 text-lg font-[Moul] text-primary">{{ tr('៧. រៀបរាប់ត្រួសៗ អំពីសម្មភាព និងកាលវិភាគប្រចាំថ្ងៃរបស់អតិថិជន') }}</h4>
                         <hr class="my-2 border dark:border-gray-700" />
                     </div>
                 <div class="col-span-12">
-                    <TwTextarea label="សកម្មភាពនៅក្នុងមណ្ឌល" name="DailyActivitiesInCenter" required class="h-[5rem]"
+                    <TwTextarea :label="tr('សកម្មភាពនៅក្នុងមណ្ឌល')" name="DailyActivitiesInCenter" required class="h-[5rem]"
                         v-model="formData.DailyActivitiesInCenter" placeholder="" type="text" />
                     <CustomErrorMessage name="DailyActivitiesInCenter" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput label="សកម្មភាពនៅក្នុងមជ្ឈមណ្ឌល ដែលអតិថិជនចូលចិត្តបំផុត៖" name="ActivitiesThatClientLike"
+                    <TwInput :label="tr('សកម្មភាពនៅក្នុងមជ្ឈមណ្ឌល ដែលអតិថិជនចូលចិត្តបំផុត៖')" name="ActivitiesThatClientLike"
                         required v-model="formData.ActivitiesThatClientLike" placeholder="" type="text" />
                     <CustomErrorMessage name="ActivitiesThatClientLike" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput label="អតិថិជនមានទេពកោសល្យខាង" name="ClientTalent" required v-model="formData.ClientTalent"
+                    <TwInput :label="tr('អតិថិជនមានទេពកោសល្យខាង')" name="ClientTalent" required v-model="formData.ClientTalent"
                         placeholder="" type="text" />
                     <CustomErrorMessage name="ClientTalent" />
                 </div>
                     <div class="col-span-12">
-                        <h4 class="mt-2 text-lg font-[Moul] text-primary">៨. ការទំនាក់ទំនងរបស់អតិថិជនក្នុងមជ្ឈមណ្ឌល</h4>
+                        <h4 class="mt-2 text-lg font-[Moul] text-primary">{{ tr('៨. ការទំនាក់ទំនងរបស់អតិថិជនក្នុងមជ្ឈមណ្ឌល') }}</h4>
                         <hr class="my-2 border dark:border-gray-700" />
                     </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput label="មិត្តភក្តិ៖" name="RelationshipWithFriends" required
+                    <TwInput :label="tr('មិត្តភក្តិ៖')" name="RelationshipWithFriends" required
                         v-model="formData.RelationshipWithFriends" placeholder="" type="text" />
                     <CustomErrorMessage name="RelationshipWithFriends" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput label="បុគ្គលិក" name="RelationshipWithStaff" required
+                    <TwInput :label="tr('បុគ្គលិក')" name="RelationshipWithStaff" required
                         v-model="formData.RelationshipWithStaff" placeholder="" type="text" />
                     <CustomErrorMessage name="RelationshipWithStaff" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput label="គ្រូបណ្តុះបណ្តាល" name="RelationshipWithTeacher" required
+                    <TwInput :label="tr('គ្រូបណ្តុះបណ្តាល')" name="RelationshipWithTeacher" required
                         v-model="formData.RelationshipWithTeacher" placeholder="" type="text" />
                     <CustomErrorMessage name="RelationshipWithTeacher" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput label="អ្នកផ្សេងទៀត(សូមរៀបរាប់)" name="RelationshipWithOther" required
+                    <TwInput :label="tr('អ្នកផ្សេងទៀត(សូមរៀបរាប់)')" name="RelationshipWithOther" required
                         v-model="formData.RelationshipWithOther" placeholder="" type="text" />
                     <CustomErrorMessage name="RelationshipWithOther" />
                 </div>
                 <div class="col-span-12">
-                    <TwTextarea label="៩.កង្វល់ និងការភ័យខ្លាចរបស់អតិថិជនទាក់ទងនឹងអនាគតរបស់ខ្លួន៖"
+                    <TwTextarea :label="tr('៩.កង្វល់ និងការភ័យខ្លាចរបស់អតិថិជនទាក់ទងនឹងអនាគតរបស់ខ្លួន៖')"
                         name="ConcernForClientFuture" required class="h-[5rem]"
                         v-model="formData.ConcernForClientFuture" placeholder="" type="text" />
                     <CustomErrorMessage name="ConcernForClientFuture" />
                 </div>
                 <div class="col-span-12">
-                    <TwTextarea label="១០.គោលបំណង និងសេចក្តីសង្ឃឹមរបស់អតិថិជនសម្រាប់អនាគតរបស់ខ្លួន"
+                    <TwTextarea :label="tr('១០.គោលបំណង និងសេចក្តីសង្ឃឹមរបស់អតិថិជនសម្រាប់អនាគតរបស់ខ្លួន')"
                         name="HopeForClientFuture" required class="h-[5rem]" v-model="formData.HopeForClientFuture"
                         placeholder="" type="text" />
                     <CustomErrorMessage name="HopeForClientFuture" />
                 </div>
 
                 <div class="col-span-12 lg:col-span-6">
-                    <TwSelect label="១១. ផែនការក្នុងអនាគតដែលបានស្នើឡើង៖" name="FuturePlanforClient"
+                    <TwSelect :label="tr('១១. ផែនការក្នុងអនាគតដែលបានស្នើឡើង៖')" name="FuturePlanforClient"
                         v-model="formData.FuturePlanforClient" required :items="[
                             { value: 'sentClientTo', label: tr('បញ្ជូនអតិថិជនទៅ') }, { value: 'Educated', label: tr('អប់រំ ឬបណ្តុះបណ្តាលវិជ្ជាជីវៈ៖') },
                             { value: 'consultant', label: tr('ផ្តល់ការពិគ្រោះបញ្ហា/ពិគ្រោះយោបល់៖') }, { value: 'sentToHospital', label: tr('បញ្ចូនទៅសេវាព្យាបាល៖') },
                             { value: 'other', label: tr('ផែនការផ្សេងៗទៀត') },
 
-                        ]" placeholder="សូមជ្រើសរើស" />
+                        ]" :placeholder="tr('សូមជ្រើសរើស')" />
                     <CustomErrorMessage name="FuturePlanforClient" />
                 </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <TwInput label="ផែនការក្នុងអនាគតដែលបានស្នើឡើង រៀបរាប់លំអិត" name="FuturePlanforClientDetails"
-                        required v-model="formData.FuturePlanforClientDetails" placeholder="រៀបរាប់លំអិត" type="text" />
+                    <TwInput :label="tr('ផែនការក្នុងអនាគតដែលបានស្នើឡើង រៀបរាប់លំអិត')" name="FuturePlanforClientDetails"
+                        required v-model="formData.FuturePlanforClientDetails" :placeholder="tr('រៀបរាប់លំអិត')" type="text" />
                     <CustomErrorMessage name="FuturePlanforClientDetails" />
                 </div>
                     <div class="col-span-12">
-                        <h4 class="mt-2 text-lg font-[Moul] text-primary">១២. តើអតិថិជនរបស់អ្នកមានបញ្ហាអ្វីខ្លះ</h4>
+                        <h4 class="mt-2 text-lg font-[Moul] text-primary">{{ tr('១២. តើអតិថិជនរបស់អ្នកមានបញ្ហាអ្វីខ្លះ') }}</h4>
                         <hr class="my-2 border dark:border-gray-700" />
                     </div>
                 <div class="col-span-12 lg:col-span-6">
-                    <span class="text-sm text-gray-500 dark:text-gray-400">អតិថិជនធ្លាក់ទឹកចិត្តខ្លាំង (ឧ.ចង់ធ្វើឃាត ប្រើជាតិពុល ប្រើគ្រឿងញៀន ។ល។)</span>
+                    <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('អតិថិជនធ្លាក់ទឹកចិត្តខ្លាំង (ឧ.ចង់ធ្វើឃាត ប្រើជាតិពុល ប្រើគ្រឿងញៀន ។ល។)') }}</span>
                     <div class="mt-2 flex flex-wrap gap-x-6 gap-y-2">
                         <URadio v-for="(opt, index) of ClientFeelsHopless" :key="index" v-model="formData.ClientFeelsHopless"
                             v-bind="opt" :disabled="readOnly" class="font-[Battambang]" />
                     </div>
                 </div>
                 <div v-if="formData.ClientFeelsHopless" class="col-span-12 lg:col-span-6">
-                    <TwInput label="ពត៌មានបន្ថែម" name="ClientHoplessDetails" required
-                        v-model="formData.ClientHoplessDetails" placeholder="រៀបរាប់លំអិត" type="text" />
+                    <TwInput :label="tr('ពត៌មានបន្ថែម')" name="ClientHoplessDetails" required
+                        v-model="formData.ClientHoplessDetails" :placeholder="tr('រៀបរាប់លំអិត')" type="text" />
                     <CustomErrorMessage name="ClientHoplessDetails" />
                 </div>
                 <div class="col-span-12">
-                    <span class="text-sm text-gray-500 dark:text-gray-400">បញ្ហាដែលអតិថិជនជួបប្រទះ (ជ្រើសរើសបានច្រើន)</span>
+                    <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('បញ្ហាដែលអតិថិជនជួបប្រទះ (ជ្រើសរើសបានច្រើន)') }}</span>
                     <ClientOnly>
                         <div class="mt-2 flex flex-wrap gap-x-6 gap-y-2">
                             <UCheckbox v-for="(item, index) of ClientHopelessMultiple" :key="index"
@@ -1210,7 +1210,7 @@ watch(() => formData.communeBA, (newCommune) => {
                 </div>
                 <div class="col-span-12">
                     <TwTextarea
-                        label="១៣. តាមរយៈការសំភាសន៍របស់អ្នកជាមួយអតិថិជន តើអ្នកយល់ឃើញដូចយ៉ាងណាអំពីស្ថានភាពរបស់អតិថិជន?"
+                        :label="tr('១៣. តាមរយៈការសំភាសន៍របស់អ្នកជាមួយអតិថិជន តើអ្នកយល់ឃើញដូចយ៉ាងណាអំពីស្ថានភាពរបស់អតិថិជន?')"
                         name="InterviewerOpinoin" required class="h-[5rem]" v-model="formData.InterviewerOpinoin"
                         placeholder="" type="text" />
                     <CustomErrorMessage name="InterviewerOpinoin" />
@@ -1219,7 +1219,7 @@ watch(() => formData.communeBA, (newCommune) => {
                 </section>
 
                 <section class="col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800">
-                    <h3 class="text-xl font-[Moul] text-primary">III. កំណត់ត្រាអំពីការរីកចម្រើន</h3>
+                    <h3 class="text-xl font-[Moul] text-primary">{{ tr('III. កំណត់ត្រាអំពីការរីកចម្រើន') }}</h3>
                     <hr class="my-2 border dark:border-gray-700" />
                     <div class="grid grid-cols-12 gap-4">
                 <div class="col-span-12">
@@ -1227,22 +1227,22 @@ watch(() => formData.communeBA, (newCommune) => {
                         <div v-for="(child, index) in ClientProgress" :key="index"
                             class="grid grid-cols-1 items-end gap-3 rounded-lg border p-3 dark:border-gray-700 sm:grid-cols-12">
                             <div class="sm:col-span-1">
-                                <span class="text-sm text-gray-500 dark:text-gray-400">ល.រ</span>
+                                <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('ល.រ') }}</span>
                                 <p class="mt-1 h-10 text-base leading-10 text-gray-800 dark:text-gray-100">
                                     {{ index + 1 }}
                                 </p>
                             </div>
                             <label class="block sm:col-span-3">
-                                <span class="text-sm text-gray-500 dark:text-gray-400">កាលបរិច្ឆេទ</span>
+                                <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('កាលបរិច្ឆេទ') }}</span>
                                 <Datepicker v-model="child.NoteDateTime" :disabled="readOnly" :maxDate="new Date()"
                                     :enableTimePicker="false" format="dd/MM/yyyy" autoApply class="mt-1" />
                             </label>
                             <label class="block sm:col-span-6">
                                 <span class="text-sm text-gray-500 dark:text-gray-400">
-                                    ការអភិវឌ្ឍន៍សំខាន់ៗ/សេវាដែលបានផ្តល់ឱ្យអតិថិជន
+                                    {{ tr('ការអភិវឌ្ឍន៍សំខាន់ៗ/សេវាដែលបានផ្តល់ឱ្យអតិថិជន') }}
                                 </span>
                                 <input v-model="child.Details" :disabled="readOnly" type="text"
-                                    placeholder="ការអភិវឌ្ឍន៍សំខាន់ៗ/សេវាដែលបានផ្តល់"
+                                    :placeholder="tr('ការអភិវឌ្ឍន៍សំខាន់ៗ/សេវាដែលបានផ្តល់')"
                                     class="mt-1 h-10 w-full rounded border px-2 text-base dark:border-gray-700 dark:bg-gray-900" />
                             </label>
                             <div class="sm:col-span-2">
@@ -1257,7 +1257,7 @@ watch(() => formData.communeBA, (newCommune) => {
                     <UButton color="gray" size="sm" type="button" class="mt-3" :disabled="readOnly"
                         @click="ClientProgress.push({ NoteDateTime: '', Details: '' })">
                         <TwFeather type="plus" :size="16" class="mr-1" />
-                        <span>បន្ថែមកំណត់ត្រា</span>
+                        <span>{{ tr('បន្ថែមកំណត់ត្រា') }}</span>
                     </UButton>
                 </div>
 
@@ -1267,11 +1267,11 @@ watch(() => formData.communeBA, (newCommune) => {
                 <!-- The interviewer's own details, a section of their own as on the
                      other forms rather than four fields trailing the last one. -->
                 <section class="col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800">
-                    <h3 class="text-xl font-[Moul] text-primary">ការសម្ភាសន៍</h3>
+                    <h3 class="text-xl font-[Moul] text-primary">{{ tr('ការសម្ភាសន៍') }}</h3>
                     <hr class="my-2 border dark:border-gray-700" />
                     <div class="grid grid-cols-12 gap-4">
                         <div class="col-span-12 lg:col-span-6">
-                            <span class="text-sm text-gray-500 dark:text-gray-400">ឈ្មោះមន្ត្រីឬបុគ្គលិកសង្គមកិច្ច</span>
+                            <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('ឈ្មោះមន្ត្រីឬបុគ្គលិកសង្គមកិច្ច') }}</span>
                             <p class="mt-1 h-10 text-base leading-10 text-gray-800 dark:text-gray-100">
                                 {{
                                     //@ts-ignored
@@ -1280,19 +1280,19 @@ watch(() => formData.communeBA, (newCommune) => {
                             </p>
                         </div>
                         <div class="col-span-12 lg:col-span-6">
-                            <TwInput label="ហត្ថលេខា" name="InterViewerSignature" required
-                                v-model="formData.InterViewerSignature" placeholder="ហត្ថលេខា" type="text"
+                            <TwInput :label="tr('ហត្ថលេខា')" name="InterViewerSignature" required
+                                v-model="formData.InterViewerSignature" :placeholder="tr('ហត្ថលេខា')" type="text"
                                 :disabled="readOnly" />
                             <CustomErrorMessage name="InterViewerSignature" />
                         </div>
                         <div class="col-span-12 lg:col-span-6">
-                            <TwInput label="តួនាទី" name="InterviewerPosition" required
-                                v-model="formData.InterviewerPosition" placeholder="តួនាទី" type="text"
+                            <TwInput :label="tr('តួនាទី')" name="InterviewerPosition" required
+                                v-model="formData.InterviewerPosition" :placeholder="tr('តួនាទី')" type="text"
                                 :disabled="readOnly" />
                             <CustomErrorMessage name="InterviewerPosition" />
                         </div>
                         <label class="col-span-12 block lg:col-span-6">
-                            <span class="text-sm text-gray-500 dark:text-gray-400">កាលបរិច្ឆេទសម្ភាសន៍</span>
+                            <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('កាលបរិច្ឆេទសម្ភាសន៍') }}</span>
                             <Datepicker v-model="formData.InterViewDate" :disabled="readOnly" :maxDate="new Date()"
                                 :enableTimePicker="false" format="dd/MM/yyyy" autoApply class="mt-1" />
                         </label>

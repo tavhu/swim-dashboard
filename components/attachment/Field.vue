@@ -36,7 +36,7 @@ const props = withDefaults(
   {
     modelValue: "",
     pending: null,
-    label: "ឯកសារពាក់ព័ន្ធ",
+    label: tr("ឯកសារពាក់ព័ន្ធ"),
     hint: "",
     readOnly: false,
     accept: undefined,
@@ -134,7 +134,7 @@ const oversized = computed(() => chosen.value.filter((f) => f.size > MAX_UPLOAD_
           class="min-w-0 flex-1 truncate text-primary hover:underline">{{ fileName(path) }}</a>
         <span class="shrink-0 text-xs text-gray-400">{{ kindOf(path).label }}</span>
         <button v-if="!readOnly" type="button" class="shrink-0 text-red-600 hover:underline"
-          @click="removeStored(path)">លុប</button>
+          @click="removeStored(path)">{{ tr("លុប") }}</button>
       </li>
     </ul>
 
@@ -148,7 +148,7 @@ const oversized = computed(() => chosen.value.filter((f) => f.size > MAX_UPLOAD_
           {{ humanSize(f.size) }}
         </span>
         <button v-if="!readOnly" type="button" class="shrink-0 text-red-600 hover:underline"
-          @click="removeChosen(i)">លុប</button>
+          @click="removeChosen(i)">{{ tr("លុប") }}</button>
       </li>
     </ul>
 
@@ -160,18 +160,18 @@ const oversized = computed(() => chosen.value.filter((f) => f.size > MAX_UPLOAD_
         :class="dragging ? 'border-primary bg-primary/5' : 'border-gray-300 hover:border-primary dark:border-gray-700'"
         @dragover.prevent="dragging = true" @dragleave.prevent="dragging = false" @drop.prevent="onDrop">
         <TwFeather type="upload-cloud" :size="24" class="text-gray-400" />
-        <span class="mt-2 text-sm text-gray-600 dark:text-gray-300">ជ្រើសរើស ឬទម្លាក់ឯកសារនៅទីនេះ</span>
+        <span class="mt-2 text-sm text-gray-600 dark:text-gray-300">{{ tr("ជ្រើសរើស ឬទម្លាក់ឯកសារនៅទីនេះ") }}</span>
         <span class="mt-1 text-xs text-gray-400">
-          {{ acceptText }} · អតិបរមា {{ MAX_UPLOAD_MB }}MB ក្នុងមួយឯកសារ
+          {{ acceptText }} · {{ $t("upload.maxPerFile", { mb: MAX_UPLOAD_MB }) }}
         </span>
       </label>
       <p v-if="hint" class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ hint }}</p>
       <!-- Said before saving rather than after the endpoint refuses it. -->
       <p v-if="tooMany" class="mt-1 text-xs text-red-600">
-        ឯកសារច្រើនពេក — អតិបរមា {{ MAX_UPLOAD_FILES }} ក្នុងមួយលើក។
+        {{ $t("upload.tooMany", { max: MAX_UPLOAD_FILES }) }}
       </p>
       <p v-if="oversized.length" class="mt-1 text-xs text-red-600">
-        ឯកសារធំពេក៖ {{ oversized.map((f) => f.name).join(", ") }}
+        {{ $t("upload.tooLarge", { files: oversized.map((f) => f.name).join(", ") }) }}
       </p>
     </div>
   </div>
