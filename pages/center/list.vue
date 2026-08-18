@@ -20,12 +20,12 @@ const table = ref<any>(null);
 useHead(() => ({ title: t("title.centres") }));
 
 const columns = [
-  { key: "center", label: "មណ្ឌល", sortable: false },
-  { key: "nameEN", label: "ឈ្មោះជាភាសាអង់គ្លេស", sortable: true },
-  { key: "type", label: "ប្រភេទ", sortable: true, class: "w-[150px]" },
-  { key: "directorName", label: "ប្រធានមណ្ឌល", sortable: true, class: "w-[180px]" },
-  { key: "status", label: "ស្ថានភាព", sortable: true, class: "w-[130px]" },
-  { key: "actions", label: "សកម្មភាព", class: "w-[120px]" },
+  { key: "center", label: tr("មណ្ឌល"), sortable: false },
+  { key: "nameEN", label: tr("ឈ្មោះជាភាសាអង់គ្លេស"), sortable: true },
+  { key: "type", label: tr("ប្រភេទ"), sortable: true, class: "w-[150px]" },
+  { key: "directorName", label: tr("ប្រធានមណ្ឌល"), sortable: true, class: "w-[180px]" },
+  { key: "status", label: tr("ស្ថានភាព"), sortable: true, class: "w-[130px]" },
+  { key: "actions", label: tr("សកម្មភាព"), class: "w-[120px]" },
 ];
 
 const fetcher = (q: any) =>
@@ -66,18 +66,18 @@ const addStaff = (CenterID: string) => {
 const actionItems = (row: any) => [
   [
     {
-      label: "មើលព័ត៌មានលំអិត",
+      label: tr("មើលព័ត៌មានលំអិត"),
       icon: "i-heroicons-eye",
       to: `/center/id/${row.id}`,
     },
     {
-      label: "កែសម្រួល",
+      label: tr("កែសម្រួល"),
       icon: "i-heroicons-pencil-square",
       to: `/center?id=${row.id}`,
       disabled: readOnly,
     },
     {
-      label: "ចុះឈ្មោះបុគ្គលិកមណ្ឌល",
+      label: tr("ចុះឈ្មោះបុគ្គលិកមណ្ឌល"),
       icon: "i-heroicons-users",
       click: () => addStaff(row.id),
       disabled: readOnly,
@@ -85,7 +85,7 @@ const actionItems = (row: any) => [
   ],
   [
     {
-      label: "លុបចេញ",
+      label: tr("លុបចេញ"),
       icon: "i-heroicons-trash",
       class: "text-red-600 dark:text-red-400",
       iconClass: "text-red-600 dark:text-red-400",
@@ -100,10 +100,10 @@ const actionItems = (row: any) => [
   <div class="font-[Battambang]">
     <div class="mt-5">
       <div class="flex items-center justify-between gap-4">
-        <h2 class="text-2xl font-[Moul] text-primary">បញ្ចីមណ្ឌល</h2>
+        <h2 class="text-2xl font-[Moul] text-primary">{{ tr('បញ្ចីមណ្ឌល') }}</h2>
         <NuxtLink to="/center">
           <UButton color="primary" size="xl" :disabled="readOnly">
-            <span class="font-[Moul] text-xl">ចុះឈ្មោះមណ្ឌល</span>
+            <span class="font-[Moul] text-xl">{{ tr('ចុះឈ្មោះមណ្ឌល') }}</span>
           </UButton>
         </NuxtLink>
       </div>
@@ -136,8 +136,8 @@ const actionItems = (row: any) => [
         </template>
 
         <template #status-data="{ row }">
-          <span v-if="row.status" class="text-primary">ដំណើការ</span>
-          <span v-else class="text-red-600 dark:text-red-400">បិទដំណើការ</span>
+          <span v-if="row.status" class="text-primary">{{ tr('ដំណើការ') }}</span>
+          <span v-else class="text-red-600 dark:text-red-400">{{ tr('បិទដំណើការ') }}</span>
         </template>
 
         <template #actions-data="{ row }">

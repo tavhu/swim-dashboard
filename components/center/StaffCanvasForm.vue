@@ -257,15 +257,15 @@ data.value?.data.forEach(ele => {
 })
 
 const SelectWorkEXP = ref(true)
-const WorkEXP = [{
+const WorkEXP = computed(() => [{
   value: false,
-  label: 'មិនធ្លាប់',
+  label: tr('មិនធ្លាប់'),
 },
 {
   value: true,
-  label: 'ធ្លាប់',
+  label: tr('ធ្លាប់'),
 },
-]
+])
 
 
 
@@ -326,13 +326,13 @@ const organisationList = computed(() => {
   }))
 })
 
-const optionsss = [{
+const optionsss = computed(() => [{
   value: 'Official',
-  label: 'មន្ត្រីរាជការ'
+  label: tr('មន្ត្រីរាជការ')
 }, {
   value: 'Contract',
-  label: 'មន្ត្រីកិច្ចសន្យា'
-}]
+  label: tr('មន្ត្រីកិច្ចសន្យា')
+}])
 
 console.log(prop.id, prop.typeEmployee)
 
@@ -344,38 +344,38 @@ if (prop.id) {
   }
 }
 
-const AddressOption = [{
+const AddressOption = computed(() => [{
   value: 'thesame',
-  label: 'ដូចអាសយដ្ឋានបច្ចុប្បន្ន',
+  label: tr('ដូចអាសយដ្ឋានបច្ចុប្បន្ន'),
 },
 {
   value: 'notthesame',
-  label: 'មិនដូចអាសយដ្ឋានបច្ចុប្បន្ន',
+  label: tr('មិនដូចអាសយដ្ឋានបច្ចុប្បន្ន'),
 },
-]
+])
 
-const SIDOption = [{
+const SIDOption = computed(() => [{
   value: 'SID',
-  label: 'លេខអត្តសញ្ញាណប័ណ្ណខ្មែរ',
+  label: tr('លេខអត្តសញ្ញាណប័ណ្ណខ្មែរ'),
 },
 {
   value: 'Passport',
-  label: 'លិខិតឆ្លងដែន',
+  label: tr('លិខិតឆ្លងដែន'),
 },
-]
-const FamilyInformation = [{
+])
+const FamilyInformation = computed(() => [{
   value: 'single',
-  label: 'នៅលីវ',
+  label: tr('នៅលីវ'),
 },
 {
   value: 'married',
-  label: 'រៀបការហើយ',
+  label: tr('រៀបការហើយ'),
 },
 {
   value: 'widow',
-  label: 'មេម៉ាយ/ពោះម៉ាយ',
+  label: tr('មេម៉ាយ/ពោះម៉ាយ'),
 },
-]
+])
 
 
 const SelectSIDOption = ref('SID')
@@ -959,7 +959,7 @@ watch(SelectedCityValue, () => {
   <div>
     <TwOffcanvas position="right" width="800px" ref="openisTrues">
       <template #headerTitle>
-        <span class="font-[Moul] text-primary"> បញ្ចូលបុគ្គលិកមណ្ឌល </span></template>
+        <span class="font-[Moul] text-primary">{{ tr('បញ្ចូលបុគ្គលិកមណ្ឌល') }}</span></template>
       <div class="p-5">
         <URadio class="font-[battambang] inline-flex ml-5 font-medium" v-for="method of optionsss" :key="method.value"
           v-model="selected" v-bind="method" />
@@ -967,14 +967,10 @@ watch(SelectedCityValue, () => {
       <div class="p-4 overflow-auto font-[battambang]">
         <div v-if="selected !== 'Contract'">
           <div class="text-center">
-            <h2 class=" font-[Moul]">
-              ជីវប្រវត្តិមន្ត្រីរាជការ
-            </h2>
+            <h2 class=" font-[Moul]">{{ tr('ជីវប្រវត្តិមន្ត្រីរាជការ') }}</h2>
           </div>
           <div>
-            <h2 class=" font-[Moul]">
-              ក.ព័ត៌មានផ្ទាល់ខ្លួន
-            </h2>
+            <h2 class=" font-[Moul]">{{ tr('ក.ព័ត៌មានផ្ទាល់ខ្លួន') }}</h2>
             <TwForm :name="formNameEditOfficial"
               class="grid grid-cols-12 gap-2 bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded-lg p-2 shadow"
               :class="{
@@ -993,50 +989,50 @@ watch(SelectedCityValue, () => {
                       :class="(files?.length > 0 ? ' hidden ' : ' ')" alt="">
                   </div>
                 </div>
-                <TwFile v-model="files" label="រូបភាព ៤x៦" />
+                <TwFile v-model="files" :label="tr('រូបភាព ៤x៦')" />
               </div>
               <div class="col-span-4">
               </div>
 
               <div class="col-span-12" v-if="prop.serviceCenterID">
-                <TwSelect label="បុគ្គលិករបស់មណ្ឌល" name="serviceCenterID" v-model="formDataEdit.serviceCenterID"
-                  required :items="serviceCenterList" placeholder="សូមជ្រើសរើស" />
+                <TwSelect :label="tr('បុគ្គលិករបស់មណ្ឌល')" name="serviceCenterID" v-model="formDataEdit.serviceCenterID"
+                  required :items="serviceCenterList" :placeholder="tr('សូមជ្រើសរើស')" />
                 <CustomErrorMessage name="serviceCenterID" />
               </div>
               <div class="col-span-12" v-else-if="prop.organisationID">
-                <TwSelect label="អង្គភាព" name="organisationID" v-model="formDataEdit.organisationID" required
-                  :items="organisationList" placeholder="សូមជ្រើសរើស" />
+                <TwSelect :label="tr('អង្គភាព')" name="organisationID" v-model="formDataEdit.organisationID" required
+                  :items="organisationList" :placeholder="tr('សូមជ្រើសរើស')" />
                 <CustomErrorMessage name="organisationID" />
               </div>
 
               <div class="col-span-12 lg:col-span-4">
-                <TwInput label="គោត្តនាម" name="lastNameKH" v-model="formDataEditOfficial.lastNameKH"
-                  placeholder="គោត្តនាមជាភាសារខ្មែរ" type="text" />
+                <TwInput :label="tr('គោត្តនាម')" name="lastNameKH" v-model="formDataEditOfficial.lastNameKH"
+                  :placeholder="tr('គោត្តនាមជាភាសារខ្មែរ')" type="text" />
                 <CustomErrorMessage name="lastNameKH" />
               </div>
               <div class="col-span-12 lg:col-span-4">
-                <TwInput label="នាមខ្លួន" name="firstNameKH" v-model="formDataEditOfficial.firstNameKH"
-                  placeholder="នាមខ្លួនជាភាសារខ្មែរ" type="text" />
+                <TwInput :label="tr('នាមខ្លួន')" name="firstNameKH" v-model="formDataEditOfficial.firstNameKH"
+                  :placeholder="tr('នាមខ្លួនជាភាសារខ្មែរ')" type="text" />
                 <CustomErrorMessage name="firstNameKH" />
               </div>
               <div class="col-span-4 ">
-                <TwSelect label="ភេទ" name="formDataEditOfficialgender" v-model="formDataEditOfficial.gender" required
-                  :items="[{ value: 'ប្រុស', label: 'ប្រុស' }, { value: 'ស្រី', label: 'ស្រី' }, { value: 'ផ្សេងៗ', label: 'ផ្សេងៗ' }]"
-                  placeholder="សូមជ្រើសរើស" />
+                <TwSelect :label="tr('ភេទ')" name="formDataEditOfficialgender" v-model="formDataEditOfficial.gender" required
+                  :items="[{ value: 'ប្រុស', label: tr('ប្រុស') }, { value: 'ស្រី', label: tr('ស្រី') }, { value: 'ផ្សេងៗ', label: tr('ផ្សេងៗ') }]"
+                  :placeholder="tr('សូមជ្រើសរើស')" />
                 <CustomErrorMessage name="formDataEditOfficialgender" />
               </div>
               <div class="col-span-12 lg:col-span-6">
-                <TwInput label="គោត្តនាម" name="lastNameEN" v-model="formDataEditOfficial.lastNameEN"
-                  placeholder="គោត្តនាមជាភាសារអង់គ្លេស" type="text" />
+                <TwInput :label="tr('គោត្តនាម')" name="lastNameEN" v-model="formDataEditOfficial.lastNameEN"
+                  :placeholder="tr('គោត្តនាមជាភាសារអង់គ្លេស')" type="text" />
                 <CustomErrorMessage name="lastNameEN" />
               </div>
               <div class="col-span-12 lg:col-span-6">
-                <TwInput label="នាមខ្លួន" name="firstNameEN" v-model="formDataEditOfficial.firstNameEN"
-                  placeholder="នាមខ្លួនជាភាសារអង់គ្លេស" type="text" />
+                <TwInput :label="tr('នាមខ្លួន')" name="firstNameEN" v-model="formDataEditOfficial.firstNameEN"
+                  :placeholder="tr('នាមខ្លួនជាភាសារអង់គ្លេស')" type="text" />
                 <CustomErrorMessage name="firstNameEN" />
               </div>
               <div class="col-span-12 lg:col-span-6">
-                <label for=""> ថ្ងៃខែឆ្នាំកំណើត </label>
+                <label for="">{{ tr('ថ្ងៃខែឆ្នាំកំណើត') }}</label>
                 <Datepicker v-model="formDataEditOfficial.DateofBirth" :dayNames="[
                   'Mo',
                   'Tu',
@@ -1050,85 +1046,83 @@ watch(SelectedCityValue, () => {
                 <CustomErrorMessage name="DateofBirth" />
               </div>
               <div class="col-span-12 lg:col-span-3">
-                <TwInput label="ជនជាតិ" name="ethnicity" v-model="formDataEditOfficial.ethnicity" placeholder="ជនជាតិ"
+                <TwInput :label="tr('ជនជាតិ')" name="ethnicity" v-model="formDataEditOfficial.ethnicity" :placeholder="tr('ជនជាតិ')"
                   type="text" />
                 <CustomErrorMessage name="ethnicity" />
               </div>
               <div class="col-span-12 lg:col-span-3">
-                <TwInput label="សញ្ជាតិ" name="nationality" v-model="formDataEditOfficial.nationality"
-                  placeholder="សញ្ជាតិ" type="text" />
+                <TwInput :label="tr('សញ្ជាតិ')" name="nationality" v-model="formDataEditOfficial.nationality"
+                  :placeholder="tr('សញ្ជាតិ')" type="text" />
                 <CustomErrorMessage name="nationality" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
-                <TwInput label="ទីកន្លែងកំណើត" name="birthAddress" v-model="formDataEditOfficial.birthAddress"
-                  placeholder="# ផ្លូវ ភូមិ" type="text" />
+                <TwInput :label="tr('ទីកន្លែងកំណើត')" name="birthAddress" v-model="formDataEditOfficial.birthAddress"
+                  :placeholder="tr('# ផ្លូវ ភូមិ')" type="text" />
                 <CustomErrorMessage name="currentAddress" />
               </div>
 
               <div class="col-span-12 lg:col-span-6">
-                <TwSelect :disabled="readOnly" label="រាជធានី/ខេត្ត" name="city"
-                  v-model="formDataEditOfficial.birthCity" required :items="cityList" placeholder="សូមជ្រើសរើស" />
+                <TwSelect :disabled="readOnly" :label="tr('រាជធានី/ខេត្ត')" name="city"
+                  v-model="formDataEditOfficial.birthCity" required :items="cityList" :placeholder="tr('សូមជ្រើសរើស')" />
                 <CustomErrorMessage name="type" />
               </div>
               <div class="col-span-12 lg:col-span-6">
-                <label for="" class=" font-bold">
-                  ខណ្ឌ/ស្រុក
-                </label>
+                <label for="" class=" font-bold">{{ tr('ខណ្ឌ/ស្រុក') }}</label>
                 <ClientOnly>
                   <USelect :disabled="readOnly" name="District" required v-model="formDataEditOfficial.birthDistrict"
-                    :options="OfficialtemDistricstList" placeholder="សូមជ្រើសរើស" size="lg" />
+                    :options="OfficialtemDistricstList" :placeholder="tr('សូមជ្រើសរើស')" size="lg" />
                 </ClientOnly>
                 <CustomErrorMessage name="type" />
               </div>
 
 
               <div class="col-span-12 lg:col-span-6 ">
-                <TwInput label="អាសយដ្ឋានបច្ចុប្បន្ន" name="currentAddress"
+                <TwInput :label="tr('អាសយដ្ឋានបច្ចុប្បន្ន')" name="currentAddress"
                   v-model="formDataEditOfficial.currentAddress"
-                  placeholder="# ផ្លូវ ភូមិ ឃុំ/សង្កាត់ ស្រុក/ខណ្ឌ រាជធានី/ខេត្ត" type="text" />
+                  :placeholder="tr('# ផ្លូវ ភូមិ ឃុំ/សង្កាត់ ស្រុក/ខណ្ឌ រាជធានី/ខេត្ត')" type="text" />
                 <CustomErrorMessage name="currentAddress" />
               </div>
               <div class="col-span-12">
-                <label class="font-bold">អាសយដ្ឋានអចិន្ត្រៃយ៍</label>
+                <label class="font-bold">{{ tr('អាសយដ្ឋានអចិន្ត្រៃយ៍') }}</label>
                 <URadio class="font-[battambang] inline-flex ml-5 font-medium" v-for="methods of AddressOption"
                   :key="methods.value" v-model="selectedAddressOption" v-bind="methods" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
-                <TwInput name="permanentAddress" label="អាសយដ្ឋានអចិន្ត្រៃយ៍"
+                <TwInput name="permanentAddress" :label="tr('អាសយដ្ឋានអចិន្ត្រៃយ៍')"
                   v-model="formDataEditOfficial.permanentAddress"
-                  placeholder="# ផ្លូវ ភូមិ ឃុំ/សង្កាត់ ស្រុក/ខណ្ឌ រាជធានី/ខេត្ត" type="text" />
+                  :placeholder="tr('# ផ្លូវ ភូមិ ឃុំ/សង្កាត់ ស្រុក/ខណ្ឌ រាជធានី/ខេត្ត')" type="text" />
                 <CustomErrorMessage name="permanentAddress" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
-                <TwInput name="email" label="អ៉ីម៉ែល" v-model="formDataEditOfficial.email" placeholder="អ៉ីម៉ែល"
+                <TwInput name="email" :label="tr('អ៉ីម៉ែល')" v-model="formDataEditOfficial.email" :placeholder="tr('អ៉ីម៉ែល')"
                   type="text" />
                 <CustomErrorMessage name="email" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
-                <TwInput name="telephone" label="លេខទូរស័ព្ទ" v-model="formDataEditOfficial.telephone"
-                  placeholder="លេខទូរស័ព្ទ" type="text" />
+                <TwInput name="telephone" :label="tr('លេខទូរស័ព្ទ')" v-model="formDataEditOfficial.telephone"
+                  :placeholder="tr('លេខទូរស័ព្ទ')" type="text" />
                 <CustomErrorMessage name="telephone" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
-                <TwInput name="officialID" label="អត្ថលេខមន្ត្រីរាជការ" v-model="formDataEditOfficial.officialID"
-                  placeholder="អត្ថលេខមន្ត្រីរាជការ" type="text" />
+                <TwInput name="officialID" :label="tr('អត្ថលេខមន្ត្រីរាជការ')" v-model="formDataEditOfficial.officialID"
+                  :placeholder="tr('អត្ថលេខមន្ត្រីរាជការ')" type="text" />
                 <CustomErrorMessage name="officialID" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
-                <TwInput name="CambodianSocialID" label="លេខអត្តសញ្ញាណប័ណ្ណសញ្ញាតិខ្មែរ"
-                  v-model="formDataEditOfficial.CambodianSocialID" placeholder="លេខអត្តសញ្ញាណប័ណ្ណសញ្ញាតិខ្មែរ"
+                <TwInput name="CambodianSocialID" :label="tr('លេខអត្តសញ្ញាណប័ណ្ណសញ្ញាតិខ្មែរ')"
+                  v-model="formDataEditOfficial.CambodianSocialID" :placeholder="tr('លេខអត្តសញ្ញាណប័ណ្ណសញ្ញាតិខ្មែរ')"
                   type="text" />
                 <CustomErrorMessage name="CambodianSocialID" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
                 <!-- <TwInput             
                 name="sIDValidStart"
-                label="សុពលភាព"
+                :label="tr('សុពលភាព')"
                 v-model="formDataEditOfficial.sIDValidStart"
-                placeholder="សុពលភាព"
+                :placeholder="tr('សុពលភាព')"
                 type="text"
               /> -->
-                <label for="">សុពលភាព</label>
+                <label for="">{{ tr('សុពលភាព') }}</label>
                 <Datepicker v-model="formDataEditOfficial.sIDValidStart" :dayNames="[
                   'Mo',
                   'Tu',
@@ -1143,12 +1137,12 @@ watch(SelectedCityValue, () => {
               <div class="col-span-12 lg:col-span-6 ">
                 <!-- <TwInput             
                 name="sIDValidEnd"
-                label="ដល់ថ្ងៃ"
+                :label="tr('ដល់ថ្ងៃ')"
                 v-model="formDataEditOfficial.sIDValidEnd"
-                placeholder="ដល់ថ្ងៃ"
+                :placeholder="tr('ដល់ថ្ងៃ')"
                 type="text"
               /> -->
-                <label for="">ដល់ថ្ងៃ</label>
+                <label for="">{{ tr('ដល់ថ្ងៃ') }}</label>
                 <Datepicker v-model="formDataEditOfficial.sIDValidEnd" :dayNames="[
                   'Mo',
                   'Tu',
@@ -1161,39 +1155,39 @@ watch(SelectedCityValue, () => {
                 <CustomErrorMessage name="sIDValidEnd" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
-                <TwSelect label="កាយសម្បទា" name="physical" v-model="formDataEditOfficial.physical" required
-                  :items="[{ value: 'Enough', label: 'គ្រប់គ្រាន់' }, { value: 'Disability', label: 'ពិការភាព' }, { value: 'Other', label: 'ប្រភេទពិការ...' }]"
-                  placeholder="សូមជ្រើសរើស" />
+                <TwSelect :label="tr('កាយសម្បទា')" name="physical" v-model="formDataEditOfficial.physical" required
+                  :items="[{ value: 'Enough', label: tr('គ្រប់គ្រាន់') }, { value: 'Disability', label: tr('ពិការភាព') }, { value: 'Other', label: tr('ប្រភេទពិការ...') }]"
+                  :placeholder="tr('សូមជ្រើសរើស')" />
                 <CustomErrorMessage name="physical" />
               </div>
               <hr>
               <div class="col-span-12">
-                <label class="font-bold font-[Moul]">ខ - ព័ត៌មានគ្រួសារ</label>
+                <label class="font-bold font-[Moul]">{{ tr('ខ - ព័ត៌មានគ្រួសារ') }}</label>
                 <URadio class="font-[battambang] inline-flex ml-5 font-medium" v-for="methods of FamilyInformation"
                   :key="methods.value" v-model="formDataEditOfficial.familyInfo" v-bind="methods" />
               </div>
               <div class="col-span-12">
-                <label for="" class="font-[Moul]"> ខ.១-ព័ត៌មានប្រពន្ធឬប្តី</label>
+                <label for="" class="font-[Moul]">{{ tr('ខ.១-ព័ត៌មានប្រពន្ធឬប្តី') }}</label>
               </div>
               <div class="col-span-12 lg:col-span-6 ">
-                <TwInput name="spouseNameKH" label="ឈ្មោះប្រពន្ធឬប្តី" v-model="formDataEditOfficial.spouseNameKH"
-                  placeholder="ឈ្មោះប្រពន្ធឬប្តី" type="text" />
+                <TwInput name="spouseNameKH" :label="tr('ឈ្មោះប្រពន្ធឬប្តី')" v-model="formDataEditOfficial.spouseNameKH"
+                  :placeholder="tr('ឈ្មោះប្រពន្ធឬប្តី')" type="text" />
                 <CustomErrorMessage name="spouseNameKH" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
-                <TwInput name="spuseNameEN" label="ឈ្មោះជាអក្សរពុម្ពឡាតាំង" v-model="formDataEditOfficial.spuseNameEN"
-                  placeholder="ឈ្មោះជាអក្សរពុម្ពឡាតាំង" type="text" />
+                <TwInput name="spuseNameEN" :label="tr('ឈ្មោះជាអក្សរពុម្ពឡាតាំង')" v-model="formDataEditOfficial.spuseNameEN"
+                  :placeholder="tr('ឈ្មោះជាអក្សរពុម្ពឡាតាំង')" type="text" />
                 <CustomErrorMessage name="spuseNameEN" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
                 <!-- <TwInput             
                 name="spouseDateOfBirth"
-                label="ថ្ងៃខែឆ្នាំកំណើត"
+                :label="tr('ថ្ងៃខែឆ្នាំកំណើត')"
                 v-model="formDataEditOfficial.spouseDateOfBirth"
-                placeholder="ថ្ងៃខែឆ្នាំកំណើត"
+                :placeholder="tr('ថ្ងៃខែឆ្នាំកំណើត')"
                 type="text"
               /> -->
-                <label for="">ថ្ងៃខែឆ្នាំកំណើត</label>
+                <label for="">{{ tr('ថ្ងៃខែឆ្នាំកំណើត') }}</label>
                 <Datepicker v-model="formDataEditOfficial.spouseDateOfBirth" :dayNames="[
                   'Mo',
                   'Tu',
@@ -1206,46 +1200,46 @@ watch(SelectedCityValue, () => {
                 <CustomErrorMessage name="spouseDateOfBirth" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
-                <TwInput name="spouseSID" label="លេខអត្តសញ្ញាណប័ណ្ណសញ្ជាតិខ្មែរ"
-                  v-model="formDataEditOfficial.spouseSID" placeholder="លេខអត្តសញ្ញាណប័ណ្ណសញ្ជាតិខ្មែរ" type="text" />
+                <TwInput name="spouseSID" :label="tr('លេខអត្តសញ្ញាណប័ណ្ណសញ្ជាតិខ្មែរ')"
+                  v-model="formDataEditOfficial.spouseSID" :placeholder="tr('លេខអត្តសញ្ញាណប័ណ្ណសញ្ជាតិខ្មែរ')" type="text" />
                 <CustomErrorMessage name="spouseSID" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
-                <TwInput name="spouseBirthAddress" label="ទីកន្លែងកំណើត"
-                  v-model="formDataEditOfficial.spouseBirthAddress" placeholder="ទីកន្លែងកំណើត" type="text" />
+                <TwInput name="spouseBirthAddress" :label="tr('ទីកន្លែងកំណើត')"
+                  v-model="formDataEditOfficial.spouseBirthAddress" :placeholder="tr('ទីកន្លែងកំណើត')" type="text" />
                 <CustomErrorMessage name="spouseBirthAddress" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
-                <TwInput name="spouseCurrentOccupation" label="មុខរបរបច្ចុប្បន្ន"
-                  v-model="formDataEditOfficial.spouseCurrentOccupation" placeholder="មុខរបរបច្ចុប្បន្ន" type="text" />
+                <TwInput name="spouseCurrentOccupation" :label="tr('មុខរបរបច្ចុប្បន្ន')"
+                  v-model="formDataEditOfficial.spouseCurrentOccupation" :placeholder="tr('មុខរបរបច្ចុប្បន្ន')" type="text" />
                 <CustomErrorMessage name="spouseCurrentOccupation" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
-                <TwInput name="spuseCurrentAddress" label="កាយសម្បទា" v-model="formDataEditOfficial.spuseCurrentAddress"
-                  placeholder="ដល់ថ្ងៃ" type="text" />
+                <TwInput name="spuseCurrentAddress" :label="tr('កាយសម្បទា')" v-model="formDataEditOfficial.spuseCurrentAddress"
+                  :placeholder="tr('ដល់ថ្ងៃ')" type="text" />
                 <CustomErrorMessage name="spuseCurrentAddress" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
-                <TwInput name="spouseOrganisationName" label="ឈ្មោះអង្គភាព"
-                  v-model="formDataEditOfficial.spouseOrganisationName" placeholder="ឈ្មោះអង្គភាព" type="text" />
+                <TwInput name="spouseOrganisationName" :label="tr('ឈ្មោះអង្គភាព')"
+                  v-model="formDataEditOfficial.spouseOrganisationName" :placeholder="tr('ឈ្មោះអង្គភាព')" type="text" />
                 <CustomErrorMessage name="spouseOrganisationName" />
               </div>
               <div class="col-span-12 ">
-                <label for="" class="font-bold"> ខ.២-ព័ត៌មានកូន </label>
+                <label for="" class="font-bold">{{ tr('ខ.២-ព័ត៌មានកូន') }}</label>
               </div>
               <div class="col-span-12 grid  grid-cols-1 lg:grid-cols-4 gap-1" v-for="(child, index) in childrenDetails"
                 :key="index">
                 <div>
-                  <TwInput :label="index + 1 + '. គោត្តនាម និងនាមខ្លួន '" v-model="child.fullnameKH" required
-                    placeholder="គោត្តនាម និងនាមខ្លួន" type="text" />
+                  <TwInput :label="index + 1 + tr('. គោត្តនាម និងនាមខ្លួន') + ' '" v-model="child.fullnameKH" required
+                    :placeholder="tr('គោត្តនាម និងនាមខ្លួន')" type="text" />
                 </div>
                 <div>
-                  <TwSelect label="ភេទ" v-model="child.gender" required
-                    :items="[{ value: 'ប្រុស', label: 'ប្រុស' }, { value: 'ស្រី', label: 'ស្រី' }, { value: 'ផ្សេងៗ', label: 'ផ្សេងៗ' }]"
-                    placeholder="សូមជ្រើសរើស" />
+                  <TwSelect :label="tr('ភេទ')" v-model="child.gender" required
+                    :items="[{ value: 'ប្រុស', label: tr('ប្រុស') }, { value: 'ស្រី', label: tr('ស្រី') }, { value: 'ផ្សេងៗ', label: tr('ផ្សេងៗ') }]"
+                    :placeholder="tr('សូមជ្រើសរើស')" />
                 </div>
                 <div>
-                  <label for=""> ថ្ងៃខែឆ្នាំកំណើត </label>
+                  <label for="">{{ tr('ថ្ងៃខែឆ្នាំកំណើត') }}</label>
                   <Datepicker v-model="child.dateofBirth" :dayNames="[
                     'Mo',
                     'Tu',
@@ -1257,7 +1251,7 @@ watch(SelectedCityValue, () => {
                   ]" position="left" required :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
                 </div>
                 <div>
-                  <TwInput label="មុខរបរ" required v-model="child.occupation" placeholder="មុខរបរ" type="text" />
+                  <TwInput :label="tr('មុខរបរ')" required v-model="child.occupation" :placeholder="tr('មុខរបរ')" type="text" />
                 </div>
               </div>
               <div class="col-span-12">
@@ -1266,116 +1260,114 @@ watch(SelectedCityValue, () => {
                   gender: '',
                   dateofBirth: '',
                   occupation: '',
-                })"> បន្ថែមព័ត៌មានកូន </UButton>
+                })">{{ tr('បន្ថែមព័ត៌មានកូន') }}</UButton>
                 <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4"
-                  @click="childrenDetails.pop()">
-                  លុបព័ត៌មានកូន </UButton>
+                  @click="childrenDetails.pop()">{{ tr('លុបព័ត៌មានកូន') }}</UButton>
               </div>
 
               <div class="col-span-12">
-                <label class=" font-[Moul]"> ខ.៣- ព័ត៌មានឪពុក និងម្តាយបង្កើត</label>
+                <label class=" font-[Moul]">{{ tr('ខ.៣- ព័ត៌មានឪពុក និងម្តាយបង្កើត') }}</label>
               </div>
               <div class="col-span-12 lg:col-span-6 ">
-                <TwInput name="fatherFullNameKH" label="ឪពុកឈ្មោះ" v-model="formDataEditOfficial.fatherFullNameKH"
-                  placeholder="ឪពុកឈ្មោះ" type="text" />
+                <TwInput name="fatherFullNameKH" :label="tr('ឪពុកឈ្មោះ')" v-model="formDataEditOfficial.fatherFullNameKH"
+                  :placeholder="tr('ឪពុកឈ្មោះ')" type="text" />
                 <CustomErrorMessage name="fatherFullNameKH" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
-                <TwInput name="fatherBirthAddress" label="ទីកន្លែងកំណើត"
-                  v-model="formDataEditOfficial.fatherBirthAddress" placeholder="ទីកន្លែងកំណើត" type="text" />
+                <TwInput name="fatherBirthAddress" :label="tr('ទីកន្លែងកំណើត')"
+                  v-model="formDataEditOfficial.fatherBirthAddress" :placeholder="tr('ទីកន្លែងកំណើត')" type="text" />
                 <CustomErrorMessage name="fatherBirthAddress" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
-                <TwInput name="fatherOccupation" label="មុខរបរបច្ចុប្បន្ន"
-                  v-model="formDataEditOfficial.fatherOccupation" placeholder="មុខរបរបច្ចុប្បន្ន" type="text" />
+                <TwInput name="fatherOccupation" :label="tr('មុខរបរបច្ចុប្បន្ន')"
+                  v-model="formDataEditOfficial.fatherOccupation" :placeholder="tr('មុខរបរបច្ចុប្បន្ន')" type="text" />
                 <CustomErrorMessage name="fatherOccupation" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
-                <TwInput name="motherFullNameKH" label="ម្តាយឈ្មោះ" v-model="formDataEditOfficial.motherFullNameKH"
-                  placeholder="ម្តាយឈ្មោះ" type="text" />
+                <TwInput name="motherFullNameKH" :label="tr('ម្តាយឈ្មោះ')" v-model="formDataEditOfficial.motherFullNameKH"
+                  :placeholder="tr('ម្តាយឈ្មោះ')" type="text" />
                 <CustomErrorMessage name="motherFullNameKH" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
-                <TwInput name="motherBirthAddress" label="ទីកន្លែងកំណើត"
-                  v-model="formDataEditOfficial.motherBirthAddress" placeholder="ទីកន្លែងកំណើត" type="text" />
+                <TwInput name="motherBirthAddress" :label="tr('ទីកន្លែងកំណើត')"
+                  v-model="formDataEditOfficial.motherBirthAddress" :placeholder="tr('ទីកន្លែងកំណើត')" type="text" />
                 <CustomErrorMessage name="motherBirthAddress" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
-                <TwInput name="motherOcupation" label="មុខរបរបច្ចុប្បន្ន" v-model="formDataEditOfficial.motherOcupation"
-                  placeholder="មុខរបរបច្ចុប្បន្ន" type="text" />
+                <TwInput name="motherOcupation" :label="tr('មុខរបរបច្ចុប្បន្ន')" v-model="formDataEditOfficial.motherOcupation"
+                  :placeholder="tr('មុខរបរបច្ចុប្បន្ន')" type="text" />
                 <CustomErrorMessage name="motherOcupation" />
               </div>
               <div class="col-span-12">
-                <label class=" font-[Moul]"> គ-ព័ត៌មានទំនាក់ទំនងក្នុងករណីមានអាសន្ន </label>
+                <label class=" font-[Moul]">{{ tr('គ-ព័ត៌មានទំនាក់ទំនងក្នុងករណីមានអាសន្ន') }}</label>
               </div>
               <div class="col-span-12 lg:col-span-6 ">
-                <TwInput name="ECFirstNameKH" label="នាមខ្លួន" v-model="formDataEditOfficial.ECFirstNameKH"
-                  placeholder="នាមខ្លួន" type="text" />
+                <TwInput name="ECFirstNameKH" :label="tr('នាមខ្លួន')" v-model="formDataEditOfficial.ECFirstNameKH"
+                  :placeholder="tr('នាមខ្លួន')" type="text" />
                 <CustomErrorMessage name="ECFirstNameKH" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
-                <TwInput name="ECLastNameKH" label="គោត្តនាម" v-model="formDataEditOfficial.ECLastNameKH"
-                  placeholder="គោត្តនាម" type="text" />
+                <TwInput name="ECLastNameKH" :label="tr('គោត្តនាម')" v-model="formDataEditOfficial.ECLastNameKH"
+                  :placeholder="tr('គោត្តនាម')" type="text" />
                 <CustomErrorMessage name="ECLastNameKH" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
-                <TwInput name="ECRelationshipAs" label="ទំនាក់ទំនងត្រូវជា"
-                  v-model="formDataEditOfficial.ECRelationshipAs" placeholder="ទំនាក់ទំនងត្រូវជា" type="text" />
+                <TwInput name="ECRelationshipAs" :label="tr('ទំនាក់ទំនងត្រូវជា')"
+                  v-model="formDataEditOfficial.ECRelationshipAs" :placeholder="tr('ទំនាក់ទំនងត្រូវជា')" type="text" />
                 <CustomErrorMessage name="ECRelationshipAs" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
-                <TwSelect label="ភេទ" name="ECGender" v-model="formDataEditOfficial.ECGender" required
-                  :items="[{ value: 'ប្រុស', label: 'ប្រុស' }, { value: 'ស្រី', label: 'ស្រី' }, { value: 'ផ្សេងៗ', label: 'ផ្សេងៗ' }]"
-                  placeholder="សូមជ្រើសរើស" />
+                <TwSelect :label="tr('ភេទ')" name="ECGender" v-model="formDataEditOfficial.ECGender" required
+                  :items="[{ value: 'ប្រុស', label: tr('ប្រុស') }, { value: 'ស្រី', label: tr('ស្រី') }, { value: 'ផ្សេងៗ', label: tr('ផ្សេងៗ') }]"
+                  :placeholder="tr('សូមជ្រើសរើស')" />
                 <CustomErrorMessage name="ECGender" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
-                <TwInput name="ECOccupation" label="មុខរបរបច្ចុប្បន្ន" v-model="formDataEditOfficial.ECOccupation"
-                  placeholder="មុខរបរបច្ចុប្បន្ន" type="text" />
+                <TwInput name="ECOccupation" :label="tr('មុខរបរបច្ចុប្បន្ន')" v-model="formDataEditOfficial.ECOccupation"
+                  :placeholder="tr('មុខរបរបច្ចុប្បន្ន')" type="text" />
                 <CustomErrorMessage name="ECOccupation" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
-                <TwInput name="ECAddress" label="អាសយដ្ឋានបច្ចុប្បន្ន" v-model="formDataEditOfficial.ECAddress"
-                  placeholder="អាសយដ្ឋានបច្ចុប្បន្ន" type="text" />
+                <TwInput name="ECAddress" :label="tr('អាសយដ្ឋានបច្ចុប្បន្ន')" v-model="formDataEditOfficial.ECAddress"
+                  :placeholder="tr('អាសយដ្ឋានបច្ចុប្បន្ន')" type="text" />
                 <CustomErrorMessage name="ECAddress" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
-                <TwInput name="ECTelehpone" label="លេខទូរស័ព្ទ" v-model="formDataEditOfficial.ECTelehpone"
-                  placeholder="លេខទូរស័ព្ទ" type="text" />
+                <TwInput name="ECTelehpone" :label="tr('លេខទូរស័ព្ទ')" v-model="formDataEditOfficial.ECTelehpone"
+                  :placeholder="tr('លេខទូរស័ព្ទ')" type="text" />
                 <CustomErrorMessage name="ECTelehpone" />
               </div>
               <div class="col-span-12">
-                <label for="" class=" font-[Moul]"> ឃ-កំរិតវប្បធម៌ទូទៅ​ ការបណ្តុះបណ្តាលមុខវិជ្ជាជីវៈ​
-                  និងការបណ្តុះបណ្តាលបន្ត</label>
+                <label for="" class=" font-[Moul]">{{ tr('ឃ-កំរិតវប្បធម៌ទូទៅ​ ការបណ្តុះបណ្តាលមុខវិជ្ជាជីវៈ​ និងការបណ្តុះបណ្តាលបន្ត') }}</label>
               </div>
               <div class="col-span-12 grid  grid-cols-1 lg:grid-cols-4 gap-2 " v-for="(item, index) in EducationDetails"
                 :key="index">
                 <div>
-                  <TwInput label="វគ្គឬកម្រិតសិក្សា" required v-model="item.couseLevel" placeholder="វគ្គឬកម្រិតសិក្សា"
+                  <TwInput :label="tr('វគ្គឬកម្រិតសិក្សា')" required v-model="item.couseLevel" :placeholder="tr('វគ្គឬកម្រិតសិក្សា')"
                     type="text" />
                   <CustomErrorMessage name="CurrentRank" />
                 </div>
                 <div>
-                  <TwInput label="គ្រឹះស្ថានសិក្សាបណ្តុះបណ្តាល" required v-model="item.SchoolName"
-                    placeholder="គ្រឹះស្ថានសិក្សាបណ្តុះបណ្តាល" type="text" />
+                  <TwInput :label="tr('គ្រឹះស្ថានសិក្សាបណ្តុះបណ្តាល')" required v-model="item.SchoolName"
+                    :placeholder="tr('គ្រឹះស្ថានសិក្សាបណ្តុះបណ្តាល')" type="text" />
                   <CustomErrorMessage name="CurrentRank" />
                 </div>
                 <div>
-                  <TwInput label="រាជធានីខេត្តឬប្រទេស" required v-model="item.SchoolLocation"
-                    placeholder="រាជធានីខេត្តឬប្រទេស" type="text" />
+                  <TwInput :label="tr('រាជធានីខេត្តឬប្រទេស')" required v-model="item.SchoolLocation"
+                    :placeholder="tr('រាជធានីខេត្តឬប្រទេស')" type="text" />
                   <CustomErrorMessage name="CurrentRank" />
                 </div>
                 <div>
-                  <TwInput label="សញ្ញាបត្រ" required v-model="item.CertificateLevel" placeholder="សញ្ញាបត្រ"
+                  <TwInput :label="tr('សញ្ញាបត្រ')" required v-model="item.CertificateLevel" :placeholder="tr('សញ្ញាបត្រ')"
                     type="text" />
                   <CustomErrorMessage name="CurrentRank" />
                 </div>
                 <div>
-                  <TwInput label="ជំនាញ" required v-model="item.majoring" placeholder="ជំនាញ" type="text" />
+                  <TwInput :label="tr('ជំនាញ')" required v-model="item.majoring" :placeholder="tr('ជំនាញ')" type="text" />
                   <CustomErrorMessage name="CurrentRank" />
                 </div>
                 <div>
-                  <label for="">ថ្ងៃខែឆ្នាំចូលសិក្សា</label>
+                  <label for="">{{ tr('ថ្ងៃខែឆ្នាំចូលសិក្សា') }}</label>
                   <Datepicker v-model="item.StartDate" :dayNames="[
                     'Mo',
                     'Tu',
@@ -1388,7 +1380,7 @@ watch(SelectedCityValue, () => {
                   <CustomErrorMessage name="DateStartOfficialWork" />
                 </div>
                 <div>
-                  <label for="">ថ្ងៃខែឆ្នាំបញ្ចប់សិក្សា</label>
+                  <label for="">{{ tr('ថ្ងៃខែឆ្នាំបញ្ចប់សិក្សា') }}</label>
                   <Datepicker v-model="item.finishDate" :dayNames="[
                     'Mo',
                     'Tu',
@@ -1410,34 +1402,33 @@ watch(SelectedCityValue, () => {
                   majoring: '',
                   StartDate: '',
                   finishDate: '',
-                })"> បន្ថែមព័ត៌មាន </UButton>
+                })">{{ tr('បន្ថែមព័ត៌មាន') }}</UButton>
                 <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4"
-                  @click="EducationDetails.pop()">
-                  លុបព័ត៌មានកូន </UButton>
+                  @click="EducationDetails.pop()">{{ tr('លុបព័ត៌មានកូន') }}</UButton>
               </div>
               <div class="col-span-12 font-[Moul]">
-                <label for=""> ង-ភាសារបរទេស(សូមបំពេញនូវកម្រិតចំណេះដឹងភាសាបរទេស​)</label>
+                <label for="">{{ tr('ង-ភាសារបរទេស(សូមបំពេញនូវកម្រិតចំណេះដឹងភាសាបរទេស​)') }}</label>
               </div>
               <div class="col-span-12 grid grid-cols-1 lg:grid-cols-4 gap-2" v-for="(item, index) in governStaffLanuage"
                 :key="index">
                 <div>
-                  <TwInput label="ភាសាបរទេស" required v-model="item.langName" placeholder="ភាសាបរទេស" type="text" />
+                  <TwInput :label="tr('ភាសាបរទេស')" required v-model="item.langName" :placeholder="tr('ភាសាបរទេស')" type="text" />
                   <CustomErrorMessage name="CurrentRank" />
                 </div>
                 <div>
-                  <TwSelect label="ការអាន" v-model="item.read" required
-                    :items="[{ value: 'good', label: 'ល្អ' }, { value: 'medium', label: 'មធ្យម' }, { value: 'bad', label: 'ខ្សោយ' }]"
-                    placeholder="សូមជ្រើសរើស" />
+                  <TwSelect :label="tr('ការអាន')" v-model="item.read" required
+                    :items="[{ value: 'good', label: tr('ល្អ') }, { value: 'medium', label: tr('មធ្យម') }, { value: 'bad', label: tr('ខ្សោយ') }]"
+                    :placeholder="tr('សូមជ្រើសរើស')" />
                 </div>
                 <div>
-                  <TwSelect label="ការសន្ទនា" v-model="item.conversation" required
-                    :items="[{ value: 'good', label: 'ល្អ' }, { value: 'medium', label: 'មធ្យម' }, { value: 'bad', label: 'ខ្សោយ' }]"
-                    placeholder="សូមជ្រើសរើស" />
+                  <TwSelect :label="tr('ការសន្ទនា')" v-model="item.conversation" required
+                    :items="[{ value: 'good', label: tr('ល្អ') }, { value: 'medium', label: tr('មធ្យម') }, { value: 'bad', label: tr('ខ្សោយ') }]"
+                    :placeholder="tr('សូមជ្រើសរើស')" />
                 </div>
                 <div>
-                  <TwSelect label="ការសរសេរ" v-model="item.writing" required
-                    :items="[{ value: 'good', label: 'ល្អ' }, { value: 'medium', label: 'មធ្យម' }, { value: 'bad', label: 'ខ្សោយ' }]"
-                    placeholder="សូមជ្រើសរើស" />
+                  <TwSelect :label="tr('ការសរសេរ')" v-model="item.writing" required
+                    :items="[{ value: 'good', label: tr('ល្អ') }, { value: 'medium', label: tr('មធ្យម') }, { value: 'bad', label: tr('ខ្សោយ') }]"
+                    :placeholder="tr('សូមជ្រើសរើស')" />
                 </div>
               </div>
               <div class="col-span-12">
@@ -1446,16 +1437,15 @@ watch(SelectedCityValue, () => {
                   read: '',
                   conversation: '',
                   writing: '',
-                })"> បន្ថែមព័ត៌មាន </UButton>
+                })">{{ tr('បន្ថែមព័ត៌មាន') }}</UButton>
                 <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4"
-                  @click="governStaffLanuage.pop()">
-                  លុបព័ត៌មានកូន </UButton>
+                  @click="governStaffLanuage.pop()">{{ tr('លុបព័ត៌មានកូន') }}</UButton>
               </div>
               <div class="col-span-12">
-                <label class=" font-[Moul]"> ច-ប្រវត្តិការងារ</label>
+                <label class=" font-[Moul]">{{ tr('ច-ប្រវត្តិការងារ') }}</label>
               </div>
               <div class="col-span-12 lg:col-span-6 ">
-                <label for="">ថ្ងៃខែឆ្នាំចូលបម្រើក្របខ័ណ្ឌរដ្ឋ</label>
+                <label for="">{{ tr('ថ្ងៃខែឆ្នាំចូលបម្រើក្របខ័ណ្ឌរដ្ឋ') }}</label>
                 <Datepicker v-model="formDataEditOfficial.DateStartOfficialWork" :dayNames="[
                   'Mo',
                   'Tu',
@@ -1468,7 +1458,7 @@ watch(SelectedCityValue, () => {
                 <CustomErrorMessage name="DateStartOfficialWork" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
-                <label for="">ថ្ងៃខែឆ្នាំតាំងស៊ុបក្នុងក្របខ័ណ្ឌរដ្ឋ</label>
+                <label for="">{{ tr('ថ្ងៃខែឆ្នាំតាំងស៊ុបក្នុងក្របខ័ណ្ឌរដ្ឋ') }}</label>
                 <Datepicker v-model="formDataEditOfficial.DateWentFullTime" :dayNames="[
                   'Mo',
                   'Tu',
@@ -1481,25 +1471,25 @@ watch(SelectedCityValue, () => {
                 <CustomErrorMessage name="DateWentFullTime" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
-                <TwInput name="CurrentRank" label="ឈ្មោះក្របខណ្ឌ" v-model="formDataEditOfficial.CurrentRank"
-                  placeholder="ឈ្មោះក្របខណ្ឌ" type="text" />
+                <TwInput name="CurrentRank" :label="tr('ឈ្មោះក្របខណ្ឌ')" v-model="formDataEditOfficial.CurrentRank"
+                  :placeholder="tr('ឈ្មោះក្របខណ្ឌ')" type="text" />
                 <CustomErrorMessage name="CurrentRank" />
               </div>
               <div class="col-span-12 lg:col-span-6 ">
-                <TwInput name="OfficialLevelKH" label="ក្របខណ្ឌ ឋានន្តរស័ក្ក​ និងថ្នាក់បច្ចុប្បន្ន"
-                  v-model="formDataEditOfficial.OfficialLevelKH" placeholder="ក.៣.២" type="text" />
+                <TwInput name="OfficialLevelKH" :label="tr('ក្របខណ្ឌ ឋានន្តរស័ក្ក​ និងថ្នាក់បច្ចុប្បន្ន')"
+                  v-model="formDataEditOfficial.OfficialLevelKH" :placeholder="tr('ក.៣.២')" type="text" />
                 <CustomErrorMessage name="OfficialLevelKH" />
               </div>
               <div class="col-span-12 font-[Moul]">
-                <label for=""> ច.១-មុខតំណែង(សូមបំពេញ​ ពីថ្មីទៅចាស់) </label>
+                <label for="">{{ tr('ច.១-មុខតំណែង(សូមបំពេញ​ ពីថ្មីទៅចាស់)') }}</label>
               </div>
               <div class="col-span-12 font-[Moul]">
-                <label for=""> ច.១.១-ក្នុងវិស័យសាធារណៈ </label>
+                <label for="">{{ tr('ច.១.១-ក្នុងវិស័យសាធារណៈ') }}</label>
               </div>
               <div class="col-span-12 grid grid-cols-1 lg:grid-cols-5 gap-2"
                 v-for="(item, index) in governStaffWorkingHistoryPublic" :key="index">
                 <div>
-                  <label for="">ថ្ងៃខែឆ្នាំចូលបម្រើការងារ</label>
+                  <label for="">{{ tr('ថ្ងៃខែឆ្នាំចូលបម្រើការងារ') }}</label>
                   <Datepicker v-model="item.DateStartWorking" :dayNames="[
                     'Mo',
                     'Tu',
@@ -1512,7 +1502,7 @@ watch(SelectedCityValue, () => {
                   <CustomErrorMessage name="DateWentFullTime" />
                 </div>
                 <div>
-                  <label for="">ថ្ងៃខែបញ្ចប់ការងារ</label>
+                  <label for="">{{ tr('ថ្ងៃខែបញ្ចប់ការងារ') }}</label>
                   <Datepicker v-model="item.DateStopWorking" :dayNames="[
                     'Mo',
                     'Tu',
@@ -1524,16 +1514,16 @@ watch(SelectedCityValue, () => {
                   ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
                 </div>
                 <div>
-                  <TwInput label="ក្រសួង-ស្ថាប័ន" v-model="item.OgnisationName" placeholder="" type="text" />
+                  <TwInput :label="tr('ក្រសួង-ស្ថាប័ន')" v-model="item.OgnisationName" placeholder="" type="text" />
                 </div>
                 <div>
-                  <TwInput label="នាយកដ្ឋាន-អង្គភាព" v-model="item.Department" placeholder="" type="text" />
+                  <TwInput :label="tr('នាយកដ្ឋាន-អង្គភាព')" v-model="item.Department" placeholder="" type="text" />
                 </div>
                 <div>
-                  <TwInput label="មុខតំណែង" v-model="item.position" placeholder="" type="text" />
+                  <TwInput :label="tr('មុខតំណែង')" v-model="item.position" placeholder="" type="text" />
                 </div>
                 <div>
-                  <TwInput label="ជំនាញ/បច្ចេកទេសក្នុងមុខតំណែង" v-model="item.SkillInPosition" placeholder=""
+                  <TwInput :label="tr('ជំនាញ/បច្ចេកទេសក្នុងមុខតំណែង')" v-model="item.SkillInPosition" placeholder=""
                     type="text" />
                 </div>
               </div>
@@ -1545,17 +1535,17 @@ watch(SelectedCityValue, () => {
                   Department: '',
                   position: '',
                   SkillInPosition: '',
-                })"> បន្ថែមព័ត៌មាន </UButton>
+                })">{{ tr('បន្ថែមព័ត៌មាន') }}</UButton>
                 <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4"
-                  @click="governStaffWorkingHistoryPublic.pop()"> លុបព័ត៌មាន </UButton>
+                  @click="governStaffWorkingHistoryPublic.pop()">{{ tr('លុបព័ត៌មាន') }}</UButton>
               </div>
               <div class="col-span-12 font-[Moul]">
-                <label for=""> ច.១.២-ក្នុងវិស័យឯកជន </label>
+                <label for="">{{ tr('ច.១.២-ក្នុងវិស័យឯកជន') }}</label>
               </div>
               <div class="col-span-12 grid grid-cols-1 lg:grid-cols-4 gap-2"
                 v-for="(item, index) in governStaffWorkingHistoryPrivate" :key="index">
                 <div>
-                  <label for="">ថ្ងៃខែឆ្នាំចូលបម្រើការងារ</label>
+                  <label for="">{{ tr('ថ្ងៃខែឆ្នាំចូលបម្រើការងារ') }}</label>
                   <Datepicker v-model="item.DateStartWorking" :dayNames="[
                     'Mo',
                     'Tu',
@@ -1568,7 +1558,7 @@ watch(SelectedCityValue, () => {
                   <CustomErrorMessage name="DateWentFullTime" />
                 </div>
                 <div>
-                  <label for="">ថ្ងៃខែបញ្ចប់ការងារ</label>
+                  <label for="">{{ tr('ថ្ងៃខែបញ្ចប់ការងារ') }}</label>
                   <Datepicker v-model="item.DateStopWorking" :dayNames="[
                     'Mo',
                     'Tu',
@@ -1580,13 +1570,13 @@ watch(SelectedCityValue, () => {
                   ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
                 </div>
                 <div>
-                  <TwInput label="គ្រឹះស្ថាន-អង្គភាព" v-model="item.OgnisationName" placeholder="" type="text" />
+                  <TwInput :label="tr('គ្រឹះស្ថាន-អង្គភាព')" v-model="item.OgnisationName" placeholder="" type="text" />
                 </div>
                 <div>
-                  <TwInput label="តួនាទី" v-model="item.position" placeholder="" type="text" />
+                  <TwInput :label="tr('តួនាទី')" v-model="item.position" placeholder="" type="text" />
                 </div>
                 <div>
-                  <TwInput label="ជំនាញ/បច្ចេកទេស" v-model="item.SkillInPosition" placeholder="" type="text" />
+                  <TwInput :label="tr('ជំនាញ/បច្ចេកទេស')" v-model="item.SkillInPosition" placeholder="" type="text" />
                 </div>
               </div>
               <div class="col-span-12">
@@ -1596,19 +1586,17 @@ watch(SelectedCityValue, () => {
                   OgnisationName: '',
                   position: '',
                   SkillInPosition: '',
-                })"> បន្ថែមព័ត៌មាន </UButton>
+                })">{{ tr('បន្ថែមព័ត៌មាន') }}</UButton>
                 <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4"
-                  @click="governStaffWorkingHistoryPrivate.pop()"> លុបព័ត៌មានកូន </UButton>
+                  @click="governStaffWorkingHistoryPrivate.pop()">{{ tr('លុបព័ត៌មានកូន') }}</UButton>
               </div>
               <div class="col-span-12">
-                <label class=" font-[Moul]"> ច.២-ការដំឡើងឋានន្តរស័ក្តិ និងថ្នាក់តាមវេនជ្រើសរើស អតីតភាព
-                  ប្តូរប្រភេទក្របខណ្ឌ
-                  និងនិយ័តកម្មថ្នាក់ (សូមបំពេញតាមលំដាប់ ពីថ្មីទៅចាស់) </label>
+                <label class=" font-[Moul]">{{ tr('ច.២-ការដំឡើងឋានន្តរស័ក្តិ និងថ្នាក់តាមវេនជ្រើសរើស អតីតភាព ប្តូរប្រភេទក្របខណ្ឌ និងនិយ័តកម្មថ្នាក់ (សូមបំពេញតាមលំដាប់ ពីថ្មីទៅចាស់)') }}</label>
               </div>
               <div class="col-span-12 grid grid-cols-1 lg:grid-cols-3 gap-2"
                 v-for="(item, index) in governStaffPositionHistory" :key="index">
                 <div>
-                  <label for="">ថ្ងៃខែបញ្ចប់ការងារ</label>
+                  <label for="">{{ tr('ថ្ងៃខែបញ្ចប់ការងារ') }}</label>
                   <Datepicker v-model="item.ValidDate" :dayNames="[
                     'Mo',
                     'Tu',
@@ -1620,24 +1608,24 @@ watch(SelectedCityValue, () => {
                   ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
                 </div>
                 <div>
-                  <TwInput label="ក្រសួង-ស្ថាប័ន" v-model="item.MinistryName" placeholder="" type="text" />
+                  <TwInput :label="tr('ក្រសួង-ស្ថាប័ន')" v-model="item.MinistryName" placeholder="" type="text" />
                 </div>
                 <div>
-                  <TwInput label="នាយកដ្ឋាន-អង្គភាព" v-model="item.Department" placeholder="" type="text" />
+                  <TwInput :label="tr('នាយកដ្ឋាន-អង្គភាព')" v-model="item.Department" placeholder="" type="text" />
                 </div>
                 <div>
-                  <TwInput label="ការិយាល័យ-ផ្នែក" v-model="item.OfficialSection" placeholder="" type="text" />
+                  <TwInput :label="tr('ការិយាល័យ-ផ្នែក')" v-model="item.OfficialSection" placeholder="" type="text" />
                 </div>
                 <div>
-                  <TwInput label="ក្របខណ្ឌឋានន្តរស័ក្តិនិងថ្នាក់ចាស់" v-model="item.oldOfficialLevel" placeholder=""
+                  <TwInput :label="tr('ក្របខណ្ឌឋានន្តរស័ក្តិនិងថ្នាក់ចាស់')" v-model="item.oldOfficialLevel" placeholder=""
                     type="text" />
                 </div>
                 <div>
-                  <TwInput label="ក្របខណ្ឌឋានន្តរស័ក្តិនិងថ្នាក់ថ្មី" v-model="item.newOffcialLevel" placeholder=""
+                  <TwInput :label="tr('ក្របខណ្ឌឋានន្តរស័ក្តិនិងថ្នាក់ថ្មី')" v-model="item.newOffcialLevel" placeholder=""
                     type="text" />
                 </div>
                 <div>
-                  <TwInput label="ប្រភេទដំឡើង/ប្តូរ" v-model="item.changeTo" placeholder="" type="text" />
+                  <TwInput :label="tr('ប្រភេទដំឡើង/ប្តូរ')" v-model="item.changeTo" placeholder="" type="text" />
                 </div>
               </div>
               <div class="col-span-12">
@@ -1649,18 +1637,17 @@ watch(SelectedCityValue, () => {
                   oldOfficialLevel: '',
                   newOffcialLevel: '',
                   changeTo: '',
-                })"> បន្ថែមព័ត៌មាន </UButton>
+                })">{{ tr('បន្ថែមព័ត៌មាន') }}</UButton>
                 <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4"
-                  @click="governStaffPositionHistory.pop()"> លុបព័ត៌មានកូន </UButton>
+                  @click="governStaffPositionHistory.pop()">{{ tr('លុបព័ត៌មានកូន') }}</UButton>
               </div>
               <div class="col-span-12">
-                <label class=" font-[Moul]"> ច.៣-ការដំឡើងឋានន្តរស័ក្តិ និងថ្នាក់តាមសញ្ញាបត្រ(សូមបំពេញតាមលំដាប់
-                  ពីថ្មីទៅចាស់)</label>
+                <label class=" font-[Moul]">{{ tr('ច.៣-ការដំឡើងឋានន្តរស័ក្តិ និងថ្នាក់តាមសញ្ញាបត្រ(សូមបំពេញតាមលំដាប់ ពីថ្មីទៅចាស់)') }}</label>
               </div>
               <div class="col-span-12 grid grid-cols-1 lg:grid-cols-3 gap-2"
                 v-for="(item, index) in governStaffCertificateLevelup" :key="index">
                 <div>
-                  <label for="">ថ្ងៃខែបញ្ចប់ការងារ</label>
+                  <label for="">{{ tr('ថ្ងៃខែបញ្ចប់ការងារ') }}</label>
                   <Datepicker v-model="item.validatDate" :dayNames="[
                     'Mo',
                     'Tu',
@@ -1672,20 +1659,20 @@ watch(SelectedCityValue, () => {
                   ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
                 </div>
                 <div>
-                  <TwInput label="គ្រឹះស្ថានបណ្តុះបណ្តាល" v-model="item.SchoolName" placeholder="" type="text" />
+                  <TwInput :label="tr('គ្រឹះស្ថានបណ្តុះបណ្តាល')" v-model="item.SchoolName" placeholder="" type="text" />
                 </div>
                 <div>
-                  <TwInput label="ទីកន្លែងសិក្សា" v-model="item.PlaceStudy" placeholder="" type="text" />
+                  <TwInput :label="tr('ទីកន្លែងសិក្សា')" v-model="item.PlaceStudy" placeholder="" type="text" />
                 </div>
                 <div>
-                  <TwInput label="សញ្ញាបត្រទទួលបាន" v-model="item.ReceivedCertificate" placeholder="" type="text" />
+                  <TwInput :label="tr('សញ្ញាបត្រទទួលបាន')" v-model="item.ReceivedCertificate" placeholder="" type="text" />
                 </div>
                 <div>
-                  <TwInput label="ក្របខណ្ឌ ឋានន្តរស័ក្តិ និងថ្នាក់ចាស់" v-model="item.OldPosition" placeholder=""
+                  <TwInput :label="tr('ក្របខណ្ឌ ឋានន្តរស័ក្តិ និងថ្នាក់ចាស់')" v-model="item.OldPosition" placeholder=""
                     type="text" />
                 </div>
                 <div>
-                  <TwInput label="ក្របខណ្ឌ ឋានន្តរស័ក្តិ និងថ្នាក់ថ្មី" v-model="item.NewPosition" placeholder=""
+                  <TwInput :label="tr('ក្របខណ្ឌ ឋានន្តរស័ក្តិ និងថ្នាក់ថ្មី')" v-model="item.NewPosition" placeholder=""
                     type="text" />
                 </div>
               </div>
@@ -1697,18 +1684,17 @@ watch(SelectedCityValue, () => {
                   ReceivedCertificate: '',
                   OldPosition: '',
                   NewPosition: '',
-                })"> បន្ថែមព័ត៌មាន </UButton>
+                })">{{ tr('បន្ថែមព័ត៌មាន') }}</UButton>
                 <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4"
-                  @click="governStaffCertificateLevelup.pop()"> លុបព័ត៌មានកូន </UButton>
+                  @click="governStaffCertificateLevelup.pop()">{{ tr('លុបព័ត៌មានកូន') }}</UButton>
               </div>
               <div class="col-span-12">
-                <label class=" font-[Moul]"> ច.៤-ស្ថានភាពស្ថិតនៅក្រៅក្របខ័ណ្ឌដើម (សូមបំពេញតាមលំដាប់
-                  ពីថ្មីទៅចាស់)</label>
+                <label class=" font-[Moul]">{{ tr('ច.៤-ស្ថានភាពស្ថិតនៅក្រៅក្របខ័ណ្ឌដើម (សូមបំពេញតាមលំដាប់ ពីថ្មីទៅចាស់)') }}</label>
               </div>
               <div class="col-span-12 grid grid-cols-1 lg:grid-cols-3 gap-2"
                 v-for="(item, index) in governStaffSituationOutsideOriginalOfficial" :key="index">
                 <div>
-                  <label for="">ថ្ងៃខែឆ្នាំចាប់ផ្តើម</label>
+                  <label for="">{{ tr('ថ្ងៃខែឆ្នាំចាប់ផ្តើម') }}</label>
                   <Datepicker v-model="item.startDate" :dayNames="[
                     'Mo',
                     'Tu',
@@ -1720,7 +1706,7 @@ watch(SelectedCityValue, () => {
                   ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
                 </div>
                 <div>
-                  <label for="">ថ្ងៃខែឆ្នាំបញ្ចប់</label>
+                  <label for="">{{ tr('ថ្ងៃខែឆ្នាំបញ្ចប់') }}</label>
                   <Datepicker v-model="item.endDate" :dayNames="[
                     'Mo',
                     'Tu',
@@ -1732,10 +1718,10 @@ watch(SelectedCityValue, () => {
                   ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
                 </div>
                 <div>
-                  <TwInput label="ក្រសួង/ស្ថាប័ន" v-model="item.OginasationName" placeholder="" type="text" />
+                  <TwInput :label="tr('ក្រសួង/ស្ថាប័ន')" v-model="item.OginasationName" placeholder="" type="text" />
                 </div>
                 <div>
-                  <TwInput label="មុខដំណែង" v-model="item.Position" placeholder="" type="text" />
+                  <TwInput :label="tr('មុខដំណែង')" v-model="item.Position" placeholder="" type="text" />
                 </div>
               </div>
               <div class="col-span-12">
@@ -1744,18 +1730,17 @@ watch(SelectedCityValue, () => {
                   endDate: '',
                   OginasationName: '',
                   Position: '',
-                })"> បន្ថែមព័ត៌មាន </UButton>
+                })">{{ tr('បន្ថែមព័ត៌មាន') }}</UButton>
                 <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4"
-                  @click="governStaffSituationOutsideOriginalOfficial.pop()"> លុបព័ត៌មានកូន </UButton>
+                  @click="governStaffSituationOutsideOriginalOfficial.pop()">{{ tr('លុបព័ត៌មានកូន') }}</UButton>
               </div>
               <div class="col-span-12">
-                <label class=" font-[Moul]">ច.៥-ស្ថានភាពស្ថិតនៅក្នុងភាពទំនេរគ្មានបៀវត្ស (សូមបំពេញតាមលំដាប់
-                  ពីថ្មីទៅចាស់)</label>
+                <label class=" font-[Moul]">{{ tr('ច.៥-ស្ថានភាពស្ថិតនៅក្នុងភាពទំនេរគ្មានបៀវត្ស (សូមបំពេញតាមលំដាប់ ពីថ្មីទៅចាស់)') }}</label>
               </div>
               <div class="col-span-12 grid grid-cols-1 lg:grid-cols-4 gap-2"
                 v-for="(item, index) in GovernStaffFreeNoSalary" :key="index">
                 <div>
-                  <label for="">ថ្ងៃខែឆ្នាំចាប់ផ្តើម</label>
+                  <label for="">{{ tr('ថ្ងៃខែឆ្នាំចាប់ផ្តើម') }}</label>
                   <Datepicker v-model="item.startDate" :dayNames="[
                     'Mo',
                     'Tu',
@@ -1767,7 +1752,7 @@ watch(SelectedCityValue, () => {
                   ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
                 </div>
                 <div>
-                  <label for="">ថ្ងៃខែឆ្នាំបញ្ចប់</label>
+                  <label for="">{{ tr('ថ្ងៃខែឆ្នាំបញ្ចប់') }}</label>
                   <Datepicker v-model="item.endDate" :dayNames="[
                     'Mo',
                     'Tu',
@@ -1779,10 +1764,10 @@ watch(SelectedCityValue, () => {
                   ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
                 </div>
                 <div>
-                  <TwInput label="ក្រសួង/ស្ថាប័ន" v-model="item.Oginisationname" placeholder="" type="text" />
+                  <TwInput :label="tr('ក្រសួង/ស្ថាប័ន')" v-model="item.Oginisationname" placeholder="" type="text" />
                 </div>
                 <div>
-                  <TwInput label="ចំនួន(ខែ/ឆ្នាំ)" v-model="item.NumberofMonthandYear" placeholder="" type="text" />
+                  <TwInput :label="tr('ចំនួន(ខែ/ឆ្នាំ)')" v-model="item.NumberofMonthandYear" placeholder="" type="text" />
                 </div>
               </div>
               <div class="col-span-12">
@@ -1791,23 +1776,23 @@ watch(SelectedCityValue, () => {
                   endDate: '',
                   Oginisationname: '',
                   NumberofMonthandYear: '',
-                })"> បន្ថែមព័ត៌មាន </UButton>
+                })">{{ tr('បន្ថែមព័ត៌មាន') }}</UButton>
                 <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4"
-                  @click="GovernStaffFreeNoSalary.pop()"> លុបព័ត៌មានកូន </UButton>
+                  @click="GovernStaffFreeNoSalary.pop()">{{ tr('លុបព័ត៌មានកូន') }}</UButton>
               </div>
               <div class="col-span-12">
-                <label class=" font-[Moul]">ឆ-ការលើសរសើរ ឬដាក់វិន័យ</label>
+                <label class=" font-[Moul]">{{ tr('ឆ-ការលើសរសើរ ឬដាក់វិន័យ') }}</label>
               </div>
               <div class="col-span-12">
-                <label class=" font-[Moul]">ឆ.១-ការលើសរសើរ (គ្រឿងឥស្សរិយយស មេដាយ ប័ណ្ឌសរសើរ)</label>
+                <label class=" font-[Moul]">{{ tr('ឆ.១-ការលើសរសើរ (គ្រឿងឥស្សរិយយស មេដាយ ប័ណ្ឌសរសើរ)') }}</label>
               </div>
               <div class="col-span-12 grid  grid-cols-1 lg:grid-cols-3 gap-1"
                 v-for="(item, index) in GovernStaffLetterAppreciation" :key="index">
                 <div>
-                  <TwInput label="លេខលិខិត" v-model="item.letterNumber" placeholder="" type="text" />
+                  <TwInput :label="tr('លេខលិខិត')" v-model="item.letterNumber" placeholder="" type="text" />
                 </div>
                 <div>
-                  <label for="">កាលបរិច្ចេទ</label>
+                  <label for="">{{ tr('កាលបរិច្ចេទ') }}</label>
                   <Datepicker v-model="item.OfficialDate" :dayNames="[
                     'Mo',
                     'Tu',
@@ -1820,14 +1805,14 @@ watch(SelectedCityValue, () => {
                   </Datepicker>
                 </div>
                 <div>
-                  <TwInput label="ក្រសួង/ស្ថាប័ន/រាជធានី-ខេត្ត(ស្នើសុំ)" v-model="item.RequestedOrginsation"
+                  <TwInput :label="tr('ក្រសួង/ស្ថាប័ន/រាជធានី-ខេត្ត(ស្នើសុំ)')" v-model="item.RequestedOrginsation"
                     placeholder="" type="text" />
                 </div>
                 <div>
-                  <TwInput label="បរិយាយ" v-model="item.LetterDetails" placeholder="" type="text" />
+                  <TwInput :label="tr('បរិយាយ')" v-model="item.LetterDetails" placeholder="" type="text" />
                 </div>
                 <div>
-                  <TwInput label="ប្រភេទ" v-model="item.TypeReceived" placeholder="" type="text" />
+                  <TwInput :label="tr('ប្រភេទ')" v-model="item.TypeReceived" placeholder="" type="text" />
                 </div>
               </div>
               <div class="col-span-12">
@@ -1837,20 +1822,20 @@ watch(SelectedCityValue, () => {
                   RequestedOrginsation: '',
                   LetterDetails: '',
                   TypeReceived: '',
-                })"> បន្ថែមព័ត៌មាន </UButton>
+                })">{{ tr('បន្ថែមព័ត៌មាន') }}</UButton>
                 <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4"
-                  @click="GovernStaffLetterAppreciation.pop()"> លុបព័ត៌មានកូន </UButton>
+                  @click="GovernStaffLetterAppreciation.pop()">{{ tr('លុបព័ត៌មានកូន') }}</UButton>
               </div>
               <div class="col-span-12">
-                <label class=" font-[Moul]"> ឆ.២-ការដាក់វិន័យ</label>
+                <label class=" font-[Moul]">{{ tr('ឆ.២-ការដាក់វិន័យ') }}</label>
               </div>
               <div class="col-span-12 grid  grid-cols-1 lg:grid-cols-3 gap-1"
                 v-for="(item, index) in governStaffFineHistory" :key="index">
                 <div>
-                  <TwInput label="លេខលិខិត" v-model="item.letterNumber" placeholder="" type="text" />
+                  <TwInput :label="tr('លេខលិខិត')" v-model="item.letterNumber" placeholder="" type="text" />
                 </div>
                 <div>
-                  <label for="">កាលបរិច្ចេទ</label>
+                  <label for="">{{ tr('កាលបរិច្ចេទ') }}</label>
                   <Datepicker v-model="item.OffialDate" :dayNames="[
                     'Mo',
                     'Tu',
@@ -1863,14 +1848,14 @@ watch(SelectedCityValue, () => {
                   </Datepicker>
                 </div>
                 <div>
-                  <TwInput label="ក្រសួង/ស្ថាប័ន/រាជធានី-ខេត្ត(ស្នើសុំ)" v-model="item.RequestedOrginsation"
+                  <TwInput :label="tr('ក្រសួង/ស្ថាប័ន/រាជធានី-ខេត្ត(ស្នើសុំ)')" v-model="item.RequestedOrginsation"
                     placeholder="" type="text" />
                 </div>
                 <div>
-                  <TwInput label="បរិយាយ" v-model="item.LetterDetails" placeholder="" type="text" />
+                  <TwInput :label="tr('បរិយាយ')" v-model="item.LetterDetails" placeholder="" type="text" />
                 </div>
                 <div>
-                  <TwInput label="ប្រភេទ" v-model="item.TypeRecieved" placeholder="" type="text" />
+                  <TwInput :label="tr('ប្រភេទ')" v-model="item.TypeRecieved" placeholder="" type="text" />
                 </div>
               </div>
               <div class="col-span-12">
@@ -1880,17 +1865,15 @@ watch(SelectedCityValue, () => {
                   RequestedOrginsation: '',
                   LetterDetails: '',
                   TypeRecieved: '',
-                })"> បន្ថែមព័ត៌មាន </UButton>
+                })">{{ tr('បន្ថែមព័ត៌មាន') }}</UButton>
                 <UButton color="red" icon="i-heroicons-trash" size="lg" class="ml-2 px-4"
-                  @click="governStaffFineHistory.pop()"> លុបព័ត៌មានកូន </UButton>
+                  @click="governStaffFineHistory.pop()">{{ tr('លុបព័ត៌មានកូន') }}</UButton>
               </div>
 
               <div class="col-span-12 lg:col-span-12  flex justify-end gap-1">
                 <UButton :ripple="true" color="gray" square type="button" size="lg"
-                  class="px-4 dark:text-gray-200 dark:!border-gray-800 dark:border" @click="clearEditOfficial()">
-                  កំណត់ឡើងវិញ
-                </UButton>
-                <UButton color="primary" size="lg" class="px-4" type="submit"> រក្សាទុក </UButton>
+                  class="px-4 dark:text-gray-200 dark:!border-gray-800 dark:border" @click="clearEditOfficial()">{{ tr('កំណត់ឡើងវិញ') }}</UButton>
+                <UButton color="primary" size="lg" class="px-4" type="submit">{{ tr('រក្សាទុក') }}</UButton>
               </div>
             </TwForm>
           </div>
@@ -1898,13 +1881,9 @@ watch(SelectedCityValue, () => {
 
         <div v-else>
           <div class="text-center">
-            <h2 class="font-[Moul]">
-              ជីវប្រវត្តិសង្ខេប
-            </h2>
+            <h2 class="font-[Moul]">{{ tr('ជីវប្រវត្តិសង្ខេប') }}</h2>
           </div>
-          <h2 class="font-[Moul]">
-            ក.ព័ត៌មានផ្ទាល់ខ្លួន
-          </h2>
+          <h2 class="font-[Moul]">{{ tr('ក.ព័ត៌មានផ្ទាល់ខ្លួន') }}</h2>
           <TwForm :name="formNameEdit"
             class="grid grid-cols-12 gap-2 bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded-lg p-2 shadow"
             :class="{
@@ -1922,50 +1901,50 @@ watch(SelectedCityValue, () => {
                     :class="(files?.length > 0 ? ' hidden ' : ' ')" alt="">
                 </div>
               </div>
-              <TwFile v-model="files" label="រូបភាព ៤x៦" />
+              <TwFile v-model="files" :label="tr('រូបភាព ៤x៦')" />
             </div>
             <div class="col-span-4">
             </div>
             <div class="col-span-12" v-if="prop.serviceCenterID">
-              <TwSelect label="បុគ្គលិករបស់មណ្ឌល" name="serviceCenterID" v-model="formDataEdit.serviceCenterID" required
-                :items="serviceCenterList" placeholder="សូមជ្រើសរើស" />
+              <TwSelect :label="tr('បុគ្គលិករបស់មណ្ឌល')" name="serviceCenterID" v-model="formDataEdit.serviceCenterID" required
+                :items="serviceCenterList" :placeholder="tr('សូមជ្រើសរើស')" />
               <CustomErrorMessage name="serviceCenterID" />
             </div>
             <div class="col-span-12" v-else-if="prop.organisationID">
-              <TwSelect label="អង្គភាព" name="organisationID" v-model="formDataEdit.organisationID" required
-                :items="organisationList" placeholder="សូមជ្រើសរើស" />
+              <TwSelect :label="tr('អង្គភាព')" name="organisationID" v-model="formDataEdit.organisationID" required
+                :items="organisationList" :placeholder="tr('សូមជ្រើសរើស')" />
               <CustomErrorMessage name="organisationID" />
             </div>
 
 
             <div class="col-span-12 lg:col-span-3 ">
-              <TwInput label="នាមខ្លួន" name="firstName" v-model="formDataEdit.firstName" placeholder="បញ្ចូលឈ្មោះ"
+              <TwInput :label="tr('នាមខ្លួន')" name="firstName" v-model="formDataEdit.firstName" :placeholder="tr('បញ្ចូលឈ្មោះ')"
                 type="text" />
               <CustomErrorMessage name="firstName" />
             </div>
             <div class="col-span-12 lg:col-span-3 ">
-              <TwInput label="នាមត្រកូល" name="lastName" v-model="formDataEdit.lastName" placeholder="បញ្ចូលនាមត្រកូល"
+              <TwInput :label="tr('នាមត្រកូល')" name="lastName" v-model="formDataEdit.lastName" :placeholder="tr('បញ្ចូលនាមត្រកូល')"
                 type="text" />
               <CustomErrorMessage name="lastName" />
             </div>
             <div class="col-span-12 lg:col-span-3 ">
-              <TwSelect label="ភេទ" name="gender" v-model="formDataEdit.gender" required
-                :items="[{ value: 'ប្រុស', label: 'ប្រុស' }, { value: 'ស្រី', label: 'ស្រី' }, { value: 'ផ្សេងៗ', label: 'ផ្សេងៗ' }]"
-                placeholder="សូមជ្រើសរើស" />
+              <TwSelect :label="tr('ភេទ')" name="gender" v-model="formDataEdit.gender" required
+                :items="[{ value: 'ប្រុស', label: tr('ប្រុស') }, { value: 'ស្រី', label: tr('ស្រី') }, { value: 'ផ្សេងៗ', label: tr('ផ្សេងៗ') }]"
+                :placeholder="tr('សូមជ្រើសរើស')" />
               <CustomErrorMessage name="gender" />
             </div>
             <div class="col-span-12 lg:col-span-3 ">
-              <TwInput label="សញ្ជាតិ" name="lastName" v-model="formDataEdit.nationality" placeholder="បញ្ចូលនាមត្រកូល"
+              <TwInput :label="tr('សញ្ជាតិ')" name="lastName" v-model="formDataEdit.nationality" :placeholder="tr('បញ្ចូលនាមត្រកូល')"
                 type="text" />
               <CustomErrorMessage name="lastName" />
             </div>
             <div class="col-span-12 lg:col-span-6 ">
-              <TwInput label="អក្សរពុម្ភឡាតាំង" name="lastName" v-model="formDataEdit.fullnameEN"
-                placeholder="បញ្ចូលនាមត្រកូល" type="text" />
+              <TwInput :label="tr('អក្សរពុម្ភឡាតាំង')" name="lastName" v-model="formDataEdit.fullnameEN"
+                :placeholder="tr('បញ្ចូលនាមត្រកូល')" type="text" />
               <CustomErrorMessage name="lastName" />
             </div>
             <div class="col-span-12 lg:col-span-6">
-              <label for="">ខែឆ្នាំកំណើត</label>
+              <label for="">{{ tr('ខែឆ្នាំកំណើត') }}</label>
               <Datepicker v-model="formDataEdit.dateofbirth" :dayNames="[
                 'Mo',
                 'Tu',
@@ -1977,12 +1956,12 @@ watch(SelectedCityValue, () => {
               ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
             </div>
             <div class="col-span-12 lg:col-span-6">
-              <TwInput label="កម្រិតវប្បធម៌" name="lastName" v-model="formDataEdit.currentQualification"
-                placeholder="បញ្ចូលនាមត្រកូល" type="text" />
+              <TwInput :label="tr('កម្រិតវប្បធម៌')" name="lastName" v-model="formDataEdit.currentQualification"
+                :placeholder="tr('បញ្ចូលនាមត្រកូល')" type="text" />
               <CustomErrorMessage name="lastName" />
             </div>
             <div class="col-span-12 lg:col-span-6">
-              <label for="">ខែឆ្នាំកំណើត</label>
+              <label for="">{{ tr('ខែឆ្នាំកំណើត') }}</label>
               <Datepicker v-model="formDataEdit.workingPeroidStart" :dayNames="[
                 'Mo',
                 'Tu',
@@ -1994,65 +1973,61 @@ watch(SelectedCityValue, () => {
               ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
             </div>
             <div class="col-span-12 ">
-              <TwInput label="ទីកន្លែងកំណើត" name="lastName" v-model="formDataEdit.birthAddress"
-                placeholder="# ផ្លូវ ភូមិ ឃុំ/សង្កាត់ ស្រុក/ខណ្ឌ រាជធានី/ខេត្ត" type="text" />
+              <TwInput :label="tr('ទីកន្លែងកំណើត')" name="lastName" v-model="formDataEdit.birthAddress"
+                :placeholder="tr('# ផ្លូវ ភូមិ ឃុំ/សង្កាត់ ស្រុក/ខណ្ឌ រាជធានី/ខេត្ត')" type="text" />
               <CustomErrorMessage name="lastName" />
             </div>
             <div class="col-span-12">
-              <label class="font-bold">លេខអត្តសញ្ញាណប័ណ្ណខ្មែរ ឬលិខិតឆ្លងដែន</label>
+              <label class="font-bold">{{ tr('លេខអត្តសញ្ញាណប័ណ្ណខ្មែរ ឬលិខិតឆ្លងដែន') }}</label>
               <URadio class="font-[battambang] inline-flex ml-5 font-medium" v-for="methods of SIDOption"
                 :key="methods.value" v-model="SelectSIDOption" v-bind="methods" />
             </div>
             <div class="col-span-12 lg:col-span-6" v-if="SelectSIDOption == SIDOption[0].value">
-              <TwInput label="លេខអត្តសញ្ញាណប័ណ្ណខ្មែរ" name="lastName" v-model="formDataEdit.sID"
-                placeholder="លេខអត្តសញ្ញាណប័ណ្ណខ្មែរ" type="text" />
+              <TwInput :label="tr('លេខអត្តសញ្ញាណប័ណ្ណខ្មែរ')" name="lastName" v-model="formDataEdit.sID"
+                :placeholder="tr('លេខអត្តសញ្ញាណប័ណ្ណខ្មែរ')" type="text" />
               <CustomErrorMessage name="lastName" />
             </div>
             <div class="col-span-12 lg:col-span-6" v-else>
-              <TwInput label="លិខិតឆ្លងដែន" name="lastName" v-model="formDataEdit.passport" placeholder="លិខិតឆ្លងដែន"
+              <TwInput :label="tr('លិខិតឆ្លងដែន')" name="lastName" v-model="formDataEdit.passport" :placeholder="tr('លិខិតឆ្លងដែន')"
                 type="text" />
               <CustomErrorMessage name="lastName" />
             </div>
             <div class="col-span-12 ">
-              <TwInput label="ចូលបម្រើការងារជាបុគ្គលិកកិច្ចសន្យានៅ" name="lastName"
-                v-model="formDataEdit.workingContractAt" placeholder="ចូលបម្រើការងារជាបុគ្គលិកកិច្ចសន្យានៅ"
+              <TwInput :label="tr('ចូលបម្រើការងារជាបុគ្គលិកកិច្ចសន្យានៅ')" name="lastName"
+                v-model="formDataEdit.workingContractAt" :placeholder="tr('ចូលបម្រើការងារជាបុគ្គលិកកិច្ចសន្យានៅ')"
                 type="text" />
               <CustomErrorMessage name="lastName" />
             </div>
             <div class="col-span-12">
-              <label class="font-[Moul]">បទពិសោធន៍ការងារ៖</label>
+              <label class="font-[Moul]">{{ tr('បទពិសោធន៍ការងារ៖') }}</label>
               <URadio class="font-[battambang] inline-flex ml-5 font-medium" v-for="(methods, index) of WorkEXP"
                 :key="index" v-model="SelectWorkEXP" v-bind="methods" />
             </div>
             <div class="col-span-12 lg:col-span-6" v-if="SelectWorkEXP == true">
-              <TwInput label="បំពេញការងារជាមន្រ្តីជាប់កិច្ចសន្យានៅ" name="lastName" v-model="formDataEdit.workingEXPYes"
-                placeholder="បំពេញការងារជាមន្រ្តីជាប់កិច្ចសន្យានៅ" type="text" />
+              <TwInput :label="tr('បំពេញការងារជាមន្រ្តីជាប់កិច្ចសន្យានៅ')" name="lastName" v-model="formDataEdit.workingEXPYes"
+                :placeholder="tr('បំពេញការងារជាមន្រ្តីជាប់កិច្ចសន្យានៅ')" type="text" />
               <CustomErrorMessage name="lastName" />
             </div>
             <div class="col-span-12">
-              <h2 class="font-[Moul]">
-                ខ.ព័ត៌មានគ្រួសារ
-              </h2>
+              <h2 class="font-[Moul]">{{ tr('ខ.ព័ត៌មានគ្រួសារ') }}</h2>
             </div>
             <div class="col-span-12 lg:col-span-6">
-              <TwInput label="អាសយដ្ឋានបច្ចុប្បន្ន" name="lastName" v-model="formDataEdit.familyAddress"
-                placeholder="# ផ្លូវ ភូមិ ឃុំ/សង្កាត់ ស្រុក/ខណ្ឌ រាជធានី/ខេត្ត" type="text" />
+              <TwInput :label="tr('អាសយដ្ឋានបច្ចុប្បន្ន')" name="lastName" v-model="formDataEdit.familyAddress"
+                :placeholder="tr('# ផ្លូវ ភូមិ ឃុំ/សង្កាត់ ស្រុក/ខណ្ឌ រាជធានី/ខេត្ត')" type="text" />
             </div>
             <div class="col-span-12 lg:col-span-6">
-              <TwInput label="លេខទូរស័ព្ទ" name="lastName" v-model="formDataEdit.familyPhoneNumber"
-                placeholder="លេខទូរស័ព្ទ" type="text" />
+              <TwInput :label="tr('លេខទូរស័ព្ទ')" name="lastName" v-model="formDataEdit.familyPhoneNumber"
+                :placeholder="tr('លេខទូរស័ព្ទ')" type="text" />
             </div>
             <div class="col-span-12 lg:col-span-6">
-              <TwInput label="អ៊ីម៉ែល" name="lastName" v-model="formDataEdit.familyEmail" placeholder="អ៊ីម៉ែល"
+              <TwInput :label="tr('អ៊ីម៉ែល')" name="lastName" v-model="formDataEdit.familyEmail" :placeholder="tr('អ៊ីម៉ែល')"
                 type="text" />
             </div>
 
             <div class="col-span-12  flex justify-end gap-1">
               <UButton :ripple="true" color="gray" square type="button" size="lg"
-                class=" dark:text-gray-200 dark:!border-gray-800 dark:border" @click="clearEdit()">
-                កំណត់ឡើងវិញ
-              </UButton>
-              <UButton color="primary" size="lg" class="px-4" type="submit"> រក្សាទុក </UButton>
+                class=" dark:text-gray-200 dark:!border-gray-800 dark:border" @click="clearEdit()">{{ tr('កំណត់ឡើងវិញ') }}</UButton>
+              <UButton color="primary" size="lg" class="px-4" type="submit">{{ tr('រក្សាទុក') }}</UButton>
             </div>
           </TwForm>
         </div>

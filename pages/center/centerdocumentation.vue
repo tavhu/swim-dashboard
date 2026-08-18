@@ -10,7 +10,7 @@ const permissionStore = usePermissionStore();
 const { t } = useI18n();
 
 useHead({
-  title: "ឯកសារកាលប្បវត្តិ",
+  title: tr("ឯកសារកាលប្បវត្តិ"),
 });
 
 
@@ -37,12 +37,12 @@ const actvityPlanLabels: { [key: string]: string } = {
 
 // --- Columns --- //
 const columns = [
-  { key: 'ServiceCenter.nameKH', label: 'មជ្ឈមណ្ឌល', sortable: true, class: 'w-2/12' },
-  { key: 'yearPlan', label: 'ឆ្នាំ', sortable: true, class: 'w-1/12' },
-  { key: 'actvityPlan', label: 'ផែនការសកម្មភាព', sortable: true, class: 'w-3/12' },
-  { key: 'note', label: 'កំណត់ចំណាំ', sortable: true, class: 'w-3/12' },
-  { key: 'filePath', label: 'ឯកសារ', sortable: false, class: 'w-2/12' },
-  { key: 'actions', label: 'សកម្មភាព', class: 'w-1/12' },
+  { key: 'ServiceCenter.nameKH', label: tr('មជ្ឈមណ្ឌល'), sortable: true, class: 'w-2/12' },
+  { key: 'yearPlan', label: tr('ឆ្នាំ'), sortable: true, class: 'w-1/12' },
+  { key: 'actvityPlan', label: tr('ផែនការសកម្មភាព'), sortable: true, class: 'w-3/12' },
+  { key: 'note', label: tr('កំណត់ចំណាំ'), sortable: true, class: 'w-3/12' },
+  { key: 'filePath', label: tr('ឯកសារ'), sortable: false, class: 'w-2/12' },
+  { key: 'actions', label: tr('សកម្មភាព'), class: 'w-1/12' },
 ];
 
 /**
@@ -67,7 +67,7 @@ const fetcher = (q: any) =>
 const actionItems = (row: any) => [
   [
     {
-      label: 'កែសម្រួល',
+      label: tr('កែសម្រួល'),
       icon: 'i-heroicons-pencil-square-20-solid',
       click: () => router.push(`/center/plan?id=${row.id}`),
       disabled: !canEdit.value,
@@ -75,7 +75,7 @@ const actionItems = (row: any) => [
   ],
   [
     {
-      label: 'លុបចេញ',
+      label: tr('លុបចេញ'),
       icon: 'i-heroicons-trash-20-solid',
       class: 'text-red-600 dark:text-red-400',
       iconClass: 'text-red-600 dark:text-red-400',
@@ -103,12 +103,8 @@ async function deletePlan(row: any) {
 <template>
   <div>
     <div class="flex justify-between items-center mb-4">
-      <h1 class="text-2xl font-[Moul] text-primary">
-        ផែនការមជ្ឈមណ្ឌល
-      </h1>
-      <UButton v-if="canCreate" icon="i-heroicons-plus-circle-20-solid" @click="router.push('/center/plan')">
-        បន្ថែមថ្មី
-      </UButton>
+      <h1 class="text-2xl font-[Moul] text-primary">{{ tr('ផែនការមជ្ឈមណ្ឌល') }}</h1>
+      <UButton v-if="canCreate" icon="i-heroicons-plus-circle-20-solid" @click="router.push('/center/plan')">{{ tr('បន្ថែមថ្មី') }}</UButton>
     </div>
 
     <DataTableServer
@@ -149,7 +145,7 @@ async function deletePlan(row: any) {
             </a>
           </div>
         </div>
-        <span v-else class="text-gray-500 dark:text-gray-400">គ្មានឯកសារ</span>
+        <span v-else class="text-gray-500 dark:text-gray-400">{{ tr('គ្មានឯកសារ') }}</span>
       </template>
 
       <template #actions-data="{ row }">

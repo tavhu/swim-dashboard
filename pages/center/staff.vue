@@ -30,19 +30,19 @@ const contractTable = ref<any>(null);
 const officialTable = ref<any>(null);
 
 const contractColumns = [
-  { key: "name", label: "ឈ្មោះ", sortable: true },
-  { key: "position", label: "តួនាទី", sortable: true, class: "w-[180px]" },
-  { key: "telephone", label: "ទូរស័ព្ទ", sortable: false, class: "w-[150px]" },
-  { key: "center", label: "មណ្ឌល", sortable: false },
-  { key: "actions", label: "សកម្មភាព", class: "w-[200px]" },
+  { key: "name", label: tr("ឈ្មោះ"), sortable: true },
+  { key: "position", label: tr("តួនាទី"), sortable: true, class: "w-[180px]" },
+  { key: "telephone", label: tr("ទូរស័ព្ទ"), sortable: false, class: "w-[150px]" },
+  { key: "center", label: tr("មណ្ឌល"), sortable: false },
+  { key: "actions", label: tr("សកម្មភាព"), class: "w-[200px]" },
 ];
 
 const officialColumns = [
-  { key: "name", label: "ឈ្មោះ", sortable: true },
-  { key: "gender", label: "ភេទ", sortable: true, class: "w-[100px]" },
-  { key: "CurrentRank", label: "ឋានៈ", sortable: true, class: "w-[160px]" },
-  { key: "center", label: "មណ្ឌល", sortable: false },
-  { key: "actions", label: "សកម្មភាព", class: "w-[200px]" },
+  { key: "name", label: tr("ឈ្មោះ"), sortable: true },
+  { key: "gender", label: tr("ភេទ"), sortable: true, class: "w-[100px]" },
+  { key: "CurrentRank", label: tr("ឋានៈ"), sortable: true, class: "w-[160px]" },
+  { key: "center", label: tr("មណ្ឌល"), sortable: false },
+  { key: "actions", label: tr("សកម្មភាព"), class: "w-[200px]" },
 ];
 
 const makeFetcher = (kind: "Contract" | "Official") => (q: any) =>
@@ -111,9 +111,9 @@ const openRegisterForm = (kind: string) => {
   <div class="font-[Battambang]">
     <div class="mt-5">
       <div class="flex items-center justify-between gap-4">
-        <h2 class="text-md font-[Moul] text-primary lg:text-2xl">បញ្ចីមន្ត្រីកិច្ចសន្យា</h2>
+        <h2 class="text-md font-[Moul] text-primary lg:text-2xl">{{ tr('បញ្ចីមន្ត្រីកិច្ចសន្យា') }}</h2>
         <UButton color="primary" size="xl" :disabled="readOnly" @click="openRegisterForm('Contract')">
-          <span class="font-[Moul] text-sm lg:text-xl">ចុះឈ្មោះមន្ត្រីកិច្ចសន្យា</span>
+          <span class="font-[Moul] text-sm lg:text-xl">{{ tr('ចុះឈ្មោះមន្ត្រីកិច្ចសន្យា') }}</span>
         </UButton>
       </div>
       <hr class="my-2 border dark:border-gray-700" />
@@ -143,13 +143,9 @@ const openRegisterForm = (kind: string) => {
         <template #actions-data="{ row }">
           <div class="flex gap-2">
             <UButton icon="i-heroicons-pencil-square" size="sm" color="primary" :disabled="readOnly"
-              @click="editRecord(row.id, 'Contract')">
-              កែសម្រួល
-            </UButton>
+              @click="editRecord(row.id, 'Contract')">{{ tr('កែសម្រួល') }}</UButton>
             <UButton icon="i-heroicons-trash" size="sm" color="red" :disabled="readOnly"
-              @click="deleteRecord(row, 'Contract')">
-              លុបចេញ
-            </UButton>
+              @click="deleteRecord(row, 'Contract')">{{ tr('លុបចេញ') }}</UButton>
           </div>
         </template>
       </DataTableServer>
@@ -157,9 +153,9 @@ const openRegisterForm = (kind: string) => {
 
     <div class="mt-8">
       <div class="flex items-center justify-between gap-4">
-        <h2 class="text-md font-[Moul] text-primary lg:text-2xl">បញ្ចីមន្ត្រីរាជការ</h2>
+        <h2 class="text-md font-[Moul] text-primary lg:text-2xl">{{ tr('បញ្ចីមន្ត្រីរាជការ') }}</h2>
         <UButton color="primary" size="xl" :disabled="readOnly" @click="openRegisterForm('Official')">
-          <span class="font-[Moul] text-sm lg:text-xl">ចុះឈ្មោះមន្ត្រីរាជការ</span>
+          <span class="font-[Moul] text-sm lg:text-xl">{{ tr('ចុះឈ្មោះមន្ត្រីរាជការ') }}</span>
         </UButton>
       </div>
       <hr class="my-2 border dark:border-gray-700" />
@@ -188,13 +184,9 @@ const openRegisterForm = (kind: string) => {
         <template #actions-data="{ row }">
           <div class="flex gap-2">
             <UButton icon="i-heroicons-pencil-square" size="sm" color="primary" :disabled="readOnly"
-              @click="editRecord(row.id, 'Official')">
-              កែសម្រួល
-            </UButton>
+              @click="editRecord(row.id, 'Official')">{{ tr('កែសម្រួល') }}</UButton>
             <UButton icon="i-heroicons-trash" size="sm" color="red" :disabled="readOnly"
-              @click="deleteRecord(row, 'Official')">
-              លុបចេញ
-            </UButton>
+              @click="deleteRecord(row, 'Official')">{{ tr('លុបចេញ') }}</UButton>
           </div>
         </template>
       </DataTableServer>

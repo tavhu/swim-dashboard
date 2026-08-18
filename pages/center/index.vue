@@ -19,7 +19,7 @@ import gazetteers from "~/store/data/gazetteers";
 const { data: userDataAuth } = useAuth()
 
 useHead({
-  title: "ចុះឈ្មោះមណ្ឌល",
+  title: tr("ចុះឈ្មោះមណ្ឌល"),
 });
 
 let readOnly = checkIfPageReadOnly()
@@ -341,9 +341,7 @@ const cityList = ref(temCity)
 <template>
   <div>
     <h2 class="text-2xl font-[Moul] text-primary"> {{ edit ? `កែព័ត៌មានមណ្ឌល` : `ចុះឈ្មោះមណ្ឌល` }} </h2>
-    <TwButton variant="danger" class="font-[battambang]" v-if="readOnly" :disabled="true">
-      អ្នកគ្មានសិទ្ធកែប្រែ គណនីនេះទេ
-    </TwButton>
+    <TwButton variant="danger" class="font-[battambang]" v-if="readOnly" :disabled="true">{{ tr('អ្នកគ្មានសិទ្ធកែប្រែ គណនីនេះទេ') }}</TwButton>
     <hr class="my-2 border dark:border-gray-700" />
 
     <div class="font-[Battambang]">
@@ -357,7 +355,7 @@ const cityList = ref(temCity)
         }">
         <div class="col-span-12 flex justify-start  gap-3 mb-5">
           <TwFeather type="file-text" />
-          <h1 class="text-lg"> ព័ត៌មានលំអិត </h1>
+          <h1 class="text-lg">{{ tr('ព័ត៌មានលំអិត') }}</h1>
         </div>
         <div class="col-span-12 lg:col-span-6">
           <div class="vt-relative vt-col-span-12 vt-flex vt-items-center vt-justify-center">
@@ -367,41 +365,41 @@ const cityList = ref(temCity)
                 alt="">
             </div>
           </div>
-          <TwFile v-model="files" label="រូបភាព Logo" />
+          <TwFile v-model="files" :label="tr('រូបភាព Logo')" />
         </div>
         <div class="cols-span-12"></div>
         <div class="col-span-12 lg:col-span-6">
-          <TwInput label="ឈ្មោះជាភាសារខ្មែរ" name="nameKH" v-model="formData.nameKH" placeholder="ឈ្មោះជាភាសារខ្មែរ"
+          <TwInput :label="tr('ឈ្មោះជាភាសារខ្មែរ')" name="nameKH" v-model="formData.nameKH" :placeholder="tr('ឈ្មោះជាភាសារខ្មែរ')"
             type="text" />
           <CustomErrorMessage name="nameKH" />
         </div>
         <div class="col-span-12 lg:col-span-6">
-          <TwInput label="ឈ្មោះជាភាសារអង់គ្លេស" name="nameEN" v-model="formData.nameEN"
-            placeholder="ឈ្មោះជាភាសារអង់គ្លេស" type="text" />
+          <TwInput :label="tr('ឈ្មោះជាភាសារអង់គ្លេស')" name="nameEN" v-model="formData.nameEN"
+            :placeholder="tr('ឈ្មោះជាភាសារអង់គ្លេស')" type="text" />
           <CustomErrorMessage name="nameEN" />
         </div>
         <div class="col-span-12 lg:col-span-6">
-          <TwSelect :disabled="readOnly" label="ប្រភេទស្ថាប័ន" name="type" v-model="formData.type" :items="orgType"
-            placeholder="សូមជ្រើសរើស" />
+          <TwSelect :disabled="readOnly" :label="tr('ប្រភេទស្ថាប័ន')" name="type" v-model="formData.type" :items="orgType"
+            :placeholder="tr('សូមជ្រើសរើស')" />
           <CustomErrorMessage name="type" />
         </div>
         <div class="col-span-12 lg:col-span-6">
-          <TwSelect :disabled="readOnly" label="ស្ថាប័ន" name="organisationID" v-model="formData.organisationID"
-            :items="organisationList" placeholder="សូមជ្រើសរើស" />
+          <TwSelect :disabled="readOnly" :label="tr('ស្ថាប័ន')" name="organisationID" v-model="formData.organisationID"
+            :items="organisationList" :placeholder="tr('សូមជ្រើសរើស')" />
           <CustomErrorMessage name="organisationID" />
         </div>
         <div class="col-span-12 flex justify-start gap-3 mt-5 mb-5">
           <TwFeather type="user" />
-          <h1 class="text-lg"> ព័ត៌មានទំនាក់ទំនង </h1>
+          <h1 class="text-lg">{{ tr('ព័ត៌មានទំនាក់ទំនង') }}</h1>
         </div>
         <div class="col-span-12 lg:col-span-6">
-          <TwInput label="ឈ្មោះនាយក" name="directorName" v-model="formData.directorName" placeholder="ឈ្មោះនាយក"
+          <TwInput :label="tr('ឈ្មោះនាយក')" name="directorName" v-model="formData.directorName" :placeholder="tr('ឈ្មោះនាយក')"
             type="text" />
           <CustomErrorMessage name="directorName" />
         </div>
 
         <div class="col-span-12 lg:col-span-6">
-          <TwInput label="លេខទូរស័ព្ទ" name="phoneNumber" v-model="formData.phoneNumber" placeholder="លេខទូរស័ព្ទ"
+          <TwInput :label="tr('លេខទូរស័ព្ទ')" name="phoneNumber" v-model="formData.phoneNumber" :placeholder="tr('លេខទូរស័ព្ទ')"
             type="text" />
           <CustomErrorMessage name="phoneNumber" />
         </div>
@@ -410,113 +408,107 @@ const cityList = ref(temCity)
           <CustomErrorMessage name="PoBox" />
         </div>
         <div class="col-span-12 lg:col-span-6">
-          <TwInput label="អុីមែល" name="email" v-model="formData.email" placeholder="អុីមែល" type="text" />
+          <TwInput :label="tr('អុីមែល')" name="email" v-model="formData.email" :placeholder="tr('អុីមែល')" type="text" />
           <CustomErrorMessage name="email" />
         </div>
         <div class="col-span-12 lg:col-span-6">
-          <TwInput label="គេហទំព័រ" name="website" v-model="formData.website" placeholder="គេហទំព័រ" type="text" />
+          <TwInput :label="tr('គេហទំព័រ')" name="website" v-model="formData.website" :placeholder="tr('គេហទំព័រ')" type="text" />
           <CustomErrorMessage name="website" />
         </div>
         <div class="col-span-12 lg:col-span-6">
-          <TwInput label="ទីតាំក្នុង Google Map" name="locationMap" v-model="formData.locationMap"
-            placeholder="ទីតាំក្នុង Google Map" type="text" />
+          <TwInput :label="tr('ទីតាំក្នុង Google Map')" name="locationMap" v-model="formData.locationMap"
+            :placeholder="tr('ទីតាំក្នុង Google Map')" type="text" />
           <CustomErrorMessage name="locationMap" />
         </div>
         <div class="col-span-12 flex justify-start gap-3 mt-5 mb-5">
           <TwFeather type="map-pin" />
-          <h1 class="text-lg"> អាសយដ្ឋាន </h1>
+          <h1 class="text-lg">{{ tr('អាសយដ្ឋាន') }}</h1>
         </div>
         <div class="col-span-12 lg:col-span-6">
-          <TwSelect :disabled="readOnly" label="រាជធានី/ខេត្ត" name="city" v-model="formData.City" required
-            :items="cityList" placeholder="សូមជ្រើសរើស" />
+          <TwSelect :disabled="readOnly" :label="tr('រាជធានី/ខេត្ត')" name="city" v-model="formData.City" required
+            :items="cityList" :placeholder="tr('សូមជ្រើសរើស')" />
           <CustomErrorMessage name="type" />
 
         </div>
         <div class="col-span-12 lg:col-span-6">
-          <label for="" class=" font-bold">
-            ខណ្ឌ/ស្រុក
-          </label>
+          <label for="" class=" font-bold">{{ tr('ខណ្ឌ/ស្រុក') }}</label>
           <ClientOnly>
             <USelect :disabled="readOnly" name="District" required v-model="formData.District"
-              :options="temDistricstList" placeholder="សូមជ្រើសរើស" size="lg" />
+              :options="temDistricstList" :placeholder="tr('សូមជ្រើសរើស')" size="lg" />
           </ClientOnly>
           <CustomErrorMessage name="type" />
         </div>
         <div class="col-span-12 lg:col-span-6">
-          <label for="" class=" font-bold">
-            សង្កាត់/ឃុំ
-          </label>
+          <label for="" class=" font-bold">{{ tr('សង្កាត់/ឃុំ') }}</label>
           <ClientOnly>
             <USelect :disabled="readOnly" name="Commute" required v-model="formData.Commute" :options="temCommutesList"
-              placeholder="សូមជ្រើសរើស" size="lg" />
+              :placeholder="tr('សូមជ្រើសរើស')" size="lg" />
           </ClientOnly>
           <CustomErrorMessage name="type" />
         </div>
         <div class="col-span-12 lg:col-span-6">
-          <label for="" class=" font-bold">
-            ភូមិ
-          </label>
+          <label for="" class=" font-bold">{{ tr('ភូមិ') }}</label>
           <ClientOnly>
             <USelect :disabled="readOnly" name="Commute" required v-model="formData.Village" :options="tempVillageList"
-              placeholder="សូមជ្រើសរើស" size="lg" />
+              :placeholder="tr('សូមជ្រើសរើស')" size="lg" />
           </ClientOnly>
           <CustomErrorMessage name="type" />
         </div>
         <div class="col-span-12 lg:col-span-6">
-          <TwInput label="អាសយដ្ឋាន" name="address" v-model="formData.Address" placeholder="ផ្ទះលេខ ផ្លូវលេខ"
+          <TwInput :label="tr('អាសយដ្ឋាន')" name="address" v-model="formData.Address" :placeholder="tr('ផ្ទះលេខ ផ្លូវលេខ')"
             type="text" />
           <CustomErrorMessage name="address" />
         </div>
         <div class="col-span-12 flex justify-start gap-3 mt-5 mb-5">
           <TwFeather type="droplet" />
-          <h1 class="text-lg font-bold"> ទិដ្ឋភាពទូទៅ </h1>
+          <h1 class="text-lg font-bold">{{ tr('ទិដ្ឋភាពទូទៅ') }}</h1>
         </div>
         <div class="col-span-12">
-          <TwTextarea name="overview" v-model="formData.overview" placeholder="បញ្ចូលទិដ្ឋភាពទូទៅ" class="h-[5rem]"
+          <TwTextarea name="overview" v-model="formData.overview" :placeholder="tr('បញ្ចូលទិដ្ឋភាពទូទៅ')" class="h-[5rem]"
             type="text" />
           <CustomErrorMessage name="overview" />
         </div>
         <div class="col-span-12 flex justify-start gap-3 mt-5 mb-5">
           <TwFeather type="loader" />
-          <h1 class="text-lg font-bold"> ប្រវត្តិសាស្ត្រ </h1>
+          <h1 class="text-lg font-bold">{{ tr('ប្រវត្តិសាស្ត្រ') }}</h1>
         </div>
         <div class="col-span-12">
-          <TwTextarea name="background" v-model="formData.background" placeholder="បញ្ចូលប្រវត្តិសាស្ត្រ"
+          <TwTextarea name="background" v-model="formData.background" :placeholder="tr('បញ្ចូលប្រវត្តិសាស្ត្រ')"
             class="h-[5rem]" type="text" />
           <CustomErrorMessage name="background" />
         </div>
         <div class="col-span-12 flex justify-start gap-3 mt-5 mb-5">
           <TwFeather type="send" />
-          <h1 class="text-lg font-bold"> បេសកកម្ម </h1>
+          <h1 class="text-lg font-bold">{{ tr('បេសកកម្ម') }}</h1>
         </div>
         <div class="col-span-12">
-          <TwTextarea name="mission" v-model="formData.mission" placeholder="បញ្ចូលបេសកកម្ម" class="h-[5rem]"
+          <TwTextarea name="mission" v-model="formData.mission" :placeholder="tr('បញ្ចូលបេសកកម្ម')" class="h-[5rem]"
             type="text" />
           <CustomErrorMessage name="mission" />
         </div>
         <div class="col-span-12 flex justify-start gap-3 mt-5 mb-5">
           <TwFeather type="award" />
-          <h1 class="text-lg font-bold"> ចក្ខុវិស័យ </h1>
+          <h1 class="text-lg font-bold">{{ tr('ចក្ខុវិស័យ') }}</h1>
         </div>
         <div class="col-span-12">
-          <TwTextarea name="vision" v-model="formData.vision" placeholder="បញ្ចូលចក្ខុវិស័យ" class="h-[5rem]"
+          <TwTextarea name="vision" v-model="formData.vision" :placeholder="tr('បញ្ចូលចក្ខុវិស័យ')" class="h-[5rem]"
             type="text" />
           <CustomErrorMessage name="vision" />
         </div>
         <div class="col-span-12 flex justify-start gap-3 mt-5 mb-5">
           <TwFeather type="navigation" />
-          <h1 class="text-lg font-bold"> គោលដៅ </h1>
+          <h1 class="text-lg font-bold">{{ tr('គោលដៅ') }}</h1>
         </div>
         <div class="col-span-12">
-          <TwTextarea name="goal" v-model="formData.goal" placeholder="បញ្ចូលគោលដៅ" class="h-[5rem]" type="text" />
+          <TwTextarea name="goal" v-model="formData.goal" :placeholder="tr('បញ្ចូលគោលដៅ')" class="h-[5rem]" type="text" />
           <CustomErrorMessage name="goal" />
         </div>
         <div class="col-span-12 flex justify-start gap-3 mt-5 mb-5">
           <TwFeather type="message-circle" />
-          <h1 class="text-lg font-bold"> សង្ខេប​គម្រោង </h1>
+          <h1 class="text-lg font-bold">{{ tr('សង្ខេប​គម្រោង') }}</h1>
         </div>
         <div class="col-span-12">
-          <TwTextarea name="ProjectSummary" v-model="formData.ProjectSummary" placeholder="បញ្ចូលសង្ខេប​គម្រោង"
+          <TwTextarea name="ProjectSummary" v-model="formData.ProjectSummary" :placeholder="tr('បញ្ចូលសង្ខេប​គម្រោង')"
             class="h-[5rem]" type="text" />
           <CustomErrorMessage name="ProjectSummary" />
         </div>
@@ -527,12 +519,10 @@ const cityList = ref(temCity)
         </div>
         <div class="col-span-12 flex justify-end gap-1 ">
           <UButton :disabled="readOnly" color="gray" type="button" square size="lg"
-            class="px-4 dark:text-gray-200 dark:!border-gray-800 dark:border" @click="clear()">
-            កំណត់ឡើងវិញ
-          </UButton>
-          <UButton color="primary" type="submit" size="lg" class="px-4" :disabled="readOnly"> រក្សាទុក </UButton>
+            class="px-4 dark:text-gray-200 dark:!border-gray-800 dark:border" @click="clear()">{{ tr('កំណត់ឡើងវិញ') }}</UButton>
+          <UButton color="primary" type="submit" size="lg" class="px-4" :disabled="readOnly">{{ tr('រក្សាទុក') }}</UButton>
           <UButton v-if="showGoBackButton" color="blue" type="button" size="lg" class="px-4 font-[Battambang]"
-            @click="navigateTo('/center/list')"> ត្រលប់ក្រោយ </UButton>
+            @click="navigateTo('/center/list')">{{ tr('ត្រលប់ក្រោយ') }}</UButton>
         </div>
       </TwForm>
     </div>

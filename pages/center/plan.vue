@@ -11,7 +11,7 @@ const permissionStore = usePermissionStore();
 
 
 useHead({
-  title: "ឯកសារកាលប្បវត្តិ",
+  title: tr("ឯកសារកាលប្បវត្តិ"),
 });
 
 // --- Page Mode & Permissions --- //
@@ -219,41 +219,41 @@ function removeExistingFile(index: number) {
       </div>
 
       <div class="col-span-12 lg:col-span-6">
-        <TwSelect label="មណ្ឌល" name="serviceCenterID" v-model="formData.serviceCenterID" required
-          :items="serviceCenterList" placeholder="សូមជ្រើសរើស" :disabled="isCenterUser || readOnly" />
+        <TwSelect :label="tr('មណ្ឌល')" name="serviceCenterID" v-model="formData.serviceCenterID" required
+          :items="serviceCenterList" :placeholder="tr('សូមជ្រើសរើស')" :disabled="isCenterUser || readOnly" />
         <CustomErrorMessage name="serviceCenterID" />
       </div>
 
       <div class="col-span-12 lg:col-span-6">
-        <TwSelect label="ផែនការសកម្មភាព" name="actvityPlan" required v-model="formData.actvityPlan" :items="[
-          { value: 'yearly', label: 'ផែនការប្រចាំឆ្នាំ' },
-          { value: 'threeyear', label: 'ផែនការមធ្យម' },
-          { value: 'longterm', label: 'ផែនការរយៈពេលវែង' },
-        ]" placeholder="សូមជ្រើសរើស" :disabled="readOnly" />
+        <TwSelect :label="tr('ផែនការសកម្មភាព')" name="actvityPlan" required v-model="formData.actvityPlan" :items="[
+          { value: 'yearly', label: tr('ផែនការប្រចាំឆ្នាំ') },
+          { value: 'threeyear', label: tr('ផែនការមធ្យម') },
+          { value: 'longterm', label: tr('ផែនការរយៈពេលវែង') },
+        ]" :placeholder="tr('សូមជ្រើសរើស')" :disabled="readOnly" />
         <CustomErrorMessage name="actvityPlan" />
       </div>
 
       <div class="col-span-12 lg:col-span-6">
-        <TwInput label="កំណត់ចំណាំ" name="note" v-model="formData.note" placeholder="កំណត់ចំណាំ" type="text"
+        <TwInput :label="tr('កំណត់ចំណាំ')" name="note" v-model="formData.note" :placeholder="tr('កំណត់ចំណាំ')" type="text"
           :disabled="readOnly" />
         <CustomErrorMessage name="note" />
       </div>
 
       <div class="col-span-12 lg:col-span-6">
-        <TwInput label="ផែនការឆ្នាំ" name="yearPlan" v-model="formData.yearPlan" placeholder="YYYY" type="text"
+        <TwInput :label="tr('ផែនការឆ្នាំ')" name="yearPlan" v-model="formData.yearPlan" placeholder="YYYY" type="text"
           :disabled="readOnly" required />
         <CustomErrorMessage name="yearPlan" />
       </div>
 
       <!-- File Upload Section -->
       <div class="col-span-12" v-if="canSave">
-        <TwFile v-model="files" :multiple="true" label="បន្ថែមឯកសារថ្មី" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
+        <TwFile v-model="files" :multiple="true" :label="tr('បន្ថែមឯកសារថ្មី')" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
           :disabled="readOnly" />
       </div>
 
       <!-- Existing Files Display -->
       <div class="col-span-12" v-if="isEditMode && existingFiles.length > 0">
-        <p class="font-medium mb-2">ឯកសារបច្ចុប្បន្ន:</p>
+        <p class="font-medium mb-2">{{ tr('ឯកសារបច្ចុប្បន្ន:') }}</p>
         <ul class="list-disc list-inside space-y-1">
           <li v-for="(file, index) in existingFiles" :key="index" class="flex items-center justify-between">
             <a :href="file" target="_blank" class="text-blue-500 hover:underline truncate">{{ file.split('/').pop()

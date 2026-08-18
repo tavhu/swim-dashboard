@@ -27,15 +27,15 @@ const generalFields = computed(() => {
   const c = serviceCenter.value;
   if (!c) return [];
   return [
-    { label: "នាយក", value: c.directorName },
-    { label: "ប្រភេទ", value: c.type },
-    { label: "អ៊ីមែល", value: c.email, href: c.email ? `mailto:${c.email}` : null },
-    { label: "ទូរស័ព្ទ", value: c.phoneNumber, href: c.phoneNumber ? `tel:${c.phoneNumber}` : null },
-    { label: "ប្រអប់សំបុត្រ", value: c.PoBox },
-    { label: "គេហទំព័រ", value: c.website, href: c.website },
-    { label: "កាលបរិច្ឆេទបង្កើត", value: formatDate(c.createdAt) },
-    { label: "ផែនទីទីតាំង", value: c.locationMap, href: c.locationMap },
-    { label: "អាសយដ្ឋាន", value: c.Address, wide: true },
+    { label: tr("នាយក"), value: c.directorName },
+    { label: tr("ប្រភេទ"), value: c.type },
+    { label: tr("អ៊ីមែល"), value: c.email, href: c.email ? `mailto:${c.email}` : null },
+    { label: tr("ទូរស័ព្ទ"), value: c.phoneNumber, href: c.phoneNumber ? `tel:${c.phoneNumber}` : null },
+    { label: tr("ប្រអប់សំបុត្រ"), value: c.PoBox },
+    { label: tr("គេហទំព័រ"), value: c.website, href: c.website },
+    { label: tr("កាលបរិច្ឆេទបង្កើត"), value: formatDate(c.createdAt) },
+    { label: tr("ផែនទីទីតាំង"), value: c.locationMap, href: c.locationMap },
+    { label: tr("អាសយដ្ឋាន"), value: c.Address, wide: true },
   ];
 });
 
@@ -43,10 +43,10 @@ const locationFields = computed(() => {
   const c = serviceCenter.value;
   if (!c) return [];
   return [
-    { label: "ក្រុង/ខេត្ត", value: c.City },
-    { label: "ស្រុក/ខណ្ឌ", value: c.District },
-    { label: "ឃុំ/សង្កាត់", value: c.Commute },
-    { label: "ភូមិ", value: c.Village },
+    { label: tr("ក្រុង/ខេត្ត"), value: c.City },
+    { label: tr("ស្រុក/ខណ្ឌ"), value: c.District },
+    { label: tr("ឃុំ/សង្កាត់"), value: c.Commute },
+    { label: tr("ភូមិ"), value: c.Village },
   ];
 });
 
@@ -54,12 +54,12 @@ const proseSections = computed(() => {
   const c = serviceCenter.value;
   if (!c) return [];
   return [
-    { title: "ទិដ្ឋភាពទូទៅ", body: c.overview },
-    { title: "ផ្ទៃរឿង", body: c.background },
-    { title: "បេសកកម្ម", body: c.mission },
-    { title: "ចក្ខុវិស័យ", body: c.vision },
-    { title: "គោលដៅ", body: c.goal },
-    { title: "សេចក្តីសង្ខេបគម្រោង", body: c.ProjectSummary },
+    { title: tr("ទិដ្ឋភាពទូទៅ"), body: c.overview },
+    { title: tr("ផ្ទៃរឿង"), body: c.background },
+    { title: tr("បេសកកម្ម"), body: c.mission },
+    { title: tr("ចក្ខុវិស័យ"), body: c.vision },
+    { title: tr("គោលដៅ"), body: c.goal },
+    { title: tr("សេចក្តីសង្ខេបគម្រោង"), body: c.ProjectSummary },
   ].filter((s) => s.body);
 });
 
@@ -86,11 +86,11 @@ const staffGroups = computed(() => {
     }));
   return [
     {
-      title: "បុគ្គលិកកិច្ចសន្យា",
+      title: tr("បុគ្គលិកកិច្ចសន្យា"),
       rows: map(c.staff, (s) => [s.firstName, s.lastName].filter(Boolean).join(" "), (s) => s.fullnameEN, "familyEmail", "familyPhoneNumber"),
     },
     {
-      title: "បុគ្គលិករដ្ឋ",
+      title: tr("បុគ្គលិករដ្ឋ"),
       rows: map(c.governStaff, (s) => [s.firstNameKH, s.lastNameKH].filter(Boolean).join(" "), (s) => [s.firstNameEN, s.lastNameEN].filter(Boolean).join(" "), "email", "telephone"),
     },
   ].filter((g) => g.rows.length);
@@ -150,7 +150,7 @@ onMounted(async () => {
       <div v-else-if="error" class="rounded-lg bg-white p-8 text-center shadow dark:bg-gray-800">
         <p class="text-lg text-red-600 dark:text-red-400">{{ error }}</p>
         <UButton color="primary" class="mt-4" @click="$router.go(0)">
-          <span class="font-[Moul]">ព្យាយាមម្តងទៀត</span>
+          <span class="font-[Moul]">{{ tr('ព្យាយាមម្តងទៀត') }}</span>
         </UButton>
       </div>
 
@@ -177,7 +177,7 @@ onMounted(async () => {
 
         <!-- General -->
         <section class="print-block col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800 xl:col-span-8">
-          <h3 class="text-xl font-[Moul] text-primary">ព័ត៌មានមជ្ឈមណ្ឌលសេវាកម្ម</h3>
+          <h3 class="text-xl font-[Moul] text-primary">{{ tr('ព័ត៌មានមជ្ឈមណ្ឌលសេវាកម្ម') }}</h3>
           <hr class="my-2 border dark:border-gray-700" />
           <dl class="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2 2xl:grid-cols-3">
             <div v-for="f in generalFields" :key="f.label" :class="f.wide ? 'sm:col-span-2 2xl:col-span-3' : ''">
@@ -193,7 +193,7 @@ onMounted(async () => {
 
         <!-- Location -->
         <section class="print-block col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800">
-          <h3 class="text-xl font-[Moul] text-primary">ព័ត៌មានលម្អិតអំពីទីតាំង</h3>
+          <h3 class="text-xl font-[Moul] text-primary">{{ tr('ព័ត៌មានលម្អិតអំពីទីតាំង') }}</h3>
           <hr class="my-2 border dark:border-gray-700" />
           <dl class="grid grid-cols-2 gap-x-8 gap-y-4 lg:grid-cols-4">
             <div v-for="f in locationFields" :key="f.label">
@@ -214,17 +214,17 @@ onMounted(async () => {
         <!-- Plans -->
         <section v-if="centerPlans.length"
           class="print-block col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800">
-          <h3 class="text-xl font-[Moul] text-primary">ផែនការមជ្ឈមណ្ឌល</h3>
+          <h3 class="text-xl font-[Moul] text-primary">{{ tr('ផែនការមជ្ឈមណ្ឌល') }}</h3>
           <hr class="my-2 border dark:border-gray-700" />
           <div class="overflow-x-auto">
             <table class="w-full text-left text-base">
               <thead class="border-b text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400">
                 <tr>
-                  <th class="py-3 pr-4 font-normal">ល.រ</th>
-                  <th class="py-3 pr-4 font-normal">ផែនការសកម្មភាព</th>
-                  <th class="py-3 pr-4 font-normal">កំណត់ចំណាំ</th>
-                  <th class="py-3 pr-4 font-normal">ផែនការឆ្នាំ</th>
-                  <th class="py-3 font-normal">ឯកសារ</th>
+                  <th class="py-3 pr-4 font-normal">{{ tr('ល.រ') }}</th>
+                  <th class="py-3 pr-4 font-normal">{{ tr('ផែនការសកម្មភាព') }}</th>
+                  <th class="py-3 pr-4 font-normal">{{ tr('កំណត់ចំណាំ') }}</th>
+                  <th class="py-3 pr-4 font-normal">{{ tr('ផែនការឆ្នាំ') }}</th>
+                  <th class="py-3 font-normal">{{ tr('ឯកសារ') }}</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
@@ -255,13 +255,13 @@ onMounted(async () => {
             <table class="w-full text-left text-base">
               <thead class="border-b text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400">
                 <tr>
-                  <th class="py-3 pr-4 font-normal">ល.រ</th>
-                  <th class="py-3 pr-4 font-normal">រូបថត</th>
-                  <th class="py-3 pr-4 font-normal">ឈ្មោះ (ខ្មែរ)</th>
-                  <th class="py-3 pr-4 font-normal">ឈ្មោះ (អង់គ្លេស)</th>
-                  <th class="py-3 pr-4 font-normal">ភេទ</th>
-                  <th class="py-3 pr-4 font-normal">អ៊ីមែល</th>
-                  <th class="py-3 font-normal">ទូរស័ព្ទ</th>
+                  <th class="py-3 pr-4 font-normal">{{ tr('ល.រ') }}</th>
+                  <th class="py-3 pr-4 font-normal">{{ tr('រូបថត') }}</th>
+                  <th class="py-3 pr-4 font-normal">{{ tr('ឈ្មោះ (ខ្មែរ)') }}</th>
+                  <th class="py-3 pr-4 font-normal">{{ tr('ឈ្មោះ (អង់គ្លេស)') }}</th>
+                  <th class="py-3 pr-4 font-normal">{{ tr('ភេទ') }}</th>
+                  <th class="py-3 pr-4 font-normal">{{ tr('អ៊ីមែល') }}</th>
+                  <th class="py-3 font-normal">{{ tr('ទូរស័ព្ទ') }}</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
