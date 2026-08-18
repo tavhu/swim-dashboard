@@ -88,7 +88,7 @@ const load = async () => {
     if (mine !== requestId) return;
     rows.value = [];
     total.value = 0;
-    failed.value = e?.data?.error ?? e?.message ?? t("table.loadFailed");
+    failed.value = apiErrorMessage(e, t("table.loadFailed"));
   } finally {
     if (mine === requestId) pending.value = false;
   }

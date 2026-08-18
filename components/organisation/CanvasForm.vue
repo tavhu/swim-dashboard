@@ -132,7 +132,7 @@ const submit = async () => {
   } catch (e: any) {
     // Name what failed rather than reporting only that it did.
     toast.error({
-      message: e?.data?.statusMessage ?? e?.data?.error ?? e?.message ?? t('message.notSaved'),
+      message: e?.data?.statusMessage ?? apiErrorMessage(e, t('message.notSaved')),
     });
   } finally {
     saving.value = false;

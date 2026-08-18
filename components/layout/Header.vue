@@ -66,8 +66,14 @@ const config = useRuntimeConfig()
         <TwDropdownMenu align="right" width="48">
           <template #trigger>
             <button>
-              <img class="w-10 h-10 rounded-full border border-[#1d152a7a]" :src=" //@ts-ignore
-                token?.image ? config.public.origin + '/' + token?.image : '/images/profile1.jpg'" alt="" />
+              <!-- Was a stock photograph, /images/profile1.jpg, for anyone
+                   without a picture — which reads as that person's face rather
+                   than as "no picture set". An icon says the true thing. -->
+              <EntityAvatar
+                :src="(token as any)?.image"
+                :alt="(token as any)?.username ?? ''"
+                kind="person"
+              />
             </button>
           </template>
           <template #content>

@@ -72,7 +72,7 @@ async function run() {
   } catch (e: any) {
     report.value = null;
     failed.value = true;
-    toast.error({ message: e?.data?.error ?? e?.message ?? "មិនអាចបង្កើតរបាយការណ៍បានទេ" });
+    toast.error({ message: apiErrorMessage(e, "មិនអាចបង្កើតរបាយការណ៍បានទេ")});
   } finally {
     loading.value = false;
   }

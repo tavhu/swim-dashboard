@@ -103,7 +103,7 @@ async function submit() {
     toast.success({ message: t('message.saved') });
     router.push(`/client/case-closure/view/${saved.id}`);
   } catch (e: any) {
-    toast.error({ message: e?.data?.error ?? e?.message ?? t('message.notSaved') });
+    toast.error({ message: apiErrorMessage(e, t('message.notSaved'))});
   } finally {
     saving.value = false;
   }

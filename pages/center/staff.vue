@@ -86,7 +86,7 @@ const deleteRecord = async (row: any, kind: "Contract" | "Official") => {
     });
     toast.success({ message: "ជោគជ័យ" });
   } catch (e: any) {
-    toast.error({ message: e?.data?.error ?? e?.message ?? "មិនជោគជ័យ" });
+    toast.error({ message: apiErrorMessage(e, "មិនជោគជ័យ")});
   }
   refreshAll();
 };

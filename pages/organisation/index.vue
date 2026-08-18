@@ -126,7 +126,7 @@ const openNewCanvas = () => {
       <UTable :loading="status === 'pending'" :columns="columns" :rows="organisations" :sort="sort" @sort="onSort">
         <template #name-data="{ row }">
           <div class="flex items-center gap-2">
-            <img :src="row.logo || '/placeholder.png'" class="w-10 h-10 rounded-full object-cover" />
+            <EntityAvatar :src="row.logo" :alt="row.name" kind="organisation" />
             <span>{{ row.name }}</span>
           </div>
         </template>

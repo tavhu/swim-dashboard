@@ -268,9 +268,7 @@ onMounted(async () => {
                 <tr v-for="r in group.rows" :key="r.number">
                   <td class="py-3 pr-4 text-gray-500">{{ r.number }}</td>
                   <td class="py-3 pr-4">
-                    <img v-if="r.photo" :src="r.photo" alt=""
-                      class="h-10 w-10 rounded-full border border-[#1d152a7a] object-cover" />
-                    <span v-else class="text-gray-400">—</span>
+                    <EntityAvatar :src="r.photo" :alt="r.nameKH ?? ''" kind="person" />
                   </td>
                   <td class="py-3 pr-4 text-gray-800 dark:text-gray-100">{{ r.nameKH || '—' }}</td>
                   <td class="py-3 pr-4 text-gray-800 dark:text-gray-100">{{ r.nameEN || '—' }}</td>

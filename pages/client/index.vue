@@ -68,9 +68,6 @@ const APPROVAL: Record<string, { label: string; classes: string }> = {
   REJECTED: { label: "បានបដិសេធ", classes: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300" },
 };
 
-const photoUrl = (row: any) =>
-  row.photo ? `${config.public.origin}/${row.photo}` : `${config.public.origin}/placeholder.png`;
-
 const deleteRecord = async (row: any) => {
   if (readOnly) return;
   const who = [row?.ReadableCode, row?.fullNameKH].filter(Boolean).join(" · ");
@@ -89,7 +86,7 @@ const deleteRecord = async (row: any) => {
         : t("message.saved"),
     });
   } catch (e: any) {
-    toast.error({ message: e?.data?.error ?? e?.message ?? t("message.notSaved") });
+    toast.error({ message: apiErrorMessage(e, t("message.notSaved"))});
   }
   table.value?.refresh();
 };
@@ -166,8 +163,7 @@ const actionItems = (row: any) => {
       >
         <template #client-data="{ row }">
           <div class="flex items-center gap-3">
-            <img :src="photoUrl(row)" alt=""
-              class="h-10 w-10 shrink-0 rounded-full border border-gray-200 object-cover dark:border-gray-600" />
+            <EntityAvatar :src="row.photo" :alt="row.fullNameKH" kind="person" />
             <div class="min-w-0">
               <p class="truncate text-gray-800 dark:text-gray-100">{{ row.fullNameKH }}</p>
               <p v-if="row.nickName" class="truncate text-sm text-gray-500 dark:text-gray-400">

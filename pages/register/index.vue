@@ -77,6 +77,12 @@ const formRules = {
   firstname: ["string"],
   lastname: ["string"],
   username: ["required", "string", (value: string) => {
+    // A username is typed at a login box on machines whose keyboard may be in
+    // Khmer, and it is compared byte-for-byte — a Khmer character or a trailing
+    // space makes an account that its owner cannot reliably sign in to.
+    if (value && !/^[A-Za-z0-9._-]+$/.test(value)) {
+      return t("account.usernameRule");
+    }
     //@ts-ignore
     if (usernameDuplicated.value && value !== userDataAuth.value?.username) {
       return t("account.usernameTaken");
@@ -183,14 +189,7 @@ const submit = async () => {
     toast.success({ message: t('message.saved') });
     if (!edit) clear();
   } catch (e: any) {
-    // The server encodes its Khmer messages for the status line, so they come
-    // back percent-escaped.
-    const raw = e?.data?.error ?? e?.data?.statusMessage ?? e?.statusMessage ?? e?.message;
-    let message = t('message.notSaved');
-    if (raw) {
-      try { message = decodeURIComponent(raw); } catch { message = String(raw); }
-    }
-    toast.error({ message });
+    toast.error({ message: apiErrorMessage(e, t('message.notSaved')) });
     isError.value = true;
     setTimeout(() => { isError.value = false; }, 1000);
   }
@@ -398,7 +397,9 @@ if (edit) {
           <div class="grid grid-cols-12 gap-4">
             <div class="col-span-12 lg:col-span-4">
               <TwInput :label="$t('account.username')" name="username" :disabled="currentUser"
-                v-model="formData.username" @keydown="checkData" autocomplete="off" />
+                v-model="formData.username" @keydown="checkData" autocomplete="off"
+                inputmode="latin" spellcheck="false" />
+              <p class="mt-1 text-xs text-gray-400">{{ $t('account.usernameHint') }}</p>
               <CustomErrorMessage name="username" />
             </div>
             <div class="col-span-12 lg:col-span-4">

@@ -136,7 +136,7 @@ async function submit() {
     router.push(`/client/case-plan/view/${saved.id}`);
   } catch (e: any) {
     // Name what failed rather than reporting only that it did.
-    toast.error({ message: e?.data?.error ?? e?.message ?? t('message.notSaved') });
+    toast.error({ message: apiErrorMessage(e, t('message.notSaved'))});
   } finally {
     saving.value = false;
   }

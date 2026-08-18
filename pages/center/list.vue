@@ -40,9 +40,6 @@ const fetcher = (q: any) =>
     },
   });
 
-const logoUrl = (row: any) =>
-  row.logo ? `${config.public.origin}/${row.logo}` : `${config.public.origin}/placeholder.png`;
-
 const deleteRecord = async (row: any) => {
   if (readOnly) return;
   if (!(await confirmDelete(t("confirm.deleteCentre", { name: row?.nameKH ?? "" })))) return;
@@ -51,7 +48,7 @@ const deleteRecord = async (row: any) => {
     await $fetch("/api/center/delete", { method: "POST", body: { id: row.id } });
     toast.success({ message: t("message.saved") });
   } catch (e: any) {
-    toast.error({ message: e?.data?.error ?? e?.message ?? t("message.notSaved") });
+    toast.error({ message: apiErrorMessage(e, t("message.notSaved"))});
   }
   table.value?.refresh();
 };
@@ -121,8 +118,7 @@ const actionItems = (row: any) => [
       >
         <template #center-data="{ row }">
           <div class="flex items-center gap-3">
-            <img :src="logoUrl(row)" alt=""
-              class="h-10 w-10 shrink-0 rounded-full border border-gray-200 object-cover dark:border-gray-600" />
+            <EntityAvatar :src="row.logo" :alt="row.nameKH" kind="centre" />
             <span class="truncate text-gray-800 dark:text-gray-100">{{ row.nameKH }}</span>
           </div>
         </template>

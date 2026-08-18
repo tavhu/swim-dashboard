@@ -199,7 +199,7 @@ const deleteRecord = async (row: any) => {
     await $fetch("/api/role/delete", { method: "POST", body: { id: row.id } });
     toast.success({ message: "ជោគជ័យ" });
   } catch (e: any) {
-    toast.error({ message: e?.data?.error ?? e?.message ?? "មិនជោគជ័យ" });
+    toast.error({ message: apiErrorMessage(e, "មិនជោគជ័យ")});
   }
   table.value?.refresh();
 };

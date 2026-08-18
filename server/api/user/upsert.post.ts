@@ -51,6 +51,25 @@ export default eventHandler(async (event) => {
 
   await assertCanAssignRole(event, caller, userRoleID);
 
+  /**
+   * Latin letters, digits and . _ - only, with no spaces.
+   *
+   * The form checks this too, but a form rule is not a constraint: this endpoint
+   * takes a JSON body and nothing stops a caller sending whatever it likes. A
+   * username is compared byte-for-byte at sign-in and typed on machines whose
+   * keyboard may be in Khmer, so a Khmer character — or a space picked up from a
+   * paste — creates an account its owner cannot reliably sign in to.
+   */
+  const username: unknown = body?.username;
+  if (typeof username !== "string" || !/^[A-Za-z0-9._-]+$/.test(username)) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: encodeURI(
+        "ឈ្មោះគណនីត្រូវប្រើអក្សរឡាតាំង លេខ និងសញ្ញា . _ - ប៉ុណ្ណោះ ដោយគ្មានចន្លោះ"
+      ),
+    });
+  }
+
   try {
     const data = {
       firstname: body?.firstname,

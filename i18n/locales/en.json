@@ -29,6 +29,8 @@
     "typeOrganisation": "Organisation",
     "typeUser": "User",
     "username": "Username",
+    "usernameHint": "Latin letters, numbers, . _ - and no spaces",
+    "usernameRule": "The username may use only Latin letters, numbers and . _ - with no spaces",
     "usernameTaken": "That username is already taken"
   },
   "action": {

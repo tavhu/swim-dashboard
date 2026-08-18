@@ -64,7 +64,7 @@ const removeRecord = async (r: any, i: number) => {
     rows.value.splice(i, 1);
     toast.success({ message: t('message.saved') });
   } catch (e: any) {
-    toast.error({ message: e?.data?.error ?? e?.message ?? t('message.notSaved') });
+    toast.error({ message: apiErrorMessage(e, t('message.notSaved'))});
   }
 };
 </script>

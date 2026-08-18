@@ -65,7 +65,7 @@ async function act(action: "submit" | "approve" | "reject") {
     reason.value = "";
     emit("changed");
   } catch (e: any) {
-    toast.error({ message: e?.data?.error ?? e?.message ?? t('message.notSaved') });
+    toast.error({ message: apiErrorMessage(e, t('message.notSaved'))});
   } finally {
     busy.value = false;
   }

@@ -48,7 +48,7 @@ const deleteRecord = async (row: any) => {
     await $fetch("/api/contact/delete", { method: "POST", body: { id: row.id } });
     toast.success({ message: t("message.saved") });
   } catch (e: any) {
-    toast.error({ message: e?.data?.error ?? e?.message ?? t("message.notSaved") });
+    toast.error({ message: apiErrorMessage(e, t("message.notSaved"))});
   }
   table.value?.refresh();
 };

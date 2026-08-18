@@ -39,9 +39,6 @@ const fetcher = (q: any) =>
     { method: "get" }
   );
 
-const avatar = (row: any) =>
-  row.image ? `${config.public.origin}/${row.image}` : `${config.public.origin}/placeholder.png`;
-
 const deleteRecord = async (row: any) => {
   if (readOnly) return;
   const who = [row?.username, [row?.lastname, row?.firstname].filter(Boolean).join(" ")]
@@ -53,7 +50,7 @@ const deleteRecord = async (row: any) => {
     await $fetch("/api/user/delete", { method: "POST", body: { id: row.id } });
     toast.success({ message: t("message.saved") });
   } catch (e: any) {
-    toast.error({ message: e?.data?.error ?? e?.message ?? t("message.notSaved") });
+    toast.error({ message: apiErrorMessage(e, t("message.notSaved"))});
   }
   table.value?.refresh();
 };
@@ -97,8 +94,7 @@ const canDelete = (row: any) =>
       >
         <template #account-data="{ row }">
           <div class="flex items-center gap-3">
-            <img :src="avatar(row)" alt=""
-              class="h-10 w-10 shrink-0 rounded-full border border-gray-200 object-cover dark:border-gray-600" />
+            <EntityAvatar :src="row.image" :alt="row.username" kind="person" />
             <span class="truncate text-gray-800 dark:text-gray-100">
               {{ [row.lastname, row.firstname].filter(Boolean).join(' ') || '—' }}
             </span>
