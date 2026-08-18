@@ -172,11 +172,11 @@ onMounted(run);
             <div v-else class="grid grid-cols-1 gap-4 sm:grid-cols-2 2xl:grid-cols-4">
               <label v-if="shows('date')" class="block">
                 <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('ចាប់ពី') }}</span>
-                <Datepicker :text-input="true" v-model="dateFrom" :enableTimePicker="false" :close-on-auto-apply="false" autoApply format="dd/MM/yyyy" class="mt-1" />
+                <Datepicker :flow="['year', 'month', 'calendar']" :text-input="true" v-model="dateFrom" :enableTimePicker="false" :close-on-auto-apply="false" autoApply format="dd/MM/yyyy" class="mt-1" />
               </label>
               <label v-if="shows('date')" class="block">
                 <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('ដល់') }}</span>
-                <Datepicker :text-input="true" v-model="dateTo" :enableTimePicker="false" :close-on-auto-apply="false" autoApply format="dd/MM/yyyy" class="mt-1" />
+                <Datepicker :flow="['year', 'month', 'calendar']" :text-input="true" v-model="dateTo" :enableTimePicker="false" :close-on-auto-apply="false" autoApply format="dd/MM/yyyy" class="mt-1" />
               </label>
               <label v-if="shows('centre')" class="block">
                 <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('មជ្ឈមណ្ឌល') }}</span>

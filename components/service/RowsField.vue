@@ -71,13 +71,13 @@ const remove = (i: number) => {
 
         <label class="block sm:col-span-2">
           <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('កាលបរិច្ឆេទចាប់ផ្តើម') }}</span>
-          <Datepicker :text-input="true" v-model="row.startDate" :disabled="readOnly" :enableTimePicker="false" :close-on-auto-apply="false" autoApply format="dd/MM/yyyy"
+          <Datepicker :flow="['year', 'month', 'calendar']" :text-input="true" v-model="row.startDate" :disabled="readOnly" :enableTimePicker="false" :close-on-auto-apply="false" autoApply format="dd/MM/yyyy"
             class="mt-1" />
         </label>
 
         <label class="block sm:col-span-2">
           <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('កាលបរិច្ឆេទបញ្ចប់') }}</span>
-          <Datepicker :text-input="true" v-model="row.endDate" :disabled="readOnly" :enableTimePicker="false" :close-on-auto-apply="false" autoApply format="dd/MM/yyyy"
+          <Datepicker :flow="['year', 'month', 'calendar']" :text-input="true" v-model="row.endDate" :disabled="readOnly" :enableTimePicker="false" :close-on-auto-apply="false" autoApply format="dd/MM/yyyy"
             class="mt-1" />
         </label>
 

@@ -253,12 +253,12 @@ async function submit() {
           <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <label class="block">
               <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('កាលបរិច្ឆេទតាមដាន') }}</span>
-              <Datepicker :text-input="true" v-model="form.monitorDate" :disabled="readOnly" :enableTimePicker="false"
+              <Datepicker :flow="['year', 'month', 'calendar']" :text-input="true" v-model="form.monitorDate" :disabled="readOnly" :enableTimePicker="false"
                 :close-on-auto-apply="false" autoApply format="dd/MM/yyyy" class="mt-1" />
             </label>
             <label class="block">
               <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('កាលបរិច្ឆេទតាមដានបន្ត') }}</span>
-              <Datepicker :text-input="true" v-model="form.nextMonitorDate" :disabled="readOnly" :enableTimePicker="false"
+              <Datepicker :flow="['year', 'month', 'calendar']" :text-input="true" v-model="form.nextMonitorDate" :disabled="readOnly" :enableTimePicker="false"
                 :close-on-auto-apply="false" autoApply format="dd/MM/yyyy" class="mt-1" />
             </label>
             <label class="block sm:col-span-2">
