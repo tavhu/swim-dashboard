@@ -232,6 +232,13 @@ export const RULES: Rule[] = [
 
   // --- service centres ------------------------------------------------------
   {
+    // "which centre am I attached to" — answered from the session, so there is
+    // nothing here a caller could ask for that is not already theirs. Browsing
+    // the centre list is a separate question and keeps its own permission below.
+    mode: "auth",
+    pattern: /^\/api\/center\/mine\/?$/,
+  },
+  {
     mode: "permission",
     pattern: /^\/api\/center\/(get|getSingle)\/?$/,
     resource: RESOURCE.centerList,

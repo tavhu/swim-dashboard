@@ -32,20 +32,25 @@ const prop = defineProps<{
 
 // const edit = ref(prop.id) //'cls8m4kxp000rnqlidfpfw5rb'  //  //route?.query?.id
 /**
- * The មជ្ឈមណ្ឌល list.
+ * The មជ្ឈមណ្ឌល options.
  *
- * /api/center/get is scoped server-side, so an officer attached to one centre
- * gets exactly one row back and a ministry-level user gets all of them. That
- * makes the single-centre case something this form can recognise rather than
- * something it has to be told: one option means there is no choice to make.
+ * Asked in two ways, because the two kinds of user are asking different
+ * questions. An officer attached to a centre is not choosing one — theirs comes
+ * from their own account via /api/center/mine, which any signed-in user may
+ * call. A ministry-level user is genuinely choosing, and gets the full list.
+ *
+ * The list was the only source before, and it needs read on the centre-list
+ * resource: a data-entry role without that permission got an empty required
+ * dropdown and a ទម្រង់ទី១ that could not be saved at all.
  */
-const { data } = await useFetch<{ data: ServiceCenter[] }>('/api/center/get', {
-    method: 'POST'
-})
+const { data: ownCentre } = await useFetch<{ data: ServiceCenter | null }>('/api/center/mine')
 
-const serviceCenterList = computed(() =>
-    (data.value?.data ?? []).map((ele) => ({ label: ele.nameKH, value: ele.id }))
-)
+const { data } = await useFetch<{ data: ServiceCenter[] }>('/api/center/get', {
+    method: 'POST',
+    // Skipped for a centre user: they already have their answer, and this call
+    // would only 403 for the roles that most need the form to work.
+    immediate: !ownCentre.value?.data,
+})
 
 /**
  * A user who belongs to one centre does not pick it — it is a fact about their
@@ -58,7 +63,13 @@ const serviceCenterList = computed(() =>
  * The server forces the value regardless of what the body says, so this is a
  * convenience, not the control.
  */
-const boundToOneCentre = computed(() => serviceCenterList.value.length === 1)
+const boundToOneCentre = computed(() => !!ownCentre.value?.data)
+
+const serviceCenterList = computed(() => {
+    const own = ownCentre.value?.data
+    if (own) return [{ label: own.nameKH, value: own.id }]
+    return (data.value?.data ?? []).map((ele) => ({ label: ele.nameKH, value: ele.id }))
+})
 const saving = ref(false)
 const config = useRuntimeConfig()
 const toast = useToast()
