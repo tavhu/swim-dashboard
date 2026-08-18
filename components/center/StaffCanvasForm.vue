@@ -317,7 +317,7 @@ if (prop.id && prop.typeEmployee === 'Contract') {
   formDataEdit.serviceCenterID = data?.value?.data.serviceCenterID
 }
 
-const { data: organisations } = await useFetch('/api/organisation/get.get')
+const { data: organisations } = await useFetch('/api/organisation/get')
 const organisationList = computed(() => {
   if (!organisations.value) return []
   return (organisations.value as any[]).map((org: any) => ({

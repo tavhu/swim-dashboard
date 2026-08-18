@@ -402,16 +402,24 @@ export const RULES: Rule[] = [
  * `[/.*­/]` enforces everything.
  */
 export const ENFORCED: RegExp[] = [
-  // Start with the most sensitive data in the system.
-  /^\/api\/client\//,
-  // New in this release, so there is no existing user to lock out of it — the
-  // reason the rest of the policy is still log-only. `(\/|$)` because the list
-  // route normalises to `/api/client-type` with no trailing slash. Note this
-  // does not overlap the rule above: that one requires `client/`, this one
-  // `client-type`.
-  /^\/api\/client-type(\/|$)/,
-  // Always enforce the disabled endpoint.
-  /^\/api\/me\/?$/,
+  // Everything. The rollout is over.
+  //
+  // This list used to hold only /api/client/, /api/client-type and /api/me,
+  // which meant the permission check ran for every other endpoint, computed the
+  // right answer, and then only wrote it to the log:
+  //
+  //   [authorize] WOULD REFUSE  POST /api/role/updateRoleToResource  user=…
+  //
+  // So roles, accounts, centres, organisations, services and reports were
+  // guarded in the browser and nowhere else. Every route under /api now has a
+  // rule — checked against the route files — so enforcing all of them refuses
+  // nothing that should be allowed.
+  //
+  // A new endpoint added without a rule will fail closed, and the middleware
+  // says so by name. That is the right default for an access-control system:
+  // the cost of forgetting is a 403 in development, not an open door in
+  // production.
+  /^\/api\//,
 ];
 
 export function isEnforced(path: string): boolean {
