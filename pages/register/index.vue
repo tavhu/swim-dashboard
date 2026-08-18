@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {
   TwForm,
-  TwButton,
+  TwFeather,
   TwFile,
   TwInput,
   TwSelect,
@@ -15,14 +15,12 @@ import { type ServiceCenter } from "@prisma/client";
 
 const { data: userDataAuth } = useAuth()
 
-useHead({
-  title: "បង្កើតគណនី",
-});
-
 let readOnly = checkIfPageReadOnly()
 const route = useRoute()
 const { t } = useI18n();
 const edit = route?.query?.id
+
+useHead(() => ({ title: edit ? t("account.editTitle") : t("account.createTitle") }));
 
 const compute = computed(() => route?.query?.id)
 watch(compute, async () => {
@@ -39,7 +37,12 @@ const formName = "User"
 const formData: {
   [key: string]: any;
 } = reactive({
-  id: edit ? edit : 'asdf',
+  // null, not a placeholder. This was the string 'asdf', which the endpoint read
+  // as `body.id` — truthy — so creating an account took the *update* branch and
+  // tried to update a user with id 'asdf'. Prisma raised P2025 "Record to update
+  // not found", the handler turned that into a 412, and the page reported a bare
+  // "មិនជោគជ័យ". Creating an account could never have worked.
+  id: edit ?? null,
   firstname: null,
   lastname: null,
   username: null,
@@ -60,14 +63,14 @@ const usernameDuplicated = ref(false)
  * and two password boxes tells the user nothing about where to look — the most
  * common miss being the role, which is a custom dropdown rather than an input.
  */
-const FIELD_LABELS: Record<string, string> = {
-  userRoleID: "តួនាទី",
-  username: "ឈ្មោះគណនី",
-  password: "លេខសម្ងាត់",
-  confirmPassword: "បញ្ជាក់លេខសម្ងាត់",
-  firstname: "នាមខ្លួន",
-  lastname: "គោត្តនាម",
-};
+const FIELD_LABELS = computed<Record<string, string>>(() => ({
+  userRoleID: t("account.role"),
+  username: t("account.username"),
+  password: t("account.password"),
+  conPassword: t("account.confirmPassword"),
+  firstname: t("account.firstname"),
+  lastname: t("account.lastname"),
+}));
 
 const formRules = {
   userRoleID: ["required"],
@@ -76,7 +79,7 @@ const formRules = {
   username: ["required", "string", (value: string) => {
     //@ts-ignore
     if (usernameDuplicated.value && value !== userDataAuth.value?.username) {
-      return `ឈ្មោះគណនីត្រូវបានប្រើប្រាស់រួចហើយ`;
+      return t("account.usernameTaken");
     }
   }],
   password: (!edit && !formData.password) ? [
@@ -86,14 +89,14 @@ const formRules = {
     (value: string) => {
       const MIN_LENGTH = 8;
       if (!value || value?.length < MIN_LENGTH) {
-        return `តិចបំផុត​៨តួអក្សរ ${MIN_LENGTH}, ប្រវែងបច្ចុប្បន្នគឺ ${value?.length}`;
+        return t("account.passwordTooShort", { min: MIN_LENGTH });
       }
     },
   ] : [],
   conPassword: ["test",
     (value: string) => {
       if (value !== formData.password) {
-        return "លេខសំងាត់មិនដូចគ្នា"
+        return t("account.passwordMismatch");
       }
     }
   ],
@@ -126,7 +129,7 @@ const submit = async () => {
     const failed: string[] = validator.value.getFailedFields?.() ?? [];
     toast.error({
       message: failed.length
-        ? "សូមបំពេញ៖ " + failed.map((f) => FIELD_LABELS[f] ?? f).join(" / ")
+        ? t("message.fillIn", { fields: failed.map((f) => FIELD_LABELS.value[f] ?? f).join(" / ") })
         : validator.value.getErrorMessage(),
     });
     isError.value = true;
@@ -144,7 +147,7 @@ const submit = async () => {
   } catch (e) {
     // Saving here would store the record with the previous image, or none,
     // while telling the user it worked.
-    toast.error({ message: "មិនអាចផ្ទុករូបភាពបានទេ៖ " + (e as any)?.message })
+    toast.error({ message: t("account.photoFailed", { reason: (e as any)?.message ?? "" }) })
     return
   }
   if (image) {
@@ -155,7 +158,12 @@ const submit = async () => {
   }
 
   // console.log(formData.image)
-  const { error } = await useFetch("/api/user/upsert", {
+  // $fetch, not useFetch: this runs from a submit handler, and the response body
+  // carries the reason a save was refused — a duplicate username, a role this
+  // account may not assign — all of which were being discarded for one generic
+  // line.
+  try {
+    await $fetch("/api/user/upsert", {
     method: "POST",
     body: JSON.stringify({
       id: formData.id,
@@ -171,32 +179,42 @@ const submit = async () => {
       accountType: formData.accountType,
       updatePass: edit && formData.password ? true : false
     }),
-  });
-
-  if (error.value?.statusCode) {
-    toast.error({
-      message: t('message.notSaved'),
     });
-  } else {
-    toast.success({
-      message: t('message.saved'),
-    });
+    toast.success({ message: t('message.saved') });
+    if (!edit) clear();
+  } catch (e: any) {
+    // The server encodes its Khmer messages for the status line, so they come
+    // back percent-escaped.
+    const raw = e?.data?.error ?? e?.data?.statusMessage ?? e?.statusMessage ?? e?.message;
+    let message = t('message.notSaved');
+    if (raw) {
+      try { message = decodeURIComponent(raw); } catch { message = String(raw); }
+    }
+    toast.error({ message });
+    isError.value = true;
+    setTimeout(() => { isError.value = false; }, 1000);
   }
 };
 
 const clear = () => {
   if (readOnly) return;
   formData.firstname = null
-  formData.conPassword = null
   formData.lastname = null
   formData.username = null
   formData.password = null
-  formData.image = null
   formData.conPassword = null
+  formData.image = null
   formData.status = false
   formData.organisationID = null
   formData.accountType = 'USER'
+  // These two were missed, so the next account started already carrying the
+  // previous one's role and centre — the same way the organisation form used to
+  // keep its values after a save. Assigning a role by accident is the worst
+  // version of that, since it is the field that grants permissions.
+  formData.userRoleID = null
+  formData.serviceCenterID = null
   files.value = null
+  usernameDuplicated.value = false
 
   setTimeout(() => {
     validator.value.clearErrors();
@@ -309,90 +327,151 @@ if (edit) {
 </script>
 
 <template>
-  <div>
-    <h2 class="text-2xl font-[Moul] text-primary"> {{ edit ? `កែប្រែគណនី` : `បង្កើតគណនី` }} </h2>
-    <TwButton variant="danger" class="font-[battambang]" v-if="readOnly" :disabled="true">
-      អ្នកគ្មានសិទ្ធកែប្រែ គណនីនេះទេ
-    </TwButton>
-    <hr class="my-2 border dark:border-gray-700" />
-    <div class="font-[Battambang]">
-      <TwForm :name="formName"
-        class="grid grid-cols-12 gap-2 bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded-lg p-2 shadow"
-        :class="{
-          'tw-shake': isError,
-        }" :rules="formRules" @submit="submit" :custom-field-name="{
-          roleName: 'ឈ្មោះតួនាទី',
-          roleDescription: 'ពិពណ៌នាតួនាទី',
-        }">
-        <div class="col-span-12">
+  <div class="font-[Battambang]">
+    <div class="mt-5">
+      <div class="flex items-center justify-between gap-4">
+        <h2 class="text-2xl font-[Moul] text-primary">
+          {{ edit ? $t('account.editTitle') : $t('account.createTitle') }}
+        </h2>
+        <NuxtLink to="/register/account">
+          <UButton color="gray" size="lg" icon="i-heroicons-arrow-left-20-solid">
+            <span class="font-[Moul]">{{ $t('action.back') }}</span>
+          </UButton>
+        </NuxtLink>
+      </div>
+      <hr class="my-2 border dark:border-gray-700" />
 
-          <div class="vt-relative vt-col-span-12 vt-flex vt-items-center vt-justify-center">
-            <div class="vt-relative vt-w-96">
-              <img :src="config.public.origin + '/' + (formData.image ? formData.image : '')"
-                :class="(files?.length > 0 ? ' hidden ' : ' ') + ' vt-object-cover vt-rounded vt-bg-white dark:vt-bg-gray-900 vt-shadow vt-border dark:vt-border-gray-700 '"
-                alt="">
+      <!-- Read-only is a state of the whole page, so it is said once at the top
+           rather than as a disabled button in the middle of the form. -->
+      <div v-if="readOnly"
+        class="mb-4 flex items-center gap-2 rounded-lg bg-amber-50 px-4 py-3 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
+        <TwFeather type="lock" :size="18" class="shrink-0" />
+        <span>{{ $t('account.noPermission') }}</span>
+      </div>
+
+      <TwForm :name="formName" :rules="formRules" @submit="submit"
+        class="space-y-4" :class="{ 'tw-shake': isError }">
+
+        <!-- 1. Who they are -->
+        <section class="rounded-lg bg-white p-5 shadow dark:bg-gray-800">
+          <h3 class="text-xl font-[Moul] text-primary">{{ $t('account.sectionProfile') }}</h3>
+          <p class="text-sm text-gray-500 dark:text-gray-400">{{ $t('account.sectionProfileHint') }}</p>
+          <hr class="my-3 border dark:border-gray-700" />
+
+          <div class="grid grid-cols-12 gap-4">
+            <div class="col-span-12 sm:col-span-4 lg:col-span-3">
+              <p class="mb-2 text-sm text-gray-600 dark:text-gray-300">{{ $t('account.photo') }}</p>
+              <div class="flex flex-col items-center gap-3">
+                <img v-if="formData.image && !(files?.length > 0)"
+                  :src="config.public.origin + '/' + formData.image" alt=""
+                  class="h-28 w-28 rounded-full border border-gray-200 object-cover dark:border-gray-600" />
+                <div v-else-if="!(files?.length > 0)"
+                  class="flex h-28 w-28 items-center justify-center rounded-full bg-gray-100 text-gray-300 dark:bg-gray-700 dark:text-gray-500">
+                  <TwFeather type="user" :size="40" />
+                </div>
+                <TwFile v-model="files" class="w-full" />
+                <p class="text-xs text-gray-400">{{ $t('account.photoHint') }}</p>
+              </div>
+            </div>
+
+            <div class="col-span-12 grid grid-cols-12 gap-4 sm:col-span-8 lg:col-span-9">
+              <div class="col-span-12 lg:col-span-6">
+                <TwInput :label="$t('account.firstname')" name="firstname" :disabled="currentUser"
+                  v-model="formData.firstname" type="text" />
+                <CustomErrorMessage name="firstname" />
+              </div>
+              <div class="col-span-12 lg:col-span-6">
+                <TwInput :label="$t('account.lastname')" name="lastname" :disabled="currentUser"
+                  v-model="formData.lastname" type="text" />
+                <CustomErrorMessage name="lastname" />
+              </div>
             </div>
           </div>
+        </section>
 
-          <TwFile v-model="files" label="រូបភាព Profile" />
-        </div>
-        <div class="col-span-12 lg:col-span-6">
-          <TwInput label="នាមខ្លួន" name="firstname" :disabled="currentUser" v-model="formData.firstname"
-            placeholder="Given Name" type="text" />
-          <CustomErrorMessage name="firstname" />
-        </div>
-        <div class="col-span-12 lg:col-span-6">
-          <TwInput label="នាមត្រគោល" name="lastname" :disabled="currentUser" v-model="formData.lastname"
-            placeholder="Family Name" type="text" />
-          <CustomErrorMessage name="lastname" />
-        </div>
-        <div class="col-span-12 lg:col-span-6">
-          <TwInput label="ឈ្មោះគណនី" name="username" :disabled="currentUser" v-model="formData.username"
-            @keydown="checkData" placeholder="Username" />
-          <CustomErrorMessage name="username" />
-        </div>
-        <div class="col-span-12 lg:col-span-6">
-          <TwInput :label="edit ? 'លេខសំងាត់(ទុកឲ្យទទេបើមិនប្តូ)' : 'លេខសំងាត់'" name="password" type="password"
-            v-model="formData.password" placeholder="Password" />
-          <CustomErrorMessage name="password" />
-        </div>
-        <div class="col-span-12 lg:col-span-6">
-          <TwInput :label="edit ? 'លេខសំងាត់ម្តងទៀត(ទុកឲ្យទទេបើមិនប្តូ)' : 'លេខសំងាត់ម្តងទៀត'" name="conPassword"
-            type="password" v-model="formData.conPassword" placeholder="Confirm Password" />
-          <CustomErrorMessage name="conPassword" />
-        </div>
-        <div class="col-span-12 lg:col-span-6" :class="currentUser ? ' hidden ' : ''">
-          <TwSelect :disabled="readOnly || currentUser" label="សិទ្ធិអ្នកប្រើប្រាស់" name="userRoleID" class="mt-5"
-            v-model="formData.userRoleID" :items="roleDataFormat" placeholder="Choose select" />
-          <CustomErrorMessage name="role" />
-        </div>
-        <div class="col-span-12 lg:col-span-6" :class="currentUser ? ' hidden ' : ''">
-          <TwSelect label="ជ្រើសរើសមណ្ឌល" class="mt-5" name="serviceCenterID" v-model="formData.serviceCenterID"
-            :items="centerList" placeholder="Choose select" :disabled="readOnly || currentUser" />
-          <CustomErrorMessage name="serviceCenterID" />
-        </div>
-        <div class="col-span-12 lg:col-span-6" :class="currentUser ? ' hidden ' : ''">
-          <TwSelect label="ជ្រើសរើសស្ថាប័ន" class="mt-5" name="organisationID" v-model="formData.organisationID"
-            :items="organisationList" placeholder="Choose select" :disabled="readOnly || currentUser" />
-          <CustomErrorMessage name="organisationID" />
-        </div>
-        <div class="col-span-12 lg:col-span-6" :class="currentUser ? ' hidden ' : ''">
-          <TwSelect label="ប្រភេទគណនី" class="mt-5" name="accountType" v-model="formData.accountType"
-            :items="accountTypes" placeholder="Choose select" :disabled="readOnly || currentUser" />
-          <CustomErrorMessage name="accountType" />
-        </div>
+        <!-- 2. How they sign in -->
+        <section class="rounded-lg bg-white p-5 shadow dark:bg-gray-800">
+          <h3 class="text-xl font-[Moul] text-primary">{{ $t('account.sectionCredentials') }}</h3>
+          <p class="text-sm text-gray-500 dark:text-gray-400">{{ $t('account.sectionCredentialsHint') }}</p>
+          <hr class="my-3 border dark:border-gray-700" />
 
-        <div class="col-span-12" :class="currentUser ? ' hidden ' : ''">
-          <TwToggle label="Status" name="status" id="toggle" :disabled="readOnly || currentUser"
-            v-model="formData.status" />
-          <CustomErrorMessage name="status" />
-        </div>
-        <div class="col-span-12 flex justify-end gap-1">
-          <UButton :disabled="readOnly" color="gray" type="button" square size="lg"
-            class="px-4 dark:text-gray-200 dark:!border-gray-800 dark:border" @click="clear()">
-            កំណត់ឡើងវិញ
+          <div class="grid grid-cols-12 gap-4">
+            <div class="col-span-12 lg:col-span-4">
+              <TwInput :label="$t('account.username')" name="username" :disabled="currentUser"
+                v-model="formData.username" @keydown="checkData" autocomplete="off" />
+              <CustomErrorMessage name="username" />
+            </div>
+            <div class="col-span-12 lg:col-span-4">
+              <TwInput :label="edit ? $t('account.passwordKeep') : $t('account.password')" name="password"
+                type="password" v-model="formData.password" autocomplete="new-password" />
+              <CustomErrorMessage name="password" />
+            </div>
+            <div class="col-span-12 lg:col-span-4">
+              <TwInput :label="edit ? $t('account.confirmPasswordKeep') : $t('account.confirmPassword')"
+                name="conPassword" type="password" v-model="formData.conPassword" autocomplete="new-password" />
+              <CustomErrorMessage name="conPassword" />
+            </div>
+          </div>
+        </section>
+
+        <!-- 3. What they may do. Hidden entirely when editing yourself: the
+             server ignores these fields in that case, so offering them would
+             promise something it will not honour. -->
+        <section v-if="!currentUser" class="rounded-lg bg-white p-5 shadow dark:bg-gray-800">
+          <h3 class="text-xl font-[Moul] text-primary">{{ $t('account.sectionAccess') }}</h3>
+          <p class="text-sm text-gray-500 dark:text-gray-400">{{ $t('account.sectionAccessHint') }}</p>
+          <hr class="my-3 border dark:border-gray-700" />
+
+          <div class="grid grid-cols-12 gap-4">
+            <div class="col-span-12 lg:col-span-6">
+              <TwSelect :disabled="readOnly" :label="$t('account.role')" name="userRoleID"
+                v-model="formData.userRoleID" :items="roleDataFormat"
+                :placeholder="$t('action.selectOne')" />
+              <CustomErrorMessage name="userRoleID" />
+            </div>
+            <div class="col-span-12 lg:col-span-6">
+              <TwSelect :label="$t('account.accountType')" name="accountType" v-model="formData.accountType"
+                :items="accountTypes" :placeholder="$t('action.selectOne')" :disabled="readOnly" />
+              <CustomErrorMessage name="accountType" />
+            </div>
+            <div class="col-span-12 lg:col-span-6">
+              <TwSelect :label="$t('account.centre')" name="serviceCenterID" v-model="formData.serviceCenterID"
+                :items="centerList" :placeholder="$t('action.selectOne')" :disabled="readOnly" />
+              <CustomErrorMessage name="serviceCenterID" />
+            </div>
+            <div class="col-span-12 lg:col-span-6">
+              <TwSelect :label="$t('account.organisation')" name="organisationID"
+                v-model="formData.organisationID" :items="organisationList"
+                :placeholder="$t('action.selectOne')" :disabled="readOnly" />
+              <CustomErrorMessage name="organisationID" />
+            </div>
+
+            <div class="col-span-12">
+              <div
+                class="flex items-center justify-between gap-4 rounded-lg border p-3 dark:border-gray-700">
+                <div>
+                  <p class="text-gray-800 dark:text-gray-100">{{ $t('account.status') }}</p>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">{{ $t('account.statusHint') }}</p>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-sm" :class="formData.status ? 'text-primary' : 'text-gray-400'">
+                    {{ formData.status ? $t('status.active') : $t('status.inactive') }}
+                  </span>
+                  <TwToggle name="status" id="toggle" :disabled="readOnly" v-model="formData.status" />
+                </div>
+              </div>
+              <CustomErrorMessage name="status" />
+            </div>
+          </div>
+        </section>
+
+        <div class="flex justify-end gap-2 pb-8">
+          <UButton :disabled="readOnly" color="gray" type="button" size="lg" class="px-4" @click="clear()">
+            <span class="font-[Moul]">{{ $t('action.reset') }}</span>
           </UButton>
-          <UButton color="primary" type="submit" size="lg" class="px-4" :disabled="readOnly"> រក្សាទុក </UButton>
+          <UButton color="primary" type="submit" size="lg" class="px-4" :disabled="readOnly">
+            <span class="font-[Moul]">{{ $t('action.saveChanges') }}</span>
+          </UButton>
         </div>
       </TwForm>
     </div>

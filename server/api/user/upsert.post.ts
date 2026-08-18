@@ -65,6 +65,21 @@ export default eventHandler(async (event) => {
     };
 
     if (targetId) {
+      // Say so plainly. The register form used to send a placeholder id on
+      // create, which landed here and came back as a raw P2025 — the page could
+      // only report "not saved", giving no hint that it had tried to update a
+      // user that does not exist.
+      const exists = await event.context.prisma.user.findUnique({
+        where: { id: targetId },
+        select: { id: true },
+      });
+      if (!exists) {
+        throw createError({
+          statusCode: 404,
+          statusMessage: encodeURI("រកមិនឃើញគណនីនេះទេ"),
+        });
+      }
+
       await event.context.prisma.user.update({
         where: { id: targetId },
         data: {
