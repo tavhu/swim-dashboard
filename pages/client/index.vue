@@ -22,15 +22,15 @@ const table = ref<any>(null);
 useHead(() => ({ title: t("title.clients") }));
 
 const columns = [
-  { key: "ReadableCode", label: "លេខសំគាល់", sortable: true, class: "w-[110px]" },
-  { key: "client", label: "អតិថិជន", sortable: false },
-  { key: "Gender", label: "ភេទ", sortable: true, class: "w-[80px]" },
-  { key: "DOB", label: "អាយុ", sortable: true, class: "w-[90px]" },
-  { key: "center", label: "មជ្ឈមណ្ឌល", sortable: false },
-  { key: "approvalStatus", label: "ស្ថានភាពឯកសារ", sortable: true, class: "w-[140px]" },
-  { key: "status", label: "ស្ថានភាព", sortable: true, class: "w-[110px]" },
-  { key: "InterViewDate", label: "ថ្ងៃសម្ភាសន៍", sortable: true, class: "w-[130px]" },
-  { key: "actions", label: "សកម្មភាព", class: "w-[130px]" },
+  { key: "ReadableCode", label: tr("លេខសំគាល់"), sortable: true, class: "w-[110px]" },
+  { key: "client", label: tr("អតិថិជន"), sortable: false },
+  { key: "Gender", label: tr("ភេទ"), sortable: true, class: "w-[80px]" },
+  { key: "DOB", label: tr("អាយុ"), sortable: true, class: "w-[90px]" },
+  { key: "center", label: tr("មជ្ឈមណ្ឌល"), sortable: false },
+  { key: "approvalStatus", label: tr("ស្ថានភាពឯកសារ"), sortable: true, class: "w-[140px]" },
+  { key: "status", label: tr("ស្ថានភាព"), sortable: true, class: "w-[110px]" },
+  { key: "InterViewDate", label: tr("ថ្ងៃសម្ភាសន៍"), sortable: true, class: "w-[130px]" },
+  { key: "actions", label: tr("សកម្មភាព"), class: "w-[130px]" },
 ];
 
 const fetcher = (q: any) =>
@@ -62,10 +62,10 @@ const age = (dob?: string | null) => {
 
 /** Same vocabulary and colours as the ទម្រង់ទី២-៦ listings. */
 const APPROVAL: Record<string, { label: string; classes: string }> = {
-  DRAFT: { label: "ព្រាង", classes: "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300" },
-  SUBMITTED: { label: "បានស្នើសុំ", classes: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300" },
-  APPROVED: { label: "បានអនុម័ត", classes: "bg-primary/10 text-primary" },
-  REJECTED: { label: "បានបដិសេធ", classes: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300" },
+  DRAFT: { label: tr("ព្រាង"), classes: "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300" },
+  SUBMITTED: { label: tr("បានស្នើសុំ"), classes: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300" },
+  APPROVED: { label: tr("បានអនុម័ត"), classes: "bg-primary/10 text-primary" },
+  REJECTED: { label: tr("បានបដិសេធ"), classes: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300" },
 };
 
 const deleteRecord = async (row: any) => {
@@ -98,12 +98,12 @@ const deleteRecord = async (row: any) => {
  * cannot be registered twice.
  */
 const CASE_FORMS = [
-  { label: "ទម្រង់(១)", title: "បញ្ជីអតិថិជន", to: (id: string) => `/client/id/${id}` },
-  { label: "ទម្រង់(២)", title: "ការប្រើសេវាកម្មរបស់អតិថិជន", to: (id: string) => `/client/service/${id}`, create: (id: string) => `/client/service/form?client=${id}` },
-  { label: "ទម្រង់(៣)", title: "ផែនការករណីរបស់អតិថិជន", to: (id: string) => `/client/case-plan/${id}`, create: (id: string) => `/client/case-plan/form?client=${id}` },
-  { label: "ទម្រង់(៤)", title: "សមាហរណកម្ម", to: (id: string) => `/client/reintegration/${id}`, create: (id: string) => `/client/reintegration/form?client=${id}` },
-  { label: "ទម្រង់(៥)", title: "តាមដាន និងវាយតម្លៃស្ថានភាពអតិថិជន", to: (id: string) => `/client/follow-up/${id}`, create: (id: string) => `/client/follow-up/form?client=${id}` },
-  { label: "ទម្រង់(៦)", title: "បិទករណី", to: (id: string) => `/client/case-closure/${id}`, create: (id: string) => `/client/case-closure/form?client=${id}` },
+  { label: tr("ទម្រង់(១)"), title: tr("បញ្ជីអតិថិជន"), to: (id: string) => `/client/id/${id}` },
+  { label: tr("ទម្រង់(២)"), title: tr("ការប្រើសេវាកម្មរបស់អតិថិជន"), to: (id: string) => `/client/service/${id}`, create: (id: string) => `/client/service/form?client=${id}` },
+  { label: tr("ទម្រង់(៣)"), title: tr("ផែនការករណីរបស់អតិថិជន"), to: (id: string) => `/client/case-plan/${id}`, create: (id: string) => `/client/case-plan/form?client=${id}` },
+  { label: tr("ទម្រង់(៤)"), title: tr("សមាហរណកម្ម"), to: (id: string) => `/client/reintegration/${id}`, create: (id: string) => `/client/reintegration/form?client=${id}` },
+  { label: tr("ទម្រង់(៥)"), title: tr("តាមដាន និងវាយតម្លៃស្ថានភាពអតិថិជន"), to: (id: string) => `/client/follow-up/${id}`, create: (id: string) => `/client/follow-up/form?client=${id}` },
+  { label: tr("ទម្រង់(៦)"), title: tr("បិទករណី"), to: (id: string) => `/client/case-closure/${id}`, create: (id: string) => `/client/case-closure/form?client=${id}` },
 ];
 
 /**
@@ -127,7 +127,7 @@ const actionItems = (row: any) => {
   // like the six navigation entries above it.
   groups.push([
     {
-      label: "លុបចេញ",
+      label: tr("លុបចេញ"),
       icon: "i-heroicons-trash",
       class: "text-red-600 dark:text-red-400",
       iconClass: "text-red-600 dark:text-red-400",
@@ -143,10 +143,10 @@ const actionItems = (row: any) => {
   <div class="font-[Battambang]">
     <div class="mt-5">
       <div class="flex items-center justify-between gap-4">
-        <h2 class="text-2xl font-[Moul] text-primary">បញ្ចីអតិថិជន</h2>
+        <h2 class="text-2xl font-[Moul] text-primary">{{ tr('បញ្ចីអតិថិជន') }}</h2>
         <NuxtLink to="/client/register">
           <UButton color="primary" size="xl" :disabled="readOnly">
-            <span class="font-[Moul] text-lg">ចុះឈ្មោះអតិថិជន</span>
+            <span class="font-[Moul] text-lg">{{ tr('ចុះឈ្មោះអតិថិជន') }}</span>
           </UButton>
         </NuxtLink>
       </div>
@@ -194,8 +194,8 @@ const actionItems = (row: any) => {
         </template>
 
         <template #status-data="{ row }">
-          <span v-if="row.status" class="text-primary">ដំណើការ</span>
-          <span v-else class="text-red-600 dark:text-red-400">បិទដំណើការ</span>
+          <span v-if="row.status" class="text-primary">{{ tr('ដំណើការ') }}</span>
+          <span v-else class="text-red-600 dark:text-red-400">{{ tr('បិទដំណើការ') }}</span>
         </template>
 
         <template #InterViewDate-data="{ row }">
@@ -205,9 +205,7 @@ const actionItems = (row: any) => {
         <template #actions-data="{ row }">
           <UDropdown :items="actionItems(row)" :popper="{ placement: 'bottom-end' }">
             <UButton color="primary" icon="i-heroicons-document-text"
-              trailing-icon="i-heroicons-chevron-down-20-solid" size="sm">
-              ទម្រង់
-            </UButton>
+              trailing-icon="i-heroicons-chevron-down-20-solid" size="sm">{{ tr('ទម្រង់') }}</UButton>
           </UDropdown>
         </template>
       </DataTableServer>

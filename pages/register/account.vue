@@ -19,11 +19,11 @@ const table = ref<any>(null);
 useHead(() => ({ title: t("title.accounts") }));
 
 const columns = [
-  { key: "account", label: "គណនី", sortable: false },
-  { key: "username", label: "ឈ្មោះគណនី", sortable: true, class: "w-[200px]" },
-  { key: "permission", label: "សិទ្ធិប្រើប្រាស់", sortable: false, class: "w-[180px]" },
-  { key: "status", label: "ស្ថានភាពគណនី", sortable: true, class: "w-[150px]" },
-  { key: "actions", label: "សកម្មភាព", class: "w-[220px]" },
+  { key: "account", label: tr("គណនី"), sortable: false },
+  { key: "username", label: tr("ឈ្មោះគណនី"), sortable: true, class: "w-[200px]" },
+  { key: "permission", label: tr("សិទ្ធិប្រើប្រាស់"), sortable: false, class: "w-[180px]" },
+  { key: "status", label: tr("ស្ថានភាពគណនី"), sortable: true, class: "w-[150px]" },
+  { key: "actions", label: tr("សកម្មភាព"), class: "w-[220px]" },
 ];
 
 const fetcher = (q: any) =>
@@ -76,10 +76,10 @@ const canDelete = (row: any) =>
   <div class="font-[Battambang]">
     <div class="mt-5">
       <div class="flex items-center justify-between gap-4">
-        <h2 class="text-sm font-[Moul] text-primary lg:text-xl">បញ្ចីគណនី</h2>
+        <h2 class="text-sm font-[Moul] text-primary lg:text-xl">{{ tr('បញ្ចីគណនី') }}</h2>
         <NuxtLink to="/register">
           <UButton color="primary" size="xl" :disabled="readOnly">
-            <span class="font-[Moul] text-sm lg:text-xl">បង្កើតគណនី</span>
+            <span class="font-[Moul] text-sm lg:text-xl">{{ tr('បង្កើតគណនី') }}</span>
           </UButton>
         </NuxtLink>
       </div>
@@ -110,21 +110,17 @@ const canDelete = (row: any) =>
         </template>
 
         <template #status-data="{ row }">
-          <span v-if="row.status" class="text-primary">ដំណើការ</span>
-          <span v-else class="text-red-600 dark:text-red-400">បិទដំណើការ</span>
+          <span v-if="row.status" class="text-primary">{{ tr('ដំណើការ') }}</span>
+          <span v-else class="text-red-600 dark:text-red-400">{{ tr('បិទដំណើការ') }}</span>
         </template>
 
         <template #actions-data="{ row }">
           <div class="flex gap-2">
             <NuxtLink :to="`/register?id=${row.id}`">
-              <UButton color="primary" icon="i-heroicons-pencil-square" size="sm" :disabled="readOnly">
-                កែសម្រួល
-              </UButton>
+              <UButton color="primary" icon="i-heroicons-pencil-square" size="sm" :disabled="readOnly">{{ tr('កែសម្រួល') }}</UButton>
             </NuxtLink>
             <UButton color="red" icon="i-heroicons-trash" size="sm" :disabled="!canDelete(row)"
-              @click="deleteRecord(row)">
-              លុបចេញ
-            </UButton>
+              @click="deleteRecord(row)">{{ tr('លុបចេញ') }}</UButton>
           </div>
         </template>
       </DataTableServer>

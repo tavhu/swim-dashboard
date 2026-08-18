@@ -20,11 +20,11 @@ const table = ref<any>(null);
 useHead(() => ({ title: t("title.inbox") }));
 
 const columns = [
-  { key: "createdAt", label: "កាលបរិច្ឆេទ", sortable: true, class: "w-[150px]" },
-  { key: "name", label: "ឈ្មោះមន្ត្រីស្នើសុំ", sortable: true },
-  { key: "email", label: "អុីមែល", sortable: true },
-  { key: "reason", label: "គោលបំណង", sortable: true },
-  { key: "actions", label: "សកម្មភាព", class: "w-[280px]" },
+  { key: "createdAt", label: tr("កាលបរិច្ឆេទ"), sortable: true, class: "w-[150px]" },
+  { key: "name", label: tr("ឈ្មោះមន្ត្រីស្នើសុំ"), sortable: true },
+  { key: "email", label: tr("អុីមែល"), sortable: true },
+  { key: "reason", label: tr("គោលបំណង"), sortable: true },
+  { key: "actions", label: tr("សកម្មភាព"), class: "w-[280px]" },
 ];
 
 const fetcher = (q: any) =>
@@ -73,7 +73,7 @@ watch(messNOtificationNumber, () => {
   <div class="font-[Battambang]">
     <div class="mt-5">
       <div class="flex items-center justify-between gap-4">
-        <h2 class="text-sm font-[Moul] text-primary lg:text-xl">បញ្ចីប្រអប់សារ</h2>
+        <h2 class="text-sm font-[Moul] text-primary lg:text-xl">{{ tr('បញ្ចីប្រអប់សារ') }}</h2>
       </div>
       <hr class="my-2 border dark:border-gray-700" />
 
@@ -109,13 +109,9 @@ watch(messNOtificationNumber, () => {
         <template #actions-data="{ row }">
           <div class="flex gap-2">
             <UButton icon="i-heroicons-eye" size="sm" :color="row.read ? 'gray' : 'primary'"
-              :disabled="readOnly" @click="OpenCanvas(row.id)">
-              មើលព័ត៌មានលំអិត
-            </UButton>
+              :disabled="readOnly" @click="OpenCanvas(row.id)">{{ tr('មើលព័ត៌មានលំអិត') }}</UButton>
             <UButton color="red" icon="i-heroicons-trash" size="sm" :disabled="readOnly"
-              @click="deleteRecord(row)">
-              លុបចេញ
-            </UButton>
+              @click="deleteRecord(row)">{{ tr('លុបចេញ') }}</UButton>
           </div>
         </template>
       </DataTableServer>

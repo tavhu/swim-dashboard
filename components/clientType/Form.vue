@@ -56,7 +56,7 @@ const fieldNames = {
   code: "លេខកូដ",
   nameKh: "ឈ្មោះ (ខ្មែរ)",
   nameEn: "ឈ្មោះ (អង់គ្លេស)",
-  description: "បរិយាយ",
+  description: tr("បរិយាយ"),
 };
 
 onMounted(async () => {
@@ -134,22 +134,20 @@ async function submit() {
       class="grid grid-cols-12 gap-4 rounded-lg bg-white p-4 shadow dark:border dark:border-gray-700 dark:bg-gray-900"
       @submit="submit">
       <div class="col-span-12 lg:col-span-6">
-        <TwInput label="លេខកូដ" name="code" v-model="formData.code"
+        <TwInput :label="tr('លេខកូដ')" name="code" v-model="formData.code"
           :placeholder="props.id ? 'លេខកូដ' : 'ទុកទទេ ដើម្បីបង្កើតដោយស្វ័យប្រវត្តិ'" :disabled="readOnly" />
-        <p v-if="!props.id" class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-          បើទុកទទេ ប្រព័ន្ធនឹងបង្កើតលេខកូដឱ្យ (ឧ. CT001)
-        </p>
+        <p v-if="!props.id" class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ tr('បើទុកទទេ ប្រព័ន្ធនឹងបង្កើតលេខកូដឱ្យ (ឧ. CT001)') }}</p>
         <CustomErrorMessage name="code" />
       </div>
 
       <div class="col-span-12 lg:col-span-6">
-        <TwInput label="ឈ្មោះ (ខ្មែរ)" name="nameKh" v-model="formData.nameKh" placeholder="ឈ្មោះប្រភេទអតិថិជន" required
+        <TwInput :label="tr('ឈ្មោះ (ខ្មែរ)')" name="nameKh" v-model="formData.nameKh" :placeholder="tr('ឈ្មោះប្រភេទអតិថិជន')" required
           :disabled="readOnly" />
         <CustomErrorMessage name="nameKh" />
       </div>
 
       <div class="col-span-12 lg:col-span-6">
-        <TwInput label="ឈ្មោះ (អង់គ្លេស)" name="nameEn" v-model="formData.nameEn" placeholder="ឈ្មោះជាភាសាអង់គ្លេស"
+        <TwInput :label="tr('ឈ្មោះ (អង់គ្លេស)')" name="nameEn" v-model="formData.nameEn" :placeholder="tr('ឈ្មោះជាភាសាអង់គ្លេស')"
           :disabled="readOnly" />
         <CustomErrorMessage name="nameEn" />
       </div>
@@ -157,15 +155,13 @@ async function submit() {
       <div class="col-span-12 lg:col-span-6">
         <!-- activeText/inactiveText default to "Active"/"Inactive"; the rest of
              the form is Khmer, so they are set rather than left in English. -->
-        <TwToggle label="ដំណើរការ" name="isActive" id="clientTypeActive" v-model="formData.isActive"
+        <TwToggle :label="tr('ដំណើរការ')" name="isActive" id="clientTypeActive" v-model="formData.isActive"
           active-text="ដំណើរការ" inactive-text="បិទដំណើរការ" :disabled="readOnly" />
-        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-          បើបិទ ប្រភេទនេះនឹងមិនបង្ហាញក្នុងទម្រង់ទី២ទេ ប៉ុន្តែកំណត់ត្រាចាស់នៅតែរក្សាទុកដដែល
-        </p>
+        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ tr('បើបិទ ប្រភេទនេះនឹងមិនបង្ហាញក្នុងទម្រង់ទី២ទេ ប៉ុន្តែកំណត់ត្រាចាស់នៅតែរក្សាទុកដដែល') }}</p>
       </div>
 
       <div class="col-span-12">
-        <TwTextarea label="បរិយាយ" name="description" v-model="formData.description" placeholder="បរិយាយអំពីប្រភេទនេះ"
+        <TwTextarea :label="tr('បរិយាយ')" name="description" v-model="formData.description" :placeholder="tr('បរិយាយអំពីប្រភេទនេះ')"
           :disabled="readOnly" />
         <CustomErrorMessage name="description" />
       </div>

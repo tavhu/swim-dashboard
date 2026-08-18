@@ -12,7 +12,16 @@ import {
   type DropdownItem,
   TwTextarea,
 } from "vue3-tailwind";
-import orgType from '~~/store/data/orgType'
+import orgTypeData from '~~/store/data/orgType'
+
+/**
+ * The stored value stays Khmer — it is what the column holds — and only the
+ * label shown in the dropdown follows the language. Same rule as GENDER in
+ * composables/clientOptions.ts.
+ */
+const orgType = computed(() =>
+  orgTypeData.map((o: any) => ({ value: o.value, label: tr(o.label) }))
+)
 // import  city  from '~~/store/data/address'
 import gazetteers from "~/store/data/gazetteers";
 

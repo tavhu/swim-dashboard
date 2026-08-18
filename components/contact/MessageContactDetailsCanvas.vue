@@ -47,11 +47,11 @@ onMounted(() => {
 <template>
   <TwOffcanvas position="right" width="800px" ref="openisTrues">
     <template #headerTitle>
-      <span class="font-[Moul] text-primary"> ព័ត៌មានលម្អិត </span></template>
+      <span class="font-[Moul] text-primary">{{ tr('ព័ត៌មានលម្អិត') }}</span></template>
     <div class="p-4 overflow-auto font-[battambang]">
       <div>
         <p class="mb-2">
-          <span class="text-primary"> កាលបរិច្ឆេទ </span><br>
+          <span class="text-primary">{{ tr('កាលបរិច្ឆេទ') }}</span><br>
           <span> {{  timeagoInKhmer(useTimeAgo(data?.createdAt ?? '' ).value) }} </span>
         </p>
         <hr />
@@ -61,17 +61,17 @@ onMounted(() => {
             <span> {{ data?.name}} </span>
           </div>
           <div>
-            <span class="text-primary"> អុីមែល </span><br>
+            <span class="text-primary">{{ tr('អុីមែល') }}</span><br>
             <span> {{ data?.email}} </span>
           </div>
           <div>
-            <span class="text-primary"> លេខទូរស័ព្ទ </span><br>
+            <span class="text-primary">{{ tr('លេខទូរស័ព្ទ') }}</span><br>
             <span> {{ data?.phone}} </span>
           </div>
         </div>
         <hr class="mt-2" />
         <div  class="mt-2" v-if="data?.serviceCenterName">
-          <span class="text-primary"> ឈ្មោះមណ្ឌល </span><br>
+          <span class="text-primary">{{ tr('ឈ្មោះមណ្ឌល') }}</span><br>
           <span> {{ data?.serviceCenterName}} </span>
         </div>
         <div  class="mt-2" v-if="data?.username">
@@ -79,11 +79,11 @@ onMounted(() => {
           <span> {{ data?.username}} </span>
         </div>
         <div class="mt-2">
-          <span class="text-primary"> មូលហេតុ </span><br>
+          <span class="text-primary">{{ tr('មូលហេតុ') }}</span><br>
           <span> {{ data?.reason}} </span>
         </div>
         <div  class="mt-2" v-if="data?.details">
-          <span class="text-primary"> ការពិពណ៌នា </span><br>
+          <span class="text-primary">{{ tr('ការពិពណ៌នា') }}</span><br>
           <span> {{ data?.details}} </span>
         </div>
         

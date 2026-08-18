@@ -21,16 +21,16 @@ import gazetteers from "~~/store/data/gazetteers";
  * correct Khmer document via Save as PDF.
  */
 const toast = useToast();
-useHead({ title: "របាយការណ៍" });
+useHead({ title: tr("របាយការណ៍") });
 
 /** Must match the keys in server/utils/reports.ts. */
 const REPORTS = [
-  { key: "clients", title: "បញ្ជីអតិថិជន", hint: "អតិថិជនទាំងអស់ និងវឌ្ឍនភាពតាមទម្រង់", icon: "users", filters: ["date", "centre", "province"] },
-  { key: "summary", title: "សង្ខេបតាមកាលបរិច្ឆេទ", hint: "តួលេខសម្រាប់ដាក់ជូនថ្នាក់លើ", icon: "bar-chart-2", filters: ["date", "centre"] },
-  { key: "approval", title: "ស្ថានភាពការអនុម័ត", hint: "អ្វីដែលកំពុងរង់ចាំ និងរង់ចាំយូរប៉ុណ្ណា", icon: "clock", filters: ["centre"] },
-  { key: "outcomes", title: "លទ្ធផលបិទករណី", hint: "ជោគជ័យ ឬមិនជោគជ័យ និងមូលហេតុ", icon: "check-circle", filters: ["date", "centre"] },
-  { key: "services", title: "សេវាកម្មដែលបានផ្តល់", hint: "សេវាកម្មនីមួយៗ និងចំនួនដង", icon: "layers", filters: ["date"] },
-  { key: "centres", title: "មជ្ឈមណ្ឌល", hint: "អតិថិជន បុគ្គលិក និងករណីបានបិទ", icon: "home", filters: [] },
+  { key: "clients", title: tr("បញ្ជីអតិថិជន"), hint: "អតិថិជនទាំងអស់ និងវឌ្ឍនភាពតាមទម្រង់", icon: "users", filters: ["date", "centre", "province"] },
+  { key: "summary", title: tr("សង្ខេបតាមកាលបរិច្ឆេទ"), hint: "តួលេខសម្រាប់ដាក់ជូនថ្នាក់លើ", icon: "bar-chart-2", filters: ["date", "centre"] },
+  { key: "approval", title: tr("ស្ថានភាពការអនុម័ត"), hint: "អ្វីដែលកំពុងរង់ចាំ និងរង់ចាំយូរប៉ុណ្ណា", icon: "clock", filters: ["centre"] },
+  { key: "outcomes", title: tr("លទ្ធផលបិទករណី"), hint: "ជោគជ័យ ឬមិនជោគជ័យ និងមូលហេតុ", icon: "check-circle", filters: ["date", "centre"] },
+  { key: "services", title: tr("សេវាកម្មដែលបានផ្តល់"), hint: "សេវាកម្មនីមួយៗ និងចំនួនដង", icon: "layers", filters: ["date"] },
+  { key: "centres", title: tr("មជ្ឈមណ្ឌល"), hint: "អតិថិជន បុគ្គលិក និងករណីបានបិទ", icon: "home", filters: [] },
 ] as const;
 
 const selected = ref<string>("clients");
@@ -135,10 +135,8 @@ onMounted(run);
     <div class="mt-5">
       <div class="no-print flex items-start justify-between gap-4">
         <div>
-          <h2 class="text-2xl font-[Moul] text-primary">របាយការណ៍</h2>
-          <p class="mt-1 text-base text-gray-500 dark:text-gray-400">
-            ជ្រើសរើសរបាយការណ៍ កំណត់លក្ខខណ្ឌ បន្ទាប់មកទាញយក
-          </p>
+          <h2 class="text-2xl font-[Moul] text-primary">{{ tr('របាយការណ៍') }}</h2>
+          <p class="mt-1 text-base text-gray-500 dark:text-gray-400">{{ tr('ជ្រើសរើសរបាយការណ៍ កំណត់លក្ខខណ្ឌ បន្ទាប់មកទាញយក') }}</p>
         </div>
       </div>
       <hr class="no-print my-2 border dark:border-gray-700" />
@@ -146,7 +144,7 @@ onMounted(run);
       <div class="grid grid-cols-12 items-start gap-4">
         <!-- Which report -->
         <section class="no-print col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800 xl:col-span-3">
-          <h3 class="text-xl font-[Moul] text-primary">ប្រភេទរបាយការណ៍</h3>
+          <h3 class="text-xl font-[Moul] text-primary">{{ tr('ប្រភេទរបាយការណ៍') }}</h3>
           <hr class="my-2 border dark:border-gray-700" />
           <div class="space-y-2">
             <button v-for="r in REPORTS" :key="r.key" type="button"
@@ -168,33 +166,31 @@ onMounted(run);
         <div class="col-span-12 grid grid-cols-12 items-start gap-4 xl:col-span-9">
           <!-- Filters, in one row above the table -->
           <section class="no-print col-span-12 rounded-lg bg-white p-4 shadow dark:bg-gray-800">
-            <h3 class="text-xl font-[Moul] text-primary">លក្ខខណ្ឌ</h3>
+            <h3 class="text-xl font-[Moul] text-primary">{{ tr('លក្ខខណ្ឌ') }}</h3>
             <hr class="my-2 border dark:border-gray-700" />
-            <p v-if="!def.filters.length" class="text-base text-gray-500 dark:text-gray-400">
-              របាយការណ៍នេះមិនត្រូវការលក្ខខណ្ឌទេ។
-            </p>
+            <p v-if="!def.filters.length" class="text-base text-gray-500 dark:text-gray-400">{{ tr('របាយការណ៍នេះមិនត្រូវការលក្ខខណ្ឌទេ។') }}</p>
             <div v-else class="grid grid-cols-1 gap-4 sm:grid-cols-2 2xl:grid-cols-4">
               <label v-if="shows('date')" class="block">
-                <span class="text-sm text-gray-500 dark:text-gray-400">ចាប់ពី</span>
+                <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('ចាប់ពី') }}</span>
                 <Datepicker v-model="dateFrom" :enableTimePicker="false" format="dd/MM/yyyy" autoApply class="mt-1" />
               </label>
               <label v-if="shows('date')" class="block">
-                <span class="text-sm text-gray-500 dark:text-gray-400">ដល់</span>
+                <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('ដល់') }}</span>
                 <Datepicker v-model="dateTo" :enableTimePicker="false" format="dd/MM/yyyy" autoApply class="mt-1" />
               </label>
               <label v-if="shows('centre')" class="block">
-                <span class="text-sm text-gray-500 dark:text-gray-400">មជ្ឈមណ្ឌល</span>
+                <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('មជ្ឈមណ្ឌល') }}</span>
                 <select v-model="centreId"
                   class="mt-1 h-10 w-full rounded border px-2 text-base dark:border-gray-700 dark:bg-gray-900">
-                  <option value="">ទាំងអស់</option>
+                  <option value="">{{ tr('ទាំងអស់') }}</option>
                   <option v-for="c in centres" :key="c.id" :value="c.id">{{ c.nameKH }}</option>
                 </select>
               </label>
               <label v-if="shows('province')" class="block">
-                <span class="text-sm text-gray-500 dark:text-gray-400">ខេត្ត</span>
+                <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('ខេត្ត') }}</span>
                 <select v-model="provinceCode"
                   class="mt-1 h-10 w-full rounded border px-2 text-base dark:border-gray-700 dark:bg-gray-900">
-                  <option value="">ទាំងអស់</option>
+                  <option value="">{{ tr('ទាំងអស់') }}</option>
                   <option v-for="p in provinces" :key="p.code" :value="p.code">{{ p.name }}</option>
                 </select>
               </label>
@@ -203,10 +199,10 @@ onMounted(run);
             <div class="mt-4 flex flex-wrap items-center gap-2">
               <UButton color="primary" size="lg" :loading="loading" @click="run">
                 <TwFeather type="search" :size="16" class="mr-1" />
-                <span class="font-[Moul]">បង្កើតរបាយការណ៍</span>
+                <span class="font-[Moul]">{{ tr('បង្កើតរបាយការណ៍') }}</span>
               </UButton>
               <UButton v-if="def.filters.length" color="gray" size="lg" variant="soft" @click="resetFilters(); run()">
-                <span>សម្អាតលក្ខខណ្ឌ</span>
+                <span>{{ tr('សម្អាតលក្ខខណ្ឌ') }}</span>
               </UButton>
 
               <span class="mx-1 hidden h-6 w-px bg-gray-200 dark:bg-gray-700 sm:block" />
@@ -226,9 +222,7 @@ onMounted(run);
                 <span>PDF</span>
               </UButton>
             </div>
-            <p class="mt-2 text-xs text-gray-400">
-              PDF ប្រើមុខងារបោះពុម្ពរបស់កម្មវិធីរុករក (Save as PDF) ដើម្បីបង្ហាញអក្សរខ្មែរបានត្រឹមត្រូវ។
-            </p>
+            <p class="mt-2 text-xs text-gray-400">{{ tr('PDF ប្រើមុខងារបោះពុម្ពរបស់កម្មវិធីរុករក (Save as PDF) ដើម្បីបង្ហាញអក្សរខ្មែរបានត្រឹមត្រូវ។') }}</p>
           </section>
 
           <!-- The preview, and the thing that gets printed -->
@@ -245,23 +239,17 @@ onMounted(run);
               <div v-for="n in 6" :key="n" class="h-8 animate-pulse rounded bg-gray-100 dark:bg-gray-700" />
             </div>
 
-            <p v-else-if="failed" class="py-10 text-center text-base text-red-600 dark:text-red-400">
-              មិនអាចបង្កើតរបាយការណ៍បានទេ។
-            </p>
+            <p v-else-if="failed" class="py-10 text-center text-base text-red-600 dark:text-red-400">{{ tr('មិនអាចបង្កើតរបាយការណ៍បានទេ។') }}</p>
 
-            <p v-else-if="!report" class="py-10 text-center text-base text-gray-500 dark:text-gray-400">
-              ចុច «បង្កើតរបាយការណ៍» ដើម្បីមើលទិន្នន័យ។
-            </p>
+            <p v-else-if="!report" class="py-10 text-center text-base text-gray-500 dark:text-gray-400">{{ tr('ចុច «បង្កើតរបាយការណ៍» ដើម្បីមើលទិន្នន័យ។') }}</p>
 
-            <p v-else-if="!report.rows.length" class="py-10 text-center text-base text-gray-500 dark:text-gray-400">
-              គ្មានទិន្នន័យសម្រាប់លក្ខខណ្ឌនេះទេ។
-            </p>
+            <p v-else-if="!report.rows.length" class="py-10 text-center text-base text-gray-500 dark:text-gray-400">{{ tr('គ្មានទិន្នន័យសម្រាប់លក្ខខណ្ឌនេះទេ។') }}</p>
 
             <div v-else class="overflow-x-auto">
               <table class="w-full text-left text-sm">
                 <thead class="border-b text-xs text-gray-500 dark:border-gray-700 dark:text-gray-400">
                   <tr>
-                    <th class="py-2 pr-3 font-normal">ល.រ</th>
+                    <th class="py-2 pr-3 font-normal">{{ tr('ល.រ') }}</th>
                     <th v-for="c in report.columns" :key="c.key" class="py-2 pr-3 font-normal"
                       :class="c.numeric ? 'text-right' : ''">
                       {{ c.label }}

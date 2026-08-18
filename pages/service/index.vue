@@ -34,14 +34,14 @@ const truncate = (value: string | null, length = 120) => {
 };
 
 const columns = [
-  { key: 'nameKh', label: 'ឈ្មោះសេវា', sortable: true, class: 'w-[15%]' },
-  { key: 'providingInstitution', label: 'ក្រសួង/ស្ថាប័ន', sortable: true, class: 'w-[15%]' },
-  { key: 'purpose', label: 'គោលបំណង', sortable: true, class: 'w-[10%]' },
-  { key: 'legalBasis', label: 'គតិយុត្ត', sortable: true, class: 'w-[10%]' },
-  { key: 'eligibleClients', label: 'អតិថិជន', sortable: true, class: 'w-[10%]' },
-  { key: 'serviceStandard', label: 'ស្តង់ដារ', sortable: true, class: 'w-[10%]' },
-  { key: 'requiredDocuments', label: 'ឯកសារ', sortable: true, class: 'w-[15%]' },
-  { key: 'feedback', label: 'យោបល់', sortable: true, class: 'w-[10%]' },
+  { key: 'nameKh', label: tr('ឈ្មោះសេវា'), sortable: true, class: 'w-[15%]' },
+  { key: 'providingInstitution', label: tr('ក្រសួង/ស្ថាប័ន'), sortable: true, class: 'w-[15%]' },
+  { key: 'purpose', label: tr('គោលបំណង'), sortable: true, class: 'w-[10%]' },
+  { key: 'legalBasis', label: tr('គតិយុត្ត'), sortable: true, class: 'w-[10%]' },
+  { key: 'eligibleClients', label: tr('អតិថិជន'), sortable: true, class: 'w-[10%]' },
+  { key: 'serviceStandard', label: tr('ស្តង់ដារ'), sortable: true, class: 'w-[10%]' },
+  { key: 'requiredDocuments', label: tr('ឯកសារ'), sortable: true, class: 'w-[15%]' },
+  { key: 'feedback', label: tr('យោបល់'), sortable: true, class: 'w-[10%]' },
   { key: 'actions', label: 'Actions', class: 'w-[5%]' }
 ];
 
@@ -123,12 +123,8 @@ async function deleteService(id: string) {
 <template>
   <div>
     <div class="flex justify-between items-center mb-4">
-      <h1 class="text-2xl font-[Moul] text-primary">
-        បញ្ជីសេវាកម្ម
-      </h1>
-      <UButton v-if="canCreate" icon="i-heroicons-plus-circle-20-solid" @click="router.push('/service/register')">
-        បន្ថែមថ្មី
-      </UButton>
+      <h1 class="text-2xl font-[Moul] text-primary">{{ tr('បញ្ជីសេវាកម្ម') }}</h1>
+      <UButton v-if="canCreate" icon="i-heroicons-plus-circle-20-solid" @click="router.push('/service/register')">{{ tr('បន្ថែមថ្មី') }}</UButton>
     </div>
 
     <div class="flex justify-end mb-4">

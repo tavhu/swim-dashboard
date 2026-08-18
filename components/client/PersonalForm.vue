@@ -16,7 +16,7 @@ import { type ServiceCenter } from '@prisma/client'
 import Datepicker from "@vuepic/vue-datepicker"
 
 useHead({
-    title: "សំណុំឯកសារផ្ទាល់ខ្លួនរបស់អតិថិជន",
+    title: tr("សំណុំឯកសារផ្ទាល់ខ្លួនរបស់អតិថិជន"),
 });
 
 const headers = useRequestHeaders(["cookie"]) as HeadersInit;
@@ -205,37 +205,37 @@ const ClientHopelessMultiple = ref(Array(
     {
         value: 'signDepression',
         check: false,
-        label: 'មានសញ្ញានៃជម្ងឺផ្លូវចិត្ត'
+        label: tr('មានសញ្ញានៃជម្ងឺផ្លូវចិត្ត')
     },
     {
         value: 'ForcetoConfess',
         check: false,
-        label: 'ទទួលការបង្ខិតបង្ខំឲ្យសារភាពកំហុស'
+        label: tr('ទទួលការបង្ខិតបង្ខំឲ្យសារភាពកំហុស')
     },
     {
         value: 'servingmoretimethanrequired',
         check: false,
-        label: 'ឃុំខ្លួនលើសរយៈពេលកំណត់ដោយច្បាប់'
+        label: tr('ឃុំខ្លួនលើសរយៈពេលកំណត់ដោយច្បាប់')
     },
     {
         value: 'wronglImprison',
         check: false,
-        label: 'ត្រូវបានឃាត ឬឃុំខ្លួនដោយខុសច្បាប់'
+        label: tr('ត្រូវបានឃាត ឬឃុំខ្លួនដោយខុសច្បាប់')
     },
     {
         value: 'NovisitedFromFamily',
         check: false,
-        label: 'មិនមានការសួរសុខទុក្ខពីគ្រូសារ'
+        label: tr('មិនមានការសួរសុខទុក្ខពីគ្រូសារ')
     },
     {
         value: 'ViolentlyArrested',
         check: false,
-        label: 'ត្រូវបានធ្វើបាបនៅពេលឃាត់'
+        label: tr('ត្រូវបានធ្វើបាបនៅពេលឃាត់')
     },
     {
         value: 'other',
         check: false,
-        label: 'បញ្ហាផ្សេងៗទៀត'
+        label: tr('បញ្ហាផ្សេងៗទៀត')
     },
 ))
 const submit = async () => {

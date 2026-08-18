@@ -103,9 +103,7 @@ async function submit() {
 
 <template>
   <div>
-    <h1 class="text-2xl font-[Moul] text-primary mb-3">
-      ទម្រង់កែប្រែសេវាកម្ម
-    </h1>
+    <h1 class="text-2xl font-[Moul] text-primary mb-3">{{ tr('ទម្រង់កែប្រែសេវាកម្ម') }}</h1>
 
     <TwForm
       :name="formName"
@@ -126,46 +124,46 @@ async function submit() {
       }"
     >
       <div class="col-span-12 lg:col-span-6">
-        <TwInput label="ឈ្មោះសេវា" name="nameKh" v-model="formData.nameKh" placeholder="ឈ្មោះសេវា" required :disabled="readOnly" />
+        <TwInput :label="tr('ឈ្មោះសេវា')" name="nameKh" v-model="formData.nameKh" :placeholder="tr('ឈ្មោះសេវា')" required :disabled="readOnly" />
         <CustomErrorMessage name="nameKh" />
       </div>
       <div class="col-span-12 lg:col-span-6">
-        <TwInput label="ឈ្មោះសេវា (អង់គ្លេស)" name="nameEn" v-model="formData.nameEn" placeholder="English service name" :disabled="readOnly" />
+        <TwInput :label="tr('ឈ្មោះសេវា (អង់គ្លេស)')" name="nameEn" v-model="formData.nameEn" placeholder="English service name" :disabled="readOnly" />
         <CustomErrorMessage name="nameEn" />
       </div>
 
       <div class="col-span-12 lg:col-span-6">
-        <TwInput label="ក្រសួង/ស្ថាប័ន ផ្តល់សេវា" name="providingInstitution" v-model="formData.providingInstitution" placeholder="ក្រសួង/ស្ថាប័ន ផ្តល់សេវា" :disabled="readOnly" />
+        <TwInput :label="tr('ក្រសួង/ស្ថាប័ន ផ្តល់សេវា')" name="providingInstitution" v-model="formData.providingInstitution" :placeholder="tr('ក្រសួង/ស្ថាប័ន ផ្តល់សេវា')" :disabled="readOnly" />
         <CustomErrorMessage name="providingInstitution" />
       </div>
       
       <div class="col-span-12 lg:col-span-6">
-        <TwInput label="គោលបំណង នៃការផ្តល់សេវា" name="purpose" v-model="formData.purpose" placeholder="គោលបំណង នៃការផ្តល់សេវា" :disabled="readOnly" />
+        <TwInput :label="tr('គោលបំណង នៃការផ្តល់សេវា')" name="purpose" v-model="formData.purpose" :placeholder="tr('គោលបំណង នៃការផ្តល់សេវា')" :disabled="readOnly" />
         <CustomErrorMessage name="purpose" />
       </div>
 
       <div class="col-span-12 lg:col-span-6">
-        <TwInput label="មូលដ្ឋានគតិយុត្ត" name="legalBasis" v-model="formData.legalBasis" placeholder="មូលដ្ឋានគតិយុត្ត" :disabled="readOnly" />
+        <TwInput :label="tr('មូលដ្ឋានគតិយុត្ត')" name="legalBasis" v-model="formData.legalBasis" :placeholder="tr('មូលដ្ឋានគតិយុត្ត')" :disabled="readOnly" />
         <CustomErrorMessage name="legalBasis" />
       </div>
 
       <div class="col-span-12 lg:col-span-6">
-        <TwInput label="អតិថិជនដែលមាន សិទ្ធិទទួលសេវា" name="eligibleClients" v-model="formData.eligibleClients" placeholder="អតិថិជនដែលមាន សិទ្ធិទទួលសេវា" :disabled="readOnly" />
+        <TwInput :label="tr('អតិថិជនដែលមាន សិទ្ធិទទួលសេវា')" name="eligibleClients" v-model="formData.eligibleClients" :placeholder="tr('អតិថិជនដែលមាន សិទ្ធិទទួលសេវា')" :disabled="readOnly" />
         <CustomErrorMessage name="eligibleClients" />
       </div>
       
       <div class="col-span-12 lg:col-span-6">
-        <TwInput label="ស្តង់ដារសេវា" name="serviceStandard" v-model="formData.serviceStandard" placeholder="ស្តង់ដារសេវា" :disabled="readOnly" />
+        <TwInput :label="tr('ស្តង់ដារសេវា')" name="serviceStandard" v-model="formData.serviceStandard" :placeholder="tr('ស្តង់ដារសេវា')" :disabled="readOnly" />
         <CustomErrorMessage name="serviceStandard" />
       </div>
 
       <div class="col-span-12 lg:col-span-6">
-        <TwInput label="តម្រូវការឯកសារ ដើម្បីទទួលបានសេវា" name="requiredDocuments" v-model="formData.requiredDocuments" placeholder="តម្រូវការឯកសារ ដើម្បីទទួលបានសេវា" :disabled="readOnly" />
+        <TwInput :label="tr('តម្រូវការឯកសារ ដើម្បីទទួលបានសេវា')" name="requiredDocuments" v-model="formData.requiredDocuments" :placeholder="tr('តម្រូវការឯកសារ ដើម្បីទទួលបានសេវា')" :disabled="readOnly" />
         <CustomErrorMessage name="requiredDocuments" />
       </div>
 
       <div class="col-span-12 lg:col-span-6">
-        <TwInput label="យោបល់" name="feedback" v-model="formData.feedback" placeholder="យោបល់" :disabled="readOnly" />
+        <TwInput :label="tr('យោបល់')" name="feedback" v-model="formData.feedback" :placeholder="tr('យោបល់')" :disabled="readOnly" />
         <CustomErrorMessage name="feedback" />
       </div>
 

@@ -32,7 +32,7 @@
 export default {
   data () {
     return {
-      title: 'តារាងទទួលអតិថិជនប្រចាំខែ',
+      title: tr('តារាងទទួលអតិថិជនប្រចាំខែ'),
       subtitle: 'ព័ត៌មានលំអិត' ,
       points: [10, 0, 8, 2, 6, 4, 5, 5],
       seriesColor: '',

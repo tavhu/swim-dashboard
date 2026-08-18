@@ -77,7 +77,7 @@ const { uploadFiles } = useFileUpload();
 
 /** The validator's own message is just "1 error occured", which names nothing. */
 const FIELD_LABELS: Record<string, string> = {
-  name: "ឈ្មោះស្ថាប័ន",
+  name: tr("ឈ្មោះស្ថាប័ន"),
 };
 const form = computed(() => composableForm.getForm(formName));
 const validator = computed(() => form.value.validator);
@@ -175,26 +175,26 @@ const close = () => {
       }" :get-on-watch-item="false">
         <div class="grid grid-cols-12 gap-4">
           <div class="col-span-12">
-            <TwFile v-model="files" label="និមិត្តសញ្ញា" />
+            <TwFile v-model="files" :label="tr('និមិត្តសញ្ញា')" />
           </div>
           <div class="col-span-12 md:col-span-6">
-            <TwInput name="name" label="ឈ្មោះ" v-model="formData.name" required />
+            <TwInput name="name" :label="tr('ឈ្មោះ')" v-model="formData.name" required />
           </div>
           <div class="col-span-12 md:col-span-6">
-            <TwInput name="website" label="គេហទំព័រ" v-model="formData.website" />
+            <TwInput name="website" :label="tr('គេហទំព័រ')" v-model="formData.website" />
           </div>
           <div class="col-span-12 md:col-span-6">
-            <TwInput name="email" label="អ៊ីមែល" v-model="formData.email" />
+            <TwInput name="email" :label="tr('អ៊ីមែល')" v-model="formData.email" />
           </div>
           <div class="col-span-12 md:col-span-6">
-            <TwInput name="phoneNumber" label="លេខទូរស័ព្ទ" v-model="formData.phoneNumber" />
+            <TwInput name="phoneNumber" :label="tr('លេខទូរស័ព្ទ')" v-model="formData.phoneNumber" />
           </div>
           <div class="col-span-12">
-            <TwTextarea name="address" label="អាសយដ្ឋាន" v-model="formData.address" />
+            <TwTextarea name="address" :label="tr('អាសយដ្ឋាន')" v-model="formData.address" />
           </div>
         </div>
         <div class="flex justify-end gap-2 mt-4">
-          <UButton @click="close" color="gray" size="xl">បោះបង់</UButton>
+          <UButton @click="close" color="gray" size="xl">{{ tr('បោះបង់') }}</UButton>
           <UButton type="submit" color="primary" size="xl">{{ $t('action.save') }}</UButton>
         </div>
       </TwForm>

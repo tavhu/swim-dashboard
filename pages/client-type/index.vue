@@ -18,7 +18,7 @@ const { t } = useI18n();
 const toast = useToast();
 const router = useRouter();
 
-useHead({ title: "ប្រភេទអតិថិជន" });
+useHead({ title: tr("ប្រភេទអតិថិជន") });
 
 const page = ref(1);
 const limit = ref(10);
@@ -39,11 +39,11 @@ const rows = computed(() => result.value?.data ?? []);
 const total = computed(() => result.value?.total ?? 0);
 
 const columns = [
-  { key: "code", label: "លេខកូដ", sortable: true, class: "w-[14%]" },
-  { key: "nameKh", label: "ឈ្មោះ (ខ្មែរ)", sortable: true, class: "w-[26%]" },
-  { key: "nameEn", label: "ឈ្មោះ (អង់គ្លេស)", sortable: true, class: "w-[24%]" },
-  { key: "description", label: "បរិយាយ", class: "w-[26%]" },
-  { key: "actions", label: "សកម្មភាព", class: "w-[10%]" },
+  { key: "code", label: tr("លេខកូដ"), sortable: true, class: "w-[14%]" },
+  { key: "nameKh", label: tr("ឈ្មោះ (ខ្មែរ)"), sortable: true, class: "w-[26%]" },
+  { key: "nameEn", label: tr("ឈ្មោះ (អង់គ្លេស)"), sortable: true, class: "w-[24%]" },
+  { key: "description", label: tr("បរិយាយ"), class: "w-[26%]" },
+  { key: "actions", label: tr("សកម្មភាព"), class: "w-[10%]" },
 ];
 
 const onSearch = useDebounceFn((value: string) => {
@@ -56,7 +56,7 @@ const onSort = (s: { column: string; direction: "asc" | "desc" }) => (sort.value
 const actionItems = (row: any) => [
   [
     {
-      label: "កែសម្រួល",
+      label: tr("កែសម្រួល"),
       icon: "i-heroicons-pencil-square-20-solid",
       click: () => router.push(`/client-type/edit/${row.id}`),
       disabled: readOnly,
@@ -64,7 +64,7 @@ const actionItems = (row: any) => [
   ],
   [
     {
-      label: "លុបចេញ",
+      label: tr("លុបចេញ"),
       icon: "i-heroicons-trash-20-solid",
       click: () => remove(row.id),
       disabled: readOnly,
@@ -97,7 +97,7 @@ async function remove(id: string) {
   <div class="font-[Battambang]">
     <div class="mt-5">
       <div class="flex items-start justify-between gap-4">
-        <h2 class="text-2xl font-[Moul] text-primary">ប្រភេទអតិថិជន</h2>
+        <h2 class="text-2xl font-[Moul] text-primary">{{ tr('ប្រភេទអតិថិជន') }}</h2>
         <NuxtLink v-if="!readOnly" to="/client-type/register">
           <UButton color="primary" size="xl">
             <TwFeather type="plus" :size="18" class="mr-1" />
@@ -108,7 +108,7 @@ async function remove(id: string) {
       <hr class="my-2 border dark:border-gray-700" />
 
       <div class="mb-4 flex justify-end">
-        <UInput :model-value="search" placeholder="ស្វែងរក..." icon="i-heroicons-magnifying-glass-20-solid"
+        <UInput :model-value="search" :placeholder="tr('ស្វែងរក...')" icon="i-heroicons-magnifying-glass-20-solid"
           @update:model-value="onSearch" />
       </div>
 
@@ -130,9 +130,7 @@ async function remove(id: string) {
             </UDropdown>
           </template>
           <template #empty-state>
-            <div class="py-8 text-center text-base text-gray-500 dark:text-gray-400">
-              មិនទាន់មានប្រភេទអតិថិជននៅឡើយទេ
-            </div>
+            <div class="py-8 text-center text-base text-gray-500 dark:text-gray-400">{{ tr('មិនទាន់មានប្រភេទអតិថិជននៅឡើយទេ') }}</div>
           </template>
         </UTable>
       </UCard>

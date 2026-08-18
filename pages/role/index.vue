@@ -179,7 +179,7 @@ const clearEdit = () => {
 };
 
 useHead({
-  title: "តួនាទី និងការអនុញ្ញាត",
+  title: tr("តួនាទី និងការអនុញ្ញាត"),
 });
 
 
@@ -194,9 +194,9 @@ const globalData: any = ref({ data: [], totalData: 0 });
 const table = ref<any>(null);
 
 const columns = [
-  { key: "name", label: "ឈ្មោះ", sortable: true, class: "w-[280px]" },
-  { key: "description", label: "ការពិពណ៌នាតួនាទី", sortable: true },
-  { key: "actions", label: "សកម្មភាព", class: "w-[340px]" },
+  { key: "name", label: tr("ឈ្មោះ"), sortable: true, class: "w-[280px]" },
+  { key: "description", label: tr("ការពិពណ៌នាតួនាទី"), sortable: true },
+  { key: "actions", label: tr("សកម្មភាព"), class: "w-[340px]" },
 ];
 
 const fetcher = (q: any) =>
@@ -304,7 +304,7 @@ const { data: readRoleToResource, refresh } = await useFetch<any>("/api/role/get
 
 <template>
   <div class="font-[Battambang]">
-    <h2 class="text-2xl font-[Moul] text-primary">បង្កើតតួនាទី</h2>
+    <h2 class="text-2xl font-[Moul] text-primary">{{ tr('បង្កើតតួនាទី') }}</h2>
     <hr class="my-2 border dark:border-gray-700" />
     <div>
       <TwForm :name="formName"
@@ -316,28 +316,26 @@ const { data: readRoleToResource, refresh } = await useFetch<any>("/api/role/get
           roleDescription: 'ពិពណ៌នាតួនាទី',
         }">
         <div class="col-span-12">
-          <TwInput label="ឈ្មោះតួនាទី" name="roleName" v-model="formData.roleName" placeholder="ប្រអប់បញ្ចូល"
+          <TwInput :label="tr('ឈ្មោះតួនាទី')" name="roleName" v-model="formData.roleName" placeholder="ប្រអប់បញ្ចូល"
             type="text" />
           <CustomErrorMessage name="roleName" />
         </div>
         <div class="col-span-12">
-          <TwTextarea label="ការពិពណ៌នាតួនាទី" name="roleDescription" v-model="formData.roleDescription"
+          <TwTextarea :label="tr('ការពិពណ៌នាតួនាទី')" name="roleDescription" v-model="formData.roleDescription"
             placeholder="ប្រអប់បញ្ចូល" type="text" />
           <CustomErrorMessage name="roleDescription" />
         </div>
         <div class="col-span-12 flex justify-end gap-1">
           <UButton :ripple="true" :disabled="readOnly" color="gray" type="button" size="lg"
-            class="px-4 dark:text-gray-200 dark:!border-gray-800 dark:border" @click="clear()">
-            កំណត់ឡើងវិញ
-          </UButton>
+            class="px-4 dark:text-gray-200 dark:!border-gray-800 dark:border" @click="clear()">{{ tr('កំណត់ឡើងវិញ') }}</UButton>
 
-          <UButton :disabled="readOnly" size="lg" type="submit" color="primary" class="px-4"> រក្សាទុក </UButton>
+          <UButton :disabled="readOnly" size="lg" type="submit" color="primary" class="px-4">{{ tr('រក្សាទុក') }}</UButton>
         </div>
       </TwForm>
     </div>
 
     <div class="mt-5">
-      <h2 class="text-2xl font-[Moul] text-primary">បញ្ចីតួនាទី</h2>
+      <h2 class="text-2xl font-[Moul] text-primary">{{ tr('បញ្ចីតួនាទី') }}</h2>
       <hr class="my-2 border dark:border-gray-700" />
       <DataTableServer
         ref="table"
@@ -355,17 +353,11 @@ const { data: readRoleToResource, refresh } = await useFetch<any>("/api/role/get
         <template #actions-data="{ row }">
           <div class="flex gap-2">
             <UButton :disabled="readOnly" icon="i-heroicons-lock-closed" size="sm" color="primary"
-              @click="AddPermission(row.id)">
-              ការអនុញ្ញាត
-            </UButton>
+              @click="AddPermission(row.id)">{{ tr('ការអនុញ្ញាត') }}</UButton>
             <UButton :disabled="readOnly" icon="i-heroicons-pencil-square" size="sm" color="gray"
-              @click="editRecord(row.id)">
-              កែសម្រួល
-            </UButton>
+              @click="editRecord(row.id)">{{ tr('កែសម្រួល') }}</UButton>
             <UButton :disabled="readOnly" icon="i-heroicons-trash" size="sm" color="red"
-              @click="deleteRecord(row)">
-              លុបចេញ
-            </UButton>
+              @click="deleteRecord(row)">{{ tr('លុបចេញ') }}</UButton>
           </div>
         </template>
       </DataTableServer>
@@ -373,7 +365,7 @@ const { data: readRoleToResource, refresh } = await useFetch<any>("/api/role/get
 
     <TwOffcanvas position="right" width="800px" ref="openisTrue">
       <template #headerTitle>
-        <span class="font-[Moul] text-primary"> កែសម្រួលតួនាទី </span></template>
+        <span class="font-[Moul] text-primary">{{ tr('កែសម្រួលតួនាទី') }}</span></template>
       <div class="p-4 overflow-auto font-[battambang]">
         <div>
           <TwForm :name="formNameEdit"
@@ -385,21 +377,19 @@ const { data: readRoleToResource, refresh } = await useFetch<any>("/api/role/get
               roleDescription: 'ពិពណ៌នាតួនាទី',
             }">
             <div class="col-span-12">
-              <TwInput label="ឈ្មោះតួនាទី" name="roleName" v-model="formDataEdit.roleName" placeholder="ប្រអប់បញ្ចូល"
+              <TwInput :label="tr('ឈ្មោះតួនាទី')" name="roleName" v-model="formDataEdit.roleName" placeholder="ប្រអប់បញ្ចូល"
                 type="text" />
               <CustomErrorMessage name="roleName" />
             </div>
             <div class="col-span-12">
-              <TwTextarea label="ការពិពណ៌នាតួនាទី" name="roleDescription" v-model="formDataEdit.roleDescription"
+              <TwTextarea :label="tr('ការពិពណ៌នាតួនាទី')" name="roleDescription" v-model="formDataEdit.roleDescription"
                 placeholder="ប្រអប់បញ្ចូល" type="text" />
               <CustomErrorMessage name="roleDescription" />
             </div>
             <div class="col-span-12 flex justify-end gap-1">
               <UButton :ripple="true" color="gray" square type="button" size="lg"
-                class="px-4 dark:text-gray-200 dark:!border-gray-800 dark:border" @click="clearEdit()">
-                កំណត់ឡើងវិញ
-              </UButton>
-              <UButton color="primary" size="lg" class="px-4" type="submit"> រក្សាទុក </UButton>
+                class="px-4 dark:text-gray-200 dark:!border-gray-800 dark:border" @click="clearEdit()">{{ tr('កំណត់ឡើងវិញ') }}</UButton>
+              <UButton color="primary" size="lg" class="px-4" type="submit">{{ tr('រក្សាទុក') }}</UButton>
             </div>
           </TwForm>
         </div>
@@ -418,7 +408,7 @@ const { data: readRoleToResource, refresh } = await useFetch<any>("/api/role/get
           <div v-if="editingSuperAdmin"
             class="mb-4 flex items-start gap-2 rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
             <TwFeather type="lock" :size="18" class="mt-0.5 shrink-0" />
-            <span>សិទ្ធិរបស់ Super Admin ត្រូវបានកំណត់ជាការអនុញ្ញាតពេញលេញ ហើយមិនអាចកែបានទេ។</span>
+            <span>{{ tr('សិទ្ធិរបស់ Super Admin ត្រូវបានកំណត់ជាការអនុញ្ញាតពេញលេញ ហើយមិនអាចកែបានទេ។') }}</span>
           </div>
 
           <div class="space-y-5">
@@ -430,10 +420,10 @@ const { data: readRoleToResource, refresh } = await useFetch<any>("/api/role/get
               <table class="w-full text-left text-sm">
                 <thead class="border-b text-xs text-gray-500 dark:border-gray-700 dark:text-gray-400">
                   <tr>
-                    <th class="px-4 py-2 font-normal">ព័ត៌មានលម្អិតអំពីការអនុញ្ញាត</th>
-                    <th class="w-28 px-2 py-2 text-center font-normal">អនុញ្ញាត</th>
-                    <th class="w-28 px-2 py-2 text-center font-normal">បានត្រឹមមើល</th>
-                    <th class="w-28 px-2 py-2 text-center font-normal">មិនអនុញ្ញាត</th>
+                    <th class="px-4 py-2 font-normal">{{ tr('ព័ត៌មានលម្អិតអំពីការអនុញ្ញាត') }}</th>
+                    <th class="w-28 px-2 py-2 text-center font-normal">{{ tr('អនុញ្ញាត') }}</th>
+                    <th class="w-28 px-2 py-2 text-center font-normal">{{ tr('បានត្រឹមមើល') }}</th>
+                    <th class="w-28 px-2 py-2 text-center font-normal">{{ tr('មិនអនុញ្ញាត') }}</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
@@ -443,9 +433,7 @@ const { data: readRoleToResource, refresh } = await useFetch<any>("/api/role/get
                       {{ item.name }}
                       <!-- A page that only displays cannot be "write", so the
                            option is not offered rather than offered and ignored. -->
-                      <span v-if="item.readOnlyPage" class="ml-1 text-xs text-gray-400">
-                        (មើលតែប៉ុណ្ណោះ)
-                      </span>
+                      <span v-if="item.readOnlyPage" class="ml-1 text-xs text-gray-400">{{ tr('(មើលតែប៉ុណ្ណោះ)') }}</span>
                     </td>
                     <td class="px-2 py-2.5 text-center">
                       <URadio v-if="!item.readOnlyPage" :name="`acc-${item.id}`"
@@ -473,15 +461,13 @@ const { data: readRoleToResource, refresh } = await useFetch<any>("/api/role/get
                  "may hand out this role", which is what stops an Admin creating
                  a Super Admin. Shown apart so it is not read as a screen. -->
             <section v-if="roleGates.length" class="overflow-hidden rounded-lg border dark:border-gray-700">
-              <h4 class="bg-gray-50 px-4 py-2 font-[Moul] text-primary dark:bg-gray-900/50">
-                សិទ្ធិផ្តល់តួនាទី
-              </h4>
+              <h4 class="bg-gray-50 px-4 py-2 font-[Moul] text-primary dark:bg-gray-900/50">{{ tr('សិទ្ធិផ្តល់តួនាទី') }}</h4>
               <table class="w-full text-left text-sm">
                 <thead class="border-b text-xs text-gray-500 dark:border-gray-700 dark:text-gray-400">
                   <tr>
-                    <th class="px-4 py-2 font-normal">តួនាទីដែលអាចផ្តល់ឲ្យបាន</th>
-                    <th class="w-28 px-2 py-2 text-center font-normal">អនុញ្ញាត</th>
-                    <th class="w-28 px-2 py-2 text-center font-normal">មិនអនុញ្ញាត</th>
+                    <th class="px-4 py-2 font-normal">{{ tr('តួនាទីដែលអាចផ្តល់ឲ្យបាន') }}</th>
+                    <th class="w-28 px-2 py-2 text-center font-normal">{{ tr('អនុញ្ញាត') }}</th>
+                    <th class="w-28 px-2 py-2 text-center font-normal">{{ tr('មិនអនុញ្ញាត') }}</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100 dark:divide-gray-700">

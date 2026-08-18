@@ -4,7 +4,7 @@ import { useToast } from 'vue3-tailwind';
 import CanvasForm from '~/components/organisation/CanvasForm.vue'
 
 useHead({
-  title: "ស្ថាប័ន",
+  title: tr("ស្ថាប័ន"),
 });
 
 const toast = useToast();
@@ -37,10 +37,10 @@ const organisations = computed(() => result.value?.data || []);
 const total = computed(() => result.value?.total || 0);
 
 const columns = [
-  { key: 'name', label: 'ឈ្មោះ', sortable: true },
-  { key: 'website', label: 'គេហទំព័រ', sortable: true },
-  { key: 'email', label: 'អ៊ីមែល', sortable: true },
-  { key: 'phoneNumber', label: 'លេខទូរស័ព្ទ', sortable: true },
+  { key: 'name', label: tr('ឈ្មោះ'), sortable: true },
+  { key: 'website', label: tr('គេហទំព័រ'), sortable: true },
+  { key: 'email', label: tr('អ៊ីមែល'), sortable: true },
+  { key: 'phoneNumber', label: tr('លេខទូរស័ព្ទ'), sortable: true },
   { key: 'actions', label: 'Actions' }
 ];
 
@@ -112,10 +112,8 @@ const openNewCanvas = () => {
 <template>
   <div>
     <div class="flex justify-between items-center mb-4">
-      <h1 class="text-2xl font-[Moul] text-primary">បញ្ជីស្ថាប័ន</h1>
-      <UButton icon="i-heroicons-plus-circle-20-solid" @click="openNewCanvas">
-        បង្កើតថ្មី
-      </UButton>
+      <h1 class="text-2xl font-[Moul] text-primary">{{ tr('បញ្ជីស្ថាប័ន') }}</h1>
+      <UButton icon="i-heroicons-plus-circle-20-solid" @click="openNewCanvas">{{ tr('បង្កើតថ្មី') }}</UButton>
     </div>
 
     <div class="flex justify-end mb-4">

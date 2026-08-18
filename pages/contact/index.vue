@@ -16,7 +16,7 @@ const tokenKey = ref('')
 
 const option = ['ផ្សេងៗ', 'បញ្ហានៅពេលចូលក្នុងប្រព័ន្ទ','ស្នើសុំបង្កើតមជ្ឈមណ្ឌល']
 useHead({
-  title: "ទាក់ទង​មក​ពួក​យើង",
+  title: tr("ទាក់ទង​មក​ពួក​យើង"),
   script : [ { 'src' : `https://www.google.com/recaptcha/api.js?render=${reCaptcharKey}`}]
 });
 const state = reactive({
@@ -115,31 +115,29 @@ const  onSubmit = async (event: FormSubmitEvent<any>) => {
         </div>
         <UCard class="w-full  md:w-9/12 lg:w-9/12">
           <template #header>          
-            <div class=" text-gray-700 dark:text-white font-[moul]">
-              ទំនាក់ទំនងមកពួកយើង
-            </div>
+            <div class=" text-gray-700 dark:text-white font-[moul]">{{ tr('ទំនាក់ទំនងមកពួកយើង') }}</div>
           </template>      
             <UForm  :schema="schema" :state="state" @submit="onSubmit" class="flex flex-col  gap-5">
-              <UFormGroup label="ឈ្មោះពេញ" name="name"   v-if="!messageSent">
+              <UFormGroup :label="tr('ឈ្មោះពេញ')" name="name"   v-if="!messageSent">
                 <UInput v-model="state.name" size="xl"/>
               </UFormGroup>
-              <UFormGroup label="អុីមែល" name="email" v-if="!messageSent">
+              <UFormGroup :label="tr('អុីមែល')" name="email" v-if="!messageSent">
                 <UInput v-model="state.email" size="xl"  />
               </UFormGroup>
-              <UFormGroup label="លេខទូរស័ព្ទ" name="phone"  v-if="!messageSent">
+              <UFormGroup :label="tr('លេខទូរស័ព្ទ')" name="phone"  v-if="!messageSent">
                 <UInput type="text" v-model="state.phone" size="xl"/>
               </UFormGroup>
-              <UFormGroup label="ការពិពណ៌នា" name="reason"  v-if="!messageSent">
+              <UFormGroup :label="tr('ការពិពណ៌នា')" name="reason"  v-if="!messageSent">
                 <USelect v-model="state.reason" :options="option" size="xl"/>
               </UFormGroup>    
               <UFormGroup label="ឈ្មោះចូលប្រើប្រាស់ក្នុងប្រើប្រាស់"   v-if="state.reason === option[1] &&  !messageSent" name="username">
                 <UInput  required oninvalid="this.setCustomValidity('សូមបំពេញទិន្នន័យ')"
                 v-model="state.username" size="xl"/>
               </UFormGroup> 
-              <UFormGroup label="ឈ្មោះមណ្ឌល"   v-if="state.reason === option[2] &&  !messageSent" name="serviceCenterName">
+              <UFormGroup :label="tr('ឈ្មោះមណ្ឌល')"   v-if="state.reason === option[2] &&  !messageSent" name="serviceCenterName">
                 <UInput  required oninvalid="this.setCustomValidity('សូមបំពេញទិន្នន័យ')" v-model="state.serviceCenterName" size="xl"/>
               </UFormGroup> 
-              <UFormGroup label="ការពិពណ៌នា" v-if="!messageSent" name="details">
+              <UFormGroup :label="tr('ការពិពណ៌នា')" v-if="!messageSent" name="details">
                 <UTextarea v-model="state.details" size="xl"/>
               </UFormGroup>    
               
