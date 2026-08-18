@@ -75,12 +75,12 @@ export default eventHandler(async (event) => {
       prisma.client_PersonalInformation.count({ where: clientWhere }),
       // A centre user counts their own centre, not the country's.
       prisma.serviceCenter.count(centreId ? { where: { id: centreId } } : undefined),
-      // Services offered by the centre; the whole active catalogue nationally.
-      prisma.service.count({
-        where: centreId
-          ? { isActive: true, serviceCenters: { some: { serviceCenterID: centreId } } }
-          : { isActive: true },
-      }),
+      // Not scoped, deliberately. Services are a national catalogue, and which
+      // centre offers which is held in ServicesOnServiceCenters — a table that
+      // is currently empty, so scoping this would report "0 services" to every
+      // centre user while three exist. An unmaintained link is not evidence that
+      // a centre offers nothing. Worth scoping once that table is populated.
+      prisma.service.count({ where: { isActive: true } }),
       prisma.client_PersonalInformation.count({ where: { ...clientWhere, caseClosures: { some: {} } } }),
       prisma.client_PersonalInformation.count({ where: { ...clientWhere, clientServices: { some: {} } } }),
       prisma.client_PersonalInformation.count({ where: { ...clientWhere, casePlans: { some: {} } } }),
