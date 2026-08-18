@@ -69,6 +69,9 @@ onMounted(async () => {
         body: { id: serviceId.value },
       });
       if (!rec?.id) throw new Error(t('message.recordNotFound'));
+      // Dates arrive as ISO strings over JSON; the datepickers need Date
+      // objects or the year overlay silently fails. See composables/reviveDates.ts.
+      Object.assign(rec, reviveDates(rec));
       Object.assign(form, {
         id: rec.id,
         clientId: rec.clientId,
@@ -239,7 +242,7 @@ async function submit() {
             <label class="block">
               <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('ថ្ងៃខែឆ្នាំមកទទួលសេវាកម្ម') }}</span>
               <Datepicker v-model="form.serviceDate" :disabled="readOnly" :enableTimePicker="false"
-                format="dd/MM/yyyy" autoApply class="mt-1" />
+                :close-on-auto-apply="false" autoApply format="dd/MM/yyyy" class="mt-1" />
             </label>
             <label class="block">
               <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('សេវាកម្ម') }}</span>

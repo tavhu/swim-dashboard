@@ -77,6 +77,9 @@ onMounted(async () => {
         body: { id: planId.value },
       });
       if (!rec?.id) throw new Error("រកមិនឃើញផែនការនេះទេ");
+      // Dates arrive as ISO strings over JSON; the datepickers need Date
+      // objects or the year overlay silently fails. See composables/reviveDates.ts.
+      Object.assign(rec, reviveDates(rec));
       Object.assign(form, {
         id: rec.id,
         clientId: rec.clientId,
@@ -251,12 +254,12 @@ async function submit() {
             <label class="block">
               <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('កាលបរិច្ឆេទតាមដាន') }}</span>
               <Datepicker v-model="form.monitorDate" :disabled="readOnly" :enableTimePicker="false"
-                format="dd/MM/yyyy" autoApply class="mt-1" />
+                :close-on-auto-apply="false" autoApply format="dd/MM/yyyy" class="mt-1" />
             </label>
             <label class="block">
               <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('កាលបរិច្ឆេទតាមដានបន្ត') }}</span>
               <Datepicker v-model="form.nextMonitorDate" :disabled="readOnly" :enableTimePicker="false"
-                format="dd/MM/yyyy" autoApply class="mt-1" />
+                :close-on-auto-apply="false" autoApply format="dd/MM/yyyy" class="mt-1" />
             </label>
             <label class="block sm:col-span-2">
               <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('វិធីសាស្រ្តតាមដាន') }}</span>

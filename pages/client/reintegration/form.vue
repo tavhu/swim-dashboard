@@ -88,6 +88,9 @@ onMounted(async () => {
         body: { id: recordId.value },
       });
       if (!rec?.id) throw new Error(t('message.recordNotFound'));
+      // Dates arrive as ISO strings over JSON; the datepickers need Date
+      // objects or the year overlay silently fails. See composables/reviveDates.ts.
+      Object.assign(rec, reviveDates(rec));
 
       for (const k of Object.keys(form)) {
         if (k === "id") continue;
@@ -253,7 +256,7 @@ async function submit() {
             <label class="block">
               <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('កាលបរិច្ឆេទទទួល') }}</span>
               <Datepicker v-model="form.handoverDate" :disabled="readOnly" :enableTimePicker="false"
-                format="dd/MM/yyyy" autoApply class="mt-1" />
+                :close-on-auto-apply="false" autoApply format="dd/MM/yyyy" class="mt-1" />
             </label>
             <label class="block">
               <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('អ្នកទទួល') }}</span>
@@ -364,13 +367,13 @@ async function submit() {
           <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <label class="block">
               <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('កាលបរិច្ឆេទតាមដាន') }}</span>
-              <Datepicker v-model="form.monitorDate" :disabled="readOnly" :enableTimePicker="false" format="dd/MM/yyyy"
-                autoApply class="mt-1" />
+              <Datepicker v-model="form.monitorDate" :disabled="readOnly" :enableTimePicker="false" :close-on-auto-apply="false" autoApply format="dd/MM/yyyy"
+                class="mt-1" />
             </label>
             <label class="block">
               <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('កាលបរិច្ឆេទតាមដានបន្ត') }}</span>
               <Datepicker v-model="form.nextMonitorDate" :disabled="readOnly" :enableTimePicker="false"
-                format="dd/MM/yyyy" autoApply class="mt-1" />
+                :close-on-auto-apply="false" autoApply format="dd/MM/yyyy" class="mt-1" />
             </label>
 
             <!-- ជ្រើសរើសបានច្រើន, so checkboxes rather than a select -->

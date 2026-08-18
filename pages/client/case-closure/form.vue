@@ -63,6 +63,9 @@ onMounted(async () => {
         body: { id: closureId.value },
       });
       if (!rec?.id) throw new Error(t('message.recordNotFound'));
+      // Dates arrive as ISO strings over JSON; the datepickers need Date
+      // objects or the year overlay silently fails. See composables/reviveDates.ts.
+      Object.assign(rec, reviveDates(rec));
 
       for (const k of Object.keys(form)) {
         if (k === "id") continue;
