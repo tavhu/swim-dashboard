@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { mayStartForm } from "~~/shared/formPipeline";
 import { TwFeather, useToast } from "vue3-tailwind";
 
 /**
@@ -11,7 +12,18 @@ const readOnly = checkIfPageReadOnly();
 const toast = useToast();
 
 const clientId = computed(() => route.params.clientId as string);
+
 const client = ref<any>(null);
+/**
+ * ទម្រង់ទី៥ may only be started once the form before it has been sent for
+ * approval. The list menu on /client already greys this out; this page is
+ * reachable from that menu and was offering the same form regardless, so the
+ * check belongs here too. Same shared function, same answer.
+ */
+const mayStart = computed(
+  () => !client.value?.pipeline || mayStartForm(client.value.pipeline, 5)
+);
+
 const rows = ref<any[]>([]);
 const pending = ref(true);
 const error = ref<string | null>(null);
@@ -81,13 +93,17 @@ const removeRecord = async (r: any, i: number) => {
             {{ client.ReadableCode }} · {{ client.fullNameKH }}
           </p>
         </div>
-        <NuxtLink v-if="client" :to="`/client/follow-up/form?client=${client.id}`">
+        <NuxtLink v-if="client && mayStart" :to="`/client/follow-up/form?client=${client.id}`">
           <UButton color="primary" size="xl" :disabled="readOnly">
             <TwFeather type="plus" :size="18" class="mr-1" />
             <span class="font-[Moul] text-lg">{{ $t('action.createNew') }}</span>
           </UButton>
         </NuxtLink>
       </div>
+      <p v-if="client && !mayStart"
+        class="mt-2 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:bg-amber-950/40 dark:text-amber-300">
+        {{ tr('ត្រូវបំពេញ និងស្នើសុំការអនុម័តទម្រង់មុនជាមុនសិន') }}
+      </p>
       <hr class="my-2 border dark:border-gray-700" />
 
       <div v-if="pending" class="h-40 animate-pulse rounded-lg bg-white shadow dark:bg-gray-800" />

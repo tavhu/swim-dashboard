@@ -78,9 +78,22 @@ export default eventHandler(async (event) => {
                 client_PersonalInformationId: body?.id,
               },
             },
+            // The six-form pipeline, so the pages hanging off a client can gate
+            // their own "add" buttons by the same rule the list menu uses.
+            // Statuses only — see server/utils/pipeline.ts.
+            clientServices: { select: { approvalStatus: true } },
+            casePlans: { select: { approvalStatus: true } },
+            reintegrations: { select: { approvalStatus: true } },
+            followUps: { select: { approvalStatus: true } },
+            caseClosures: { select: { approvalStatus: true } },
           },
         })
       : null;
+
+    // Attached rather than replacing the relations: ទម្រង់ទី១'s own edit form
+    // reads this record, and removing keys it does not use would be a change it
+    // has no reason to absorb.
+    if (data) (data as any).pipeline = pipelineOf(data);
 
     // The list branch: server-side search, sort and paging, and a total that
     // counts the matches rather than the table.

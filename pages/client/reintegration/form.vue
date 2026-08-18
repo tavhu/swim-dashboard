@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { mayStartForm } from "~~/shared/formPipeline";
 import { useToast } from "vue3-tailwind";
 import Datepicker from "@vuepic/vue-datepicker";
 
@@ -121,6 +122,15 @@ onMounted(async () => {
       });
       if (!c?.id) throw new Error(t('message.clientNotFound'));
       client.value = c;
+
+      // The order rule, at the last door into this form. The list menu and the
+      // client's own ទម្រង់ទី៤ page both hide the way here when it is not open
+      // yet, but a typed or bookmarked URL reaches it directly — and the server
+      // would refuse the save, which is a poor time to find out. Said before the
+      // form is filled in rather than after.
+      if (!mayStartForm(c.pipeline, 4)) {
+        throw new Error(tr('ត្រូវបំពេញ និងស្នើសុំការអនុម័តទម្រង់មុនជាមុនសិន'));
+      }
       // The family's number is already on ទម្រង់ទី១ and is the most likely first
       // contact for a client going home. Prefilled, and editable — the manual
       // asks for at least two lines and the second is nearly always someone else.
