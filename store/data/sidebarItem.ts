@@ -231,6 +231,34 @@ export default [
     icon: "file-text",
     submenu: [],
   },
+  // Moved up from Settings > មណ្ឌល. Those three are daily work — who is on staff,
+  // what the centre plans to do, what it has on file — while the two left behind
+  // (listing and registering a centre) are configuration, done once. Settings is
+  // where you go to set the system up; this is where you go to use it.
+  {
+    isTitle: false,
+    name: "បុគ្គលិកមណ្ឌល",
+    i18nKey: "menu.centreStaff",
+    url: "/center/staff",
+    icon: "users",
+    submenu: [],
+  },
+  {
+    isTitle: false,
+    name: "ផែនការមជ្ឈមណ្ឌល",
+    i18nKey: "menu.centrePlan",
+    url: "/center/plan",
+    icon: "calendar",
+    submenu: [],
+  },
+  {
+    isTitle: false,
+    name: "ឯកសារកាលប្បវត្តិ",
+    i18nKey: "menu.centreDocuments",
+    url: "/center/centerdocumentation",
+    icon: "folder",
+    submenu: [],
+  },
   // {
   //   isTitle: false,
   //   name: "របាយការណ៏",

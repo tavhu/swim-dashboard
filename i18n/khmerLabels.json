@@ -601,7 +601,6 @@
   "តួនាទី និងការអនុញ្ញាត": "Roles and permissions",
   "ប្រអប់សារ": "Inbox",
   "សេវា": "Services",
-  "បុគ្កលិកមណ្ឌល": "Centre staff",
   "បញ្ចីតួនាទី": "Roles",
   "បង្កើតតួនាទី": "Create a role",
   "កែសម្រួលតួនាទី": "Edit the role",
@@ -846,5 +845,6 @@
   "ពិនិត្យ": "Review",
   "ថ្ងៃនេះ": "Today",
   "មិនអាចទាញយកទិន្នន័យបានទេ": "Could not load the data",
-  "ការអនុម័ត (មជ្ឈមណ្ឌលរបស់ខ្លួន)": "Approvals (own centre)"
+  "ការអនុម័ត (មជ្ឈមណ្ឌលរបស់ខ្លួន)": "Approvals (own centre)",
+  "បុគ្គលិកមណ្ឌល": "Centre staff"
 }
