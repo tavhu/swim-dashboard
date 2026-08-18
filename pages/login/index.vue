@@ -124,7 +124,7 @@ onMounted(() => {
             <!-- The compact identity, for screens without the panel. -->
             <div class="mb-5 flex items-center gap-3 lg:hidden">
               <img src="/Logo.png" alt="" class="h-12 w-12 shrink-0 rounded-full" />
-              <span class="font-[Moul] text-base leading-tight text-primary">
+              <span class="font-[Moul] text-base leading-tight text-blue-900 dark:text-white">
                 {{ $t('app.namePart1') }} {{ $t('app.namePart2') }}
               </span>
             </div>

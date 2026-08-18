@@ -52,6 +52,7 @@ export const RESOURCE = {
   userCreate: "register",
   userList: "register-account",
   file: "file",
+  /** Not a page — the right to approve or reject ទម្រង់ទី១-៦ for one's own centre. */
   approval: "approval",
   // added for features built since
   organisation: "organisation",

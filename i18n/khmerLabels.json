@@ -177,7 +177,7 @@
   "ដំណើការ": "Active",
   "បិទដំណើការ": "Inactive",
   "ហៅ": "known as",
-  "សិទ្ធិអនុម័ត": "Approval",
+  "សិទ្ធិអនុម័ត": "Approval rights",
   "ស្ថានភាព": "Status",
   "ស្នើឡើងដោយ": "Submitted by",
   "សម្រេចដោយ": "Decided by",
@@ -811,5 +811,7 @@
   "ឈ្មោះអ្នកប្រើប្រាស់នេះមានរួចហើយ": "That username already exists",
   "សូមបញ្ចូលលេខសំងាត់": "Please enter a password",
   "សូមបញ្ចូលឈ្មោះតួនាទី": "Please enter a role name",
-  "គណនីត្រូវបានបិទ! សូមទំនាក់ទំនងអ្នកគ្រប់គ្រង ": "This account has been disabled. Please contact an administrator."
+  "គណនីត្រូវបានបិទ! សូមទំនាក់ទំនងអ្នកគ្រប់គ្រង ": "This account has been disabled. Please contact an administrator.",
+  "អ្នកមិនមានសិទ្ធិអនុម័តទេ": "You do not have permission to approve",
+  "សិទ្ធិអនុម័ត (មជ្ឈមណ្ឌលរបស់ខ្លួន)": "Approval rights (own centre)"
 }

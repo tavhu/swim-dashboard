@@ -68,6 +68,44 @@ export async function runApprovalTransition(opts: {
     };
   }
 
+  // --- who may decide -------------------------------------------------------
+  //
+  // Submitting is part of doing the work: whoever fills a ទម្រង់ in may send it
+  // for approval. Approving and rejecting are not — they need the `approval`
+  // right, and they are limited to the caller's own centre, so a director signs
+  // off their own centre's cases and nobody else's.
+  //
+  // Checked here rather than in the six endpoints, for the same reason the
+  // transitions are: one rule, one place, no form left out by accident.
+  if (action === "approve" || action === "reject") {
+    const caller = await getAuthUser(event);
+    if (!caller || !userCan(caller, "approval", "write")) {
+      setResponseStatus(event, 403);
+      return { error: errorMessage(event, "អ្នកមិនមានសិទ្ធិអនុម័តទេ") };
+    }
+
+    // ទម្រង់ទី១ is the client, so it holds the centre itself; ទម្រង់ទី២-៦ reach
+    // it through theirs.
+    const scoped =
+      recordType === "CLIENT"
+        ? await prisma.client_PersonalInformation.findUnique({
+            where: { id: id as string },
+            select: { serviceCenterID: true },
+          })
+        : await (delegate as any).findUnique({
+            where: { id },
+            select: { client: { select: { serviceCenterID: true } } },
+          });
+
+    const recordCentre =
+      recordType === "CLIENT" ? scoped?.serviceCenterID : scoped?.client?.serviceCenterID;
+
+    if (!isInCenterScope(caller.serviceCenterID, recordCentre)) {
+      setResponseStatus(event, 403);
+      return { error: errorMessage(event, "អ្នកមិនមានសិទ្ធិលើមជ្ឈមណ្ឌលនេះទេ") };
+    }
+  }
+
   const now = new Date();
   // Submitting clears any previous rejection reason: it belonged to the version
   // that was turned back, and leaving it would make a fresh submission look

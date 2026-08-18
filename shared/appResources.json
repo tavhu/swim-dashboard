@@ -196,5 +196,11 @@
     "group": "report",
     "nameKh": "របាយការណ៏",
     "readOnlyPage": true
+  },
+  {
+    "route": "approval",
+    "group": "approval",
+    "nameKh": "សិទ្ធិអនុម័ត (មជ្ឈមណ្ឌលរបស់ខ្លួន)",
+    "capability": true
   }
 ]

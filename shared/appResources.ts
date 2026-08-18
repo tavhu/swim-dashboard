@@ -25,7 +25,7 @@ export interface AppResource {
   /** Nuxt route name === Resources.frontEndURL. */
   route: string;
   /** Stable key for the UI's label lookup; also the group heading. */
-  group: "dashboard" | "client" | "service" | "centre" | "organisation" | "account" | "report";
+  group: "dashboard" | "client" | "service" | "centre" | "organisation" | "account" | "report" | "approval";
   /** Khmer name stored in Resources.name, which is what existing rows use. */
   nameKh: string;
   /**
@@ -34,6 +34,13 @@ export interface AppResource {
    * write — offering it would promise something the page cannot do.
    */
   readOnlyPage?: boolean;
+  /**
+   * Not a page — a right the holder carries wherever the app checks for it.
+   * `approval` is the first: it decides who may approve or reject ទម្រង់ទី១-៦,
+   * as opposed to who may open a screen. The route guard never matches it,
+   * because there is no route by that name.
+   */
+  capability?: boolean;
 }
 
 /**
@@ -50,7 +57,12 @@ import raw from "./appResources.json";
 export const APP_RESOURCES: AppResource[] = raw as AppResource[];
 
 /** Fast membership test for "is this route something we gate at all?". */
-export const APP_RESOURCE_ROUTES = new Set(APP_RESOURCES.map((r) => r.route));
+export const APP_RESOURCE_ROUTES = new Set(
+  APP_RESOURCES.filter((r) => !r.capability).map((r) => r.route)
+);
+
+/** The capability rows, which the permission grid shows apart from the pages. */
+export const APP_CAPABILITIES = APP_RESOURCES.filter((r) => r.capability);
 
 /**
  * Pages every signed-in user may open regardless of grants.

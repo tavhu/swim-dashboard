@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { usePermissionStore } from "~/stores/permission";
 import { TwFeather, useToast } from "vue3-tailwind";
 
 /**
@@ -47,6 +48,23 @@ const current = computed(() => STATUS[props.status] ?? STATUS.DRAFT);
 
 const fmt = (d?: string | null) =>
   d ? new Date(d).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : "—";
+
+/**
+ * Who may decide, as opposed to who may submit.
+ *
+ * Every page passed `:can-decide="true"`, so in practice nobody was gated —
+ * a data-entry officer saw អនុម័ត and បដិសេធ on a record they had just filed
+ * in. The right now comes from the permission grid (`approval`), and the prop
+ * can only narrow that further, never widen it: a page cannot hand out a right
+ * its holder does not have.
+ *
+ * The server checks the same right and the caller's centre independently — see
+ * server/utils/approval.ts. Hiding a button is not a rule.
+ */
+const permissionStore = usePermissionStore();
+const mayDecide = computed(
+  () => props.canDecide !== false && permissionStore.hasWritePermission("approval")
+);
 
 async function act(action: "submit" | "approve" | "reject") {
   if (props.readOnly || busy.value) return;
@@ -116,7 +134,7 @@ async function act(action: "submit" | "approve" | "reject") {
         <span class="font-[Moul]">{{ tr('ស្នើសុំ') }}</span>
       </UButton>
 
-      <template v-if="canDecide && status === 'SUBMITTED'">
+      <template v-if="mayDecide && status === 'SUBMITTED'">
         <UButton color="primary" :loading="busy" @click="act('approve')">
           <TwFeather type="check" :size="16" class="mr-1" />
           <span class="font-[Moul]">{{ tr('អនុម័ត') }}</span>
