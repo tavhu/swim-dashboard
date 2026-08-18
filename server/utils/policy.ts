@@ -230,6 +230,17 @@ export const RULES: Rule[] = [
     action: "write",
   },
 
+  // --- approval queue -------------------------------------------------------
+  {
+    // Read on `approval` — the same row that grants the right to decide. A
+    // read-only grant is a meaningful state here: see the queue, without the
+    // អនុម័ត and បដិសេធ buttons, which the panel checks for write.
+    mode: "permission",
+    pattern: /^\/api\/approval\/pending\/?$/,
+    resource: RESOURCE.approval,
+    action: "read",
+  },
+
   // --- service centres ------------------------------------------------------
   {
     // "which centre am I attached to" — answered from the session, so there is

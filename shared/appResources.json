@@ -200,7 +200,6 @@
   {
     "route": "approval",
     "group": "approval",
-    "nameKh": "សិទ្ធិអនុម័ត (មជ្ឈមណ្ឌលរបស់ខ្លួន)",
-    "capability": true
+    "nameKh": "ការអនុម័ត (មជ្ឈមណ្ឌលរបស់ខ្លួន)"
   }
 ]

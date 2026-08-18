@@ -212,7 +212,8 @@
     "rolesPermissions": "Roles and permissions",
     "services": "Services",
     "settings": "Settings",
-    "yearly": "Yearly"
+    "yearly": "Yearly",
+    "approvals": "Approvals"
   },
   "message": {
     "clientNotFound": "Client not found",

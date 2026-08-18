@@ -14,6 +14,17 @@ export default [
     icon: "trello",
     submenu: [],
   },
+  // Right below the dashboard: for an approver this is the first thing they open
+  // in a working day. Pruned away automatically for a role without the
+  // `approval` grant — see composables/menuPermission.ts.
+  {
+    isTitle: false,
+    name: "Approvals",
+    i18nKey: "menu.approvals",
+    url: "/approval",
+    icon: "check-square",
+    submenu: [],
+  },
   // {
   //   isTitle: false,
   //   name: "Components",

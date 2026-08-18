@@ -61,7 +61,15 @@ export const APP_RESOURCE_ROUTES = new Set(
   APP_RESOURCES.filter((r) => !r.capability).map((r) => r.route)
 );
 
-/** The capability rows, which the permission grid shows apart from the pages. */
+/**
+ * The capability rows, which the permission grid shows apart from the pages.
+ *
+ * Empty as it stands: `approval` was the only one, and it became a page when
+ * the approval queue was built — one row now means both "may approve" and "may
+ * open the queue", which is the same permission asked twice if they are split.
+ * Kept because a right without a page of its own is a shape this grid should
+ * still be able to express.
+ */
 export const APP_CAPABILITIES = APP_RESOURCES.filter((r) => r.capability);
 
 /**

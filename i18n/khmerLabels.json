@@ -837,5 +837,14 @@
   "ទម្រង់ទី": "Form ",
   "កំណត់ត្រា": "records",
   "ត្រូវស្នើសុំទម្រង់មុនជាមុនសិន": "request the previous form first",
-  "ត្រូវបំពេញ និងស្នើសុំការអនុម័តទម្រង់មុនជាមុនសិន": "Complete and request approval for the previous form first"
+  "ត្រូវបំពេញ និងស្នើសុំការអនុម័តទម្រង់មុនជាមុនសិន": "Complete and request approval for the previous form first",
+  "ការអនុម័ត": "Approvals",
+  "ទម្រង់ដែលកំពុងរង់ចាំការសម្រេច": "Forms awaiting a decision",
+  "គ្មានទម្រង់រង់ចាំការអនុម័តទេ": "Nothing is waiting for approval",
+  "កាលបរិច្ឆេទស្នើ": "Requested on",
+  "រង់ចាំ": "Waiting",
+  "ពិនិត្យ": "Review",
+  "ថ្ងៃនេះ": "Today",
+  "មិនអាចទាញយកទិន្នន័យបានទេ": "Could not load the data",
+  "ការអនុម័ត (មជ្ឈមណ្ឌលរបស់ខ្លួន)": "Approvals (own centre)"
 }
