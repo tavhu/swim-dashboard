@@ -843,7 +843,7 @@ watch(() => formData.communeBA, (newCommune) => {
                 </div>
                 <label class="col-span-12 block lg:col-span-6">
                     <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('ថ្ងៃខែឆ្នាំកំណើត') }}</span>
-                    <Datepicker v-model="formData.DOB" :disabled="readOnly" :maxDate="new Date()"
+                    <Datepicker :flow="['year', 'month', 'calendar']" :text-input="true" v-model="formData.DOB" :disabled="readOnly" :maxDate="new Date()"
                         :enableTimePicker="false" :close-on-auto-apply="false" autoApply format="dd/MM/yyyy" class="mt-1" />
                 </label>
                 <div class="col-span-12 lg:col-span-6">
@@ -863,7 +863,7 @@ watch(() => formData.communeBA, (newCommune) => {
                 </div>
                 <label class="col-span-12 block lg:col-span-6">
                     <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('កាលបរិច្ឆេទចូលមជ្ឈមណ្ឌល') }}</span>
-                    <Datepicker v-model="formData.DateArrested" :disabled="readOnly" :enableTimePicker="false"
+                    <Datepicker :text-input="true" v-model="formData.DateArrested" :disabled="readOnly" :enableTimePicker="false"
                         :close-on-auto-apply="false" autoApply format="dd/MM/yyyy" class="mt-1" />
                 </label>
                 <!-- START: Corrected Address Fields -->
@@ -923,12 +923,12 @@ watch(() => formData.communeBA, (newCommune) => {
                 </div>
                 <label class="col-span-12 block lg:col-span-6">
                     <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('ថ្ងៃខែឆ្នាំកំណើត (ឪពុក-អ្នកថែទាំ)') }}</span>
-                    <Datepicker v-model="formData.FOCDOB" :disabled="readOnly" :maxDate="new Date()"
+                    <Datepicker :flow="['year', 'month', 'calendar']" :text-input="true" v-model="formData.FOCDOB" :disabled="readOnly" :maxDate="new Date()"
                         :enableTimePicker="false" :close-on-auto-apply="false" autoApply format="dd/MM/yyyy" class="mt-1" />
                 </label>
                 <label class="col-span-12 block lg:col-span-6">
                     <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('ថ្ងៃខែឆ្នាំកំណើត (ម្តាយ-អ្នកថែទាំ)') }}</span>
-                    <Datepicker v-model="formData.MOCDOB" :disabled="readOnly" :maxDate="new Date()"
+                    <Datepicker :flow="['year', 'month', 'calendar']" :text-input="true" v-model="formData.MOCDOB" :disabled="readOnly" :maxDate="new Date()"
                         :enableTimePicker="false" :close-on-auto-apply="false" autoApply format="dd/MM/yyyy" class="mt-1" />
                 </label>
                 <div class="col-span-12 lg:col-span-6">
@@ -1079,7 +1079,7 @@ watch(() => formData.communeBA, (newCommune) => {
                             </label>
                             <label class="block sm:col-span-3">
                                 <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('ថ្ងៃខែ') }}</span>
-                                <Datepicker v-model="child.DateTimeServed" :disabled="readOnly" :maxDate="new Date()"
+                                <Datepicker :text-input="true" v-model="child.DateTimeServed" :disabled="readOnly" :maxDate="new Date()"
                                     :enableTimePicker="false" :close-on-auto-apply="false" autoApply format="dd/MM/yyyy" class="mt-1" />
                             </label>
                             <div class="sm:col-span-2">
@@ -1237,7 +1237,7 @@ watch(() => formData.communeBA, (newCommune) => {
                             </div>
                             <label class="block sm:col-span-3">
                                 <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('កាលបរិច្ឆេទ') }}</span>
-                                <Datepicker v-model="child.NoteDateTime" :disabled="readOnly" :maxDate="new Date()"
+                                <Datepicker :text-input="true" v-model="child.NoteDateTime" :disabled="readOnly" :maxDate="new Date()"
                                     :enableTimePicker="false" :close-on-auto-apply="false" autoApply format="dd/MM/yyyy" class="mt-1" />
                             </label>
                             <label class="block sm:col-span-6">
@@ -1296,7 +1296,7 @@ watch(() => formData.communeBA, (newCommune) => {
                         </div>
                         <label class="col-span-12 block lg:col-span-6">
                             <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('កាលបរិច្ឆេទសម្ភាសន៍') }}</span>
-                            <Datepicker v-model="formData.InterViewDate" :disabled="readOnly" :maxDate="new Date()"
+                            <Datepicker :text-input="true" v-model="formData.InterViewDate" :disabled="readOnly" :maxDate="new Date()"
                                 :enableTimePicker="false" :close-on-auto-apply="false" autoApply format="dd/MM/yyyy" class="mt-1" />
                         </label>
                     </div>

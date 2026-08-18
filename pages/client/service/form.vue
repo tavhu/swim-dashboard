@@ -241,7 +241,7 @@ async function submit() {
           <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <label class="block">
               <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('ថ្ងៃខែឆ្នាំមកទទួលសេវាកម្ម') }}</span>
-              <Datepicker v-model="form.serviceDate" :disabled="readOnly" :enableTimePicker="false"
+              <Datepicker :text-input="true" v-model="form.serviceDate" :disabled="readOnly" :enableTimePicker="false"
                 :close-on-auto-apply="false" autoApply format="dd/MM/yyyy" class="mt-1" />
             </label>
             <label class="block">

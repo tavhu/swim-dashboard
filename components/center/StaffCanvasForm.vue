@@ -1033,7 +1033,7 @@ watch(SelectedCityValue, () => {
               </div>
               <div class="col-span-12 lg:col-span-6">
                 <label for="">{{ tr('ថ្ងៃខែឆ្នាំកំណើត') }}</label>
-                <Datepicker v-model="formDataEditOfficial.DateofBirth" :dayNames="[
+                <Datepicker :flow="['year', 'month', 'calendar']" :text-input="true" v-model="formDataEditOfficial.DateofBirth" :dayNames="[
                   'Mo',
                   'Tu',
                   'We',
@@ -1123,7 +1123,7 @@ watch(SelectedCityValue, () => {
                 type="text"
               /> -->
                 <label for="">{{ tr('សុពលភាព') }}</label>
-                <Datepicker v-model="formDataEditOfficial.sIDValidStart" :dayNames="[
+                <Datepicker :text-input="true" v-model="formDataEditOfficial.sIDValidStart" :dayNames="[
                   'Mo',
                   'Tu',
                   'We',
@@ -1143,7 +1143,7 @@ watch(SelectedCityValue, () => {
                 type="text"
               /> -->
                 <label for="">{{ tr('ដល់ថ្ងៃ') }}</label>
-                <Datepicker v-model="formDataEditOfficial.sIDValidEnd" :dayNames="[
+                <Datepicker :text-input="true" v-model="formDataEditOfficial.sIDValidEnd" :dayNames="[
                   'Mo',
                   'Tu',
                   'We',
@@ -1188,7 +1188,7 @@ watch(SelectedCityValue, () => {
                 type="text"
               /> -->
                 <label for="">{{ tr('ថ្ងៃខែឆ្នាំកំណើត') }}</label>
-                <Datepicker v-model="formDataEditOfficial.spouseDateOfBirth" :dayNames="[
+                <Datepicker :flow="['year', 'month', 'calendar']" :text-input="true" v-model="formDataEditOfficial.spouseDateOfBirth" :dayNames="[
                   'Mo',
                   'Tu',
                   'We',
@@ -1240,7 +1240,7 @@ watch(SelectedCityValue, () => {
                 </div>
                 <div>
                   <label for="">{{ tr('ថ្ងៃខែឆ្នាំកំណើត') }}</label>
-                  <Datepicker v-model="child.dateofBirth" :dayNames="[
+                  <Datepicker :flow="['year', 'month', 'calendar']" :text-input="true" v-model="child.dateofBirth" :dayNames="[
                     'Mo',
                     'Tu',
                     'We',
@@ -1368,7 +1368,7 @@ watch(SelectedCityValue, () => {
                 </div>
                 <div>
                   <label for="">{{ tr('ថ្ងៃខែឆ្នាំចូលសិក្សា') }}</label>
-                  <Datepicker v-model="item.StartDate" :dayNames="[
+                  <Datepicker :text-input="true" v-model="item.StartDate" :dayNames="[
                     'Mo',
                     'Tu',
                     'We',
@@ -1381,7 +1381,7 @@ watch(SelectedCityValue, () => {
                 </div>
                 <div>
                   <label for="">{{ tr('ថ្ងៃខែឆ្នាំបញ្ចប់សិក្សា') }}</label>
-                  <Datepicker v-model="item.finishDate" :dayNames="[
+                  <Datepicker :text-input="true" v-model="item.finishDate" :dayNames="[
                     'Mo',
                     'Tu',
                     'We',
@@ -1446,7 +1446,7 @@ watch(SelectedCityValue, () => {
               </div>
               <div class="col-span-12 lg:col-span-6 ">
                 <label for="">{{ tr('ថ្ងៃខែឆ្នាំចូលបម្រើក្របខ័ណ្ឌរដ្ឋ') }}</label>
-                <Datepicker v-model="formDataEditOfficial.DateStartOfficialWork" :dayNames="[
+                <Datepicker :text-input="true" v-model="formDataEditOfficial.DateStartOfficialWork" :dayNames="[
                   'Mo',
                   'Tu',
                   'We',
@@ -1459,7 +1459,7 @@ watch(SelectedCityValue, () => {
               </div>
               <div class="col-span-12 lg:col-span-6 ">
                 <label for="">{{ tr('ថ្ងៃខែឆ្នាំតាំងស៊ុបក្នុងក្របខ័ណ្ឌរដ្ឋ') }}</label>
-                <Datepicker v-model="formDataEditOfficial.DateWentFullTime" :dayNames="[
+                <Datepicker :text-input="true" v-model="formDataEditOfficial.DateWentFullTime" :dayNames="[
                   'Mo',
                   'Tu',
                   'We',
@@ -1490,7 +1490,7 @@ watch(SelectedCityValue, () => {
                 v-for="(item, index) in governStaffWorkingHistoryPublic" :key="index">
                 <div>
                   <label for="">{{ tr('ថ្ងៃខែឆ្នាំចូលបម្រើការងារ') }}</label>
-                  <Datepicker v-model="item.DateStartWorking" :dayNames="[
+                  <Datepicker :text-input="true" v-model="item.DateStartWorking" :dayNames="[
                     'Mo',
                     'Tu',
                     'We',
@@ -1503,7 +1503,7 @@ watch(SelectedCityValue, () => {
                 </div>
                 <div>
                   <label for="">{{ tr('ថ្ងៃខែបញ្ចប់ការងារ') }}</label>
-                  <Datepicker v-model="item.DateStopWorking" :dayNames="[
+                  <Datepicker :text-input="true" v-model="item.DateStopWorking" :dayNames="[
                     'Mo',
                     'Tu',
                     'We',
@@ -1546,7 +1546,7 @@ watch(SelectedCityValue, () => {
                 v-for="(item, index) in governStaffWorkingHistoryPrivate" :key="index">
                 <div>
                   <label for="">{{ tr('ថ្ងៃខែឆ្នាំចូលបម្រើការងារ') }}</label>
-                  <Datepicker v-model="item.DateStartWorking" :dayNames="[
+                  <Datepicker :text-input="true" v-model="item.DateStartWorking" :dayNames="[
                     'Mo',
                     'Tu',
                     'We',
@@ -1559,7 +1559,7 @@ watch(SelectedCityValue, () => {
                 </div>
                 <div>
                   <label for="">{{ tr('ថ្ងៃខែបញ្ចប់ការងារ') }}</label>
-                  <Datepicker v-model="item.DateStopWorking" :dayNames="[
+                  <Datepicker :text-input="true" v-model="item.DateStopWorking" :dayNames="[
                     'Mo',
                     'Tu',
                     'We',
@@ -1597,7 +1597,7 @@ watch(SelectedCityValue, () => {
                 v-for="(item, index) in governStaffPositionHistory" :key="index">
                 <div>
                   <label for="">{{ tr('ថ្ងៃខែបញ្ចប់ការងារ') }}</label>
-                  <Datepicker v-model="item.ValidDate" :dayNames="[
+                  <Datepicker :text-input="true" v-model="item.ValidDate" :dayNames="[
                     'Mo',
                     'Tu',
                     'We',
@@ -1648,7 +1648,7 @@ watch(SelectedCityValue, () => {
                 v-for="(item, index) in governStaffCertificateLevelup" :key="index">
                 <div>
                   <label for="">{{ tr('ថ្ងៃខែបញ្ចប់ការងារ') }}</label>
-                  <Datepicker v-model="item.validatDate" :dayNames="[
+                  <Datepicker :text-input="true" v-model="item.validatDate" :dayNames="[
                     'Mo',
                     'Tu',
                     'We',
@@ -1695,7 +1695,7 @@ watch(SelectedCityValue, () => {
                 v-for="(item, index) in governStaffSituationOutsideOriginalOfficial" :key="index">
                 <div>
                   <label for="">{{ tr('ថ្ងៃខែឆ្នាំចាប់ផ្តើម') }}</label>
-                  <Datepicker v-model="item.startDate" :dayNames="[
+                  <Datepicker :text-input="true" v-model="item.startDate" :dayNames="[
                     'Mo',
                     'Tu',
                     'We',
@@ -1707,7 +1707,7 @@ watch(SelectedCityValue, () => {
                 </div>
                 <div>
                   <label for="">{{ tr('ថ្ងៃខែឆ្នាំបញ្ចប់') }}</label>
-                  <Datepicker v-model="item.endDate" :dayNames="[
+                  <Datepicker :text-input="true" v-model="item.endDate" :dayNames="[
                     'Mo',
                     'Tu',
                     'We',
@@ -1741,7 +1741,7 @@ watch(SelectedCityValue, () => {
                 v-for="(item, index) in GovernStaffFreeNoSalary" :key="index">
                 <div>
                   <label for="">{{ tr('ថ្ងៃខែឆ្នាំចាប់ផ្តើម') }}</label>
-                  <Datepicker v-model="item.startDate" :dayNames="[
+                  <Datepicker :text-input="true" v-model="item.startDate" :dayNames="[
                     'Mo',
                     'Tu',
                     'We',
@@ -1753,7 +1753,7 @@ watch(SelectedCityValue, () => {
                 </div>
                 <div>
                   <label for="">{{ tr('ថ្ងៃខែឆ្នាំបញ្ចប់') }}</label>
-                  <Datepicker v-model="item.endDate" :dayNames="[
+                  <Datepicker :text-input="true" v-model="item.endDate" :dayNames="[
                     'Mo',
                     'Tu',
                     'We',
@@ -1793,7 +1793,7 @@ watch(SelectedCityValue, () => {
                 </div>
                 <div>
                   <label for="">{{ tr('កាលបរិច្ចេទ') }}</label>
-                  <Datepicker v-model="item.OfficialDate" :dayNames="[
+                  <Datepicker :text-input="true" v-model="item.OfficialDate" :dayNames="[
                     'Mo',
                     'Tu',
                     'We',
@@ -1836,7 +1836,7 @@ watch(SelectedCityValue, () => {
                 </div>
                 <div>
                   <label for="">{{ tr('កាលបរិច្ចេទ') }}</label>
-                  <Datepicker v-model="item.OffialDate" :dayNames="[
+                  <Datepicker :text-input="true" v-model="item.OffialDate" :dayNames="[
                     'Mo',
                     'Tu',
                     'We',
@@ -1945,7 +1945,7 @@ watch(SelectedCityValue, () => {
             </div>
             <div class="col-span-12 lg:col-span-6">
               <label for="">{{ tr('ខែឆ្នាំកំណើត') }}</label>
-              <Datepicker v-model="formDataEdit.dateofbirth" :dayNames="[
+              <Datepicker :flow="['year', 'month', 'calendar']" :text-input="true" v-model="formDataEdit.dateofbirth" :dayNames="[
                 'Mo',
                 'Tu',
                 'We',
@@ -1962,7 +1962,7 @@ watch(SelectedCityValue, () => {
             </div>
             <div class="col-span-12 lg:col-span-6">
               <label for="">{{ tr('ខែឆ្នាំកំណើត') }}</label>
-              <Datepicker v-model="formDataEdit.workingPeroidStart" :dayNames="[
+              <Datepicker :text-input="true" v-model="formDataEdit.workingPeroidStart" :dayNames="[
                 'Mo',
                 'Tu',
                 'We',
