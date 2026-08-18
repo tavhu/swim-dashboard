@@ -2,11 +2,9 @@
 import { useToast,TwToast } from 'vue3-tailwind';
 import {useThemeStore} from '~~/store/theme'
 
-useHead({
-  htmlAttrs: {
-    lang: 'en',
-  }
-})
+// Was pinned to 'en', which overrode the reactive lang set in app.vue — the
+// login page then always claimed to be English, and the Latin font fallbacks
+// keyed on html[lang] fired on Khmer text.
 const { toasts } = useToast();
 const theme = useThemeStore()
 const isDark = computed(()=>theme.isDark)

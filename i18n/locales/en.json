@@ -140,6 +140,22 @@
       "f6": "Form 6"
     }
   },
+  "login": {
+    "contact": "Contact us",
+    "hidePassword": "Hide password",
+    "needHelp": "Trouble signing in?",
+    "officialSystem": "Official system of the Ministry of Social Affairs, Veterans and Youth Rehabilitation",
+    "password": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "restricted": "For authorised officials only",
+    "showPassword": "Show password",
+    "signingIn": "Signing in…",
+    "submit": "Sign in",
+    "subtitle": "Enter your username and password",
+    "title": "Sign in",
+    "username": "Username",
+    "usernamePlaceholder": "Enter your username"
+  },
   "menu": {
     "accountManagement": "User accounts",
     "accounts": "Accounts",
@@ -165,6 +181,7 @@
   },
   "message": {
     "clientNotFound": "Client not found",
+    "fillIn": "Please fill in: {fields}",
     "loadFailed": "Could not load the information",
     "notSaved": "Could not save",
     "recordNotFound": "Record not found",
