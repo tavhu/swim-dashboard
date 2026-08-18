@@ -26,6 +26,13 @@ const props = defineProps<{
   submittedByName?: string | null;
   decidedByName?: string | null;
   canDecide?: boolean;
+  /**
+   * Whether this user may send the record for approval. False for a role that
+   * can read a ទម្រង់ but not fill one in. Separate from `canDecide`, because
+   * the two are different jobs: an intake officer submits and cannot approve, a
+   * director approves and may not do data entry.
+   */
+  canSubmit?: boolean;
   readOnly?: boolean;
 }>();
 
@@ -65,6 +72,13 @@ const permissionStore = usePermissionStore();
 const mayDecide = computed(
   () => props.canDecide !== false && permissionStore.hasWritePermission("approval")
 );
+
+/**
+ * Whether ស្នើសុំ is offered. Defaults to true so a caller that says nothing
+ * behaves as before; the six pages pass their write permission on the form's
+ * own edit page, which is the right that submitting belongs to.
+ */
+const maySubmit = computed(() => props.canSubmit !== false);
 
 async function act(action: "submit" | "approve" | "reject") {
   if (props.readOnly || busy.value) return;
@@ -128,7 +142,7 @@ async function act(action: "submit" | "approve" | "reject") {
 
     <!-- Controls are interface, not part of the printed record. -->
     <div v-if="!readOnly" class="no-print mt-4 flex flex-wrap gap-2">
-      <UButton v-if="status === 'DRAFT' || status === 'REJECTED'" color="primary" :loading="busy"
+      <UButton v-if="maySubmit && (status === 'DRAFT' || status === 'REJECTED')" color="primary" :loading="busy"
         @click="act('submit')">
         <TwFeather type="send" :size="16" class="mr-1" />
         <span class="font-[Moul]">{{ tr('ស្នើសុំ') }}</span>

@@ -9,6 +9,9 @@ const config = useRuntimeConfig();
 const route = useRoute();
 const { t } = useI18n();
 const readOnly = checkIfPageReadOnly();
+// កែសម្រួល and ស្នើសុំ belong to the form's edit resource, not to this view
+// page's — see composables/recordPermissions.ts.
+const { mayEdit } = useRecordPermissions('client-register-id');
 
 const client = ref<any>(null);
 const pending = ref(true);
@@ -172,7 +175,7 @@ onMounted(load);
         <h2 class="text-2xl font-[Moul] text-primary">{{ tr('សំណុំឯកសារអតិថិជន') }}</h2>
         <div class="no-print flex shrink-0 gap-2">
           <NuxtLink v-if="client" :to="`/client/register/${client.id}`">
-            <UButton color="gray" size="xl" :disabled="readOnly">
+            <UButton color="gray" size="xl" :disabled="!mayEdit">
               <TwFeather type="edit-2" :size="18" class="mr-1" />
               <span class="hidden font-[Moul] text-lg sm:inline">{{ $t('action.edit') }}</span>
             </UButton>
@@ -340,7 +343,7 @@ onMounted(load);
         <ApprovalPanel :record-id="client.id" endpoint="/api/client/approve" :status="client.approvalStatus"
           :submitted-at="client.submittedAt" :decided-at="client.decidedAt"
           :rejection-reason="client.rejectionReason"
-          :submitted-by-name="client.submittedByName" :decided-by-name="client.decidedByName" :can-decide="true" :read-only="readOnly" @changed="load" />
+          :submitted-by-name="client.submittedByName" :decided-by-name="client.decidedByName" :can-decide="true" :can-submit="mayEdit" @changed="load" />
       </div>
     </div>
   </div>

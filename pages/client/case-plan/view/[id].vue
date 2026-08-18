@@ -13,6 +13,9 @@ import { TwFeather } from "vue3-tailwind";
 const route = useRoute();
 const { t } = useI18n();
 const readOnly = checkIfPageReadOnly();
+// កែសម្រួល and ស្នើសុំ belong to the form's edit resource, not to this view
+// page's — see composables/recordPermissions.ts.
+const { mayEdit } = useRecordPermissions('client-case-plan-form');
 
 const rec = ref<any>(null);
 const pending = ref(true);
@@ -107,7 +110,7 @@ onMounted(load);
         <h2 class="text-2xl font-[Moul] text-primary">{{ tr('ផែនការករណីរបស់អតិថិជន') }}</h2>
         <div class="no-print flex shrink-0 gap-2">
           <NuxtLink v-if="rec" :to="`/client/case-plan/form?id=${rec.id}`">
-            <UButton color="gray" size="xl" :disabled="readOnly">
+            <UButton color="gray" size="xl" :disabled="!mayEdit">
               <TwFeather type="edit-2" :size="18" class="mr-1" />
               <span class="hidden font-[Moul] text-lg sm:inline">{{ $t('action.edit') }}</span>
             </UButton>
@@ -214,7 +217,7 @@ onMounted(load);
         <ApprovalPanel :record-id="rec.id" endpoint="/api/client/case-plan/approve" :status="rec.approvalStatus"
           :submitted-at="rec.submittedAt" :decided-at="rec.decidedAt" :rejection-reason="rec.rejectionReason"
           :submitted-by-name="rec.submittedByName" :decided-by-name="rec.decidedByName"
-          :can-decide="true" :read-only="readOnly" @changed="load" />
+          :can-decide="true" :can-submit="mayEdit" @changed="load" />
       </div>
     </div>
   </div>
