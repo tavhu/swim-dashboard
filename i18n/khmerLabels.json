@@ -813,5 +813,10 @@
   "សូមបញ្ចូលឈ្មោះតួនាទី": "Please enter a role name",
   "គណនីត្រូវបានបិទ! សូមទំនាក់ទំនងអ្នកគ្រប់គ្រង ": "This account has been disabled. Please contact an administrator.",
   "អ្នកមិនមានសិទ្ធិអនុម័តទេ": "You do not have permission to approve",
-  "សិទ្ធិអនុម័ត (មជ្ឈមណ្ឌលរបស់ខ្លួន)": "Approval rights (own centre)"
+  "សិទ្ធិអនុម័ត (មជ្ឈមណ្ឌលរបស់ខ្លួន)": "Approval rights (own centre)",
+  "រកមិនឃើញអតិថិជននេះទេ": "No such client",
+  "រកមិនឃើញបុគ្គលិកនេះទេ": "No such staff member",
+  "សូមជ្រើសរើសមជ្ឈមណ្ឌល": "Please choose a centre",
+  "អ្នកមិនមានសិទ្ធិលុបមជ្ឈមណ្ឌលទេ": "You do not have permission to delete a centre",
+  "អ្នកអាចបង្កើតគណនីសម្រាប់មជ្ឈមណ្ឌលរបស់ខ្លួនប៉ុណ្ណោះ": "You may only create accounts for your own centre"
 }

@@ -32,3 +32,11 @@ backups/
 # Root-level .sql only — anchored so it cannot swallow
 # prisma/migrations/*/migration.sql, which must stay tracked.
 /*.sql
+
+# Client uploads — photographs and scanned attachments belonging to real people.
+# These are data, not source: they belong on the server's disk and in its backups,
+# not in a repository that gets cloned onto laptops. 14 were committed before this
+# rule existed and are still in history; removing those needs a history rewrite
+# and a force-push, which is the repository owner's call.
+public/uploads/*
+!public/uploads/.gitkeep

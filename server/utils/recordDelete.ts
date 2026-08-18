@@ -59,13 +59,28 @@ export async function runRecordDelete(opts: {
   const fields = ATTACHMENT_FIELDS[recordType];
 
   // Read the paths before the row goes — afterwards there is nothing to read.
-  const select: Record<string, boolean> = { id: true, clientId: true };
+  const select: Record<string, any> = {
+    id: true,
+    clientId: true,
+    // Whose centre this record belongs to. ទម្រង់ទី២-៦ have no centre column of
+    // their own, so it comes through the client.
+    client: { select: { serviceCenterID: true } },
+  };
   for (const f of fields) select[f] = true;
 
   const record = await delegate.findUnique({ where: { id }, select });
   if (!record) {
     setResponseStatus(event, 404);
     return { error: `No ${label} with that id` };
+  }
+
+  // Deleting is the one operation with no undo, so it is scoped like the rest —
+  // here, in the shared helper, so no form's delete endpoint can be the one that
+  // was forgotten.
+  const caller = await getAuthUser(event);
+  if (caller?.serviceCenterID && caller.serviceCenterID !== record.client?.serviceCenterID) {
+    setResponseStatus(event, 403);
+    return { error: errorMessage(event, "អ្នកមិនមានសិទ្ធិលើមជ្ឈមណ្ឌលនេះទេ") };
   }
 
   const paths: string[] = fields

@@ -31,17 +31,34 @@ const prop = defineProps<{
 // console.log(prop.id)
 
 // const edit = ref(prop.id) //'cls8m4kxp000rnqlidfpfw5rb'  //  //route?.query?.id
+/**
+ * The មជ្ឈមណ្ឌល list.
+ *
+ * /api/center/get is scoped server-side, so an officer attached to one centre
+ * gets exactly one row back and a ministry-level user gets all of them. That
+ * makes the single-centre case something this form can recognise rather than
+ * something it has to be told: one option means there is no choice to make.
+ */
 const { data } = await useFetch<{ data: ServiceCenter[] }>('/api/center/get', {
     method: 'POST'
 })
 
-let serviceCenterList: any = []
-data.value?.data.forEach(ele => {
-    serviceCenterList.push({
-        label: ele.nameKH,
-        value: ele.id
-    })
-})
+const serviceCenterList = computed(() =>
+    (data.value?.data ?? []).map((ele) => ({ label: ele.nameKH, value: ele.id }))
+)
+
+/**
+ * A user who belongs to one centre does not pick it — it is a fact about their
+ * account, not a question. Left as an empty required dropdown it was one more
+ * field to fill in with the only answer available, and one more way to file a
+ * client under the wrong centre by mis-clicking.
+ *
+ * Locked rather than hidden: the printed ទម្រង់ទី១ has this field, and someone
+ * reading the form on screen should see the same thing they will see on paper.
+ * The server forces the value regardless of what the body says, so this is a
+ * convenience, not the control.
+ */
+const boundToOneCentre = computed(() => serviceCenterList.value.length === 1)
 const saving = ref(false)
 const config = useRuntimeConfig()
 const toast = useToast()
@@ -118,6 +135,21 @@ const formData: {
     InterviewerPosition: '',
     serviceCenterID: '',
 })
+
+/**
+ * Fill the centre in for a user who only has one.
+ *
+ * `watchEffect` rather than a plain assignment because the list arrives from a
+ * fetch and the record arrives from `onMounted` — this runs whenever either
+ * settles, and only ever fills a blank, so loading an existing client never has
+ * its stored centre overwritten by the viewer's own.
+ */
+watchEffect(() => {
+    if (!formData.serviceCenterID && boundToOneCentre.value) {
+        formData.serviceCenterID = serviceCenterList.value[0].value
+    }
+})
+
 // One entry per non-nullable column on Client_PersonalInformation, so the form
 // refuses to submit what the database would reject. This was `{}`, which meant
 // validator.validate() passed everything and the `required` attributes on the
@@ -796,6 +828,7 @@ watch(() => formData.communeBA, (newCommune) => {
                 <div class="col-span-12">
                     <TwSelect :label="tr('មជ្ឈមណ្ឌលព្យាបាលនិងស្តារនីតិសម្បទា')" name="serviceCenterID"
                         v-model="formData.serviceCenterID" required :items="serviceCenterList"
+                        :disabled="readOnly || boundToOneCentre"
                         :placeholder="tr('សូមជ្រើសរើស')" />
                     <CustomErrorMessage name="serviceCenterID" />
                 </div>

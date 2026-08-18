@@ -44,10 +44,15 @@ export default eventHandler(async (event) => {
   }
 
   try {
+    // The list branch below was scoped to the caller's centre; this one was not,
+    // so a centre officer could open any client file in the country by putting
+    // its id in the request. The scope belongs on both.
+    const viewer = await getAuthUser(event);
     const data = body?.id
       ? await event.context.prisma.client_PersonalInformation.findFirst({
           where: {
             id: body?.id,
+            ...(viewer ? centerScopeFilter(viewer) : {}),
           },
           include: {
             // ទម្រង់ទី២ fills its provider fields from the centre the client was

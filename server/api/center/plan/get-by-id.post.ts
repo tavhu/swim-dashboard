@@ -1,8 +1,5 @@
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
-
 export default defineEventHandler(async (event) => {
+  const prisma = event.context.prisma;
   const { id } = await readBody(event);
 
   if (!id) {
@@ -13,8 +10,13 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const plan = await prisma.centerPlan.findUnique({
-      where: { id },
+    // Scoped like every other read: a plan is only visible to its own centre.
+    const caller = await getAuthUser(event);
+    const plan = await prisma.centerPlan.findFirst({
+      where: {
+        id,
+        ...(caller?.serviceCenterID ? { serviceCenterID: caller.serviceCenterID } : {}),
+      },
     });
 
     if (!plan) {

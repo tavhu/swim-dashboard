@@ -15,6 +15,16 @@ export default eventHandler(async (event) => {
     return { error: `Missing or invalid: ${missing.join(', ')}`, fields: missing };
   }
 
+  // Two separate checks, and both are needed. The first says the caller may edit
+  // *this* client; the second stops the edit itself from moving the client into
+  // another centre, which would otherwise be a one-request way out of the scope.
+  await assertClientScope(event, body?.id);
+  const centreID = await resolveWriteCentre(event, body?.serviceCenterID);
+  if (!centreID) {
+    setResponseStatus(event, 400);
+    return { error: errorMessage(event, "សូមជ្រើសរើសមជ្ឈមណ្ឌល") };
+  }
+
   try {
     const result = await event.context.prisma.client_PersonalInformation.update(
       {
@@ -85,7 +95,7 @@ export default eventHandler(async (event) => {
           InterViewDate: body?.InterViewDate,
           InterViewerSignature: body?.InterViewerSignature,
           InterviewerPosition: body?.InterviewerPosition,
-          serviceCenterID: body?.serviceCenterID,
+          serviceCenterID: centreID,
         },
       }
     );

@@ -10,6 +10,10 @@ export default eventHandler(async (event) => {
     return { status: "unauthenticated" };
   }
 
+  // Staff belong to a centre, so a centre-bound user files them under their own
+  // and nowhere else — the body does not get to say otherwise.
+  const centreID = await resolveWriteCentre(event, body?.serviceCenterID);
+
   try {
     await event.context.prisma.staff.upsert({
       where: {
@@ -44,7 +48,7 @@ export default eventHandler(async (event) => {
         familyAddress: body?.familyAddress,
         familyPhoneNumber: body?.familyPhoneNumber,
         familyEmail: body?.familyEmail,
-        serviceCenterID: body?.serviceCenterID,
+        serviceCenterID: centreID,
       },
       create: {
         photo: body?.photo,
@@ -75,7 +79,7 @@ export default eventHandler(async (event) => {
         familyAddress: body?.familyAddress,
         familyPhoneNumber: body?.familyPhoneNumber,
         familyEmail: body?.familyEmail,
-        serviceCenterID: body?.serviceCenterID,
+        serviceCenterID: centreID,
       },
     });
     //@ts-ignored

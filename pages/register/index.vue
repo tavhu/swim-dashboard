@@ -251,14 +251,26 @@ roleData.value?.data?.forEach((ele: any) => {
 
 
 const { data: centerData } = await useFetch<{ data: ServiceCenter[] }>('/api/center/get', { method: 'POST' })
-const centerList: DropdownItem[] = new Array({ label: '', value: '' })
-centerList.pop()
-
-centerData.value?.data.forEach((serviceCenter: ServiceCenter) => {
-  centerList.push({
+const centerList = computed<DropdownItem[]>(() =>
+  (centerData.value?.data ?? []).map((serviceCenter: ServiceCenter) => ({
     label: serviceCenter?.nameKH,
-    value: serviceCenter?.id
-  })
+    value: serviceCenter?.id,
+  }))
+)
+
+/**
+ * An administrator who belongs to one centre creates accounts for that centre.
+ *
+ * Leaving this blank was not a neutral default: a null serviceCenterID is a
+ * ministry-level account that sees every centre, so an unfilled dropdown handed
+ * out more access than the person filling it in has. The server refuses any
+ * other value; this fills in the only one it will accept.
+ */
+const boundToOneCentre = computed(() => centerList.value.length === 1)
+watchEffect(() => {
+  if (!formData.serviceCenterID && boundToOneCentre.value) {
+    formData.serviceCenterID = centerList.value[0].value
+  }
 })
 
 
@@ -437,7 +449,8 @@ if (edit) {
             </div>
             <div class="col-span-12 lg:col-span-6">
               <TwSelect :label="$t('account.centre')" name="serviceCenterID" v-model="formData.serviceCenterID"
-                :items="centerList" :placeholder="$t('action.selectOne')" :disabled="readOnly" />
+                :items="centerList" :placeholder="$t('action.selectOne')"
+                :disabled="readOnly || boundToOneCentre" />
               <CustomErrorMessage name="serviceCenterID" />
             </div>
             <div class="col-span-12 lg:col-span-6">

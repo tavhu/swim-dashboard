@@ -28,6 +28,11 @@ export default eventHandler(async (event) => {
     return { error: "clientId is required" };
   }
 
+  // The client is named by the request, so it decides which centre this record
+  // lands in. A centre-bound user filing against someone else's client is
+  // refused here rather than after the row is written.
+  await assertClientScope(event, body.clientId);
+
   const stage = STAGES.includes(body.stage) ? body.stage : "IN_CENTRE";
   const inCentre = stage === "IN_CENTRE";
 

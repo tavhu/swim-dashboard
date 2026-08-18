@@ -15,7 +15,14 @@ export default eventHandler(async (event) => {
     return { error: `Missing or invalid: ${missing.join(', ')}`, fields: missing };
   }
 
-  console.log(body);
+  // Which centre this client is filed under is not the form's decision when the
+  // officer belongs to one. The dropdown offers only their own centre, but a
+  // dropdown is not a permission check — the body can say anything.
+  const centreID = await resolveWriteCentre(event, body?.serviceCenterID);
+  if (!centreID) {
+    setResponseStatus(event, 400);
+    return { error: errorMessage(event, "សូមជ្រើសរើសមជ្ឈមណ្ឌល") };
+  }
 
   try {
     const result = await event.context.prisma.client_PersonalInformation.create(
@@ -85,7 +92,7 @@ export default eventHandler(async (event) => {
           InterViewDate: body?.InterViewDate,
           InterViewerSignature: body?.InterViewerSignature,
           InterviewerPosition: body?.InterviewerPosition,
-          serviceCenterID: body?.serviceCenterID,
+          serviceCenterID: centreID,
 
           ClientProgress: {
             createMany: {

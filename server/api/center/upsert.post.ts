@@ -10,6 +10,15 @@ export default eventHandler(async (event) => {
     return { status: "unauthenticated" };
   }
 
+  // A centre-bound user may edit their own centre's details and no other's.
+  // They may not create one either: `upsert` writes a new row when the id does
+  // not match, so without this a centre officer could add centres at will.
+  const caller = await getAuthUser(event);
+  if (caller?.serviceCenterID && caller.serviceCenterID !== body?.id) {
+    setResponseStatus(event, 403);
+    return { error: errorMessage(event, "អ្នកមិនមានសិទ្ធិលើមជ្ឈមណ្ឌលនេះទេ") };
+  }
+
   try {
     await event.context.prisma.serviceCenter.upsert({
       where: {

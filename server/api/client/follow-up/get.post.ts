@@ -42,9 +42,14 @@ export default eventHandler(async (event) => {
   };
 
   try {
+    // Centre scope. ទម្រង់ទី២-៦ carry no centre of their own — they inherit the
+    // one on the client they belong to — so the filter reaches through the
+    // relation. Without it, any id in the request body was readable by anyone.
+    const centre = await clientCentreFilter(event);
+
     if (body?.id) {
-      const data = await event.context.prisma.followUp.findUnique({
-        where: { id: body.id },
+      const data = await event.context.prisma.followUp.findFirst({
+        where: { id: body.id, ...centre },
         include,
       });
       setResponseStatus(event, 200);
@@ -53,7 +58,7 @@ export default eventHandler(async (event) => {
 
     if (body?.clientId) {
       const data = await event.context.prisma.followUp.findMany({
-        where: { clientId: body.clientId },
+        where: { clientId: body.clientId, ...centre },
         include,
         orderBy: { createdAt: "desc" },
       });

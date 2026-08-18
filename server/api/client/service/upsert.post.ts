@@ -26,6 +26,11 @@ export default eventHandler(async (event) => {
     return { error: "clientId is required" };
   }
 
+  // The client is named by the request, so it decides which centre this record
+  // lands in. A centre-bound user filing against someone else's client is
+  // refused here rather than after the row is written.
+  await assertClientScope(event, body.clientId);
+
   const data = {
     clientId: body.clientId,
     clientTypeId: body.clientTypeId || null,

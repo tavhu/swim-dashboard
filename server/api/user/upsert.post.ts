@@ -52,6 +52,30 @@ export default eventHandler(async (event) => {
   await assertCanAssignRole(event, caller, userRoleID);
 
   /**
+   * A centre-bound administrator creates accounts for their own centre only.
+   *
+   * `serviceCenterID` came straight from the body, and null means ministry
+   * level — unscoped, sees every centre. So a centre administrator could create
+   * an account with no centre at all, sign in as it, and be outside the scope
+   * their own account is subject to. Every other centre check in the app is
+   * downstream of this one, which makes it the one that has to hold.
+   *
+   * Editing yourself never reaches here for the centre either: your own centre
+   * is not a field you may change.
+   */
+  let serviceCenterID = body?.serviceCenterID ?? null;
+  if (caller.serviceCenterID) {
+    if (isSelf) {
+      serviceCenterID = caller.serviceCenterID;
+    } else if (serviceCenterID !== caller.serviceCenterID) {
+      throw createError({
+        statusCode: 403,
+        statusMessage: errorMessage(event, "អ្នកអាចបង្កើតគណនីសម្រាប់មជ្ឈមណ្ឌលរបស់ខ្លួនប៉ុណ្ណោះ"),
+      });
+    }
+  }
+
+  /**
    * Latin letters, digits and . _ - only, with no spaces.
    *
    * The form checks this too, but a form rule is not a constraint: this endpoint
@@ -79,7 +103,7 @@ export default eventHandler(async (event) => {
       image: body?.image,
       status,
       userRoleID,
-      serviceCenterID: body?.serviceCenterID,
+      serviceCenterID,
       organisationID: body?.organisationID,
       accountType: body?.accountType,
     };

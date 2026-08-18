@@ -48,6 +48,11 @@ export default eventHandler(async (event) => {
     return { error: "id is required" };
   }
 
+  // Scoped before anything is read: deleting a whole case file is the least
+  // reversible thing in the app, and it was open to any signed-in user with the
+  // right, for any client in the country.
+  await assertClientScope(event, id);
+
   const prisma = event.context.prisma;
 
   try {

@@ -35,7 +35,22 @@ export default defineEventHandler(async (event) => {
   // either, so the caller can move without the list silently starting at row 0.
   const skip = body?.page ? (parseInt(String(body.page), 10) - 1) * q.take : q.skip;
 
-  const where = searchFilter(q.search, SEARCHABLE) ?? {};
+  /**
+   * A centre-bound user sees their own centre and no other.
+   *
+   * This endpoint is both the centre list page and the source of ទម្រង់ទី១'s
+   * មជ្ឈមណ្ឌល dropdown, so leaving it unscoped meant an officer attached to one
+   * centre was offered every centre in the country to file a client under —
+   * and could pick the wrong one by accident, not just on purpose.
+   *
+   * `centerScopeFilter` keys on serviceCenterID, which is the column on the
+   * *client* table. A ServiceCenter is identified by its own `id`, so the
+   * filter here is on id.
+   */
+  const caller = await getAuthUser(event);
+  const ownCentre = caller?.serviceCenterID ? { id: caller.serviceCenterID } : {};
+
+  const where = { ...ownCentre, ...(searchFilter(q.search, SEARCHABLE) ?? {}) };
 
   try {
     const [data, total] = await Promise.all([

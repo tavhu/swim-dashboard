@@ -10,6 +10,15 @@ export default eventHandler(async (event) => {
     return { status: "unauthenticated" };
   }
 
+  // Deleting a centre is a ministry-level act. A user attached to one has no
+  // business removing any centre — least of all their own, which would orphan
+  // every client filed under it.
+  const caller = await getAuthUser(event);
+  if (caller?.serviceCenterID) {
+    setResponseStatus(event, 403);
+    return { error: errorMessage(event, "អ្នកមិនមានសិទ្ធិលុបមជ្ឈមណ្ឌលទេ") };
+  }
+
   try {
     await event.context.prisma.serviceCenter.delete({
       where: {

@@ -1,14 +1,15 @@
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
-
 export default defineEventHandler(async (event) => {
+  const prisma = event.context.prisma;
   const body = await readBody(event);
-  
+
   const { id, serviceCenterID, yearPlan, actvityPlan, note, filePath } = body;
 
+  // A centre-bound user writes plans for their own centre only. Taking
+  // serviceCenterID from the body let one centre file a plan against another.
+  const ownCentre = await resolveWriteCentre(event, serviceCenterID);
+
   const data = {
-    serviceCenterID,
+    serviceCenterID: ownCentre,
     yearPlan,
     actvityPlan,
     note,
