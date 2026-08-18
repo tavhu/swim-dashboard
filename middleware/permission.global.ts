@@ -23,8 +23,15 @@ export default defineNuxtRouteMiddleware(async (to) => {
   // Public pages and a user's own profile are never gated.
   if (ALWAYS_ALLOWED_ROUTES.has(routeName)) return;
 
+  // Signing out leaves no session, and this guard has nothing to say about that
+  // — @sidebase/nuxt-auth's own middleware sends the visitor to /login. Running
+  // on regardless is what produced the 404 after logout: with no session there
+  // are no grants, so every route looked denied, and abortNavigation() with no
+  // argument renders as "Page Not Found: /".
+  const { status, data: currentUser } = useAuth();
+  if (status.value !== "authenticated") return;
+
   const data = await userPermission();
-  const { data: currentUser } = useAuth();
   const grants = data.readRoleToResource.value?.data?.Role?.resource ?? [];
 
   useState("userPermission", () => grants);
@@ -58,5 +65,13 @@ export default defineNuxtRouteMiddleware(async (to) => {
     return navigateTo(landing.path);
   }
 
-  return abortNavigation();
+  // Authenticated, but holding nothing at all. Say that, rather than letting a
+  // bare abortNavigation() render as a 404 — the page exists; they may not open
+  // it, and "not found" sends them looking for a broken link.
+  return abortNavigation(
+    createError({
+      statusCode: 403,
+      statusMessage: encodeURI("អ្នកមិនមានសិទ្ធិចូលមើលទំព័រនេះទេ"),
+    })
+  );
 });
