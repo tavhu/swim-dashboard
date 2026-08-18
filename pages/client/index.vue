@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useToast } from "vue3-tailwind";
+import { mayStartForm } from "~~/shared/formPipeline";
 
 /**
  * បញ្ជីអតិថិជន.
@@ -27,7 +28,9 @@ const columns = [
   { key: "Gender", label: tr("ភេទ"), sortable: true, class: "w-[80px]" },
   { key: "DOB", label: tr("អាយុ"), sortable: true, class: "w-[90px]" },
   { key: "center", label: tr("មជ្ឈមណ្ឌល"), sortable: false },
-  { key: "approvalStatus", label: tr("ស្ថានភាពឯកសារ"), sortable: true, class: "w-[140px]" },
+  // The whole ទម្រង់ទី១-៦ picture, not just ទម្រង់ទី១'s approval status. Not
+  // sortable: it is derived from six forms, so there is no column to sort on.
+  { key: "pipeline", label: tr("ដំណើរការទម្រង់ ១–៦"), sortable: false, class: "w-[220px]" },
   { key: "status", label: tr("ស្ថានភាព"), sortable: true, class: "w-[110px]" },
   { key: "InterViewDate", label: tr("ថ្ងៃសម្ភាសន៍"), sortable: true, class: "w-[130px]" },
   { key: "actions", label: tr("សកម្មភាព"), class: "w-[130px]" },
@@ -58,14 +61,6 @@ const age = (dob?: string | null) => {
   const m = now.getMonth() - b.getMonth();
   if (m < 0 || (m === 0 && now.getDate() < b.getDate())) years--;
   return years >= 0 && years < 150 ? `${years} ឆ្នាំ` : "—";
-};
-
-/** Same vocabulary and colours as the ទម្រង់ទី២-៦ listings. */
-const APPROVAL: Record<string, { label: string; classes: string }> = {
-  DRAFT: { label: tr("ព្រាង"), classes: "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300" },
-  SUBMITTED: { label: tr("បានស្នើសុំ"), classes: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300" },
-  APPROVED: { label: tr("បានអនុម័ត"), classes: "bg-primary/10 text-primary" },
-  REJECTED: { label: tr("បានបដិសេធ"), classes: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300" },
 };
 
 const deleteRecord = async (row: any) => {
@@ -112,14 +107,27 @@ const CASE_FORMS = [
  */
 const actionItems = (row: any) => {
   const registered = !!row?.ReadableCode;
-  const groups: any[] = CASE_FORMS.map((form) => {
+  const groups: any[] = CASE_FORMS.map((form, index) => {
     const entries: any[] = [
       registered
         ? { label: `${form.label} ${form.title}`, icon: "i-heroicons-document-text", to: form.to(row.id) }
         : { label: `${form.label} ${form.title}`, icon: "i-heroicons-document-text", disabled: true },
     ];
+    // ទម្រង់ទី២-៦ open in order: each needs the one before it to have been sent
+    // for approval. Same rule as server/utils/pipeline.ts enforces, read from
+    // the same shared function, so the menu never offers a form the endpoint
+    // would refuse.
     if (form.create && registered && !readOnly) {
-      entries.push({ label: `ចុះឈ្មោះ ${form.label}`, icon: "i-heroicons-plus", to: form.create(row.id) });
+      const startable = !row?.pipeline || mayStartForm(row.pipeline, index + 1);
+      entries.push(
+        startable
+          ? { label: `ចុះឈ្មោះ ${form.label}`, icon: "i-heroicons-plus", to: form.create(row.id) }
+          : {
+              label: `ចុះឈ្មោះ ${form.label} — ${tr("ត្រូវស្នើសុំទម្រង់មុនជាមុនសិន")}`,
+              icon: "i-heroicons-lock-closed",
+              disabled: true,
+            }
+      );
     }
     return entries;
   });
@@ -185,12 +193,9 @@ const actionItems = (row: any) => {
           <span class="text-gray-800 dark:text-gray-100">{{ row.ServiceCenter?.nameKH ?? '—' }}</span>
         </template>
 
-        <template #approvalStatus-data="{ row }">
-          <span class="inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm"
-            :class="(APPROVAL[row.approvalStatus] ?? APPROVAL.DRAFT).classes">
-            <span class="h-1.5 w-1.5 rounded-full bg-current" />
-            {{ (APPROVAL[row.approvalStatus] ?? APPROVAL.DRAFT).label }}
-          </span>
+        <template #pipeline-data="{ row }">
+          <ClientFormPipeline v-if="row.pipeline" :pipeline="row.pipeline" :client-id="row.id" />
+          <span v-else class="text-sm text-gray-400">—</span>
         </template>
 
         <template #status-data="{ row }">

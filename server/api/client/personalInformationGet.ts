@@ -123,10 +123,21 @@ export default eventHandler(async (event) => {
             approvalStatus: true,
             status: true,
             ServiceCenter: { select: { id: true, nameKH: true } },
+            // The six-form pipeline, in the same query rather than six more per
+            // row. Only each episode's approvalStatus is read — the state of a
+            // step is derived from nothing else.
+            ...PIPELINE_SELECT,
           },
         }),
         event.context.prisma.client_PersonalInformation.count({ where }),
       ]);
+
+      // Derived here, not in the page, so the list and the endpoints that
+      // enforce the order are working from one rule.
+      list = list.map((row: any) => {
+        const { clientServices, casePlans, reintegrations, followUps, caseClosures, ...rest } = row;
+        return { ...rest, pipeline: pipelineOf(row) };
+      });
     }
     // InterviewerID is a plain column rather than a relation, so the officer's
     // name needs its own lookup. Only the name is selected — /api/user/checkUsername

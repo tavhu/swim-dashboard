@@ -824,5 +824,17 @@
   "ត្រូវតែជាលេខ": "Must be a number",
   "អាសយដ្ឋានអ៊ីមែលមិនត្រឹមត្រូវ": "Not a valid email address",
   "ខ្លីជាងកំណត់": "Too short",
-  "វែងជាងកំណត់": "Too long"
+  "វែងជាងកំណត់": "Too long",
+  "ដំណើរការទម្រង់ ១–៦": "Form 1-6 progress",
+  "មិនទាន់ដល់វេន": "Not yet unlocked",
+  "អាចចាប់ផ្ដើមបាន": "Ready to start",
+  "រង់ចាំអនុម័ត": "Awaiting approval",
+  "កែទម្រង់ទី": "Fix form ",
+  "បន្តទម្រង់ទី": "Continue form ",
+  "ចាប់ផ្ដើមទម្រង់ទី": "Start form ",
+  "រង់ចាំការអនុម័ត": "Awaiting approval",
+  "បញ្ចប់គ្រប់ទម្រង់": "All forms complete",
+  "ទម្រង់ទី": "Form ",
+  "កំណត់ត្រា": "records",
+  "ត្រូវស្នើសុំទម្រង់មុនជាមុនសិន": "request the previous form first"
 }

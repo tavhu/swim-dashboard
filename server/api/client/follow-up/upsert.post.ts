@@ -33,6 +33,10 @@ export default eventHandler(async (event) => {
   // refused here rather than after the row is written.
   await assertClientScope(event, body.clientId);
 
+  // ទម្រង់ទី៥ may only be started once ទម្រង់ទី៤ has been sent for approval.
+  // Creating only — an existing record is never stranded by the order rule.
+  await assertFormOrder(event, body.clientId, 5, !body?.id);
+
   const stage = STAGES.includes(body.stage) ? body.stage : "IN_CENTRE";
   const inCentre = stage === "IN_CENTRE";
 

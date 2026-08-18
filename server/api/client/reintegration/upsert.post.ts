@@ -33,6 +33,10 @@ export default eventHandler(async (event) => {
   // refused here rather than after the row is written.
   await assertClientScope(event, body.clientId);
 
+  // ទម្រង់ទី៤ may only be started once ទម្រង់ទី៣ has been sent for approval.
+  // Creating only — an existing record is never stranded by the order rule.
+  await assertFormOrder(event, body.clientId, 4, !body?.id);
+
   /** Ages come off a number input, which yields '' when cleared. */
   const age = (v: any) => {
     const n = Number(String(v ?? "").trim());

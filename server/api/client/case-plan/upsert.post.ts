@@ -37,6 +37,10 @@ export default eventHandler(async (event) => {
   // refused here rather than after the row is written.
   await assertClientScope(event, body.clientId);
 
+  // ទម្រង់ទី៣ may only be started once ទម្រង់ទី២ has been sent for approval.
+  // Creating only — an existing record is never stranded by the order rule.
+  await assertFormOrder(event, body.clientId, 3, !body?.id);
+
   const data = {
     clientId: body.clientId,
     providerName: body.providerName || null,
