@@ -56,7 +56,6 @@ export const RESOURCE = {
   approval: "approval",
   feedbackList: "feedback-list",
   about: "about",
-  referral: "referral",
   referralType: "referral-type",
   // added for features built since
   organisation: "organisation",
@@ -234,19 +233,6 @@ export const RULES: Rule[] = [
     action: "write",
   },
 
-  // --- referrals ------------------------------------------------------------
-  {
-    mode: "permission",
-    pattern: /^\/api\/client\/referral\/get\/?$/,
-    resource: RESOURCE.referral,
-    action: "read",
-  },
-  {
-    mode: "permission",
-    pattern: /^\/api\/client\/referral\/(upsert|approve|delete)\/?$/,
-    resource: RESOURCE.referral,
-    action: "write",
-  },
   {
     // The dropdown's source — a lookup of referral service names, read by both
     // ទម្រង់ទី៣'s ខ. section and the referral form. Any signed-in user may read

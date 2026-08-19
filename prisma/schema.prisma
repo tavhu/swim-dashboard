@@ -503,7 +503,6 @@ model Client_PersonalInformation {
   reintegrations             Reintegration[]
   followUps                  FollowUp[]
   caseClosures               CaseClosure[]
-  referrals                  Referral[]
 
   // Propose → approve (ស្នើឡើង / អនុម័ត / បដិសេធ). Intake staff at a centre
   // submit a record; a ប្រធានមជ្ឈមណ្ឌល or ministry user approves or rejects it.
@@ -918,10 +917,20 @@ model CasePlanReferralService {
   // ខ. names a referral service type from the Referral & Service Details table,
   // not a catalogue service — a referral asks what kind of onward help is sought,
   // which is a different (admin-managed) list from what a centre itself delivers.
-  referralTypeId String?
-  referralType   ReferralServiceType? @relation("CasePlanReferralType", fields: [referralTypeId], references: [id])
-  startDate      DateTime?
-  endDate        DateTime?
+  // មូលហេតុនៃការបញ្ជូន និងព័ត៌មានលម្អិតអំពីសេវា — each ខ. entry is a full onward
+  // referral now, not just a service+dates line.
+  referralTypeId   String?
+  referralType     ReferralServiceType? @relation("CasePlanReferralType", fields: [referralTypeId], references: [id])
+  primaryReason    String? // មូលហេតុចម្បងនៃការបញ្ជូន
+  currentSituation String? // ស្ថានភាពបច្ចុប្បន្ន / សាវតា
+  urgency          ReferralUrgency      @default(ROUTINE)
+  startDate        DateTime?
+  endDate          DateTime?
+
+  // ការយល់ព្រម និងឯកសារភ្ជាប់
+  consentObtained Boolean @default(false) // បានទទួលការយល់ព្រមពីអតិថិជន
+  attachments     String? // comma-separated paths, as the other forms store them
+  signature       String? // ហត្ថលេខា / សេចក្តីប្រកាស
 
   sortOrder Int @default(0)
 
@@ -1268,7 +1277,6 @@ model ReferralServiceType {
   nameEn            String? // ឈ្មោះ (អង់គ្លេស)
   description       String? // បរិយាយ
   isActive          Boolean                   @default(true)
-  referrals         Referral[]
   casePlanReferrals CasePlanReferralService[] @relation("CasePlanReferralType")
   createdAt         DateTime                  @default(now())
   updatedAt         DateTime                  @updatedAt
@@ -1292,35 +1300,3 @@ enum ReferralUrgency {
 /// the manual defines and the order rule enforces; a referral can be raised at
 /// any point and gating it behind a form the client has not reached would stop
 /// the very thing it is for.
-model Referral {
-  id       String                     @id @default(cuid())
-  clientId String
-  client   Client_PersonalInformation @relation(fields: [clientId], references: [id])
-
-  // មូលហេតុនៃការបញ្ជូន និងព័ត៌មានលម្អិតអំពីសេវា
-  serviceTypeId    String? // ប្រភេទសេវា/ជំនួយដែលស្នើសុំ
-  serviceType      ReferralServiceType? @relation(fields: [serviceTypeId], references: [id])
-  primaryReason    String? // មូលហេតុចម្បងនៃការបញ្ជូន
-  currentSituation String? // ស្ថានភាពបច្ចុប្បន្ន / សាវតា
-  urgency          ReferralUrgency      @default(ROUTINE)
-
-  // ការយល់ព្រម និងឯកសារភ្ជាប់
-  consentObtained Boolean @default(false) // បានទទួលការយល់ព្រមពីអតិថិជន
-  attachments     String? // comma-separated paths, as the other forms store them
-  signature       String? // ហត្ថលេខា / សេចក្តីប្រកាស
-
-  // ៥. សិទ្ធិអនុម័ត — the same block every ទម្រង់ carries, so one panel and one
-  // server helper serve them all.
-  approvalStatus  ApprovalStatus @default(DRAFT)
-  submittedAt     DateTime?
-  submittedByID   String?
-  decidedAt       DateTime?
-  decidedByID     String?
-  rejectionReason String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([clientId])
-  @@map("referrals")
-}

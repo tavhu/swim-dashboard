@@ -30,8 +30,7 @@ export type FormRecordType =
   | "CASE_PLAN"
   | "REINTEGRATION"
   | "FOLLOW_UP"
-  | "CASE_CLOSURE"
-  | "REFERRAL";
+  | "CASE_CLOSURE";
 
 /** Columns holding comma-separated upload paths, per form. */
 const ATTACHMENT_FIELDS: Record<FormRecordType, string[]> = {
@@ -40,7 +39,6 @@ const ATTACHMENT_FIELDS: Record<FormRecordType, string[]> = {
   REINTEGRATION: ["goalAttachments", "communityAttachments"],
   FOLLOW_UP: ["attachments"],
   CASE_CLOSURE: [],
-  REFERRAL: ["attachments"],
 };
 
 export async function runRecordDelete(opts: {

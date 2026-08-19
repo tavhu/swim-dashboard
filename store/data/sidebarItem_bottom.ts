@@ -327,17 +327,6 @@ export default [
           },
         ],
       },
-      // ការបញ្ជូន lives under ការកំណត់ at the ministry's request. The list is the
-      // way in; a referral itself is raised from a client's own file, which is
-      // the only place the client is known.
-      {
-        isTitle: false,
-        name: "បញ្ជីការបញ្ជូន",
-        i18nKey: "menu.referralList",
-        url: "/referral",
-        icon: "send",
-        submenu: [],
-      },
       // Reading មតិយោបល់ is administration, so it stays in ការកំណត់. Writing one
       // moved to the main menu — it is open to everyone, and Settings is not
       // where an ordinary user looks. Flat rather than a group: with writing

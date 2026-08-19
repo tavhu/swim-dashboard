@@ -70,6 +70,12 @@ const plan = computed(() => {
 
 const activities = computed(() => rec.value?.activities ?? []);
 const referralServices = computed(() => rec.value?.referralServices ?? []);
+/** Urgency codes → their Khmer labels, for the ខ. referral blocks. */
+const URGENCY: Record<string, string> = {
+  ROUTINE: tr("ធម្មតា"),
+  URGENT: tr("បន្ទាន់"),
+  EMERGENCY: tr("អាសន្ន"),
+};
 
 const monitoring = computed(() => {
   const r = rec.value;
@@ -192,30 +198,62 @@ onMounted(load);
             </table>
           </div>
 
-          <!-- ខ. សេវាបញ្ចូនបន្ត — the same columns under its own heading, as the
-               printed plan sets them out. -->
+          <!-- ខ. សេវាបញ្ចូនបន្ត — each entry a full referral, laid out as its two
+               sections, numbered as the plan lists them. -->
           <h4 class="mt-6 text-lg font-[Moul] text-primary">{{ tr('ខ. សេវាបញ្ចូនបន្ត') }}</h4>
           <hr class="my-2 border dark:border-gray-700" />
           <p v-if="!referralServices.length" class="py-2 text-base text-gray-500 dark:text-gray-400">{{ tr('មិនទាន់មានសេវាបញ្ចូនបន្តនៅឡើយទេ។') }}</p>
-          <div v-else class="overflow-x-auto">
-            <table class="w-full text-left text-base">
-              <thead class="border-b text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400">
-                <tr>
-                  <th class="py-2 pr-4 font-normal">{{ tr('ល.រ') }}</th>
-                  <th class="py-2 pr-4 font-normal">{{ tr('ប្រភេទសេវា/ជំនួយដែលស្នើសុំ') }}</th>
-                  <th class="py-2 pr-4 font-normal">{{ tr('កាលបរិច្ឆេទចាប់ផ្តើម') }}</th>
-                  <th class="py-2 font-normal">{{ tr('កាលបរិច្ឆេទបញ្ចប់') }}</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
-                <tr v-for="(r, i) in referralServices" :key="r.id">
-                  <td class="py-2 pr-4 text-gray-500">{{ i + 1 }}</td>
-                  <td class="py-2 pr-4 text-gray-800 dark:text-gray-100">{{ val(r.referralType?.nameKh) }}</td>
-                  <td class="py-2 pr-4 text-gray-800 dark:text-gray-100">{{ fmt(r.startDate) }}</td>
-                  <td class="py-2 text-gray-800 dark:text-gray-100">{{ fmt(r.endDate) }}</td>
-                </tr>
-              </tbody>
-            </table>
+          <div v-else class="space-y-3">
+            <div v-for="(r, i) in referralServices" :key="r.id" class="rounded-lg border p-3 dark:border-gray-700">
+              <p class="font-[Moul] text-primary">{{ tr('ការបញ្ជូនទី') }} {{ i + 1 }}</p>
+              <dl class="mt-2 grid grid-cols-1 gap-x-8 gap-y-3 sm:grid-cols-2">
+                <div>
+                  <dt class="text-sm text-gray-500 dark:text-gray-400">{{ tr('ប្រភេទសេវា/ជំនួយដែលស្នើសុំ') }}</dt>
+                  <dd class="mt-1 text-base">{{ val(r.referralType?.nameKh) }}</dd>
+                </div>
+                <div>
+                  <dt class="text-sm text-gray-500 dark:text-gray-400">{{ tr('កម្រិតបន្ទាន់') }}</dt>
+                  <dd class="mt-1 text-base">{{ URGENCY[r.urgency] ?? '—' }}</dd>
+                </div>
+                <div class="sm:col-span-2">
+                  <dt class="text-sm text-gray-500 dark:text-gray-400">{{ tr('មូលហេតុចម្បងនៃការបញ្ជូន') }}</dt>
+                  <dd class="mt-1 whitespace-pre-line text-base">{{ val(r.primaryReason) }}</dd>
+                </div>
+                <div class="sm:col-span-2">
+                  <dt class="text-sm text-gray-500 dark:text-gray-400">{{ tr('ស្ថានភាពបច្ចុប្បន្ន និងសាវតាពាក់ព័ន្ធ') }}</dt>
+                  <dd class="mt-1 whitespace-pre-line text-base">{{ val(r.currentSituation) }}</dd>
+                </div>
+                <div>
+                  <dt class="text-sm text-gray-500 dark:text-gray-400">{{ tr('កាលបរិច្ឆេទចាប់ផ្តើម') }}</dt>
+                  <dd class="mt-1 text-base">{{ fmt(r.startDate) }}</dd>
+                </div>
+                <div>
+                  <dt class="text-sm text-gray-500 dark:text-gray-400">{{ tr('កាលបរិច្ឆេទបញ្ចប់') }}</dt>
+                  <dd class="mt-1 text-base">{{ fmt(r.endDate) }}</dd>
+                </div>
+                <div>
+                  <dt class="text-sm text-gray-500 dark:text-gray-400">{{ tr('បានទទួលការយល់ព្រមពីអតិថិជន') }}</dt>
+                  <dd class="mt-1 text-base" :class="r.consentObtained ? 'text-primary' : 'text-red-600 dark:text-red-400'">
+                    {{ r.consentObtained ? tr('បាទ/ចាស') : tr('មិនទាន់') }}
+                  </dd>
+                </div>
+                <div>
+                  <dt class="text-sm text-gray-500 dark:text-gray-400">{{ tr('ហត្ថលេខា / សេចក្តីប្រកាស') }}</dt>
+                  <dd class="mt-1 text-base">{{ val(r.signature) }}</dd>
+                </div>
+                <div class="sm:col-span-2">
+                  <dt class="text-sm text-gray-500 dark:text-gray-400">{{ tr('ឯកសារភ្ជាប់') }}</dt>
+                  <dd class="mt-1">
+                    <span v-if="!String(r.attachments || '').trim()" class="text-base text-gray-500">—</span>
+                    <ul v-else class="list-disc pl-5">
+                      <li v-for="a in String(r.attachments).split(',').filter(Boolean)" :key="a">
+                        <a :href="a.trim()" target="_blank" class="text-primary underline">{{ a.trim().split('/').pop() }}</a>
+                      </li>
+                    </ul>
+                  </dd>
+                </div>
+              </dl>
+            </div>
           </div>
         </section>
 

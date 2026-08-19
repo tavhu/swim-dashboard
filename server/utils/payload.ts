@@ -48,9 +48,10 @@ export const CASE_PLAN_ACTIVITY_FIELDS: FieldSpec = {
   optionalDates: ["startDate", "endDate"],
 };
 
-/** One ខ. សេវាបញ្ចូនបន្ត row. Same shape as an activity — same coercion. */
+/** One ខ. សេវាបញ្ចូនបន្ត referral. Dates optional; consent defaults to false. */
 export const CASE_PLAN_REFERRAL_FIELDS: FieldSpec = {
   optionalDates: ["startDate", "endDate"],
+  defaultedBooleans: ["consentObtained"],
 };
 
 /** ការបញ្ជូន. No dates of its own; the consent box carries a default. */

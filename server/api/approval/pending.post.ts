@@ -66,16 +66,6 @@ const SOURCES = [
     nameKh: "ការបិទករណី",
     href: (r: any) => `/client/case-closure/view/${r.id}`,
   },
-  {
-    // ការបញ្ជូន is not one of the six — it sits outside the pipeline — but it
-    // carries the same approval block, so it is the same work and belongs in the
-    // same queue. `form: 7` is a sort key here, not a place in the sequence.
-    form: 7,
-    label: "↗",
-    recordType: "REFERRAL",
-    nameKh: "ការបញ្ជូន",
-    href: (r: any) => `/client/referral/view/${r.id}`,
-  },
 ] as const;
 
 export default defineEventHandler(async (event) => {
@@ -94,7 +84,7 @@ export default defineEventHandler(async (event) => {
 
   const client = { select: { id: true, ReadableCode: true, fullNameKH: true, photo: true } };
 
-  const [clients, services, plans, reints, follows, closures, referrals] = await Promise.all([
+  const [clients, services, plans, reints, follows, closures] = await Promise.all([
     prisma.client_PersonalInformation.findMany({
       where: { approvalStatus: "SUBMITTED", ...clientWhere },
       select: { id: true, ReadableCode: true, fullNameKH: true, photo: true, submittedAt: true, submittedByID: true },
@@ -105,7 +95,6 @@ export default defineEventHandler(async (event) => {
       prisma.reintegration,
       prisma.followUp,
       prisma.caseClosure,
-      prisma.referral,
     ].map((d: any) =>
       d.findMany({
         where: { approvalStatus: "SUBMITTED", ...episodeWhere },
@@ -114,7 +103,7 @@ export default defineEventHandler(async (event) => {
     ),
   ]);
 
-  const grouped = [clients, services, plans, reints, follows, closures, referrals];
+  const grouped = [clients, services, plans, reints, follows, closures];
 
   // One lookup for every submitter across all six lists, rather than per row.
   const ids = grouped.flat().map((r: any) => r.submittedByID).filter(Boolean);

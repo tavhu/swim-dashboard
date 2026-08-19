@@ -80,11 +80,18 @@ export default eventHandler(async (event) => {
       const { data: r } = normalisePayload(row ?? {}, CASE_PLAN_REFERRAL_FIELDS);
       return {
         referralTypeId: r.referralTypeId || null,
+        primaryReason: r.primaryReason || null,
+        currentSituation: r.currentSituation || null,
+        urgency: (["ROUTINE", "URGENT", "EMERGENCY"].includes(r.urgency) ? r.urgency : "ROUTINE") as any,
         startDate: r.startDate ?? null,
         endDate: r.endDate ?? null,
+        consentObtained: r.consentObtained === true,
+        attachments: r.attachments || null,
+        signature: r.signature || null,
       };
     })
-    .filter((r: any) => r.referralTypeId || r.startDate || r.endDate)
+    // A row is real if any of its meaningful fields is filled.
+    .filter((r: any) => r.referralTypeId || r.primaryReason || r.currentSituation || r.attachments || r.signature || r.startDate || r.endDate)
     .map((r: any, i: number) => ({ ...r, sortOrder: i }));
 
   try {

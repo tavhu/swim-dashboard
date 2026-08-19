@@ -51,11 +51,22 @@ const form = reactive<Record<string, any>>({
  */
 const blankActivity = () => ({ serviceId: "", startDate: "", endDate: "" });
 const activities = ref<any[]>([blankActivity()]);
-/** ខ. សេវាបញ្ចូនបន្ត — the onward referrals, same row shape as ក. above. */
+/** ខ. សេវាបញ្ចូនបន្ត — repeatable full referrals; options from the referral table. */
 const referralTypes = ref<any[]>([]);
-/** ខ. rows carry a referralTypeId, not a serviceId. */
-const blankReferral = () => ({ referralTypeId: "", startDate: "", endDate: "" });
+/** ខ. rows are full referrals; _pending holds files not yet uploaded. */
+const blankReferral = () => ({
+  referralTypeId: "", primaryReason: "", currentSituation: "", urgency: "ROUTINE",
+  startDate: "", endDate: "", consentObtained: false, attachments: "", signature: "",
+  _pending: [] as File[],
+});
 const referralServices = ref<any[]>([blankReferral()]);
+
+// The signer's own name, for the per-referral signature check.
+const { data: token } = await useFetch("/api/token", {
+  headers: useRequestHeaders(["cookie"]) as HeadersInit,
+});
+const signerName = computed(() => String((token.value as any)?.fullname ?? "").trim());
+const { uploadFiles } = useFileUpload();
 
 /** Section ១, all derived from ទម្រង់ទី១. */
 const clientAge = computed(() => ageFrom(client.value?.DOB));
@@ -120,8 +131,15 @@ onMounted(async () => {
       referralServices.value = rec.referralServices?.length
         ? rec.referralServices.map((r: any) => ({
             referralTypeId: r.referralTypeId ?? "",
+            primaryReason: r.primaryReason ?? "",
+            currentSituation: r.currentSituation ?? "",
+            urgency: r.urgency ?? "ROUTINE",
             startDate: r.startDate ?? "",
             endDate: r.endDate ?? "",
+            consentObtained: r.consentObtained ?? false,
+            attachments: r.attachments ?? "",
+            signature: r.signature ?? "",
+            _pending: [] as File[],
           }))
         : [blankReferral()];
       client.value = rec.client;
@@ -162,9 +180,22 @@ async function submit() {
 
   saving.value = true;
   try {
+    // Upload each referral's attachments before saving; a row keeps its files on
+    // _pending until here, then hands over comma-joined paths like the other
+    // forms store them.
+    const referrals = [];
+    for (const r of referralServices.value) {
+      const { _pending, ...rest } = r;
+      if (_pending?.length) {
+        const uploaded = await uploadFiles(_pending);
+        const existing = String(rest.attachments || "").split(",").filter(Boolean);
+        rest.attachments = [...existing, ...uploaded].join(",");
+      }
+      referrals.push(rest);
+    }
     const saved: any = await $fetch("/api/client/case-plan/upsert", {
       method: "POST",
-      body: { ...form, activities: activities.value, referralServices: referralServices.value },
+      body: { ...form, activities: activities.value, referralServices: referrals },
     });
     toast.success({ message: t('message.saved') });
     router.push(`/client/case-plan/view/${saved.id}`);
@@ -281,7 +312,7 @@ async function submit() {
                centre will do, and where the client is sent on to. -->
           <h4 class="mt-6 text-lg font-[Moul] text-primary">{{ tr('ខ. សេវាបញ្ចូនបន្ត') }}</h4>
           <hr class="my-2 border dark:border-gray-700" />
-          <ServiceRowsField v-model="referralServices" :services="referralTypes" value-key="referralTypeId" :read-only="readOnly" />
+          <ClientCasePlanReferralField v-model="referralServices" :types="referralTypes" :signer-name="signerName" :read-only="readOnly" />
         </section>
 
         <!-- ៣. កាលបរិច្ឆេទតាមដាន ត្រួតពិនិត្យ -->
