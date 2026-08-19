@@ -79,12 +79,12 @@ export default eventHandler(async (event) => {
     .map((row: any) => {
       const { data: r } = normalisePayload(row ?? {}, CASE_PLAN_REFERRAL_FIELDS);
       return {
-        serviceId: r.serviceId || null,
+        referralTypeId: r.referralTypeId || null,
         startDate: r.startDate ?? null,
         endDate: r.endDate ?? null,
       };
     })
-    .filter((r: any) => r.serviceId || r.startDate || r.endDate)
+    .filter((r: any) => r.referralTypeId || r.startDate || r.endDate)
     .map((r: any, i: number) => ({ ...r, sortOrder: i }));
 
   try {

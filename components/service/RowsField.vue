@@ -24,15 +24,22 @@ const props = withDefaults(
     outcomes?: readonly string[] | null;
     readOnly?: boolean;
     addLabel?: string;
+    /**
+     * Which row field the dropdown binds. Defaults to `serviceId` for the
+     * service lists; ខ. សេវាបញ្ចូនបន្ត passes `referralTypeId`, because it draws
+     * from the Referral & Service Details table rather than the catalogue. The
+     * options list is still `services`, since both are {id, nameKh, nameEn}.
+     */
+    valueKey?: string;
   }>(),
-  { outcomes: null, readOnly: false, addLabel: "បន្ថែមសកម្មភាព" }
+  { outcomes: null, readOnly: false, addLabel: "បន្ថែមសកម្មភាព", valueKey: "serviceId" }
 );
 
 const emit = defineEmits<{ (e: "update:modelValue", v: any[]): void }>();
 
 const { localisedName } = useLocalisedName();
 
-const blank = () => ({ serviceId: "", startDate: "", endDate: "", outcome: "" });
+const blank = () => ({ [props.valueKey]: "", startDate: "", endDate: "", outcome: "" });
 
 const rows = computed({
   get: () => props.modelValue,
@@ -62,7 +69,7 @@ const remove = (i: number) => {
 
         <label class="block" :class="outcomes ? 'sm:col-span-3' : 'sm:col-span-5'">
           <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('សេវាកម្ម') }}</span>
-          <select v-model="row.serviceId" :disabled="readOnly"
+          <select v-model="row[valueKey]" :disabled="readOnly"
             class="mt-1 h-10 w-full rounded border px-2 text-base dark:border-gray-700 dark:bg-gray-900">
             <option value="">{{ $t('action.selectOne') }}</option>
             <option v-for="s in services" :key="s.id" :value="s.id">{{ localisedName(s) }}</option>

@@ -622,7 +622,6 @@ model Service {
   reintegrationCommunity ReintegrationCommunityService[] @relation("ReintegrationCommunityService")
   followUpServices       FollowUpService[]               @relation("FollowUpService")
   serviceCenters         ServicesOnServiceCenters[]
-  casePlanReferrals      CasePlanReferralService[]       @relation("CasePlanReferralService")
 
   @@map("services")
 }
@@ -916,10 +915,13 @@ model CasePlanReferralService {
   /// Cascade, for the same reason as the activities: these belong to the plan.
   casePlan   CasePlan @relation(fields: [casePlanId], references: [id], onDelete: Cascade)
 
-  serviceId String?
-  service   Service?  @relation("CasePlanReferralService", fields: [serviceId], references: [id])
-  startDate DateTime?
-  endDate   DateTime?
+  // ខ. names a referral service type from the Referral & Service Details table,
+  // not a catalogue service — a referral asks what kind of onward help is sought,
+  // which is a different (admin-managed) list from what a centre itself delivers.
+  referralTypeId String?
+  referralType   ReferralServiceType? @relation("CasePlanReferralType", fields: [referralTypeId], references: [id])
+  startDate      DateTime?
+  endDate        DateTime?
 
   sortOrder Int @default(0)
 
@@ -927,7 +929,7 @@ model CasePlanReferralService {
   updatedAt DateTime @updatedAt
 
   @@index([casePlanId, sortOrder])
-  @@index([serviceId])
+  @@index([referralTypeId])
   @@map("casePlanReferralServices")
 }
 
@@ -1261,14 +1263,15 @@ model AboutPage {
 /// different people. Same shape as ClientType, so it is administered the same
 /// way.
 model ReferralServiceType {
-  id          String     @id @default(cuid())
-  nameKh      String // ឈ្មោះ (ខ្មែរ)
-  nameEn      String? // ឈ្មោះ (អង់គ្លេស)
-  description String? // បរិយាយ
-  isActive    Boolean    @default(true)
-  referrals   Referral[]
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  id                String                    @id @default(cuid())
+  nameKh            String // ឈ្មោះ (ខ្មែរ)
+  nameEn            String? // ឈ្មោះ (អង់គ្លេស)
+  description       String? // បរិយាយ
+  isActive          Boolean                   @default(true)
+  referrals         Referral[]
+  casePlanReferrals CasePlanReferralService[] @relation("CasePlanReferralType")
+  createdAt         DateTime                  @default(now())
+  updatedAt         DateTime                  @updatedAt
 
   @@map("referralServiceTypes")
 }

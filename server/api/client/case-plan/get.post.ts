@@ -57,7 +57,8 @@ export default eventHandler(async (event) => {
     // ខ. សេវាបញ្ចូនបន្ត, ordered by the manual's numbering like ក. above.
     referralServices: {
       orderBy: { sortOrder: "asc" as const },
-      include: { service: { select: { code: true, nameKh: true } } },
+      // ខ. names a referral service type, resolved to its name for display.
+      include: { referralType: { select: { nameKh: true, nameEn: true } } },
     },
   };
 

@@ -52,7 +52,10 @@ const form = reactive<Record<string, any>>({
 const blankActivity = () => ({ serviceId: "", startDate: "", endDate: "" });
 const activities = ref<any[]>([blankActivity()]);
 /** ខ. សេវាបញ្ចូនបន្ត — the onward referrals, same row shape as ក. above. */
-const referralServices = ref<any[]>([blankActivity()]);
+const referralTypes = ref<any[]>([]);
+/** ខ. rows carry a referralTypeId, not a serviceId. */
+const blankReferral = () => ({ referralTypeId: "", startDate: "", endDate: "" });
+const referralServices = ref<any[]>([blankReferral()]);
 
 /** Section ១, all derived from ទម្រង់ទី១. */
 const clientAge = computed(() => ageFrom(client.value?.DOB));
@@ -72,6 +75,9 @@ onMounted(async () => {
     // there is no new reference data behind this form.
     const opts: any = await $fetch("/api/client/service/options", { method: "POST" });
     services.value = opts?.services ?? [];
+    // ខ. draws from the Referral & Service Details table, a separate list.
+    const refTypes: any = await $fetch("/api/referral-type", { query: { activeOnly: "true" } });
+    referralTypes.value = refTypes?.data ?? [];
 
     if (planId.value) {
       // $fetch, not useFetch — useFetch is setup-only and never fires here.
@@ -107,11 +113,11 @@ onMounted(async () => {
         : [blankActivity()];
       referralServices.value = rec.referralServices?.length
         ? rec.referralServices.map((r: any) => ({
-            serviceId: r.serviceId ?? "",
+            referralTypeId: r.referralTypeId ?? "",
             startDate: r.startDate ?? "",
             endDate: r.endDate ?? "",
           }))
-        : [blankActivity()];
+        : [blankReferral()];
       client.value = rec.client;
     } else {
       form.clientId = clientIdParam.value;
@@ -269,7 +275,7 @@ async function submit() {
                centre will do, and where the client is sent on to. -->
           <h4 class="mt-6 text-lg font-[Moul] text-primary">{{ tr('ខ. សេវាបញ្ចូនបន្ត') }}</h4>
           <hr class="my-2 border dark:border-gray-700" />
-          <ServiceRowsField v-model="referralServices" :services="services" :read-only="readOnly" />
+          <ServiceRowsField v-model="referralServices" :services="referralTypes" value-key="referralTypeId" :read-only="readOnly" />
         </section>
 
         <!-- ៣. កាលបរិច្ឆេទតាមដាន ត្រួតពិនិត្យ -->

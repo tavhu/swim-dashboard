@@ -202,8 +202,7 @@ onMounted(load);
               <thead class="border-b text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400">
                 <tr>
                   <th class="py-2 pr-4 font-normal">{{ tr('ល.រ') }}</th>
-                  <th class="py-2 pr-4 font-normal">{{ tr('លេខកូដ') }}</th>
-                  <th class="py-2 pr-4 font-normal">{{ tr('ឈ្មោះសេវា') }}</th>
+                  <th class="py-2 pr-4 font-normal">{{ tr('ប្រភេទសេវា/ជំនួយដែលស្នើសុំ') }}</th>
                   <th class="py-2 pr-4 font-normal">{{ tr('កាលបរិច្ឆេទចាប់ផ្តើម') }}</th>
                   <th class="py-2 font-normal">{{ tr('កាលបរិច្ឆេទបញ្ចប់') }}</th>
                 </tr>
@@ -211,8 +210,7 @@ onMounted(load);
               <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
                 <tr v-for="(r, i) in referralServices" :key="r.id">
                   <td class="py-2 pr-4 text-gray-500">{{ i + 1 }}</td>
-                  <td class="py-2 pr-4 text-gray-800 dark:text-gray-100">{{ val(r.service?.code) }}</td>
-                  <td class="py-2 pr-4 text-gray-800 dark:text-gray-100">{{ val(r.service?.nameKh) }}</td>
+                  <td class="py-2 pr-4 text-gray-800 dark:text-gray-100">{{ val(r.referralType?.nameKh) }}</td>
                   <td class="py-2 pr-4 text-gray-800 dark:text-gray-100">{{ fmt(r.startDate) }}</td>
                   <td class="py-2 text-gray-800 dark:text-gray-100">{{ fmt(r.endDate) }}</td>
                 </tr>

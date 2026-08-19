@@ -196,6 +196,17 @@ export default [
           },
         ],
       },
+      // Referral & Service Details — the lookup the ខ. សេវាបញ្ចូនបន្ត dropdown on
+      // ទម្រង់ទី៣ and the referral form both read from. Below សេវា because it is
+      // the same kind of thing: a catalogue an admin maintains for the forms.
+      {
+        isTitle: false,
+        name: "សេវាបញ្ជូន",
+        i18nKey: "menu.referralTypes",
+        url: "/referral-type",
+        icon: "send",
+        submenu: [],
+      },
       // The reference list behind the ប្រភេទអតិថិជន dropdown on ទម្រង់ទី២, kept
       // next to សេវា because they are the same kind of thing: catalogues an
       // admin maintains so the case forms have something to offer.
@@ -321,28 +332,11 @@ export default [
       // the only place the client is known.
       {
         isTitle: false,
-        name: "ការបញ្ជូន",
-        i18nKey: "menu.referral",
-        url: "",
+        name: "បញ្ជីការបញ្ជូន",
+        i18nKey: "menu.referralList",
+        url: "/referral",
         icon: "send",
-        submenu: [
-          {
-            isTitle: false,
-            name: "បញ្ជីការបញ្ជូន",
-            i18nKey: "menu.referralList",
-            url: "/referral",
-            icon: "",
-            submenu: [],
-          },
-          {
-            isTitle: false,
-            name: "ប្រភេទសេវាបញ្ជូន",
-            i18nKey: "menu.referralTypes",
-            url: "/referral-type",
-            icon: "",
-            submenu: [],
-          },
-        ],
+        submenu: [],
       },
       // Reading មតិយោបល់ is administration, so it stays in ការកំណត់. Writing one
       // moved to the main menu — it is open to everyone, and Settings is not
