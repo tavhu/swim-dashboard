@@ -316,44 +316,30 @@ export default [
           },
         ],
       },
-      // មតិយោបល់: writing one is open to everyone, so this entry shows for every
-      // account. The list under it appears only for a role granted feedback-list
-      // — pruned by composables/menuPermission.ts like everything else.
+      // Reading មតិយោបល់ is administration, so it stays in ការកំណត់. Writing one
+      // moved to the main menu — it is open to everyone, and Settings is not
+      // where an ordinary user looks. Flat rather than a group: with writing
+      // gone there is one entry left, and a group of one is just an extra click.
       {
         isTitle: false,
-        name: "មតិយោបល់",
-        i18nKey: "menu.feedback",
-        url: "",
+        name: "បញ្ជីមតិយោបល់",
+        i18nKey: "menu.feedbackList",
+        url: "/feedback/list",
         icon: "message-square",
-        submenu: [
-          {
-            isTitle: false,
-            name: "សរសេរមតិយោបល់",
-            i18nKey: "menu.feedbackWrite",
-            url: "/feedback",
-            icon: "",
-            submenu: [],
-          },
-          {
-            isTitle: false,
-            name: "បញ្ជីមតិយោបល់",
-            i18nKey: "menu.feedbackList",
-            url: "/feedback/list",
-            icon: "",
-            submenu: [],
-          },
-        ],
-      },
-      // Below the inbox, as asked. A single link rather than a group: there is
-      // one About page, and editing happens on it rather than somewhere else.
-      {
-        isTitle: false,
-        name: "អំពីយើង",
-        i18nKey: "menu.about",
-        url: "/about",
-        icon: "info",
         submenu: [],
       },
     ],
+  },
+  // Below ការកំណត់ rather than inside it. Everyone may read អំពីយើង, and a page
+  // for everyone does not belong in the group that holds the administration —
+  // sitting outside it also means the entry stays visible to a role that cannot
+  // open anything under Settings at all.
+  {
+    isTitle: false,
+    name: "អំពីយើង",
+    i18nKey: "menu.about",
+    url: "/about",
+    icon: "info",
+    submenu: [],
   },
 ];

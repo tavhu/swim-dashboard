@@ -259,6 +259,17 @@ export default [
     icon: "folder",
     submenu: [],
   },
+  // Writing មតិយោបល់ is open to every account, so it belongs where everyone
+  // looks rather than inside ការកំណត់. Reading the list stays there — that part
+  // is administration and needs a grant.
+  {
+    isTitle: false,
+    name: "សរសេរមតិយោបល់",
+    i18nKey: "menu.feedbackWrite",
+    url: "/feedback",
+    icon: "message-square",
+    submenu: [],
+  },
   // {
   //   isTitle: false,
   //   name: "របាយការណ៏",
