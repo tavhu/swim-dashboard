@@ -48,6 +48,11 @@ export const CASE_PLAN_ACTIVITY_FIELDS: FieldSpec = {
   optionalDates: ["startDate", "endDate"],
 };
 
+/** One ខ. សេវាបញ្ចូនបន្ត row. Same shape as an activity — same coercion. */
+export const CASE_PLAN_REFERRAL_FIELDS: FieldSpec = {
+  optionalDates: ["startDate", "endDate"],
+};
+
 /** Reintegration (ទម្រង់ទី៤). Its two service lists use the row spec below. */
 export const REINTEGRATION_FIELDS: FieldSpec = {
   optionalDates: ["handoverDate", "monitorDate", "nextMonitorDate"],

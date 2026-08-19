@@ -51,6 +51,8 @@ const form = reactive<Record<string, any>>({
  */
 const blankActivity = () => ({ serviceId: "", startDate: "", endDate: "" });
 const activities = ref<any[]>([blankActivity()]);
+/** ខ. សេវាបញ្ចូនបន្ត — the onward referrals, same row shape as ក. above. */
+const referralServices = ref<any[]>([blankActivity()]);
 
 /** Section ១, all derived from ទម្រង់ទី១. */
 const clientAge = computed(() => ageFrom(client.value?.DOB));
@@ -103,6 +105,13 @@ onMounted(async () => {
             endDate: a.endDate ?? "",
           }))
         : [blankActivity()];
+      referralServices.value = rec.referralServices?.length
+        ? rec.referralServices.map((r: any) => ({
+            serviceId: r.serviceId ?? "",
+            startDate: r.startDate ?? "",
+            endDate: r.endDate ?? "",
+          }))
+        : [blankActivity()];
       client.value = rec.client;
     } else {
       form.clientId = clientIdParam.value;
@@ -143,7 +152,7 @@ async function submit() {
   try {
     const saved: any = await $fetch("/api/client/case-plan/upsert", {
       method: "POST",
-      body: { ...form, activities: activities.value },
+      body: { ...form, activities: activities.value, referralServices: referralServices.value },
     });
     toast.success({ message: t('message.saved') });
     router.push(`/client/case-plan/view/${saved.id}`);
@@ -254,6 +263,13 @@ async function submit() {
           <h4 class="mt-6 text-lg font-[Moul] text-primary">{{ tr('ក. សកម្មភាពសេវាកម្ម (ផ្អែកលើតម្រូវការអតិថិជន)') }}</h4>
           <hr class="my-2 border dark:border-gray-700" />
           <ServiceRowsField v-model="activities" :services="services" :read-only="readOnly" />
+
+          <!-- ខ. សេវាបញ្ចូនបន្ត — repeatable, same control as ក. The two are
+               separate blocks because they answer different questions: what this
+               centre will do, and where the client is sent on to. -->
+          <h4 class="mt-6 text-lg font-[Moul] text-primary">{{ tr('ខ. សេវាបញ្ចូនបន្ត') }}</h4>
+          <hr class="my-2 border dark:border-gray-700" />
+          <ServiceRowsField v-model="referralServices" :services="services" :read-only="readOnly" />
         </section>
 
         <!-- ៣. កាលបរិច្ឆេទតាមដាន ត្រួតពិនិត្យ -->

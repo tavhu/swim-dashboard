@@ -620,6 +620,7 @@ model Service {
   reintegrationCommunity ReintegrationCommunityService[] @relation("ReintegrationCommunityService")
   followUpServices       FollowUpService[]               @relation("FollowUpService")
   serviceCenters         ServicesOnServiceCenters[]
+  casePlanReferrals      CasePlanReferralService[]       @relation("CasePlanReferralService")
 
   @@map("services")
 }
@@ -837,6 +838,12 @@ model CasePlan {
   /// table rather than a fixed set of columns.
   activities CasePlanActivity[]
 
+  // ខ. សេវាបញ្ចូនបន្ត — services the client is referred onward to, as opposed to
+  // ក. above, which is what this centre will do itself. Same shape and the same
+  // repeatable row, kept as its own list because the two answer different
+  // questions and a printed plan sets them out under separate headings.
+  referralServices CasePlanReferralService[]
+
   // ៣. កាលបរិច្ឆេទតាមដាន ត្រួតពិនិត្យ
   //
   // One set, not a list. The manual writes it once and ends it with a "next
@@ -892,6 +899,34 @@ model CasePlanActivity {
   @@index([casePlanId, sortOrder])
   @@index([serviceId])
   @@map("casePlanActivities")
+}
+
+/// ខ. សេវាបញ្ចូនបន្ត — one onward referral on a ផែនការករណី.
+///
+/// Deliberately a second table rather than a `kind` column on CasePlanActivity.
+/// The two lists are printed under their own headings, are numbered ១, ២, ៣
+/// independently, and are edited as separate blocks — a shared table would mean
+/// every read filtering by kind and every write remembering to set it, to save
+/// one table.
+model CasePlanReferralService {
+  id         String   @id @default(cuid())
+  casePlanId String
+  /// Cascade, for the same reason as the activities: these belong to the plan.
+  casePlan   CasePlan @relation(fields: [casePlanId], references: [id], onDelete: Cascade)
+
+  serviceId String?
+  service   Service?  @relation("CasePlanReferralService", fields: [serviceId], references: [id])
+  startDate DateTime?
+  endDate   DateTime?
+
+  sortOrder Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([casePlanId, sortOrder])
+  @@index([serviceId])
+  @@map("casePlanReferralServices")
 }
 
 /// ទម្រង់ទី៤ សមាហរណកម្ម — reintegrating a client back into their community.

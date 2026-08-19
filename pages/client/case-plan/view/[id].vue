@@ -69,6 +69,7 @@ const plan = computed(() => {
 });
 
 const activities = computed(() => rec.value?.activities ?? []);
+const referralServices = computed(() => rec.value?.referralServices ?? []);
 
 const monitoring = computed(() => {
   const r = rec.value;
@@ -186,6 +187,34 @@ onMounted(load);
                   <td class="py-2 pr-4 text-gray-800 dark:text-gray-100">{{ val(a.service?.nameKh) }}</td>
                   <td class="py-2 pr-4 text-gray-800 dark:text-gray-100">{{ fmt(a.startDate) }}</td>
                   <td class="py-2 text-gray-800 dark:text-gray-100">{{ fmt(a.endDate) }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- ខ. សេវាបញ្ចូនបន្ត — the same columns under its own heading, as the
+               printed plan sets them out. -->
+          <h4 class="mt-6 text-lg font-[Moul] text-primary">{{ tr('ខ. សេវាបញ្ចូនបន្ត') }}</h4>
+          <hr class="my-2 border dark:border-gray-700" />
+          <p v-if="!referralServices.length" class="py-2 text-base text-gray-500 dark:text-gray-400">{{ tr('មិនទាន់មានសេវាបញ្ចូនបន្តនៅឡើយទេ។') }}</p>
+          <div v-else class="overflow-x-auto">
+            <table class="w-full text-left text-base">
+              <thead class="border-b text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400">
+                <tr>
+                  <th class="py-2 pr-4 font-normal">{{ tr('ល.រ') }}</th>
+                  <th class="py-2 pr-4 font-normal">{{ tr('លេខកូដ') }}</th>
+                  <th class="py-2 pr-4 font-normal">{{ tr('ឈ្មោះសេវា') }}</th>
+                  <th class="py-2 pr-4 font-normal">{{ tr('កាលបរិច្ឆេទចាប់ផ្តើម') }}</th>
+                  <th class="py-2 font-normal">{{ tr('កាលបរិច្ឆេទបញ្ចប់') }}</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                <tr v-for="(r, i) in referralServices" :key="r.id">
+                  <td class="py-2 pr-4 text-gray-500">{{ i + 1 }}</td>
+                  <td class="py-2 pr-4 text-gray-800 dark:text-gray-100">{{ val(r.service?.code) }}</td>
+                  <td class="py-2 pr-4 text-gray-800 dark:text-gray-100">{{ val(r.service?.nameKh) }}</td>
+                  <td class="py-2 pr-4 text-gray-800 dark:text-gray-100">{{ fmt(r.startDate) }}</td>
+                  <td class="py-2 text-gray-800 dark:text-gray-100">{{ fmt(r.endDate) }}</td>
                 </tr>
               </tbody>
             </table>

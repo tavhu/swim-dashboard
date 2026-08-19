@@ -54,6 +54,11 @@ export default eventHandler(async (event) => {
       // what the printed plan can carry today.
       include: { service: { select: { code: true, nameKh: true } } },
     },
+    // ខ. សេវាបញ្ចូនបន្ត, ordered by the manual's numbering like ក. above.
+    referralServices: {
+      orderBy: { sortOrder: "asc" as const },
+      include: { service: { select: { code: true, nameKh: true } } },
+    },
   };
 
   try {

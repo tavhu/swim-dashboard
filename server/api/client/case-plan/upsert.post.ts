@@ -74,6 +74,19 @@ export default eventHandler(async (event) => {
     .filter((r: any) => r.serviceId || r.startDate || r.endDate)
     .map((r: any, i: number) => ({ ...r, sortOrder: i }));
 
+  /** ខ. សេវាបញ្ចូនបន្ត — same rules as ក. above, kept as its own list. */
+  const referralServices = (Array.isArray(rawBody?.referralServices) ? rawBody.referralServices : [])
+    .map((row: any) => {
+      const { data: r } = normalisePayload(row ?? {}, CASE_PLAN_REFERRAL_FIELDS);
+      return {
+        serviceId: r.serviceId || null,
+        startDate: r.startDate ?? null,
+        endDate: r.endDate ?? null,
+      };
+    })
+    .filter((r: any) => r.serviceId || r.startDate || r.endDate)
+    .map((r: any, i: number) => ({ ...r, sortOrder: i }));
+
   try {
     const prisma = event.context.prisma;
 
@@ -86,11 +99,21 @@ export default eventHandler(async (event) => {
             data: activities.map((a: any) => ({ ...a, casePlanId: body.id })),
           });
         }
+        await tx.casePlanReferralService.deleteMany({ where: { casePlanId: body.id } });
+        if (referralServices.length) {
+          await tx.casePlanReferralService.createMany({
+            data: referralServices.map((r: any) => ({ ...r, casePlanId: body.id })),
+          });
+        }
         return body.id;
       }
 
       const created = await tx.casePlan.create({
-        data: { ...data, activities: { create: activities } },
+        data: {
+          ...data,
+          activities: { create: activities },
+          referralServices: { create: referralServices },
+        },
         select: { id: true },
       });
       return created.id;
