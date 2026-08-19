@@ -248,12 +248,13 @@ export const RULES: Rule[] = [
     action: "write",
   },
   {
-    // The dropdown's source. Read is open to anyone who may see a referral form;
-    // maintaining the list is a separate, narrower right.
-    mode: "permission",
+    // The dropdown's source — a lookup of referral service names, read by both
+    // ទម្រង់ទី៣'s ខ. section and the referral form. Any signed-in user may read
+    // it: gating it on `referral` broke Form 3 for data-entry staff, who fill
+    // that form but hold no referral right. Maintaining the list is the separate
+    // `referral-type` write rule below.
+    mode: "auth",
     pattern: /^\/api\/referral-type\/?$/,
-    resource: RESOURCE.referral,
-    action: "read",
   },
   {
     mode: "permission",

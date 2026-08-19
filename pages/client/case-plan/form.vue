@@ -76,8 +76,14 @@ onMounted(async () => {
     const opts: any = await $fetch("/api/client/service/options", { method: "POST" });
     services.value = opts?.services ?? [];
     // ខ. draws from the Referral & Service Details table, a separate list.
-    const refTypes: any = await $fetch("/api/referral-type", { query: { activeOnly: "true" } });
-    referralTypes.value = refTypes?.data ?? [];
+    // Non-fatal: if it cannot be read, ខ. simply has no options — that must not
+    // stop ក. and the rest of the plan from being filled in and saved.
+    try {
+      const refTypes: any = await $fetch("/api/referral-type", { query: { activeOnly: "true" } });
+      referralTypes.value = refTypes?.data ?? [];
+    } catch {
+      referralTypes.value = [];
+    }
 
     if (planId.value) {
       // $fetch, not useFetch — useFetch is setup-only and never fires here.
