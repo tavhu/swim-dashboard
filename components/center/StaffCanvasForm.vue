@@ -168,7 +168,7 @@ async function submitEdit() {
   } catch (e) {
     // Saving here would store the record with the previous photo, or none,
     // while telling the user it worked.
-    toast.error({ message: "មិនអាចផ្ទុករូបភាពបានទេ៖ " + (e as any)?.message })
+    toast.error({ message: tr("មិនអាចផ្ទុករូបភាពបានទេ") + "៖ " + (e as any)?.message })
     return
   }
   if (image) {
@@ -224,11 +224,11 @@ async function submitEdit() {
 
   if (error.value?.statusCode) {
     toast.error({
-      message: "មិនឈោកជ័យ",
+      message: tr("មិនជោគជ័យ"),
     });
   } else {
     toast.success({
-      message: "ជោកជ័យ",
+      message: tr("ជោគជ័យ"),
     });
     clearEdit();
   }
@@ -780,7 +780,7 @@ async function submitEditOfficial() {
   } catch (e) {
     // Saving here would store the record with the previous photo, or none,
     // while telling the user it worked.
-    toast.error({ message: "មិនអាចផ្ទុករូបភាពបានទេ៖ " + (e as any)?.message })
+    toast.error({ message: tr("មិនអាចផ្ទុករូបភាពបានទេ") + "៖ " + (e as any)?.message })
     return
   }
   if (image) {
@@ -888,11 +888,11 @@ async function submitEditOfficial() {
 
   if (error.value?.statusCode) {
     toast.error({
-      message: "មិនឈោកជ័យ",
+      message: tr("មិនជោគជ័យ"),
     });
   } else {
     toast.success({
-      message: "ជោកជ័យ",
+      message: tr("ជោគជ័យ"),
     });
     clearEdit();
   }

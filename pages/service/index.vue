@@ -105,16 +105,16 @@ const actionItems = (row: any) => [
 
 // Delete logic
 async function deleteService(id: string) {
-  if (!(await confirmDialog({ title: 'Confirm Deletion', message: 'Are you sure you want to delete this service?' }))) return;
+  if (!(await confirmDialog({ title: tr("បញ្ជាក់ការលុប"), message: tr("តើអ្នកប្រាកដថាចង់លុបសេវាកម្មនេះមែនទេ?") }))) return;
 
   const { error } = await useFetch(`/api/service/${id}`, {
     method: 'DELETE',
   });
 
   if (error.value) {
-    toast.error({ message: 'Failed to delete service.' });
+    toast.error({ message: tr("មិនអាចលុបសេវាកម្មបានទេ") });
   } else {
-    toast.success({ message: 'Service deleted successfully.' });
+    toast.success({ message: tr("បានលុបសេវាកម្មដោយជោគជ័យ") });
     refresh();
   }
 }

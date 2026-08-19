@@ -904,5 +904,15 @@
   "មិនទាន់": "Not yet",
   "សូមបញ្ចូលឈ្មោះ": "Please enter a name",
   "ការបញ្ជូនទី": "Referral #",
-  "បន្ថែមការបញ្ជូន": "Add referral"
+  "បន្ថែមការបញ្ជូន": "Add referral",
+  "លេខទូរស័ព្ទមិនត្រឹមត្រូវ": "Invalid phone number",
+  "មិនអាចផ្ទុករូបភាពបានទេ": "Could not upload the image",
+  "មិនអាចទាញយកព័ត៌មានអតិថិជនបានទេ": "Could not load the client information",
+  "រកមិនឃើញផែនការ": "Plan not found",
+  "មិនអាចផ្ទុកឯកសារបានទេ": "Could not upload the file",
+  "បានលុបដោយជោគជ័យ": "Deleted successfully",
+  "មិនអាចលុបសេវាកម្មបានទេ": "Could not delete the service",
+  "បានលុបសេវាកម្មដោយជោគជ័យ": "Service deleted successfully",
+  "បញ្ជាក់ការលុប": "Confirm deletion",
+  "តើអ្នកប្រាកដថាចង់លុបសេវាកម្មនេះមែនទេ?": "Are you sure you want to delete this service?"
 }

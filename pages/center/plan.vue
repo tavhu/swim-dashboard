@@ -67,11 +67,11 @@ async function fetchPlanData(id: string) {
       formData.serviceCenterID = result.plan.serviceCenterID;
       existingFiles.value = result.plan.filePath ? result.plan.filePath.split(',').filter((f: string) => f) : [];
     } else {
-      toast.error({ message: 'Plan not found.' });
+      toast.error({ message: tr("រកមិនឃើញផែនការ") });
       goBack();
     }
   } catch (e) {
-    toast.error({ message: 'Failed to load plan data.' });
+    toast.error({ message: tr("មិនអាចទាញយកព័ត៌មានបានទេ") });
     goBack();
   }
 }
@@ -166,9 +166,9 @@ async function submit() {
   });
 
   if (error.value) {
-    toast.error({ message: `Save failed: ${error.value.data?.message || 'An unknown error occurred.'}` });
+    toast.error({ message: tr("មិនជោគជ័យ") });
   } else {
-    toast.success({ message: "Save successful" });
+    toast.success({ message: tr("ជោគជ័យ") });
     goBack();
   }
 }
@@ -190,7 +190,7 @@ const handleImageUpload = async () => {
     return data.value;
   } catch (err) {
     console.error('File upload failed:', err);
-    toast.error({ message: 'File upload failed.' });
+    toast.error({ message: tr("មិនអាចផ្ទុកឯកសារបានទេ") });
     return null;
   }
 };

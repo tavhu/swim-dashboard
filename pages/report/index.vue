@@ -98,9 +98,9 @@ async function download(format: "xlsx" | "docx") {
     a.download = name;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success({ message: "បានទាញយក " + name });
+    toast.success({ message: tr("បានទាញយក") + " " + name });
   } catch (e: any) {
-    toast.error({ message: e?.message ?? "មិនអាចទាញយកបានទេ" });
+    toast.error({ message: e?.message ?? tr("មិនអាចទាញយកបានទេ") });
   } finally {
     busyFormat.value = null;
   }

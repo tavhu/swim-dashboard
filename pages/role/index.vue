@@ -158,11 +158,11 @@ async function submitEdit() {
 
   if (error.value?.statusCode) {
     toast.error({
-      message: "មិនឈោកជ័យ",
+      message: tr("មិនជោគជ័យ"),
     });
   } else {
     toast.success({
-      message: "ជោកជ័យ",
+      message: tr("ជោគជ័យ"),
     });
     clearEdit();
   }
@@ -223,7 +223,7 @@ const deleteRecord = async (row: any) => {
 
   try {
     await $fetch("/api/role/delete", { method: "POST", body: { id: row.id } });
-    toast.success({ message: "ជោគជ័យ" });
+    toast.success({ message: tr("ជោគជ័យ") });
   } catch (e: any) {
     toast.error({ message: apiErrorMessage(e, "មិនជោគជ័យ")});
   }

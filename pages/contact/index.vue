@@ -33,7 +33,7 @@ const schema = z.object({
   email: z.string({ required_error : 'សូមបំពេញទិន្នន័យ' }).email('អុីមែលមិនត្រឹមត្រូវ'),
   name: z.string({ required_error : 'សូមបំពេញទិន្នន័យ'}),
   phone : z.string({ required_error : 'សូមបំពេញទិន្នន័យ'}).refine((val) => /^\d+$/.test(val) , {
-    message: "លេខទូរស័ព្ទមិនត្រឹមត្រូវ"
+    message: tr("លេខទូរស័ព្ទមិនត្រឹមត្រូវ")
   }),  
   reason :  z.string({ required_error : 'សូមបំពេញទិន្នន័យ'}),
   // username :z.optional(z.string()).refine((va) => state.reason == option[1] ? z.string({ required_error : 'សូមបំពេញទិន្នន័យ'}) : z.optional(z.string()) ),

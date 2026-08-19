@@ -79,7 +79,9 @@ const toggleFormError = () => {
 onMounted(() => {
   const err = router.currentRoute.value.query?.error;
   if (err && err !== "undefined") {
-    toast.error({ message: decodeURI(err.toString()) });
+    // The auth handler sends the reason as a Khmer key (it has no request
+    // locale there); tr() renders it in whatever language is selected here.
+    toast.error({ message: tr(decodeURI(err.toString())) });
     toggleFormError();
   }
 });

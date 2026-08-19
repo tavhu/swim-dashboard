@@ -38,7 +38,7 @@ const formData = reactive({
 onMounted(async () => {
     const { data: service, error } = await useFetch(`/api/service/${serviceId}`);
     if (error.value || !service.value) {
-        toast.error({ message: 'Failed to load service data.' });
+        toast.error({ message: tr("មិនអាចទាញយកព័ត៌មានបានទេ") });
         router.back();
     } else {
         Object.assign(formData, service.value.data);
@@ -89,11 +89,11 @@ async function submit() {
 
   if (error.value?.statusCode) {
     toast.error({
-      message: "ការកែប្រែសេវាកម្មមិនបានជោគជ័យ",
+      message: tr("ការកែប្រែសេវាកម្មមិនបានជោគជ័យ"),
     });
   } else {
     toast.success({
-      message: "ការកែប្រែសេវាកម្មបានជោគជ័យ",
+      message: tr("ការកែប្រែសេវាកម្មបានជោគជ័យ"),
     });
     router.push('/service');
   }

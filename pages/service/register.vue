@@ -77,11 +77,11 @@ async function submit() {
 
   if (error.value?.statusCode) {
     toast.error({
-      message: "ការចុះឈ្មោះសេវាកម្មមិនបានជោគជ័យ",
+      message: tr("ការចុះឈ្មោះសេវាកម្មមិនបានជោគជ័យ"),
     });
   } else {
     toast.success({
-      message: "ការចុះឈ្មោះសេវាកម្មបានជោគជ័យ",
+      message: tr("ការចុះឈ្មោះសេវាកម្មបានជោគជ័យ"),
     });
     clearForm();
     // router.back() sent the user to whatever was previously in history — often

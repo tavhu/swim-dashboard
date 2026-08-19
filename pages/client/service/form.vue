@@ -130,7 +130,7 @@ async function submit() {
   if (readOnly || saving.value) return;
   if (!(await confirmDialog())) return;
   if (!form.clientId) {
-    toast.error({ message: "រកមិនឃើញអតិថិជន" });
+    toast.error({ message: tr("រកមិនឃើញអតិថិជននេះទេ") });
     return;
   }
   saving.value = true;

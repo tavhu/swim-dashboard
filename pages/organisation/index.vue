@@ -86,9 +86,9 @@ async function deleteOrganisation(id: string) {
   });
 
   if (error.value) {
-    toast.error({ message: 'Failed to delete item.' });
+    toast.error({ message: tr("មិនអាចលុបបានទេ") });
   } else {
-    toast.success({ message: 'Item deleted successfully.' });
+    toast.success({ message: tr("បានលុបដោយជោគជ័យ") });
     refresh();
   }
 }

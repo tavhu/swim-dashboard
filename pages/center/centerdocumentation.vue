@@ -91,7 +91,7 @@ async function deletePlan(row: any) {
 
   try {
     await $fetch('/api/center/plan/delete', { method: 'POST', body: { id: row.id } });
-    toast.success({ message: 'ជោគជ័យ' });
+    toast.success({ message: tr("ជោគជ័យ") });
   } catch (e: any) {
     toast.error({ message: apiErrorMessage(e, 'មិនជោគជ័យ')});
   }

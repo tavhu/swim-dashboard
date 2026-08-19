@@ -375,7 +375,7 @@ const submit = async () => {
         // Saving here would store the record with the previous photo, or
         // none, while telling the user it worked.
         saving.value = false
-        toast.error({ message: "មិនអាចផ្ទុករូបភាពបានទេ៖ " + (e as any)?.message })
+        toast.error({ message: tr("មិនអាចផ្ទុករូបភាពបានទេ") + "៖ " + (e as any)?.message })
         return
     }
     if (image) {
@@ -688,7 +688,7 @@ onMounted(async () => {
                 body: { id: prop.id },
             });
         } catch (e: any) {
-            toast.error({ message: 'មិនអាចទាញយកព័ត៌មានអតិថិជនបានទេ' });
+            toast.error({ message: tr("មិនអាចទាញយកព័ត៌មានអតិថិជនបានទេ") });
         }
 
         if (userProfile?.id) {
