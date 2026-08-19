@@ -213,7 +213,11 @@
     "services": "Services",
     "settings": "Settings",
     "yearly": "Yearly",
-    "approvals": "Approvals"
+    "approvals": "Approvals",
+    "feedback": "Feedback",
+    "feedbackWrite": "Leave feedback",
+    "feedbackList": "Feedback list",
+    "about": "About us"
   },
   "message": {
     "clientNotFound": "Client not found",

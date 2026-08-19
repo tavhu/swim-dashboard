@@ -316,6 +316,44 @@ export default [
           },
         ],
       },
+      // មតិយោបល់: writing one is open to everyone, so this entry shows for every
+      // account. The list under it appears only for a role granted feedback-list
+      // — pruned by composables/menuPermission.ts like everything else.
+      {
+        isTitle: false,
+        name: "មតិយោបល់",
+        i18nKey: "menu.feedback",
+        url: "",
+        icon: "message-square",
+        submenu: [
+          {
+            isTitle: false,
+            name: "សរសេរមតិយោបល់",
+            i18nKey: "menu.feedbackWrite",
+            url: "/feedback",
+            icon: "",
+            submenu: [],
+          },
+          {
+            isTitle: false,
+            name: "បញ្ជីមតិយោបល់",
+            i18nKey: "menu.feedbackList",
+            url: "/feedback/list",
+            icon: "",
+            submenu: [],
+          },
+        ],
+      },
+      // Below the inbox, as asked. A single link rather than a group: there is
+      // one About page, and editing happens on it rather than somewhere else.
+      {
+        isTitle: false,
+        name: "អំពីយើង",
+        i18nKey: "menu.about",
+        url: "/about",
+        icon: "info",
+        submenu: [],
+      },
     ],
   },
 ];

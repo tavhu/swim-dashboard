@@ -49,6 +49,7 @@ model User {
   Role            Role?            @relation(fields: [userRoleID], references: [id])
   contactMessage  contactMessage[]
   approvalEvents  ApprovalEvent[]
+  feedback        Feedback[]
 }
 
 model contactMessage {
@@ -1165,4 +1166,51 @@ model CaseClosure {
 enum ClosureOutcome {
   SUCCESSFUL
   UNSUCCESSFUL
+}
+
+/// មតិយោបល់ — what a user has to say about the system itself.
+///
+/// Anyone signed in may write one; who may read them is a grant, so the
+/// ministry decides that rather than it being fixed here.
+///
+/// The author is recorded by relation and their name and centre are also copied
+/// in as plain text. That is deliberate duplication: feedback outlives the
+/// account that wrote it, and a complaint whose author was later deleted should
+/// still say who raised it and from where. `userID` is SetNull for the same
+/// reason — losing the link must not lose the message.
+model Feedback {
+  id              String   @id @default(cuid())
+  message         String
+  createdAt       DateTime @default(now())
+  /// Read, so a long list can be worked through without losing your place.
+  handled         Boolean  @default(false)
+  userID          String?
+  user            User?    @relation(fields: [userID], references: [id], onDelete: SetNull)
+  /// Kept as text — see the note above.
+  authorName      String?
+  serviceCenterID String?
+  centreName      String?
+
+  @@index([createdAt])
+  @@map("feedback")
+}
+
+/// អំពីយើង — the About page, written by the ministry.
+///
+/// One row, always. `id` defaults to a constant rather than a cuid so there is
+/// no way to end up with two competing versions of a page that is singular by
+/// definition — the endpoint upserts on it.
+///
+/// Khmer only, matching the decision that recorded content stays in Khmer. The
+/// heading and chrome around it still translate; this is the ministry's own
+/// text, and a half-translated About page reads worse than one in the language
+/// it was written in.
+model AboutPage {
+  id          String   @id @default("about")
+  title       String?
+  content     String?
+  updatedAt   DateTime @updatedAt
+  updatedByID String?
+
+  @@map("aboutPage")
 }

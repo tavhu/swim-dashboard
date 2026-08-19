@@ -81,7 +81,18 @@ export const APP_CAPABILITIES = APP_RESOURCES.filter((r) => r.capability);
  * means the app has to land them somewhere else, which is what
  * `firstAllowedRoute` below is for.
  */
-export const ALWAYS_ALLOWED_ROUTES = new Set(["login", "contact", "profile"]);
+export const ALWAYS_ALLOWED_ROUTES = new Set([
+  "login",
+  "contact",
+  "profile",
+  // Leaving មតិយោបល់ is open to everyone by design — a system nobody can
+  // complain about is one whose problems stay invisible. Reading the list is
+  // the gated half, under its own `feedback-list` row.
+  "feedback",
+  // អំពីយើង is the ministry describing itself to its own staff. Everyone reads
+  // it; the `about` row governs who may write it.
+  "about",
+]);
 
 /**
  * Where to send someone whose landing page is denied — the first thing they may

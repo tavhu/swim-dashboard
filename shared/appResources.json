@@ -201,5 +201,15 @@
     "route": "approval",
     "group": "approval",
     "nameKh": "ការអនុម័ត (មជ្ឈមណ្ឌលរបស់ខ្លួន)"
+  },
+  {
+    "route": "feedback-list",
+    "group": "feedback",
+    "nameKh": "បញ្ជីមតិយោបល់"
+  },
+  {
+    "route": "about",
+    "group": "feedback",
+    "nameKh": "អំពីយើង (កែសម្រួល)"
   }
 ]

@@ -1,3 +1,5 @@
+import { ALWAYS_ALLOWED_ROUTES } from "~~/shared/appResources";
+
 /**
  * Prunes the sidebar to what the signed-in role may actually open.
  *
@@ -89,6 +91,10 @@ export function useMenuPermission() {
   const canOpen = (url?: string): boolean => {
     const name = routeNameFor(url);
     if (!name) return false;
+    // A page nobody needs a grant for still belongs in the menu. The route guard
+    // already lets these through; without the same check here the entry was
+    // hidden from everyone, since nobody holds a grant for a page that has none.
+    if (ALWAYS_ALLOWED_ROUTES.has(name)) return true;
     const g = grantFor(name);
     return !!g && (g.granted === true || g.read === true);
   };

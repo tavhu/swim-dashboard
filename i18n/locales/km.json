@@ -213,7 +213,11 @@
     "services": "សេវា",
     "settings": "ការកំណត់",
     "yearly": "ប្រចាំឆ្នាំ",
-    "approvals": "ការអនុម័ត"
+    "approvals": "ការអនុម័ត",
+    "feedback": "មតិយោបល់",
+    "feedbackWrite": "សរសេរមតិយោបល់",
+    "feedbackList": "បញ្ជីមតិយោបល់",
+    "about": "អំពីយើង"
   },
   "message": {
     "clientNotFound": "រកមិនឃើញអតិថិជននេះទេ",

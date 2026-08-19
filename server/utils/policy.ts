@@ -54,6 +54,8 @@ export const RESOURCE = {
   file: "file",
   /** Not a page — the right to approve or reject ទម្រង់ទី១-៦ for one's own centre. */
   approval: "approval",
+  feedbackList: "feedback-list",
+  about: "about",
   // added for features built since
   organisation: "organisation",
   service: "service",
@@ -227,6 +229,37 @@ export const RULES: Rule[] = [
     mode: "permission",
     pattern: /^\/api\/user\/delete\/?$/,
     resource: RESOURCE.userList,
+    action: "write",
+  },
+
+  // --- feedback and the About page ------------------------------------------
+  {
+    // Anyone signed in may leave មតិយោបល់ — a system nobody can complain about
+    // is a system whose problems stay invisible.
+    mode: "auth",
+    pattern: /^\/api\/feedback\/create\/?$/,
+  },
+  {
+    mode: "permission",
+    pattern: /^\/api\/feedback\/list\/?$/,
+    resource: RESOURCE.feedbackList,
+    action: "read",
+  },
+  {
+    mode: "permission",
+    pattern: /^\/api\/feedback\/handled\/?$/,
+    resource: RESOURCE.feedbackList,
+    action: "write",
+  },
+  {
+    // Reading អំពីយើង needs only a session; writing it is a grant.
+    mode: "auth",
+    pattern: /^\/api\/about\/get\/?$/,
+  },
+  {
+    mode: "permission",
+    pattern: /^\/api\/about\/upsert\/?$/,
+    resource: RESOURCE.about,
     action: "write",
   },
 
