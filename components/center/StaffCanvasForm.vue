@@ -302,20 +302,6 @@ const serviceCenterList = computed(() => {
  */
 const boundToOneCentre = computed(() => !!ownCentre.value?.data)
 
-/**
- * Fill the centre in for a user who only has one, on whichever of the two forms
- * is open. watchEffect rather than a plain assignment because the centre fetch
- * and the record fetch both settle after setup; it only ever fills a blank, so
- * editing an existing staff member never has their centre overwritten.
- */
-watchEffect(() => {
-  if (!boundToOneCentre.value) return
-  const own = serviceCenterList.value[0]?.value
-  if (!own) return
-  if (!formDataEdit.serviceCenterID) formDataEdit.serviceCenterID = own
-  if (!formDataEditOfficial.serviceCenterID) formDataEditOfficial.serviceCenterID = own
-})
-
 const SelectWorkEXP = ref(true)
 const WorkEXP = computed(() => [{
   value: false,
@@ -330,51 +316,60 @@ const WorkEXP = computed(() => [{
 
 
 if (prop.id && prop.typeEmployee === 'Contract') {
-  const { data } = await useFetch<{ data: Staff, error: '', status: '' }>('/api/center/staff/getSingleStaff', {
-    method: 'POST', body: JSON.stringify({
-      id: prop.id,
-      typeEmployee: prop.typeEmployee
-    })
-  })
+  // $fetch, not useFetch.
+  //
+  // useFetch needs the Nuxt instance, and by here setup has already awaited
+  // twice (the centre lookups above). After an await that instance is no longer
+  // resolvable, so the call returned undefined — reading `.value` off it threw,
+  // which killed setup before the off-canvas could render. That is why the
+  // កែសម្រួល buttons appeared to do nothing at all: the click opened a component
+  // that had already failed.
+  //
+  // $fetch needs no instance and is what the rest of the app uses for this;
+  // components/client/PersonalForm.vue records the same lesson.
+  const rec: any = await $fetch('/api/center/staff/getSingleStaff', {
+    method: 'POST',
+    body: { id: prop.id, typeEmployee: prop.typeEmployee },
+  }).then((r: any) => r?.data).catch(() => null)
 
-  formDataEdit.id = data.value?.data?.id
-  formDataEdit.fullnameEN = data.value?.data?.fullnameEN
-  formDataEdit.photo = data?.value?.data.photo
-  formDataEdit.workingPeroidStart = data?.value?.data.workingPeroidStart
-  formDataEdit.attachedContract = data?.value?.data.attachedContract
-  formDataEdit.attachedBackground = data?.value?.data.attachedBackground
-  formDataEdit.attachedFileInfomation = data?.value?.data.attachedFileInfomation
-  formDataEdit.firstName = data?.value?.data.firstName
-  formDataEdit.lastName = data?.value?.data.lastName
-  formDataEdit.nationality = data?.value?.data.nationality
-  formDataEdit.dateofbirth = data?.value?.data.dateofbirth
-  formDataEdit.birthAddress = data?.value?.data.birthAddress
-  formDataEdit.birthCity = data?.value?.data.birthCity
-  formDataEdit.birthDistrict = data?.value?.data.birthDistrict
-  formDataEdit.birthCommune = data?.value?.data?.birthCommune
-  formDataEdit.birthVillage = data?.value?.data?.birthVillage
-  formDataEdit.currentAddress = data?.value?.data.currentAddress
-  formDataEdit.currentQualification = data?.value?.data.currentQualification
-  formDataEdit.currentCity = data?.value?.data.currentCity
-  formDataEdit.currentDistrict = data?.value?.data.currentDistrict
-  formDataEdit.currentCommune = data?.value?.data.currentCommune
-  formDataEdit.currentVillage = data?.value?.data.currentVillage
-  formDataEdit.sID = data?.value?.data.sID
-  formDataEdit.passport = data?.value?.data.passport
-  formDataEdit.workingEXP = data?.value?.data.workingEXP
-  SelectWorkEXP.value = data?.value?.data.workingEXP ? data?.value?.data.workingEXP : true
-  formDataEdit.workingEXPYes = data?.value?.data.workingEXPYes
-  formDataEdit.gender = data?.value?.data.gender
-  formDataEdit.position = data?.value?.data.position
-  formDataEdit.telephone = data?.value?.data.telephone
-  formDataEdit.familyAddress = data?.value?.data.familyAddress
-  formDataEdit.familyAddressCity = data?.value?.data?.familyAddressCity
-  formDataEdit.familyAddressDistrict = data?.value?.data?.familyAddressDistrict
-  formDataEdit.familyAddressCommune = data?.value?.data?.familyAddressCommune
-  formDataEdit.familyAddressVillage = data?.value?.data?.familyAddressVillage
-  formDataEdit.familyPhoneNumber = data?.value?.data.familyPhoneNumber
-  formDataEdit.familyEmail = data?.value?.data.familyEmail
-  formDataEdit.serviceCenterID = data?.value?.data.serviceCenterID
+  formDataEdit.id = rec?.id
+  formDataEdit.fullnameEN = rec?.fullnameEN
+  formDataEdit.photo = rec?.photo
+  formDataEdit.workingPeroidStart = rec?.workingPeroidStart
+  formDataEdit.attachedContract = rec?.attachedContract
+  formDataEdit.attachedBackground = rec?.attachedBackground
+  formDataEdit.attachedFileInfomation = rec?.attachedFileInfomation
+  formDataEdit.firstName = rec?.firstName
+  formDataEdit.lastName = rec?.lastName
+  formDataEdit.nationality = rec?.nationality
+  formDataEdit.dateofbirth = rec?.dateofbirth
+  formDataEdit.birthAddress = rec?.birthAddress
+  formDataEdit.birthCity = rec?.birthCity
+  formDataEdit.birthDistrict = rec?.birthDistrict
+  formDataEdit.birthCommune = rec?.birthCommune
+  formDataEdit.birthVillage = rec?.birthVillage
+  formDataEdit.currentAddress = rec?.currentAddress
+  formDataEdit.currentQualification = rec?.currentQualification
+  formDataEdit.currentCity = rec?.currentCity
+  formDataEdit.currentDistrict = rec?.currentDistrict
+  formDataEdit.currentCommune = rec?.currentCommune
+  formDataEdit.currentVillage = rec?.currentVillage
+  formDataEdit.sID = rec?.sID
+  formDataEdit.passport = rec?.passport
+  formDataEdit.workingEXP = rec?.workingEXP
+  SelectWorkEXP.value = rec?.workingEXP ? rec?.workingEXP : true
+  formDataEdit.workingEXPYes = rec?.workingEXPYes
+  formDataEdit.gender = rec?.gender
+  formDataEdit.position = rec?.position
+  formDataEdit.telephone = rec?.telephone
+  formDataEdit.familyAddress = rec?.familyAddress
+  formDataEdit.familyAddressCity = rec?.familyAddressCity
+  formDataEdit.familyAddressDistrict = rec?.familyAddressDistrict
+  formDataEdit.familyAddressCommune = rec?.familyAddressCommune
+  formDataEdit.familyAddressVillage = rec?.familyAddressVillage
+  formDataEdit.familyPhoneNumber = rec?.familyPhoneNumber
+  formDataEdit.familyEmail = rec?.familyEmail
+  formDataEdit.serviceCenterID = rec?.serviceCenterID
 }
 
 const { data: organisations } = await useFetch('/api/organisation/get')
@@ -386,23 +381,30 @@ const organisationList = computed(() => {
   }))
 })
 
-const optionsss = computed(() => [{
-  value: 'Official',
-  label: tr('មន្ត្រីរាជការ')
-}, {
-  value: 'Contract',
-  label: tr('មន្ត្រីកិច្ចសន្យា')
-}])
-
-console.log(prop.id, prop.typeEmployee)
-
-if (prop.id) {
-  if (prop.typeEmployee === optionsss[0].value) {
-    optionsss.splice(1, 1)
-  } else {
-    optionsss.splice(0, 1)
-  }
-}
+/**
+ * The មន្ត្រីរាជការ / មន្ត្រីកិច្ចសន្យា switch at the top of the canvas.
+ *
+ * Editing an existing person offers only their own kind: the two live in
+ * different tables, so switching the radio mid-edit would point the form at a
+ * record that does not exist.
+ *
+ * That used to be done by mutating the list after the fact —
+ * `optionsss[0].value`, then `.splice()`. optionsss is a computed, so indexing
+ * it without `.value` gave undefined and reading `.value` off that threw. The
+ * block ran only when prop.id was set, which is why registering worked and
+ * កែសម្រួល did not: the click opened a component whose setup had already died,
+ * so nothing appeared and nothing was logged as a failure.
+ *
+ * Filtering inside the computed says the same thing without mutating a
+ * read-only value, and keeps the labels following the language picker.
+ */
+const optionsss = computed(() => {
+  const all = [
+    { value: 'Official', label: tr('មន្ត្រីរាជការ') },
+    { value: 'Contract', label: tr('មន្ត្រីកិច្ចសន្យា') },
+  ]
+  return prop.id ? all.filter((o) => o.value === prop.typeEmployee) : all
+})
 
 const AddressOption = computed(() => [{
   value: 'thesame',
@@ -620,115 +622,134 @@ const formDataEditOfficial: {
 const isErrorEditOfficial = ref(false);
 const formEditOfficial = computed(() => composableForm.getForm(formNameEditOfficial));
 const validatorEditOfficial = computed(() => formEditOfficial.value.validator);
+
+/**
+ * Fill the centre in for a user who only has one, on whichever of the two forms
+ * is open.
+ *
+ * Placed after both reactive models are declared: watchEffect runs its callback
+ * immediately, and from higher up the file formDataEditOfficial was still in the
+ * temporal dead zone — which threw during setup and left the canvas unable to
+ * open at all, so the edit buttons did nothing.
+ *
+ * It only ever fills a blank, so editing an existing staff member never has
+ * their centre overwritten.
+ */
+watchEffect(() => {
+  if (!boundToOneCentre.value) return
+  const own = serviceCenterList.value[0]?.value
+  if (!own) return
+  if (!formDataEdit.serviceCenterID) formDataEdit.serviceCenterID = own
+  if (!formDataEditOfficial.serviceCenterID) formDataEditOfficial.serviceCenterID = own
+})
+
 // console.log(prop.id, prop.typeEmployee)
 if (prop.id && prop.typeEmployee === 'Official') {
-  const { data } = await useFetch<{ data: governStaff, error: '', status: '' }>('/api/center/staff/getSingleStaff', {
-    method: 'POST', body: JSON.stringify({
-      id: prop.id,
-      typeEmployee: prop.typeEmployee,
+  // $fetch for the same reason as the contract block above.
+  const rec: any = await $fetch('/api/center/staff/getSingleStaff', {
+    method: 'POST',
+    body: { id: prop.id, typeEmployee: prop.typeEmployee },
+  }).then((r: any) => r?.data).catch(() => null)
+  // console.log(rec)
 
-    })
-  })
-  // console.log(data.value?.data)
-
-  // console.log(data.value?.data)
-  formDataEditOfficial.id = data.value?.data.id
-  formDataEditOfficial.photo = data.value?.data.photo
-  formDataEditOfficial.firstNameKH = data.value?.data.firstNameKH
-  formDataEditOfficial.lastNameKH = data.value?.data.lastNameKH
-  formDataEditOfficial.firstNameEN = data.value?.data.firstNameEN
-  formDataEditOfficial.lastNameEN = data.value?.data.lastNameEN
-  formDataEditOfficial.gender = data.value?.data.gender
-  formDataEditOfficial.DateofBirth = data.value?.data.DateofBirth
-  formDataEditOfficial.ethnicity = data.value?.data.ethnicity
-  formDataEditOfficial.nationality = data.value?.data.nationality
-  formDataEditOfficial.birthAddress = data.value?.data.birthAddress
-  formDataEditOfficial.birthCity = data?.value?.data?.birthCity
-  formDataEditOfficial.birthDistrict = data?.value?.data?.birthDistrict
-  formDataEditOfficial.birthCommune = data?.value?.data?.birthCommune
-  formDataEditOfficial.birthVillage = data?.value?.data?.birthVillage
-  formDataEditOfficial.currentAddress = data.value?.data.currentAddress
-  formDataEditOfficial.currentCity = data.value?.data.currentCity
-  formDataEditOfficial.currentDistrict = data.value?.data.currentDistrict
-  formDataEditOfficial.currentCommune = data.value?.data.currentCommune
-  formDataEditOfficial.currentVillage = data.value?.data.currentVillage
-  formDataEditOfficial.permanentAddress = data.value?.data.permanentAddress
-  formDataEditOfficial.permanentCity = data?.value?.data?.permanentCity
-  formDataEditOfficial.permanentDistrict = data?.value?.data?.permanentDistrict
-  formDataEditOfficial.permanentCommune = data?.value?.data?.permanentCommune
-  formDataEditOfficial.permanentVillage = data?.value?.data?.permanentVillage
-  formDataEditOfficial.telephone = data.value?.data.telephone
-  formDataEditOfficial.email = data.value?.data.email
-  formDataEditOfficial.officialID = data.value?.data.officialID
-  formDataEditOfficial.CambodianSocialID = data.value?.data.CambodianSocialID
-  formDataEditOfficial.sIDValidStart = data.value?.data.sIDValidStart
-  formDataEditOfficial.sIDValidEnd = data.value?.data.sIDValidEnd
-  formDataEditOfficial.physical = data.value?.data.physical
-  formDataEditOfficial.familyInfo = data.value?.data.familyInfo
-  formDataEditOfficial.spouseNameKH = data.value?.data.spouseNameKH
-  formDataEditOfficial.spuseNameEN = data.value?.data.spuseNameEN
-  formDataEditOfficial.spouseDateOfBirth = data.value?.data.spouseDateOfBirth
-  formDataEditOfficial.spouseSID = data.value?.data.spouseSID
-  formDataEditOfficial.spouseBirthAddress = data.value?.data.spouseBirthAddress
-  formDataEditOfficial.spouseCurrentOccupation = data.value?.data.spouseCurrentOccupation
-  formDataEditOfficial.spouseOrganisationName = data.value?.data.spouseOrganisationName
-  formDataEditOfficial.spuseCurrentAddress = data.value?.data.spuseCurrentAddress
-  formDataEditOfficial.spuseCurrentAddressCity = data?.value?.data?.spuseCurrentAddressCity
-  formDataEditOfficial.spuseCurrentAddressDistrict = data?.value?.data?.spuseCurrentAddressDistrict
-  formDataEditOfficial.spuseCurrentAddressCommune = data?.value?.data?.spuseCurrentAddressCommune
-  formDataEditOfficial.spuseCurrentAddressVillage = data?.value?.data?.spuseCurrentAddressVillage
-  formDataEditOfficial.fatherFullNameKH = data.value?.data.fatherFullNameKH
-  formDataEditOfficial.fatherOccupation = data.value?.data.fatherOccupation
-  formDataEditOfficial.fatherBirthAddress = data.value?.data.fatherBirthAddress
-  formDataEditOfficial.fatherBirthAddressCity = data?.value?.data?.fatherBirthAddressCity
-  formDataEditOfficial.fatherBirthAddressDistrict = data?.value?.data?.fatherBirthAddressDistrict
-  formDataEditOfficial.fatherBirthAddressCommune = data?.value?.data?.fatherBirthAddressCommune
-  formDataEditOfficial.fatherBirthAddressVillage = data?.value?.data?.fatherBirthAddressVillage
-  formDataEditOfficial.motherOcupation = data.value?.data.motherOcupation
-  formDataEditOfficial.motherBirthAddressCity = data?.value?.data.motherBirthAddressCity
-  formDataEditOfficial.motherBirthAddressDistrict = data?.value?.data.motherBirthAddressDistrict
-  formDataEditOfficial.motherBirthAddressCommune = data?.value?.data.motherBirthAddressCommune
-  formDataEditOfficial.motherBirthAddressVillage = data?.value?.data.motherBirthAddressVillage
-  formDataEditOfficial.motherFullNameKH = data.value?.data.motherFullNameKH
-  formDataEditOfficial.motherBirthAddress = data.value?.data.motherBirthAddress
-  formDataEditOfficial.ECFirstNameKH = data.value?.data.ECFirstNameKH
-  formDataEditOfficial.ECLastNameKH = data.value?.data.ECLastNameKH
-  formDataEditOfficial.ECGender = data.value?.data.ECGender
-  formDataEditOfficial.ECRelationshipAs = data.value?.data.ECRelationshipAs
-  formDataEditOfficial.ECOccupation = data.value?.data.ECOccupation
-  formDataEditOfficial.ECAddress = data.value?.data.ECAddress
-  formDataEditOfficial.ECAddressCity = data?.value?.data?.ECAddressCity
-  formDataEditOfficial.ECAddressDistrict = data?.value?.data?.ECAddressDistrict
-  formDataEditOfficial.ECAddressCommune = data?.value?.data?.ECAddressCommune
-  formDataEditOfficial.ECAddressVillage = data?.value?.data?.ECAddressVillage
-  formDataEditOfficial.ECTelehpone = data.value?.data.ECTelehpone
-  formDataEditOfficial.DateStartOfficialWork = data.value?.data.DateStartOfficialWork
-  formDataEditOfficial.DateWentFullTime = data.value?.data.DateWentFullTime
-  formDataEditOfficial.CurrentRank = data.value?.data.CurrentRank
-  formDataEditOfficial.OfficialLevelKH = data.value?.data.OfficialLevelKH
-  formDataEditOfficial.serviceCenterID = data.value?.data.serviceCenterID
+  // console.log(rec)
+  formDataEditOfficial.id = rec?.id
+  formDataEditOfficial.photo = rec?.photo
+  formDataEditOfficial.firstNameKH = rec?.firstNameKH
+  formDataEditOfficial.lastNameKH = rec?.lastNameKH
+  formDataEditOfficial.firstNameEN = rec?.firstNameEN
+  formDataEditOfficial.lastNameEN = rec?.lastNameEN
+  formDataEditOfficial.gender = rec?.gender
+  formDataEditOfficial.DateofBirth = rec?.DateofBirth
+  formDataEditOfficial.ethnicity = rec?.ethnicity
+  formDataEditOfficial.nationality = rec?.nationality
+  formDataEditOfficial.birthAddress = rec?.birthAddress
+  formDataEditOfficial.birthCity = rec?.birthCity
+  formDataEditOfficial.birthDistrict = rec?.birthDistrict
+  formDataEditOfficial.birthCommune = rec?.birthCommune
+  formDataEditOfficial.birthVillage = rec?.birthVillage
+  formDataEditOfficial.currentAddress = rec?.currentAddress
+  formDataEditOfficial.currentCity = rec?.currentCity
+  formDataEditOfficial.currentDistrict = rec?.currentDistrict
+  formDataEditOfficial.currentCommune = rec?.currentCommune
+  formDataEditOfficial.currentVillage = rec?.currentVillage
+  formDataEditOfficial.permanentAddress = rec?.permanentAddress
+  formDataEditOfficial.permanentCity = rec?.permanentCity
+  formDataEditOfficial.permanentDistrict = rec?.permanentDistrict
+  formDataEditOfficial.permanentCommune = rec?.permanentCommune
+  formDataEditOfficial.permanentVillage = rec?.permanentVillage
+  formDataEditOfficial.telephone = rec?.telephone
+  formDataEditOfficial.email = rec?.email
+  formDataEditOfficial.officialID = rec?.officialID
+  formDataEditOfficial.CambodianSocialID = rec?.CambodianSocialID
+  formDataEditOfficial.sIDValidStart = rec?.sIDValidStart
+  formDataEditOfficial.sIDValidEnd = rec?.sIDValidEnd
+  formDataEditOfficial.physical = rec?.physical
+  formDataEditOfficial.familyInfo = rec?.familyInfo
+  formDataEditOfficial.spouseNameKH = rec?.spouseNameKH
+  formDataEditOfficial.spuseNameEN = rec?.spuseNameEN
+  formDataEditOfficial.spouseDateOfBirth = rec?.spouseDateOfBirth
+  formDataEditOfficial.spouseSID = rec?.spouseSID
+  formDataEditOfficial.spouseBirthAddress = rec?.spouseBirthAddress
+  formDataEditOfficial.spouseCurrentOccupation = rec?.spouseCurrentOccupation
+  formDataEditOfficial.spouseOrganisationName = rec?.spouseOrganisationName
+  formDataEditOfficial.spuseCurrentAddress = rec?.spuseCurrentAddress
+  formDataEditOfficial.spuseCurrentAddressCity = rec?.spuseCurrentAddressCity
+  formDataEditOfficial.spuseCurrentAddressDistrict = rec?.spuseCurrentAddressDistrict
+  formDataEditOfficial.spuseCurrentAddressCommune = rec?.spuseCurrentAddressCommune
+  formDataEditOfficial.spuseCurrentAddressVillage = rec?.spuseCurrentAddressVillage
+  formDataEditOfficial.fatherFullNameKH = rec?.fatherFullNameKH
+  formDataEditOfficial.fatherOccupation = rec?.fatherOccupation
+  formDataEditOfficial.fatherBirthAddress = rec?.fatherBirthAddress
+  formDataEditOfficial.fatherBirthAddressCity = rec?.fatherBirthAddressCity
+  formDataEditOfficial.fatherBirthAddressDistrict = rec?.fatherBirthAddressDistrict
+  formDataEditOfficial.fatherBirthAddressCommune = rec?.fatherBirthAddressCommune
+  formDataEditOfficial.fatherBirthAddressVillage = rec?.fatherBirthAddressVillage
+  formDataEditOfficial.motherOcupation = rec?.motherOcupation
+  formDataEditOfficial.motherBirthAddressCity = rec?.motherBirthAddressCity
+  formDataEditOfficial.motherBirthAddressDistrict = rec?.motherBirthAddressDistrict
+  formDataEditOfficial.motherBirthAddressCommune = rec?.motherBirthAddressCommune
+  formDataEditOfficial.motherBirthAddressVillage = rec?.motherBirthAddressVillage
+  formDataEditOfficial.motherFullNameKH = rec?.motherFullNameKH
+  formDataEditOfficial.motherBirthAddress = rec?.motherBirthAddress
+  formDataEditOfficial.ECFirstNameKH = rec?.ECFirstNameKH
+  formDataEditOfficial.ECLastNameKH = rec?.ECLastNameKH
+  formDataEditOfficial.ECGender = rec?.ECGender
+  formDataEditOfficial.ECRelationshipAs = rec?.ECRelationshipAs
+  formDataEditOfficial.ECOccupation = rec?.ECOccupation
+  formDataEditOfficial.ECAddress = rec?.ECAddress
+  formDataEditOfficial.ECAddressCity = rec?.ECAddressCity
+  formDataEditOfficial.ECAddressDistrict = rec?.ECAddressDistrict
+  formDataEditOfficial.ECAddressCommune = rec?.ECAddressCommune
+  formDataEditOfficial.ECAddressVillage = rec?.ECAddressVillage
+  formDataEditOfficial.ECTelehpone = rec?.ECTelehpone
+  formDataEditOfficial.DateStartOfficialWork = rec?.DateStartOfficialWork
+  formDataEditOfficial.DateWentFullTime = rec?.DateWentFullTime
+  formDataEditOfficial.CurrentRank = rec?.CurrentRank
+  formDataEditOfficial.OfficialLevelKH = rec?.OfficialLevelKH
+  formDataEditOfficial.serviceCenterID = rec?.serviceCenterID
   //@ts-ignored
-  childrenDetails.value = data.value?.data?.governStaffChildren
+  childrenDetails.value = rec?.governStaffChildren
   //@ts-ignored   
-  EducationDetails.value = data.value?.data?.governStaffQualifitcation
+  EducationDetails.value = rec?.governStaffQualifitcation
   //@ts-ignored
-  governStaffLanuage.value = data.value?.data?.governStaffLanuage
+  governStaffLanuage.value = rec?.governStaffLanuage
   //@ts-ignored
-  governStaffWorkingHistoryPublic.value = data.value?.data?.governStaffWorkingHistoryPublic
+  governStaffWorkingHistoryPublic.value = rec?.governStaffWorkingHistoryPublic
   //@ts-ignored
-  governStaffPositionHistory.value = data.value?.data?.governStaffPositionHistory
+  governStaffPositionHistory.value = rec?.governStaffPositionHistory
   //@ts-ignored
-  governStaffCertificateLevelup.value = data.value?.data?.governStaffCertificateLevelup
+  governStaffCertificateLevelup.value = rec?.governStaffCertificateLevelup
   //@ts-ignored
-  governStaffSituationOutsideOriginalOfficial.value = data.value?.data?.governStaffSituationOutsideOriginalOfficial
+  governStaffSituationOutsideOriginalOfficial.value = rec?.governStaffSituationOutsideOriginalOfficial
   //@ts-ignored
-  GovernStaffFreeNoSalary.value = data.value?.data?.governStaffFreeNoSalary
+  GovernStaffFreeNoSalary.value = rec?.governStaffFreeNoSalary
   //@ts-ignored
-  GovernStaffLetterAppreciation.value = data.value?.data?.governStaffLetterAppreciation
+  GovernStaffLetterAppreciation.value = rec?.governStaffLetterAppreciation
   //@ts-ignored
-  governStaffFineHistory.value = data.value?.data?.governStaffFineHistory
+  governStaffFineHistory.value = rec?.governStaffFineHistory
   //@ts-ignored
-  governStaffWorkingHistoryPrivate.value = data.value?.data?.governStaffWorkingHistoryPrivate
+  governStaffWorkingHistoryPrivate.value = rec?.governStaffWorkingHistoryPrivate
 
 }
 
