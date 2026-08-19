@@ -7,6 +7,17 @@ import { PrismaClient } from '@prisma/client';
 const runtimeConfig = useRuntimeConfig()
 const prisma = new PrismaClient()
 
+/**
+ * The message for a failed sign-in.
+ *
+ * These next-auth callbacks receive no h3 `event`, so the usual
+ * errorMessage(event, …) helper cannot run here — it referenced an undefined
+ * `event`, and that ReferenceError was what reached the login page as
+ * "event is not defined" instead of a real reason. Login errors are shown in
+ * Khmer; encodeURI matches how /login decodes the ?error= it is handed.
+ */
+const loginError = (khmer: string) => encodeURI(khmer)
+
 export default NuxtAuthHandler({
     // secret needed to run nuxt-auth in production mode (used to encrypt data)
     secret: process.env.NUXT_SECRET,
@@ -41,7 +52,7 @@ export default NuxtAuthHandler({
           // token.status = me.status
           throw createError({
             statusCode: 403,
-            statusMessage: errorMessage(event, "គណនីត្រូវបានបិទ​! សូមទំនាក់ទំនងអ្នកគ្រប់គ្រង ")
+            statusMessage: loginError("គណនីត្រូវបានបិទ! សូមទំនាក់ទំនងអ្នកគ្រប់គ្រង")
           })  
         }
 
@@ -76,14 +87,14 @@ export default NuxtAuthHandler({
           if(!user) {
             throw createError({
               statusCode: 403,
-              statusMessage:  errorMessage(event, "គណនីឬលេខសំងាត់មិនត្រឹមត្រូវ"),
+              statusMessage: loginError("គណនីឬលេខសំងាត់មិនត្រឹមត្រូវ"),
             })  
           }            
           const isPasswordValid = await compare(credentials?.password, user.password)  
           if (!isPasswordValid || !user.status) {
             throw createError({
               statusCode: 403,
-              statusMessage: errorMessage(event, !user.status ? "គណនីត្រូវបានបិទ​! សូមទំនាក់ទំនងអ្នកគ្រប់គ្រង" : "គណនីឬលេខសំងាត់មិនត្រឹមត្រូវ"),
+              statusMessage: loginError(!user.status ? "គណនីត្រូវបានបិទ! សូមទំនាក់ទំនងអ្នកគ្រប់គ្រង" : "គណនីឬលេខសំងាត់មិនត្រឹមត្រូវ"),
             })  
           }  
           return user
