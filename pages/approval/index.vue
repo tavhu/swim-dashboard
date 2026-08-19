@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { TwFeather } from "vue3-tailwind";
-import { KHMER_DIGIT } from "~~/shared/formPipeline";
 
 /**
  * ការអនុម័ត — everything waiting on this approver, across all six ទម្រង់.
@@ -98,7 +97,7 @@ const fmtDate = (d?: string | null) =>
             : 'border-gray-300 text-gray-600 hover:border-primary dark:border-gray-700 dark:text-gray-300'"
           @click="formFilter = f.form"
         >
-          {{ tr('ទម្រង់ទី') }}{{ KHMER_DIGIT[f.form] }} ({{ f.count }})
+          {{ f.label }} {{ tr(f.nameKh) }} ({{ f.count }})
         </button>
       </div>
 

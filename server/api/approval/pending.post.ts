@@ -1,59 +1,80 @@
-import { KHMER_DIGIT } from "../../../shared/formPipeline";
-
 /**
- * Everything waiting on a decision, across all six ទម្រង់, as one list.
+ * Everything waiting on a decision, as one list.
  *
  * Without this an approver has to go looking: open the client list, open a
  * client, open each form in turn, and see whether anything is amber. The work
  * they are responsible for was visible only one record at a time, which is not a
  * queue — it is a search.
  *
- * Six queries rather than one because the records live in six tables with
- * nothing in common but the approval columns. They run together and are merged
- * oldest-first, since the point of a queue is what has been waiting longest.
+ * One query per source rather than one overall, because the records live in
+ * separate tables with nothing in common but the approval columns. They run
+ * together and are merged oldest-first, since the point of a queue is what has
+ * been waiting longest.
  *
  * Scoped to the caller's centre like every other read. A ministry-level user has
  * no centre and sees all of them, which is what makes this useful at that level
  * too.
  */
 
-/** The six forms, and how to reach each record's own page from the queue. */
+/**
+ * Every approvable record type, and how to reach one from the queue.
+ *
+ * `label` is written out rather than derived from `form`: ការបញ្ជូន is not part
+ * of the ១-៦ sequence, and numbering it ៧ would claim a place in a pipeline it
+ * deliberately sits outside of.
+ */
 const SOURCES = [
   {
     form: 1,
+    label: "១",
     recordType: "CLIENT",
     nameKh: "ព័ត៌មានអតិថិជន",
     href: (r: any) => `/client/id/${r.id}`,
   },
   {
     form: 2,
+    label: "២",
     recordType: "CLIENT_SERVICE",
     nameKh: "ការប្រើសេវាកម្ម",
     href: (r: any) => `/client/service/view/${r.id}`,
   },
   {
     form: 3,
+    label: "៣",
     recordType: "CASE_PLAN",
     nameKh: "ផែនការករណី",
     href: (r: any) => `/client/case-plan/view/${r.id}`,
   },
   {
     form: 4,
+    label: "៤",
     recordType: "REINTEGRATION",
     nameKh: "សមាហរណកម្ម",
     href: (r: any) => `/client/reintegration/view/${r.id}`,
   },
   {
     form: 5,
+    label: "៥",
     recordType: "FOLLOW_UP",
     nameKh: "ការតាមដាន",
     href: (r: any) => `/client/follow-up/view/${r.id}`,
   },
   {
     form: 6,
+    label: "៦",
     recordType: "CASE_CLOSURE",
     nameKh: "ការបិទករណី",
     href: (r: any) => `/client/case-closure/view/${r.id}`,
+  },
+  {
+    // ការបញ្ជូន is not one of the six — it sits outside the pipeline — but it
+    // carries the same approval block, so it is the same work and belongs in the
+    // same queue. `form: 7` is a sort key here, not a place in the sequence.
+    form: 7,
+    label: "↗",
+    recordType: "REFERRAL",
+    nameKh: "ការបញ្ជូន",
+    href: (r: any) => `/client/referral/view/${r.id}`,
   },
 ] as const;
 
@@ -73,7 +94,7 @@ export default defineEventHandler(async (event) => {
 
   const client = { select: { id: true, ReadableCode: true, fullNameKH: true, photo: true } };
 
-  const [clients, services, plans, reints, follows, closures] = await Promise.all([
+  const [clients, services, plans, reints, follows, closures, referrals] = await Promise.all([
     prisma.client_PersonalInformation.findMany({
       where: { approvalStatus: "SUBMITTED", ...clientWhere },
       select: { id: true, ReadableCode: true, fullNameKH: true, photo: true, submittedAt: true, submittedByID: true },
@@ -84,6 +105,7 @@ export default defineEventHandler(async (event) => {
       prisma.reintegration,
       prisma.followUp,
       prisma.caseClosure,
+      prisma.referral,
     ].map((d: any) =>
       d.findMany({
         where: { approvalStatus: "SUBMITTED", ...episodeWhere },
@@ -92,7 +114,7 @@ export default defineEventHandler(async (event) => {
     ),
   ]);
 
-  const grouped = [clients, services, plans, reints, follows, closures];
+  const grouped = [clients, services, plans, reints, follows, closures, referrals];
 
   // One lookup for every submitter across all six lists, rather than per row.
   const ids = grouped.flat().map((r: any) => r.submittedByID).filter(Boolean);
@@ -116,7 +138,7 @@ export default defineEventHandler(async (event) => {
       return {
         id: r.id,
         form: src.form,
-        formLabel: `${KHMER_DIGIT[src.form]}`,
+        formLabel: src.label,
         formNameKh: src.nameKh,
         recordType: src.recordType,
         href: src.href(r),
@@ -141,6 +163,11 @@ export default defineEventHandler(async (event) => {
     data,
     total: data.length,
     /** Per-form counts, so the page can show where the backlog actually is. */
-    byForm: SOURCES.map((s, i) => ({ form: s.form, count: grouped[i].length })),
+    byForm: SOURCES.map((s, i) => ({
+      form: s.form,
+      label: s.label,
+      nameKh: s.nameKh,
+      count: grouped[i].length,
+    })),
   };
 });

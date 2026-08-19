@@ -53,6 +53,11 @@ export const CASE_PLAN_REFERRAL_FIELDS: FieldSpec = {
   optionalDates: ["startDate", "endDate"],
 };
 
+/** ការបញ្ជូន. No dates of its own; the consent box carries a default. */
+export const REFERRAL_FIELDS: FieldSpec = {
+  defaultedBooleans: ["consentObtained"],
+};
+
 /** Reintegration (ទម្រង់ទី៤). Its two service lists use the row spec below. */
 export const REINTEGRATION_FIELDS: FieldSpec = {
   optionalDates: ["handoverDate", "monitorDate", "nextMonitorDate"],

@@ -217,7 +217,10 @@
     "feedback": "មតិយោបល់",
     "feedbackWrite": "សរសេរមតិយោបល់",
     "feedbackList": "បញ្ជីមតិយោបល់",
-    "about": "អំពីយើង"
+    "about": "អំពីយើង",
+    "referral": "ការបញ្ជូន",
+    "referralList": "បញ្ជីការបញ្ជូន",
+    "referralTypes": "ប្រភេទសេវាបញ្ជូន"
   },
   "message": {
     "clientNotFound": "រកមិនឃើញអតិថិជននេះទេ",

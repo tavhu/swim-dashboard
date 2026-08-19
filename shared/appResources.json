@@ -211,5 +211,30 @@
     "route": "about",
     "group": "feedback",
     "nameKh": "អំពីយើង (កែសម្រួល)"
+  },
+  {
+    "route": "referral",
+    "group": "referral",
+    "nameKh": "ការបញ្ជូន"
+  },
+  {
+    "route": "referral-type",
+    "group": "referral",
+    "nameKh": "ប្រភេទសេវាបញ្ជូន (កំណត់)"
+  },
+  {
+    "route": "client-referral-clientId",
+    "group": "referral",
+    "nameKh": "ការបញ្ជូន (បញ្ជីតាមអតិថិជន)"
+  },
+  {
+    "route": "client-referral-form",
+    "group": "referral",
+    "nameKh": "ការបញ្ជូន បញ្ចូល/កែសម្រួល"
+  },
+  {
+    "route": "client-referral-view-id",
+    "group": "referral",
+    "nameKh": "ការបញ្ជូន មើលលម្អិត"
   }
 ]

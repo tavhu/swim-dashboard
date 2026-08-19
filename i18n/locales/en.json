@@ -217,7 +217,10 @@
     "feedback": "Feedback",
     "feedbackWrite": "Leave feedback",
     "feedbackList": "Feedback list",
-    "about": "About us"
+    "about": "About us",
+    "referral": "Referrals",
+    "referralList": "Referral list",
+    "referralTypes": "Referral service types"
   },
   "message": {
     "clientNotFound": "Client not found",

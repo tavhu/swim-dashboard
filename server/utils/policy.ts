@@ -56,6 +56,8 @@ export const RESOURCE = {
   approval: "approval",
   feedbackList: "feedback-list",
   about: "about",
+  referral: "referral",
+  referralType: "referral-type",
   // added for features built since
   organisation: "organisation",
   service: "service",
@@ -229,6 +231,34 @@ export const RULES: Rule[] = [
     mode: "permission",
     pattern: /^\/api\/user\/delete\/?$/,
     resource: RESOURCE.userList,
+    action: "write",
+  },
+
+  // --- referrals ------------------------------------------------------------
+  {
+    mode: "permission",
+    pattern: /^\/api\/client\/referral\/get\/?$/,
+    resource: RESOURCE.referral,
+    action: "read",
+  },
+  {
+    mode: "permission",
+    pattern: /^\/api\/client\/referral\/(upsert|approve|delete)\/?$/,
+    resource: RESOURCE.referral,
+    action: "write",
+  },
+  {
+    // The dropdown's source. Read is open to anyone who may see a referral form;
+    // maintaining the list is a separate, narrower right.
+    mode: "permission",
+    pattern: /^\/api\/referral-type\/?$/,
+    resource: RESOURCE.referral,
+    action: "read",
+  },
+  {
+    mode: "permission",
+    pattern: /^\/api\/referral-type\/(upsert|delete)\/?$/,
+    resource: RESOURCE.referralType,
     action: "write",
   },
 
