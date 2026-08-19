@@ -149,15 +149,21 @@ async function submitEdit() {
   validatorEdit.value.clearErrors();
   await validatorEdit.value.validate();
   if (validatorEdit.value.fail()) {
-
+    // Named, ringed and scrolled to — the same treatment ទម្រង់ទី១ gives a
+    // failed save. getErrorMessage() alone says "2 errors occurred", which
+    // names nothing on a form this long.
+    const failed: string[] = validatorEdit.value.getFailedFields?.() ?? [];
     toast.error({
-      message: validatorEdit.value.getErrorMessage(),
+      message: failed.length
+        ? t('message.fillIn', { fields: failed.map((f) => STAFF_FIELD_LABELS[f] ?? f).join(' / ') })
+        : validatorEdit.value.getErrorMessage(),
     });
-
     isErrorEdit.value = true;
     setTimeout(() => {
       isErrorEdit.value = false;
     }, 1000);
+    await nextTick();
+    scrollToFirstError();
     return true;
   }
 
@@ -244,16 +250,70 @@ onMounted(() => {
   }
 })
 
+const { t } = useI18n()
+
+/**
+ * Field name → the label the user actually sees, so a failed save can name the
+ * fields rather than their column names. ទម្រង់ទី១ does the same.
+ */
+const STAFF_FIELD_LABELS: Record<string, string> = {
+  firstNameKH: tr('នាមត្រកូល (ខ្មែរ)'),
+  lastNameKH: tr('នាមខ្លួន (ខ្មែរ)'),
+  firstNameEN: tr('នាមត្រកូល (ឡាតាំង)'),
+  lastNameEN: tr('នាមខ្លួន (ឡាតាំង)'),
+  firstName: tr('នាមត្រកូល'),
+  lastName: tr('នាមខ្លួន'),
+  serviceCenterID: tr('បុគ្គលិករបស់មណ្ឌល'),
+}
+
+/**
+ * The មណ្ឌល a staff member belongs to.
+ *
+ * Asked the same two ways ទម្រង់ទី១ asks it. An officer attached to a centre is
+ * not choosing one — theirs comes from their own account via /api/center/mine,
+ * which any signed-in user may call. A ministry-level user is genuinely
+ * choosing and gets the full list, which needs the centre-list right.
+ *
+ * The select used to render only `v-if="prop.serviceCenterID"`, and the staff
+ * page passes null — so on /center/staff the field never appeared at all. A
+ * national user had no way to say which centre the person worked at, and the
+ * record saved with no centre.
+ */
+const { data: ownCentre } = await useFetch<{ data: ServiceCenter | null }>('/api/center/mine')
+
 const { data } = await useFetch<{ data: ServiceCenter[] }>('/api/center/get', {
-  method: 'POST'
+  method: 'POST',
+  // Skipped for a centre user: they already have their answer, and this call
+  // would 403 for a role that may manage staff but not browse every centre.
+  immediate: !ownCentre.value?.data,
 })
 
-let serviceCenterList: any = []
-data.value?.data.forEach(ele => {
-  serviceCenterList.push({
-    label: ele.nameKH,
-    value: ele.id
-  })
+/** Computed, not built once: the fetches settle after setup runs. */
+const serviceCenterList = computed(() => {
+  const own = ownCentre.value?.data
+  if (own) return [{ label: own.nameKH, value: own.id }]
+  return (data.value?.data ?? []).map((ele) => ({ label: ele.nameKH, value: ele.id }))
+})
+
+/**
+ * A user who belongs to one centre does not pick it. Locked rather than hidden,
+ * so the form shows the same field to everyone and the value is visible.
+ * The server forces it regardless of what the body says.
+ */
+const boundToOneCentre = computed(() => !!ownCentre.value?.data)
+
+/**
+ * Fill the centre in for a user who only has one, on whichever of the two forms
+ * is open. watchEffect rather than a plain assignment because the centre fetch
+ * and the record fetch both settle after setup; it only ever fills a blank, so
+ * editing an existing staff member never has their centre overwritten.
+ */
+watchEffect(() => {
+  if (!boundToOneCentre.value) return
+  const own = serviceCenterList.value[0]?.value
+  if (!own) return
+  if (!formDataEdit.serviceCenterID) formDataEdit.serviceCenterID = own
+  if (!formDataEditOfficial.serviceCenterID) formDataEditOfficial.serviceCenterID = own
 })
 
 const SelectWorkEXP = ref(true)
@@ -763,13 +823,19 @@ async function submitEditOfficial() {
   validatorEditOfficial.value.clearErrors();
   await validatorEditOfficial.value.validate();
   if (validatorEditOfficial.value.fail()) {
+    const failed: string[] = validatorEditOfficial.value.getFailedFields?.() ?? [];
     toast.error({
-      message: validatorEditOfficial.value.getErrorMessage(),
+      message: failed.length
+        ? t('message.fillIn', { fields: failed.map((f) => STAFF_FIELD_LABELS[f] ?? f).join(' / ') })
+        : validatorEditOfficial.value.getErrorMessage(),
     });
-    isErrorEdit.value = true;
+    // Was isErrorEdit — the contract form's flag — so this form never shook.
+    isErrorEditOfficial.value = true;
     setTimeout(() => {
-      isErrorEdit.value = false;
+      isErrorEditOfficial.value = false;
     }, 1000);
+    await nextTick();
+    scrollToFirstError();
     return true;
   }
 
@@ -971,7 +1037,7 @@ watch(SelectedCityValue, () => {
           </div>
           <div>
             <h2 class=" font-[Moul]">{{ tr('ក.ព័ត៌មានផ្ទាល់ខ្លួន') }}</h2>
-            <TwForm :name="formNameEditOfficial"
+            <TwForm novalidate :name="formNameEditOfficial"
               class="grid grid-cols-12 gap-2 bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded-lg p-2 shadow"
               :class="{
                 'tw-shake': isErrorEditOfficial,
@@ -994,40 +1060,45 @@ watch(SelectedCityValue, () => {
               <div class="col-span-4">
               </div>
 
-              <div class="col-span-12" v-if="prop.serviceCenterID">
-                <TwSelect :label="tr('បុគ្គលិករបស់មណ្ឌល')" name="serviceCenterID" v-model="formDataEdit.serviceCenterID"
-                  required :items="serviceCenterList" :placeholder="tr('សូមជ្រើសរើស')" />
+              <!-- Always shown: every staff member belongs to a centre, and the
+                   page that hosts this form passes no centre of its own. -->
+              <div class="col-span-12">
+                <TwSelect :label="tr('បុគ្គលិករបស់មណ្ឌល')" name="serviceCenterID"
+                  v-model="formDataEditOfficial.serviceCenterID" required :items="serviceCenterList"
+                  :disabled="readOnly || boundToOneCentre" :placeholder="tr('សូមជ្រើសរើស')" />
                 <CustomErrorMessage name="serviceCenterID" />
               </div>
-              <div class="col-span-12" v-else-if="prop.organisationID">
+              <!-- Dormant: no caller passes organisationID today. Independent of the
+                   centre select above, which now always shows. -->
+              <div class="col-span-12" v-if="prop.organisationID">
                 <TwSelect :label="tr('អង្គភាព')" name="organisationID" v-model="formDataEdit.organisationID" required
                   :items="organisationList" :placeholder="tr('សូមជ្រើសរើស')" />
                 <CustomErrorMessage name="organisationID" />
               </div>
 
               <div class="col-span-12 lg:col-span-4">
-                <TwInput :label="tr('គោត្តនាម')" name="lastNameKH" v-model="formDataEditOfficial.lastNameKH"
+                <TwInput :label="tr('គោត្តនាម')" name="lastNameKH" required v-model="formDataEditOfficial.lastNameKH"
                   :placeholder="tr('គោត្តនាមជាភាសារខ្មែរ')" type="text" />
                 <CustomErrorMessage name="lastNameKH" />
               </div>
               <div class="col-span-12 lg:col-span-4">
-                <TwInput :label="tr('នាមខ្លួន')" name="firstNameKH" v-model="formDataEditOfficial.firstNameKH"
+                <TwInput :label="tr('នាមខ្លួន')" name="firstNameKH" required v-model="formDataEditOfficial.firstNameKH"
                   :placeholder="tr('នាមខ្លួនជាភាសារខ្មែរ')" type="text" />
                 <CustomErrorMessage name="firstNameKH" />
               </div>
               <div class="col-span-4 ">
-                <TwSelect :label="tr('ភេទ')" name="formDataEditOfficialgender" v-model="formDataEditOfficial.gender" required
+                <TwSelect :label="tr('ភេទ')" name="gender" v-model="formDataEditOfficial.gender" required
                   :items="[{ value: 'ប្រុស', label: tr('ប្រុស') }, { value: 'ស្រី', label: tr('ស្រី') }, { value: 'ផ្សេងៗ', label: tr('ផ្សេងៗ') }]"
                   :placeholder="tr('សូមជ្រើសរើស')" />
-                <CustomErrorMessage name="formDataEditOfficialgender" />
+                <CustomErrorMessage name="gender" />
               </div>
               <div class="col-span-12 lg:col-span-6">
-                <TwInput :label="tr('គោត្តនាម')" name="lastNameEN" v-model="formDataEditOfficial.lastNameEN"
+                <TwInput :label="tr('គោត្តនាម')" name="lastNameEN" required v-model="formDataEditOfficial.lastNameEN"
                   :placeholder="tr('គោត្តនាមជាភាសារអង់គ្លេស')" type="text" />
                 <CustomErrorMessage name="lastNameEN" />
               </div>
               <div class="col-span-12 lg:col-span-6">
-                <TwInput :label="tr('នាមខ្លួន')" name="firstNameEN" v-model="formDataEditOfficial.firstNameEN"
+                <TwInput :label="tr('នាមខ្លួន')" name="firstNameEN" required v-model="formDataEditOfficial.firstNameEN"
                   :placeholder="tr('នាមខ្លួនជាភាសារអង់គ្លេស')" type="text" />
                 <CustomErrorMessage name="firstNameEN" />
               </div>
@@ -1062,7 +1133,7 @@ watch(SelectedCityValue, () => {
               </div>
 
               <div class="col-span-12 lg:col-span-6">
-                <TwSelect :disabled="readOnly" :label="tr('រាជធានី/ខេត្ត')" name="city"
+                <TwSelect :disabled="readOnly" :label="tr('រាជធានី/ខេត្ត')" name="birthCity"
                   v-model="formDataEditOfficial.birthCity" required :items="cityList" :placeholder="tr('សូមជ្រើសរើស')" />
                 <CustomErrorMessage name="type" />
               </div>
@@ -1345,26 +1416,26 @@ watch(SelectedCityValue, () => {
                 <div>
                   <TwInput :label="tr('វគ្គឬកម្រិតសិក្សា')" required v-model="item.couseLevel" :placeholder="tr('វគ្គឬកម្រិតសិក្សា')"
                     type="text" />
-                  <CustomErrorMessage name="CurrentRank" />
+                  <CustomErrorMessage name="couseLevel" />
                 </div>
                 <div>
                   <TwInput :label="tr('គ្រឹះស្ថានសិក្សាបណ្តុះបណ្តាល')" required v-model="item.SchoolName"
                     :placeholder="tr('គ្រឹះស្ថានសិក្សាបណ្តុះបណ្តាល')" type="text" />
-                  <CustomErrorMessage name="CurrentRank" />
+                  <CustomErrorMessage name="SchoolName" />
                 </div>
                 <div>
                   <TwInput :label="tr('រាជធានីខេត្តឬប្រទេស')" required v-model="item.SchoolLocation"
                     :placeholder="tr('រាជធានីខេត្តឬប្រទេស')" type="text" />
-                  <CustomErrorMessage name="CurrentRank" />
+                  <CustomErrorMessage name="SchoolLocation" />
                 </div>
                 <div>
                   <TwInput :label="tr('សញ្ញាបត្រ')" required v-model="item.CertificateLevel" :placeholder="tr('សញ្ញាបត្រ')"
                     type="text" />
-                  <CustomErrorMessage name="CurrentRank" />
+                  <CustomErrorMessage name="CertificateLevel" />
                 </div>
                 <div>
                   <TwInput :label="tr('ជំនាញ')" required v-model="item.majoring" :placeholder="tr('ជំនាញ')" type="text" />
-                  <CustomErrorMessage name="CurrentRank" />
+                  <CustomErrorMessage name="majoring" />
                 </div>
                 <div>
                   <label for="">{{ tr('ថ្ងៃខែឆ្នាំចូលសិក្សា') }}</label>
@@ -1413,7 +1484,7 @@ watch(SelectedCityValue, () => {
                 :key="index">
                 <div>
                   <TwInput :label="tr('ភាសាបរទេស')" required v-model="item.langName" :placeholder="tr('ភាសាបរទេស')" type="text" />
-                  <CustomErrorMessage name="CurrentRank" />
+                  <CustomErrorMessage name="langName" />
                 </div>
                 <div>
                   <TwSelect :label="tr('ការអាន')" v-model="item.read" required
@@ -1884,7 +1955,7 @@ watch(SelectedCityValue, () => {
             <h2 class="font-[Moul]">{{ tr('ជីវប្រវត្តិសង្ខេប') }}</h2>
           </div>
           <h2 class="font-[Moul]">{{ tr('ក.ព័ត៌មានផ្ទាល់ខ្លួន') }}</h2>
-          <TwForm :name="formNameEdit"
+          <TwForm novalidate :name="formNameEdit"
             class="grid grid-cols-12 gap-2 bg-white dark:bg-gray-900 dark:border dark:border-gray-700 rounded-lg p-2 shadow"
             :class="{
               'tw-shake': isErrorEdit,
@@ -1905,12 +1976,15 @@ watch(SelectedCityValue, () => {
             </div>
             <div class="col-span-4">
             </div>
-            <div class="col-span-12" v-if="prop.serviceCenterID">
+            <div class="col-span-12">
               <TwSelect :label="tr('បុគ្គលិករបស់មណ្ឌល')" name="serviceCenterID" v-model="formDataEdit.serviceCenterID" required
-                :items="serviceCenterList" :placeholder="tr('សូមជ្រើសរើស')" />
+                :items="serviceCenterList" :disabled="readOnly || boundToOneCentre"
+                :placeholder="tr('សូមជ្រើសរើស')" />
               <CustomErrorMessage name="serviceCenterID" />
             </div>
-            <div class="col-span-12" v-else-if="prop.organisationID">
+            <!-- Dormant: no caller passes organisationID today. Independent of the
+                   centre select above, which now always shows. -->
+              <div class="col-span-12" v-if="prop.organisationID">
               <TwSelect :label="tr('អង្គភាព')" name="organisationID" v-model="formDataEdit.organisationID" required
                 :items="organisationList" :placeholder="tr('សូមជ្រើសរើស')" />
               <CustomErrorMessage name="organisationID" />
@@ -1918,12 +1992,12 @@ watch(SelectedCityValue, () => {
 
 
             <div class="col-span-12 lg:col-span-3 ">
-              <TwInput :label="tr('នាមខ្លួន')" name="firstName" v-model="formDataEdit.firstName" :placeholder="tr('បញ្ចូលឈ្មោះ')"
+              <TwInput :label="tr('នាមខ្លួន')" name="firstName" required v-model="formDataEdit.firstName" :placeholder="tr('បញ្ចូលឈ្មោះ')"
                 type="text" />
               <CustomErrorMessage name="firstName" />
             </div>
             <div class="col-span-12 lg:col-span-3 ">
-              <TwInput :label="tr('នាមត្រកូល')" name="lastName" v-model="formDataEdit.lastName" :placeholder="tr('បញ្ចូលនាមត្រកូល')"
+              <TwInput :label="tr('នាមត្រកូល')" name="lastName" required v-model="formDataEdit.lastName" :placeholder="tr('បញ្ចូលនាមត្រកូល')"
                 type="text" />
               <CustomErrorMessage name="lastName" />
             </div>
@@ -1934,14 +2008,14 @@ watch(SelectedCityValue, () => {
               <CustomErrorMessage name="gender" />
             </div>
             <div class="col-span-12 lg:col-span-3 ">
-              <TwInput :label="tr('សញ្ជាតិ')" name="lastName" v-model="formDataEdit.nationality" :placeholder="tr('បញ្ចូលនាមត្រកូល')"
+              <TwInput :label="tr('សញ្ជាតិ')" name="nationality" v-model="formDataEdit.nationality" :placeholder="tr('បញ្ចូលនាមត្រកូល')"
                 type="text" />
-              <CustomErrorMessage name="lastName" />
+              <CustomErrorMessage name="nationality" />
             </div>
             <div class="col-span-12 lg:col-span-6 ">
-              <TwInput :label="tr('អក្សរពុម្ភឡាតាំង')" name="lastName" v-model="formDataEdit.fullnameEN"
+              <TwInput :label="tr('អក្សរពុម្ភឡាតាំង')" name="fullnameEN" v-model="formDataEdit.fullnameEN"
                 :placeholder="tr('បញ្ចូលនាមត្រកូល')" type="text" />
-              <CustomErrorMessage name="lastName" />
+              <CustomErrorMessage name="fullnameEN" />
             </div>
             <div class="col-span-12 lg:col-span-6">
               <label for="">{{ tr('ខែឆ្នាំកំណើត') }}</label>
@@ -1956,9 +2030,9 @@ watch(SelectedCityValue, () => {
               ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
             </div>
             <div class="col-span-12 lg:col-span-6">
-              <TwInput :label="tr('កម្រិតវប្បធម៌')" name="lastName" v-model="formDataEdit.currentQualification"
+              <TwInput :label="tr('កម្រិតវប្បធម៌')" name="currentQualification" v-model="formDataEdit.currentQualification"
                 :placeholder="tr('បញ្ចូលនាមត្រកូល')" type="text" />
-              <CustomErrorMessage name="lastName" />
+              <CustomErrorMessage name="currentQualification" />
             </div>
             <div class="col-span-12 lg:col-span-6">
               <label for="">{{ tr('ខែឆ្នាំកំណើត') }}</label>
@@ -1973,9 +2047,9 @@ watch(SelectedCityValue, () => {
               ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
             </div>
             <div class="col-span-12 ">
-              <TwInput :label="tr('ទីកន្លែងកំណើត')" name="lastName" v-model="formDataEdit.birthAddress"
+              <TwInput :label="tr('ទីកន្លែងកំណើត')" name="birthAddress" v-model="formDataEdit.birthAddress"
                 :placeholder="tr('# ផ្លូវ ភូមិ ឃុំ/សង្កាត់ ស្រុក/ខណ្ឌ រាជធានី/ខេត្ត')" type="text" />
-              <CustomErrorMessage name="lastName" />
+              <CustomErrorMessage name="birthAddress" />
             </div>
             <div class="col-span-12">
               <label class="font-bold">{{ tr('លេខអត្តសញ្ញាណប័ណ្ណខ្មែរ ឬលិខិតឆ្លងដែន') }}</label>
@@ -1983,20 +2057,20 @@ watch(SelectedCityValue, () => {
                 :key="methods.value" v-model="SelectSIDOption" v-bind="methods" />
             </div>
             <div class="col-span-12 lg:col-span-6" v-if="SelectSIDOption == SIDOption[0].value">
-              <TwInput :label="tr('លេខអត្តសញ្ញាណប័ណ្ណខ្មែរ')" name="lastName" v-model="formDataEdit.sID"
+              <TwInput :label="tr('លេខអត្តសញ្ញាណប័ណ្ណខ្មែរ')" name="sID" v-model="formDataEdit.sID"
                 :placeholder="tr('លេខអត្តសញ្ញាណប័ណ្ណខ្មែរ')" type="text" />
-              <CustomErrorMessage name="lastName" />
+              <CustomErrorMessage name="sID" />
             </div>
             <div class="col-span-12 lg:col-span-6" v-else>
-              <TwInput :label="tr('លិខិតឆ្លងដែន')" name="lastName" v-model="formDataEdit.passport" :placeholder="tr('លិខិតឆ្លងដែន')"
+              <TwInput :label="tr('លិខិតឆ្លងដែន')" name="passport" v-model="formDataEdit.passport" :placeholder="tr('លិខិតឆ្លងដែន')"
                 type="text" />
-              <CustomErrorMessage name="lastName" />
+              <CustomErrorMessage name="passport" />
             </div>
             <div class="col-span-12 ">
-              <TwInput :label="tr('ចូលបម្រើការងារជាបុគ្គលិកកិច្ចសន្យានៅ')" name="lastName"
+              <TwInput :label="tr('ចូលបម្រើការងារជាបុគ្គលិកកិច្ចសន្យានៅ')" name="workingContractAt"
                 v-model="formDataEdit.workingContractAt" :placeholder="tr('ចូលបម្រើការងារជាបុគ្គលិកកិច្ចសន្យានៅ')"
                 type="text" />
-              <CustomErrorMessage name="lastName" />
+              <CustomErrorMessage name="workingContractAt" />
             </div>
             <div class="col-span-12">
               <label class="font-[Moul]">{{ tr('បទពិសោធន៍ការងារ៖') }}</label>
@@ -2004,23 +2078,23 @@ watch(SelectedCityValue, () => {
                 :key="index" v-model="SelectWorkEXP" v-bind="methods" />
             </div>
             <div class="col-span-12 lg:col-span-6" v-if="SelectWorkEXP == true">
-              <TwInput :label="tr('បំពេញការងារជាមន្រ្តីជាប់កិច្ចសន្យានៅ')" name="lastName" v-model="formDataEdit.workingEXPYes"
+              <TwInput :label="tr('បំពេញការងារជាមន្រ្តីជាប់កិច្ចសន្យានៅ')" name="workingEXPYes" v-model="formDataEdit.workingEXPYes"
                 :placeholder="tr('បំពេញការងារជាមន្រ្តីជាប់កិច្ចសន្យានៅ')" type="text" />
-              <CustomErrorMessage name="lastName" />
+              <CustomErrorMessage name="workingEXPYes" />
             </div>
             <div class="col-span-12">
               <h2 class="font-[Moul]">{{ tr('ខ.ព័ត៌មានគ្រួសារ') }}</h2>
             </div>
             <div class="col-span-12 lg:col-span-6">
-              <TwInput :label="tr('អាសយដ្ឋានបច្ចុប្បន្ន')" name="lastName" v-model="formDataEdit.familyAddress"
+              <TwInput :label="tr('អាសយដ្ឋានបច្ចុប្បន្ន')" name="familyAddress" v-model="formDataEdit.familyAddress"
                 :placeholder="tr('# ផ្លូវ ភូមិ ឃុំ/សង្កាត់ ស្រុក/ខណ្ឌ រាជធានី/ខេត្ត')" type="text" />
             </div>
             <div class="col-span-12 lg:col-span-6">
-              <TwInput :label="tr('លេខទូរស័ព្ទ')" name="lastName" v-model="formDataEdit.familyPhoneNumber"
+              <TwInput :label="tr('លេខទូរស័ព្ទ')" name="familyPhoneNumber" v-model="formDataEdit.familyPhoneNumber"
                 :placeholder="tr('លេខទូរស័ព្ទ')" type="text" />
             </div>
             <div class="col-span-12 lg:col-span-6">
-              <TwInput :label="tr('អ៊ីម៉ែល')" name="lastName" v-model="formDataEdit.familyEmail" :placeholder="tr('អ៊ីម៉ែល')"
+              <TwInput :label="tr('អ៊ីម៉ែល')" name="familyEmail" v-model="formDataEdit.familyEmail" :placeholder="tr('អ៊ីម៉ែល')"
                 type="text" />
             </div>
 

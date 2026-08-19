@@ -14,6 +14,13 @@ export default eventHandler(async (event) => {
     setResponseStatus(event, 400);
     return { error: `Missing or invalid: ${missing.join(', ')}`, fields: missing };
   }
+
+  // បុគ្គលិករដ្ឋ belong to a centre, so a centre-bound user files them under
+  // their own and nowhere else — the body does not get to say otherwise. The
+  // contract-staff endpoint has done this since the centre scoping went in;
+  // this one was taking serviceCenterID straight from the request.
+  const centreID = await resolveWriteCentre(event, body?.serviceCenterID);
+
   try {
     const result = await event.context.prisma.governStaff.update({
       where: {
@@ -93,7 +100,7 @@ export default eventHandler(async (event) => {
         DateWentFullTime: body?.DateWentFullTime,
         CurrentRank: body?.CurrentRank,
         OfficialLevelKH: body?.OfficialLevelKH,
-        serviceCenterID: body?.serviceCenterID,
+        serviceCenterID: centreID,
       },
     });
 

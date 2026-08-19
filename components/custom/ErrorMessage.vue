@@ -23,6 +23,10 @@ defineProps<{
 function localise(raw: string): string {
   const s = String(raw);
   if (/is required/i.test(s)) return tr("ត្រូវការបំពេញ");
+  // vue3-tailwind's type rules read "The <field> must be string" — the column
+  // name and an English sentence, in a Khmer form. The rule that matters to the
+  // reader is the same one "required" states.
+  if (/must be (a )?string/i.test(s)) return tr("ត្រូវការបំពេញ");
   if (/must be a number|numeric/i.test(s)) return tr("ត្រូវតែជាលេខ");
   if (/valid email/i.test(s)) return tr("អាសយដ្ឋានអ៊ីមែលមិនត្រឹមត្រូវ");
   if (/at least|minimum|min:/i.test(s)) return tr("ខ្លីជាងកំណត់");

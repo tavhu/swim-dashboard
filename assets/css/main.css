@@ -190,6 +190,16 @@ label:has(~ :is(input, select, textarea)[required])::before {
   box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.18) !important;
 }
 
+/* TwSelect and TwMultiSelect are not <select> — they render a div wrapper with
+   the control inside, and put data-error on that wrapper. Without this a
+   dropdown that failed validation stayed grey while the text fields beside it
+   turned red, on every form in the app. */
+div[data-error="true"] {
+  border-radius: 0.25rem;
+  border-color: #dc2626 !important;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.18) !important;
+}
+
 .field-invalid > label,
 .field-invalid label:first-of-type {
   color: #dc2626;
