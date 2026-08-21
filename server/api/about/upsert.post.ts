@@ -1,21 +1,23 @@
 /**
- * Write the អំពីយើង page.
- *
- * Write on the `about` resource, which the ministry grants — in practice to
- * Super Admin, but expressed as a grant rather than hard-coded so it can be
- * delegated without a code change.
- *
- * The id is fixed to the constant the model defaults to. Taking it from the body
- * would let a caller create a second About page that nothing reads.
+ * Write the អំពីយើង page (both languages).
+ * Write permission is required on the `about` resource.
  */
 export default defineEventHandler(async (event) => {
   const caller = await getAuthUser(event);
   const body = await readBody(event);
 
-  const title = String(body?.title ?? "").trim() || null;
-  const content = String(body?.content ?? "").trim() || null;
+  const titleKh = String(body?.titleKh ?? "").trim() || null;
+  const titleEn = String(body?.titleEn ?? "").trim() || null;
+  const contentKh = String(body?.contentKh ?? "").trim() || null;
+  const contentEn = String(body?.contentEn ?? "").trim() || null;
 
-  const data = { title, content, updatedByID: caller?.id ?? null };
+  const data = {
+    titleKh,
+    titleEn,
+    contentKh,
+    contentEn,
+    updatedByID: caller?.id ?? null,
+  };
 
   const row = await event.context.prisma.aboutPage.upsert({
     where: { id: "about" },

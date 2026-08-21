@@ -1255,8 +1255,10 @@ model Feedback {
 /// it was written in.
 model AboutPage {
   id          String   @id @default("about")
-  title       String?
-  content     String?
+  titleKh     String?
+  titleEn     String?
+  contentKh   String?
+  contentEn   String?
   updatedAt   DateTime @updatedAt
   updatedByID String?
 
