@@ -52,6 +52,15 @@ export default eventHandler(async (event) => {
 
     await delegate.delete({ where: { id } });
 
+    const { writeActivityLog } = await import("../../../utils/activityLog");
+    await writeActivityLog(event, {
+      action: "DELETE",
+      entityType: isContract ? "STAFF" : "GOVERN_STAFF",
+      entityId: id,
+      summary: `Deleted ${isContract ? "contract" : "civil-servant"} staff record`,
+      serviceCenterID: record.serviceCenterID,
+    });
+
     setResponseStatus(event, 201);
     return { message: "delete success" };
   } catch (e: any) {

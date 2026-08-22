@@ -1,4 +1,5 @@
 import { getServerSession } from "#auth";
+import { writeActivityLog } from "../../utils/activityLog";
 
 export default eventHandler(async (event) => {
   const session = await getServerSession(event);
@@ -18,6 +19,15 @@ export default eventHandler(async (event) => {
     setResponseStatus(event, 403);
     return { error: errorMessage(event, "អ្នកមិនមានសិទ្ធិលើមជ្ឈមណ្ឌលនេះទេ") };
   }
+
+  // An id that names an existing row is an update; anything else creates.
+  const existing = body?.id
+    ? await event.context.prisma.serviceCenter.findUnique({
+        where: { id: body.id },
+        select: { id: true },
+      })
+    : null;
+  const isUpdate = !!existing;
 
   try {
     await event.context.prisma.serviceCenter.upsert({
@@ -74,6 +84,13 @@ export default eventHandler(async (event) => {
         status: body?.status,
         organisationID: body?.organisationID,
       },
+    });
+
+    await writeActivityLog(event, {
+      action: isUpdate ? "UPDATE" : "CREATE",
+      entityType: "CENTER",
+      entityId: body?.id ?? null,
+      summary: `${isUpdate ? "Updated" : "Created"} centre ${body?.nameKH || body?.nameEN || ""}`.trim(),
     });
     // console.log(res)
     //@ts-ignored

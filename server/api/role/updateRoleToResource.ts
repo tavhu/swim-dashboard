@@ -10,6 +10,7 @@
  * mistake.
  */
 import { SUPER_ADMIN_ROLE } from "../../utils/roleGuard";
+import { writeActivityLog } from "../../utils/activityLog";
 
 export default eventHandler(async (event) => {
   const caller = await requireAuth(event);
@@ -42,6 +43,19 @@ export default eventHandler(async (event) => {
       where: { roleID_resourceID: { resourceID: body?.resourceID, roleID: body?.roleID } },
       update: { granted, read },
       create: { roleID: body?.roleID, resourceID: body?.resourceID, granted, read },
+    });
+
+    // Permission changes are exactly what an audit log exists for.
+    const roleName = await event.context.prisma.role.findUnique({
+      where: { id: body?.roleID },
+      select: { name: true },
+    });
+    await writeActivityLog(event, {
+      action: "UPDATE",
+      entityType: "ROLE",
+      entityId: body?.roleID,
+      summary: `Set permission on permission grid: ${granted ? "granted" : "denied"} for role ${roleName?.name ?? body?.roleID}`,
+      metadata: { resourceID: body?.resourceID, granted, read },
     });
 
     setResponseStatus(event, 201);

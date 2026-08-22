@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { writeActivityLog } from '../../utils/activityLog';
 
 const prisma = new PrismaClient();
 
@@ -13,9 +14,18 @@ export default defineEventHandler(async (event) => {
       });
     }
 
+    const service = await prisma.service.findUnique({ where: { id: serviceId }, select: { nameEn: true, nameKh: true } });
+
     await prisma.service.update({
       where: { id: serviceId },
       data: { isActive: false },
+    });
+
+    await writeActivityLog(event, {
+      action: 'DELETE',
+      entityType: 'SERVICE',
+      entityId: serviceId,
+      summary: `Deactivated service ${service?.nameEn || service?.nameKh || serviceId}`,
     });
 
     return {

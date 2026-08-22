@@ -1,4 +1,5 @@
 import { getServerSession } from "#auth";
+import { writeActivityLog } from "../../utils/activityLog";
 
 export default eventHandler(async (event) => {
   const session = await getServerSession(event);
@@ -20,10 +21,22 @@ export default eventHandler(async (event) => {
   }
 
   try {
+    const centre = await event.context.prisma.serviceCenter.findUnique({
+      where: { id: body?.id },
+      select: { nameKH: true, nameEN: true },
+    });
+
     await event.context.prisma.serviceCenter.delete({
       where: {
         id: body?.id,
       },
+    });
+
+    await writeActivityLog(event, {
+      action: "DELETE",
+      entityType: "CENTER",
+      entityId: body?.id,
+      summary: `Deleted centre ${centre?.nameKH || centre?.nameEN || body?.id}`,
     });
     //@ts-ignored
     setResponseStatus(event, 201);

@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { writeActivityLog } from '../../utils/activityLog';
 
 const prisma = new PrismaClient();
 
@@ -32,6 +33,13 @@ export default defineEventHandler(async (event) => {
       });
       message = 'Service created successfully.';
     }
+
+    await writeActivityLog(event, {
+      action: id ? 'UPDATE' : 'CREATE',
+      entityType: 'SERVICE',
+      entityId: service.id,
+      summary: `${id ? 'Updated' : 'Created'} service ${data.nameEn || data.nameKh}`,
+    });
 
     return {
       statusCode: 200,

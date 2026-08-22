@@ -1,4 +1,5 @@
 import { getServerSession } from "#auth";
+import { writeActivityLog } from "../../../utils/activityLog";
 
 export default eventHandler(async (event) => {
   const session = await getServerSession(event);
@@ -15,7 +16,7 @@ export default eventHandler(async (event) => {
   const centreID = await resolveWriteCentre(event, body?.serviceCenterID);
 
   try {
-    await event.context.prisma.staff.upsert({
+    const result = await event.context.prisma.staff.upsert({
       where: {
         id: body?.id,
       },
@@ -81,6 +82,14 @@ export default eventHandler(async (event) => {
         familyEmail: body?.familyEmail,
         serviceCenterID: centreID,
       },
+    });
+
+    await writeActivityLog(event, {
+      action: body?.id ? "UPDATE" : "CREATE",
+      entityType: "STAFF",
+      entityId: result.id,
+      summary: `${body?.id ? "Updated" : "Created"} contract staff ${[body?.firstName, body?.lastName].filter(Boolean).join(" ") || body?.fullnameEN || ""}`.trim(),
+      serviceCenterID: centreID,
     });
     //@ts-ignored
     setResponseStatus(event, 201);

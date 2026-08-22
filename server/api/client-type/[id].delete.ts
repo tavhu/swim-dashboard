@@ -10,7 +10,6 @@
 export default eventHandler(async (event) => {
   const prisma = event.context.prisma;
   const id = event.context.params?.id;
-
   if (!id) {
     throw createError({ statusCode: 400, statusMessage: "សូមបញ្ជាក់ប្រភេទអតិថិជន" });
   }
@@ -19,6 +18,15 @@ export default eventHandler(async (event) => {
     const inUse = await prisma.clientService.count({ where: { clientTypeId: id } });
 
     await prisma.clientType.update({ where: { id }, data: { isActive: false } });
+
+    const { writeActivityLog } = await import("../../utils/activityLog");
+    await writeActivityLog(event, {
+      action: "DELETE",
+      entityType: "CLIENT_TYPE",
+      entityId: id,
+      summary: "Retired a ប្រភេទអតិថិជន (client type)",
+      metadata: { inUse },
+    });
 
     return {
       statusCode: 200,

@@ -1,4 +1,5 @@
 import { assertRoleAdmin, SUPER_ADMIN_ROLE } from "../../utils/roleGuard";
+import { writeActivityLog } from "../../utils/activityLog";
 
 /**
  * Creates a role. Only Super Admin may, and the Super Admin name is reserved —
@@ -26,6 +27,11 @@ export default eventHandler(async (event) => {
       data: { name, description: body?.description },
     });
     setResponseStatus(event, 201);
+    await writeActivityLog(event, {
+      action: "CREATE",
+      entityType: "ROLE",
+      summary: `Created role ${name}`,
+    });
     return { message: "Role created" };
   } catch (e: any) {
     if (e?.code === "P2002") {

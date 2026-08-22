@@ -25,8 +25,22 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
+    const plan = await prisma.centerPlan.findUnique({
+      where: { id },
+      select: { serviceCenterID: true, yearPlan: true },
+    });
+
     await prisma.centerPlan.delete({
       where: { id },
+    });
+
+    const { writeActivityLog } = await import("../../../../utils/activityLog");
+    await writeActivityLog(event, {
+      action: "DELETE",
+      entityType: "CENTER",
+      entityId: id,
+      summary: `Deleted centre plan${plan?.yearPlan ? ` for year ${plan.yearPlan}` : ""}`,
+      serviceCenterID: plan?.serviceCenterID ?? null,
     });
 
     return {

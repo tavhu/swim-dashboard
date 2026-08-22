@@ -1,4 +1,5 @@
 import { getServerSession } from "#auth";
+import { writeActivityLog } from "../../../utils/activityLog";
 
 export default eventHandler(async (event) => {
   const session = await getServerSession(event);
@@ -162,6 +163,15 @@ export default eventHandler(async (event) => {
 
     //@ts-ignored
     setResponseStatus(event, 201);
+
+    await writeActivityLog(event, {
+      action: "CREATE",
+      entityType: "GOVERN_STAFF",
+      entityId: result.id,
+      summary: `Created civil-servant staff ${[body?.firstNameKH, body?.lastNameKH].filter(Boolean).join(" ") || body?.firstNameEN || ""}`.trim(),
+      serviceCenterID: centreID,
+    });
+
     return { message: "User Update or Created", id: result.id };
   } catch (e: any) {
     console.log(e);

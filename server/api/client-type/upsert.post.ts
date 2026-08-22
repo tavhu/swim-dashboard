@@ -13,7 +13,6 @@ export default eventHandler(async (event) => {
   try {
     const body = await readBody(event);
     const { id } = body ?? {};
-
     const nameKh = String(body?.nameKh ?? "").trim();
     if (!nameKh) {
       throw createError({ statusCode: 400, statusMessage: "សូមបញ្ចូលឈ្មោះប្រភេទអតិថិជន" });
@@ -41,6 +40,14 @@ export default eventHandler(async (event) => {
     const row = id
       ? await prisma.clientType.update({ where: { id }, data })
       : await prisma.clientType.create({ data });
+
+    const { writeActivityLog } = await import("../../utils/activityLog");
+    await writeActivityLog(event, {
+      action: id ? "UPDATE" : "CREATE",
+      entityType: "CLIENT_TYPE",
+      entityId: row.id,
+      summary: `${id ? "Updated" : "Created"} ប្រភេទអតិថិជន ${nameKh}`,
+    });
 
     return { statusCode: 200, data: row };
   } catch (e: any) {

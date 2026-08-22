@@ -1,5 +1,6 @@
 import { hash } from "bcrypt";
 import { RESOURCE } from "../../utils/policy";
+import { writeActivityLog } from "../../utils/activityLog";
 
 /**
  * Create or update a user account.
@@ -135,6 +136,19 @@ export default eventHandler(async (event) => {
             : {}),
         },
       });
+
+      await writeActivityLog(event, {
+        action: "UPDATE",
+        entityType: "USER",
+        entityId: targetId,
+        summary: `Updated account ${data.username ?? ""} (self: ${isSelf})`.trim(),
+        metadata: {
+          self: isSelf,
+          passwordReset: Boolean(body?.updatePass && body?.password),
+          roleChanged: userRoleID !== undefined,
+        },
+        serviceCenterID,
+      });
     } else {
       if (!body?.password) {
         throw createError({
@@ -142,8 +156,17 @@ export default eventHandler(async (event) => {
           statusMessage: errorMessage(event, "សូមបញ្ចូលលេខសំងាត់"),
         });
       }
-      await event.context.prisma.user.create({
+      const created = await event.context.prisma.user.create({
         data: { ...data, password: await hash(body.password, 12) },
+        select: { id: true },
+      });
+
+      await writeActivityLog(event, {
+        action: "CREATE",
+        entityType: "USER",
+        entityId: created.id,
+        summary: `Created account ${data.username ?? ""}`,
+        serviceCenterID,
       });
     }
 

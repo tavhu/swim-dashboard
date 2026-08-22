@@ -1,4 +1,5 @@
 import { SUPER_ADMIN_ROLE } from "../../utils/roleGuard";
+import { writeActivityLog } from "../../utils/activityLog";
 
 /**
  * Renames a role. Guarded the same way as create and delete: only Super Admin,
@@ -27,6 +28,12 @@ export default eventHandler(async (event) => {
       data: { name, description: body?.description },
     });
     setResponseStatus(event, 201);
+    await writeActivityLog(event, {
+      action: "UPDATE",
+      entityType: "ROLE",
+      entityId: body.id,
+      summary: `Renamed role to ${name}`,
+    });
     return { message: "Role updated" };
   } catch (e: any) {
     if (e?.code === "P2002") {

@@ -7,7 +7,6 @@ export default defineEventHandler(async (event) => {
   // A centre-bound user writes plans for their own centre only. Taking
   // serviceCenterID from the body let one centre file a plan against another.
   const ownCentre = await resolveWriteCentre(event, serviceCenterID);
-
   const data = {
     serviceCenterID: ownCentre,
     yearPlan,
@@ -38,6 +37,15 @@ export default defineEventHandler(async (event) => {
         data,
       });
     }
+
+    const { writeActivityLog } = await import("../../../utils/activityLog");
+    await writeActivityLog(event, {
+      action: id ? "UPDATE" : "CREATE",
+      entityType: "CENTER",
+      entityId: result.id,
+      summary: `${id ? "Updated" : "Created"} centre plan for year ${yearPlan}`,
+      serviceCenterID: ownCentre,
+    });
 
     return {
       statusCode: id ? 200 : 201, // 200 OK for update, 201 Created for create

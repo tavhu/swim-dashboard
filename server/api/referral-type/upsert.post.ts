@@ -1,4 +1,6 @@
 /** Create or rename one referral service type. */
+import { writeActivityLog } from "../../utils/activityLog";
+
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
   const nameKh = String(body?.nameKh ?? "").trim();
@@ -18,6 +20,13 @@ export default defineEventHandler(async (event) => {
   const row = body?.id
     ? await event.context.prisma.referralServiceType.update({ where: { id: body.id }, data })
     : await event.context.prisma.referralServiceType.create({ data });
+
+  await writeActivityLog(event, {
+    action: body?.id ? "UPDATE" : "CREATE",
+    entityType: "REFERRAL_TYPE",
+    entityId: row.id,
+    summary: `${body?.id ? "Updated" : "Created"} referral service type ${nameKh}`,
+  });
 
   setResponseStatus(event, body?.id ? 200 : 201);
   return { message: "ok", data: row };
