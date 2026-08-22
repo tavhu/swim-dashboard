@@ -66,15 +66,14 @@ const approvalForms = computed(() =>
   (s.value?.approval ?? []).map((f: any) => ({ ...f, label: t(`form.${f.formKey}`) }))
 );
 
-/** Month names follow the language, not the server's fixed en-GB. */
+/** Month labels come from locale keys so SSR & client always agree. */
+const MONTHS = ["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"];
+const monthIndex = (m: any) => typeof m.month === "number" ? m.month : new Date(m.year, m.month, 1).getMonth();
 const intakePoints = computed(() =>
-  (s.value?.intakeByMonth ?? []).map((m: any) => ({
+  (s.value?.intakeByMonth ?? []).map((m: any, i: number) => ({
     key: m.key,
     count: m.count,
-    label: new Date(m.year, m.month, 1).toLocaleDateString(
-      locale.value === "en" ? "en-GB" : "km-KH",
-      { month: "short" }
-    ),
+    label: t(`month.short.${MONTHS[monthIndex(m)]}`),
   }))
 );
 

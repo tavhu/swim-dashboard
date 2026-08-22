@@ -268,5 +268,21 @@
     "maxPerFile": "max {mb}MB per file",
     "tooLarge": "Files too large: {files}",
     "tooMany": "Too many files — {max} at a time."
+  },
+  "month": {
+    "short": {
+      "jan": "Jan",
+      "feb": "Feb",
+      "mar": "Mar",
+      "apr": "Apr",
+      "may": "May",
+      "jun": "Jun",
+      "jul": "Jul",
+      "aug": "Aug",
+      "sep": "Sep",
+      "oct": "Oct",
+      "nov": "Nov",
+      "dec": "Dec"
+    }
   }
 }
