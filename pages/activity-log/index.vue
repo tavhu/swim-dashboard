@@ -26,7 +26,11 @@ const actor = ref("");
 const dateFrom = ref("");
 const dateTo = ref("");
 const page = ref(0);
-const take = 50;
+// Rows per page — user-selectable. Changing it resets to the first page,
+// because a page number that meant something at 50 rows points past the end
+// at 10.
+const take = ref(50);
+const TAKE_OPTIONS = [10, 25, 50, 100, 200];
 const showFilters = ref(false);
 
 const ACTIONS = ["CREATE", "UPDATE", "DELETE", "SUBMIT", "APPROVE", "REJECT"];
@@ -63,14 +67,22 @@ const load = async () => {
                 actor: actor.value || undefined,
                 dateFrom: dateFrom.value || undefined,
                 dateTo: dateTo.value || undefined,
-                take,
-                skip: page.value * take,
+                take: take.value,
+                skip: page.value * take.value,
                 sortBy: "createdAt",
                 sortType: "desc",
             },
         });
         rows.value = res?.data ?? [];
         total.value = res?.total ?? 0;
+        // Filters or a page-size change can leave `page` pointing past the
+        // last row (e.g. page 5 at 200/page after switching to 10/page).
+        // Pull back to the last valid page instead of showing a permanent
+        // empty table.
+        const maxPage = Math.max(0, Math.ceil(total.value / take.value) - 1);
+        if (page.value > maxPage) {
+            page.value = maxPage;
+        }
     } catch (e: any) {
         error.value = apiErrorMessage(e, tr("មិនអាចទាញយកទិន្នន័យបានទេ"));
     } finally {
@@ -78,6 +90,34 @@ const load = async () => {
     }
 };
 onMounted(load);
+
+const onTakeChange = () => {
+    page.value = 0;
+    load();
+};
+
+// Page numbers shown around the current one, with first/last and ellipsis.
+const pageWindow = computed<(number | "…")[]>(() => {
+    const tp = totalPages.value;
+    const cur = page.value + 1;
+    if (tp <= 7) return Array.from({ length: tp }, (_, i) => i + 1);
+    const pages = new Set<number>([1, tp, cur - 1, cur, cur + 1]);
+    const sorted = [...pages].filter((n) => n >= 1 && n <= tp).sort((a, b) => a - b);
+    const out: (number | "…")[] = [];
+    let prev = 0;
+    for (const n of sorted) {
+        if (n - prev > 1) out.push("…");
+        out.push(n);
+        prev = n;
+    }
+    return out;
+});
+
+const goToPage = (p: number) => {
+    if (p < 0 || p > totalPages.value - 1 || p === page.value) return;
+    page.value = p;
+    load();
+};
 
 const onSearch = useDebounceFn(() => {
     page.value = 0;
@@ -112,7 +152,15 @@ const hasActiveFilters = computed(
         )
 );
 
-const totalPages = computed(() => Math.max(1, Math.ceil(total.value / take)));
+const totalPages = computed(() => Math.max(1, Math.ceil(total.value / take.value)));
+
+// Range text, e.g. "1–50 of 237"
+const rangeLabel = computed(() => {
+    if (!total.value) return "";
+    const start = page.value * take.value + 1;
+    const end = Math.min(total.value, (page.value + 1) * take.value);
+    return `${start}–${end} ${tr("ក្នុងចំណោម")} ${total.value}`;
+});
 
 const fmt = (d?: string | null) =>
     d
@@ -316,6 +364,24 @@ const actionClass = (a: string) => {
                 </div>
             </div>
 
+            <!-- Rows per page + result range — above the table -->
+            <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
+                <div class="flex items-center gap-2">
+                    <label class="text-sm text-gray-600 dark:text-gray-300">
+                        {{ tr("បង្ហាញ") }}
+                    </label>
+                    <select v-model.number="take"
+                        class="rounded-lg border border-gray-300 px-2 py-1.5 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+                        @change="onTakeChange">
+                        <option v-for="n in TAKE_OPTIONS" :key="n" :value="n">{{ n }}</option>
+                    </select>
+                    <span class="text-sm text-gray-600 dark:text-gray-300">{{ tr("ជួរដេក") }}</span>
+                </div>
+                <p v-if="rangeLabel" class="text-sm text-gray-500 dark:text-gray-400">
+                    {{ rangeLabel }}
+                </p>
+            </div>
+
             <!-- Loading -->
             <div v-if="pending" class="h-40 animate-pulse rounded-lg bg-white shadow dark:bg-gray-800" />
 
@@ -382,15 +448,21 @@ const actionClass = (a: string) => {
                 </table>
             </div>
 
-            <!-- Pagination -->
-            <div v-if="!pending && !error && totalPages > 1" class="mt-4 flex items-center justify-center gap-3">
-                <UButton color="gray" size="sm" :disabled="page <= 0" @click="page--; load()">
+            <!-- Pagination — first / window / last, with prev & next -->
+            <div v-if="!pending && !error && totalPages > 1"
+                class="mt-4 flex flex-wrap items-center justify-center gap-2">
+                <UButton color="gray" size="sm" :disabled="page <= 0" @click="goToPage(page - 1)">
                     ←
                 </UButton>
-                <span class="text-sm text-gray-600 dark:text-gray-300">
-                    {{ page + 1 }} / {{ totalPages }}
-                </span>
-                <UButton color="gray" size="sm" :disabled="page >= totalPages - 1" @click="page++; load()">
+                <template v-for="(p, i) in pageWindow" :key="`${p}-${i}`">
+                    <span v-if="p === '…'" class="px-1 text-sm text-gray-400">…</span>
+                    <UButton v-else :color="p - 1 === page ? 'primary' : 'gray'" size="sm"
+                        @click="goToPage(p - 1)">
+                        {{ p }}
+                    </UButton>
+                </template>
+                <UButton color="gray" size="sm" :disabled="page >= totalPages - 1"
+                    @click="goToPage(page + 1)">
                     →
                 </UButton>
             </div>

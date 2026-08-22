@@ -25,6 +25,14 @@ export default defineEventHandler(async (event) => {
     maxTake: 200,
   });
 
+  // Rows-per-page comes from the page's dropdown. readListQuery only knows
+  // `limit` (the vue3-tailwind shape), so honour `take` too — clamped to the
+  // same max so a hand-crafted body cannot pull the whole table at once.
+  if (body?.take !== undefined) {
+    const n = parseInt(String(body.take), 10);
+    q.take = Number.isFinite(n) && n > 0 ? Math.min(n, 200) : q.take;
+  }
+
   const where: Record<string, any> = searchFilter(q.search, SEARCHABLE) ?? {};
 
   if (body?.action) where.action = String(body.action);
