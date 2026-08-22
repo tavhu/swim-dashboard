@@ -68,6 +68,7 @@
     "nodemailer": "^6.9.7",
     "nuxt-file-storage": "^0.2.9",
     "nuxt-highcharts": "^3.1.1",
+    "sharp": "^0.35.3",
     "vue3-tailwind": "^0.3.4",
     "zod": "^3.22.4"
   }
