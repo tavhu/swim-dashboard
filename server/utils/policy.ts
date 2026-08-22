@@ -336,7 +336,7 @@ export const RULES: Rule[] = [
   // --- centre staff ---------------------------------------------------------
   {
     mode: "permission",
-    pattern: /^\/api\/center\/staff\/(get|getSingleStaff)\/?$/,
+    pattern: /^\/api\/center\/staff\/(get|getSingleStaff|view)\/?$/,
     resource: RESOURCE.centerStaff,
     action: "read",
   },

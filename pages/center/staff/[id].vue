@@ -295,15 +295,16 @@ onMounted(async () => {
   pending.value = true;
   error.value = null;
   try {
-    const res = await $fetch<any>("/api/center/staff/getSingleStaff", {
+    // Same contract as /api/client/service/get: the record itself, top-level id.
+    const data: any = await $fetch("/api/center/staff/view", {
       method: "POST",
       body: { id: staffId.value, typeEmployee: kind.value },
     });
-    // The endpoint wraps the record in { data, error, status } — unwrap it.
-    staff.value = res?.data ?? null;
-    if (!staff.value?.id) {
+    if (!data?.id) {
       error.value = tr("រកមិនឃើញបុគ្គលិកនេះទេ");
+      return;
     }
+    staff.value = data;
   } catch (e: any) {
     error.value = apiErrorMessage(e, tr("មិនអាចទាញយកព័ត៌មានបានទេ"));
   } finally {
