@@ -36,7 +36,9 @@ const loading = computed(() => status.value === "pending");
 const provinceName = (code: string) => {
   const p = (gazetteers as any[]).find((x) => x.code === code);
   if (!p) return code ?? t("common.unassigned");
-  return (locale.value === "en" ? p.name?.en : p.name?.km) ?? p.name?.km ?? code;
+  // Locale-stable: always the Khmer gazetteer name (the system language). Branching on
+  // locale.value here re-created the SSR/client hydration mismatch the chart had.
+  return p.name?.km ?? p.name?.en ?? code;
 };
 
 const provinceRows = computed(() =>
@@ -105,10 +107,19 @@ const tiles = computed(() => [
   },
 ]);
 
-const fmtWhen = (d: string) =>
-  new Date(d).toLocaleDateString(locale.value === "en" ? "en-GB" : "km-KH", {
-    day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit",
-  });
+/**
+ * Locale-stable timestamp: same output on server and client, which toLocaleDateString
+ * cannot promise here (useI18n's locale is not resolved during SSR — that exact
+ * branch caused the dashboard's hydration mismatches). Month comes from the
+ * month.short translation keys; the rest are fixed numeric fields.
+ */
+const fmtWhen = (d: string) => {
+  const dt = new Date(d);
+  const hh = String(dt.getHours() % 12 || 12).padStart(2, "0");
+  const mm = String(dt.getMinutes()).padStart(2, "0");
+  const ampm = dt.getHours() >= 12 ? "PM" : "AM";
+  return `${String(dt.getDate()).padStart(2, "0")} ${t(`month.short.${MONTHS[dt.getMonth()]}`)}, ${hh}:${mm} ${ampm}`;
+};
 
 /** ApprovalRecordType → the form's translation key. */
 const FORM_KEY: Record<string, string> = {
