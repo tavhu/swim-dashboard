@@ -61,6 +61,15 @@ export default eventHandler(async (event) => {
   };
 
   try {
+    // Storage hygiene: remember current attachments so replaced files can be
+    // removed after a successful save.
+    const previous = body?.id
+      ? await event.context.prisma.clientService.findUnique({
+          where: { id: body.id },
+          select: { attachments: true },
+        })
+      : null;
+
     const result = body?.id
       ? await event.context.prisma.clientService.update({
           where: { id: body.id },
@@ -72,7 +81,14 @@ export default eventHandler(async (event) => {
           select: { id: true },
         });
 
-    await writeActivityLog(event, {
+        if (previous) {
+      const { cleanupReplacedFiles } = await import("../../../utils/storageCleanup");
+      for (const f of ['attachments'] as const) {
+        await cleanupReplacedFiles(previous[f], body?.[f], "[ClientService/update]");
+      }
+    }
+
+await writeActivityLog(event, {
       action: body?.id ? "UPDATE" : "CREATE",
       entityType: "CLIENT_SERVICE",
       entityId: result.id,

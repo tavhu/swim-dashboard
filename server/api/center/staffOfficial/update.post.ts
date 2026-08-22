@@ -28,6 +28,12 @@ export default eventHandler(async (event) => {
   const centreID = await resolveWriteCentre(event, body?.serviceCenterID);
 
   try {
+    // Storage hygiene: remove a replaced photo after the update commits.
+    const previous = await event.context.prisma.governStaff.findUnique({
+      where: { id: body?.id },
+      select: { photo: true },
+    });
+
     const result = await event.context.prisma.governStaff.update({
       where: {
         id: body?.id,
@@ -260,6 +266,9 @@ export default eventHandler(async (event) => {
     ]);
 
     //console.log(deleteed, createMany);
+
+    const { cleanupReplacedFile } = await import("../../../utils/storageCleanup");
+    await cleanupReplacedFile(previous?.photo, body?.photo, "[governStaff/update]");
 
     //@ts-ignored
     setResponseStatus(event, 201);

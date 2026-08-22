@@ -125,6 +125,13 @@ export default eventHandler(async (event) => {
         });
       }
 
+      // Storage hygiene: if the photo is being replaced, remove the old file
+      // after the row is committed so uploads/ does not fill with orphans.
+      const previous = await event.context.prisma.user.findUnique({
+        where: { id: targetId },
+        select: { image: true },
+      });
+
       await event.context.prisma.user.update({
         where: { id: targetId },
         data: {
@@ -136,6 +143,9 @@ export default eventHandler(async (event) => {
             : {}),
         },
       });
+
+      const { cleanupReplacedFile } = await import("../../utils/storageCleanup");
+      await cleanupReplacedFile(previous?.image, data.image, "[user/update]");
 
       await writeActivityLog(event, {
         action: "UPDATE",

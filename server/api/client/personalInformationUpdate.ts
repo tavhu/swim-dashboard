@@ -37,6 +37,12 @@ export default eventHandler(async (event) => {
   }
 
   try {
+    // Storage hygiene: remove a replaced photo after the update commits.
+    const previous = await event.context.prisma.client_PersonalInformation.findUnique({
+      where: { id: body?.id },
+      select: { photo: true },
+    });
+
     const result = await event.context.prisma.client_PersonalInformation.update(
       {
         where: {
@@ -110,6 +116,9 @@ export default eventHandler(async (event) => {
         },
       },
     );
+
+    const { cleanupReplacedFile } = await import("../../utils/storageCleanup");
+    await cleanupReplacedFile(previous?.photo, body?.photo, "[client/update]");
 
     //   console.log(body?.governStaffChildren);
     const ContextPrisma = event.context.prisma;

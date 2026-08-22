@@ -16,6 +16,20 @@ export default eventHandler(async (event) => {
   const centreID = await resolveWriteCentre(event, body?.serviceCenterID);
 
   try {
+    // Storage hygiene: on update, remove replaced files (photo + the three
+    // attachment columns) after the row is written.
+    const previous = body?.id
+      ? await event.context.prisma.staff.findUnique({
+          where: { id: body.id },
+          select: {
+            photo: true,
+            attachedContract: true,
+            attachedBackground: true,
+            attachedFileInfomation: true,
+          },
+        })
+      : null;
+
     const result = await event.context.prisma.staff.upsert({
       where: {
         id: body?.id,
@@ -91,6 +105,13 @@ export default eventHandler(async (event) => {
       summary: `${body?.id ? "Updated" : "Created"} contract staff ${[body?.firstName, body?.lastName].filter(Boolean).join(" ") || body?.fullnameEN || ""}`.trim(),
       serviceCenterID: centreID,
     });
+
+    if (previous) {
+      const { cleanupReplacedFiles } = await import("../../../utils/storageCleanup");
+      for (const f of ["photo", "attachedContract", "attachedBackground", "attachedFileInfomation"] as const) {
+        await cleanupReplacedFiles(previous[f], body?.[f], "[staff/update]");
+      }
+    }
     //@ts-ignored
     setResponseStatus(event, 201);
     return { message: "Update or Created" };
