@@ -232,18 +232,24 @@ const ROW_SPECS: Record<string, { key: string; label: string }[]> = {
 };
 
 /** The refs holding each list, keyed by name for checkRows below. */
-const rowListRefs = {
-    childrenDetails,
-    EducationDetails,
-    governStaffLanuage,
-    governStaffWorkingHistoryPublic,
-    governStaffWorkingHistoryPrivate,
-    governStaffPositionHistory,
-    governStaffCertificateLevelup,
-    governStaffSituationOutsideOriginalOfficial,
-    GovernStaffFreeNoSalary,
-    GovernStaffLetterAppreciation,
-    governStaffFineHistory,
+/**
+ * The refs holding each list, resolved LAZILY. The list refs are declared
+ * further down the file; evaluating them eagerly here (setup runs top to
+ * bottom) would touch them before initialisation — the exact TDZ crash that
+ * 500s /center/staff.
+ */
+const rowListRefs: Record<string, () => any[]> = {
+    childrenDetails: () => childrenDetails.value,
+    EducationDetails: () => EducationDetails.value,
+    governStaffLanuage: () => governStaffLanuage.value,
+    governStaffWorkingHistoryPublic: () => governStaffWorkingHistoryPublic.value,
+    governStaffWorkingHistoryPrivate: () => governStaffWorkingHistoryPrivate.value,
+    governStaffPositionHistory: () => governStaffPositionHistory.value,
+    governStaffCertificateLevelup: () => governStaffCertificateLevelup.value,
+    governStaffSituationOutsideOriginalOfficial: () => governStaffSituationOutsideOriginalOfficial.value,
+    GovernStaffFreeNoSalary: () => GovernStaffFreeNoSalary.value,
+    GovernStaffLetterAppreciation: () => GovernStaffLetterAppreciation.value,
+    governStaffFineHistory: () => governStaffFineHistory.value,
 };
 
 const SECTION_LABELS: Record<string, string> = {
@@ -262,7 +268,7 @@ const SECTION_LABELS: Record<string, string> = {
 
 function checkRows(problems: { field: string; label: string }[]) {
     for (const [listName, spec] of Object.entries(ROW_SPECS)) {
-        const list = (rowListRefs as any)[listName]?.value ?? [];
+        const list = (rowListRefs as any)[listName]?.() ?? [];
         list.forEach((row: any, i: number) => {
             const filled = Object.entries(row ?? {}).filter(
                 ([, v]) => v !== null && v !== undefined && String(v).trim() !== ""
