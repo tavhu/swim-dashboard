@@ -476,6 +476,12 @@ export const RULES: Rule[] = [
   },
   {
     mode: "permission",
+    pattern: /^\/api\/activity-log\/export\/?$/,
+    resource: RESOURCE.activityLog,
+    action: "read",
+  },
+  {
+    mode: "permission",
     pattern: /^\/api\/activity-log\/settings\/?$/,
     method: "GET",
     resource: RESOURCE.activityLog,

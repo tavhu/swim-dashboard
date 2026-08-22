@@ -255,6 +255,38 @@ const purgeOld = async () => {
     }
 };
 
+// Export the CURRENTLY FILTERED result set. The filters travel with the
+    // request, so what lands in the CSV is what the user sees on screen.
+const exporting = ref(false);
+const exportCsv = async () => {
+    exporting.value = true;
+    try {
+        const res: any = await $fetch("/api/activity-log/export", {
+            method: "POST",
+            responseType: "blob",
+            body: {
+                search: search.value,
+                action: action.value || undefined,
+                entityType: entityType.value || undefined,
+                actor: actor.value || undefined,
+                dateFrom: dateFrom.value || undefined,
+                dateTo: dateTo.value || undefined,
+                take: 5000,
+            },
+        });
+        const url = URL.createObjectURL(res);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `activity-log-${new Date().toISOString().slice(0, 10)}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+    } catch (e: any) {
+        toast.error({ message: apiErrorMessage(e, tr("មិនអាចទាញយកបានទេ")) });
+    } finally {
+        exporting.value = false;
+    }
+};
+
 const actionClass = (a: string) => {
     switch (a) {
         case "CREATE":
@@ -296,6 +328,10 @@ const actionClass = (a: string) => {
                     <UButton :color="showFilters ? 'primary' : 'gray'" size="xl" @click="showFilters = !showFilters">
                         <TwFeather type="filter" :size="18" class="mr-1" />
                         <span class="font-[Moul] text-lg">{{ tr("តម្រង") }}</span>
+                    </UButton>
+                    <UButton color="gray" size="xl" :loading="exporting" @click="exportCsv">
+                        <TwFeather type="download" :size="18" class="mr-1" />
+                        <span class="font-[Moul] text-lg">CSV</span>
                     </UButton>
                 </div>
             </div>
