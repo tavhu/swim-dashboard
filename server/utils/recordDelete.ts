@@ -113,11 +113,16 @@ export async function runRecordDelete(opts: {
     }
   }
 
+  // The record is gone, but its client still exists — name the client by code,
+  // not by the raw record id nobody can read.
+  const { clientCode } = await import("./logNames");
+  const clientLabel = await clientCode(prisma, record.clientId);
+
   await writeActivityLog(event, {
     action: "DELETE",
     entityType: recordType,
     entityId: id,
-    summary: `Deleted ${label} ${id}`,
+    summary: `Deleted ${label} for client ${clientLabel}`,
     serviceCenterID: record.client?.serviceCenterID ?? null,
   });
 

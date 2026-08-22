@@ -1,4 +1,5 @@
 import { getServerSession } from "#auth";
+import { clientCode } from "../../../utils/logNames";
 import { writeActivityLog } from "~~/server/utils/activityLog";
 
 /**
@@ -161,11 +162,13 @@ export default eventHandler(async (event) => {
       });
       return created.id;
     });
+    // This is ទម្រង់ទី៣ — the entityType said CASE_CLOSURE, a copy-paste from the
+    // closure form that put case-plan writes under the wrong filter.
     await writeActivityLog(event, {
       action: body?.id ? "UPDATE" : "CREATE",
-      entityType: "CASE_CLOSURE",
-      entityId: id, // or `id`
-      summary: `${body?.id ? "Updated" : "Created"} case closure for client ${body.clientId}`,
+      entityType: "CASE_PLAN",
+      entityId: id,
+      summary: `${body?.id ? "Updated" : "Created"} case plan for client ${await clientCode(event.context.prisma, body.clientId)}`,
     });
     setResponseStatus(event, body?.id ? 200 : 201);
     return { message: "saved", id };

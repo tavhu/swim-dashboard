@@ -37,7 +37,7 @@ export default eventHandler(async (event) => {
   try {
     const record = await delegate.findUnique({
       where: { id },
-      select: { id: true, serviceCenterID: true },
+      select: { id: true, serviceCenterID: true, firstName: true, lastName: true, fullnameEN: true, firstNameKH: true, lastNameKH: true, firstNameEN: true },
     });
     if (!record) {
       setResponseStatus(event, 404);
@@ -52,12 +52,13 @@ export default eventHandler(async (event) => {
 
     await delegate.delete({ where: { id } });
 
+    const staffNameLabel = [record.firstName, record.lastName].filter(Boolean).join(" ") || record.fullnameEN || [record.firstNameKH, record.lastNameKH].filter(Boolean).join(" ") || record.firstNameEN || "";
     const { writeActivityLog } = await import("../../../utils/activityLog");
     await writeActivityLog(event, {
       action: "DELETE",
       entityType: isContract ? "STAFF" : "GOVERN_STAFF",
       entityId: id,
-      summary: `Deleted ${isContract ? "contract" : "civil-servant"} staff record`,
+      summary: `Deleted ${isContract ? "contract" : "civil-servant"} staff record${record.name ? ` — ${staffNameLabel}` : ""}`,
       serviceCenterID: record.serviceCenterID,
     });
 

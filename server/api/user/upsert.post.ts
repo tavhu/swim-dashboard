@@ -141,7 +141,7 @@ export default eventHandler(async (event) => {
         action: "UPDATE",
         entityType: "USER",
         entityId: targetId,
-        summary: `Updated account ${data.username ?? ""} (self: ${isSelf})`.trim(),
+        summary: `Updated account ${data.username ?? ""}${isSelf ? " (own profile)" : ""}`.trim(),
         metadata: {
           self: isSelf,
           passwordReset: Boolean(body?.updatePass && body?.password),

@@ -1,4 +1,5 @@
 import { getServerSession } from "#auth";
+import { clientCode } from "../../../utils/logNames";
 import { writeActivityLog } from "~~/server/utils/activityLog";
 
 /**
@@ -75,7 +76,7 @@ export default eventHandler(async (event) => {
       action: body?.id ? "UPDATE" : "CREATE",
       entityType: "CLIENT_SERVICE",
       entityId: result.id,
-      summary: `${body?.id ? "Updated" : "Created"} service record for client ${body.clientId}`,
+      summary: `${body?.id ? "Updated" : "Created"} service record for client ${await clientCode(event.context.prisma, body.clientId)}`,
     });
 
     setResponseStatus(event, body?.id ? 200 : 201);

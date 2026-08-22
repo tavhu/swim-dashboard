@@ -1,4 +1,5 @@
 import { getServerSession } from "#auth";
+import { clientCode } from "../../../utils/logNames";
 import { writeActivityLog } from "~~/server/utils/activityLog";
 
 /**
@@ -89,7 +90,7 @@ export default eventHandler(async (event) => {
       action: body?.id ? "UPDATE" : "CREATE",
       entityType: "CASE_CLOSURE",
       entityId: result.id, // or `id`
-      summary: `${body?.id ? "Updated" : "Created"} case closure for client ${body.clientId}`,
+      summary: `${body?.id ? "Updated" : "Created"} case closure for client ${await clientCode(event.context.prisma, body.clientId)}`,
     });
     setResponseStatus(event, body?.id ? 200 : 201);
     return { message: "saved", id: result.id };

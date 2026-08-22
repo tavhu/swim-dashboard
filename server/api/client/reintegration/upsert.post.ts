@@ -1,4 +1,5 @@
 import { getServerSession } from "#auth";
+import { clientCode } from "../../../utils/logNames";
 import { writeActivityLog } from "~~/server/utils/activityLog";
 
 /**
@@ -164,7 +165,7 @@ export default eventHandler(async (event) => {
       action: body?.id ? "UPDATE" : "CREATE",
       entityType: "REINTEGRATION",
       entityId: id,
-      summary: `${body?.id ? "Updated" : "Created"} reintegration for client ${body.clientId}`,
+      summary: `${body?.id ? "Updated" : "Created"} reintegration for client ${await clientCode(event.context.prisma, body.clientId)}`,
     });
 
     setResponseStatus(event, body?.id ? 200 : 201);
