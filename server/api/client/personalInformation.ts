@@ -11,6 +11,15 @@ export default eventHandler(async (event) => {
   // Prisma rejects '' for DateTime and Boolean columns, and the form
   // initialises every field to ''. See server/utils/clientPayload.ts.
   const { data: body, missing } = normaliseClientPayload(rawBody);
+
+  // The repeatable lists carry NOT NULL columns of their own — a half-filled
+  // row used to reach Prisma and fail the whole save with a message no one
+  // could act on. Normalise here so blank rows are dropped and broken rows are
+  // named back to the form.
+  const serveHistory = normaliseServeHistoryRows(rawBody?.ClientServeHistory);
+  const progress = normaliseProgressRows(rawBody?.ClientProgress);
+  missing.push(...serveHistory.missing, ...progress.missing);
+
   if (missing.length) {
     setResponseStatus(event, 400);
     return {
@@ -100,12 +109,12 @@ export default eventHandler(async (event) => {
 
           ClientProgress: {
             createMany: {
-              data: body?.ClientProgress,
+              data: progress.rows,
             },
           },
           ClientServeHistory: {
             createMany: {
-              data: body?.ClientServeHistory,
+              data: serveHistory.rows,
             },
           },
           ClientHopelessMultiple: {

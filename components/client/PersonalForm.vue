@@ -338,12 +338,49 @@ const submit = async () => {
         if (v === null || v === undefined || v === '') problems.push({ field, label: tr(label) })
     }
 
-    // 2. The signature must be the signer's own name — see signatureValid.
+    // 2. The repeatable rows — ប្រវត្តិសេវា and កំណត់ត្រាវិវត្តន៍. Both lists carry
+    //    NOT NULL columns, so a half-filled row used to reach Prisma and fail
+    //    the whole save with a message nobody could act on. Check them here,
+    //    name them like every other problem field, and let markFieldErrors
+    //    ring and scroll to the row.
+    const checkRows = (
+        list: any[],
+        listKhmer: string,
+        fields: { key: string; label: string }[]
+    ) => {
+        list.forEach((row, i) => {
+            const filled = Object.entries(row ?? {}).filter(
+                ([, v]) => v !== null && v !== undefined && String(v).trim() !== ""
+            );
+            // A completely blank row is one the user added and never used;
+            // the server drops it silently rather than blocking the save.
+            if (!filled.length) return;
+            for (const f of fields) {
+                const v = row?.[f.key];
+                if (v === null || v === undefined || String(v).trim() === "") {
+                    problems.push({
+                        field: `row-${f.key}-${i}`,
+                        label: `${listKhmer} ${tr("ជួរដេក")} ${i + 1} — ${f.label}`,
+                    });
+                }
+            }
+        });
+    };
+    checkRows(ClientServeHistory.value, tr("ឈ្មោះមជ្ឈមណ្ឌល ឬពន្ធនាគារ"), [
+        { key: "nameCenterorPrison", label: tr("ឈ្មោះមជ្ឈមណ្ឌល ឬពន្ធនាគារ") },
+        { key: "DateTimeServed", label: tr("ថ្ងៃខែ") },
+    ]);
+    checkRows(ClientProgress.value, tr("ការអភិវឌ្ឍន៍សំខាន់ៗ/សេវាដែលបានផ្តល់ឱ្យអតិថិជន"), [
+        { key: "NoteDateTime", label: tr("កាលបរិច្ឆេទ") },
+        { key: "Details", label: tr("ការអភិវឌ្ឍន៍សំខាន់ៗ/សេវាដែលបានផ្តល់") },
+    ]);
+
+    // 3. The signature must be the signer's own name — see signatureValid.
     if (!signatureValid.value) {
         problems.push({ field: 'InterViewerSignature', label: tr('ហត្ថលេខា') })
     }
 
-    // 3. The validator's own fields. Run even when the checks above already
+    // 4. The validator's own fields. Run even when the checks above already
     //    failed, so its data-error marks appear in the same pass.
     validator.value.clearErrors();
     await validator.value.validate();
@@ -465,9 +502,22 @@ const submit = async () => {
 
     if (error.value?.statusCode) {
         ClientRegister.value = false
-        toast.error({
-            message: t('message.notSaved'),
+        // The server names the fields it rejected (`fields` on a 400, or a
+        // message on other codes). Surface the names rather than a bare
+        // "not saved" — and ring the row wrappers when row checks fired.
+        // Server row names look like "ClientServeHistory[2].DateTimeServed";
+        // the template's wrappers are "row-DateTimeServed-2". Translate before
+        // marking so the ring lands on the actual input.
+        const serverFields: string[] = (
+            Array.isArray(error.value?.data?.fields) ? error.value.data.fields : []
+        ).map((f: string) => {
+            const m = /^(\w+)\[(\d+)]\.(\w+)$/.exec(f);
+            return m ? `row-${m[3]}-${m[2]}` : f;
         });
+        const detail = apiErrorMessage(error.value, t('message.notSaved'));
+        toast.error({ message: detail === t('message.notSaved') ? t('message.notSaved') : `${t('message.notSaved')} — ${detail}` });
+        await nextTick();
+        markFieldErrors(serverFields);
     } else {
         toast.success({
             message: t('message.saved'),
@@ -1164,13 +1214,13 @@ watch(() => formData.communeBA, (newCommune) => {
                                     {{ index + 1 }}
                                 </p>
                             </div>
-                            <label class="block sm:col-span-6">
+                            <label class="block sm:col-span-6" :data-field="`row-nameCenterorPrison-${index}`">
                                 <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('ឈ្មោះមជ្ឈមណ្ឌល ឬពន្ធនាគារ') }}</span>
                                 <input v-model="child.nameCenterorPrison" :disabled="readOnly" type="text"
                                     :placeholder="tr('ឈ្មោះមជ្ឈមណ្ឌល ឬពន្ធនាគារ')"
                                     class="mt-1 h-10 w-full rounded border px-2 text-base dark:border-gray-700 dark:bg-gray-900" />
                             </label>
-                            <label class="block sm:col-span-3">
+                            <label class="block sm:col-span-3" :data-field="`row-DateTimeServed-${index}`">
                                 <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('ថ្ងៃខែ') }}</span>
                                 <Datepicker :flow="['year', 'month', 'calendar']" :text-input="true" v-model="child.DateTimeServed" :disabled="readOnly" :maxDate="new Date()"
                                     :enableTimePicker="false" :close-on-auto-apply="false" autoApply format="dd/MM/yyyy" class="mt-1" />
@@ -1328,12 +1378,12 @@ watch(() => formData.communeBA, (newCommune) => {
                                     {{ index + 1 }}
                                 </p>
                             </div>
-                            <label class="block sm:col-span-3">
+                            <label class="block sm:col-span-3" :data-field="`row-NoteDateTime-${index}`">
                                 <span class="text-sm text-gray-500 dark:text-gray-400">{{ tr('កាលបរិច្ឆេទ') }}</span>
                                 <Datepicker :flow="['year', 'month', 'calendar']" :text-input="true" v-model="child.NoteDateTime" :disabled="readOnly" :maxDate="new Date()"
                                     :enableTimePicker="false" :close-on-auto-apply="false" autoApply format="dd/MM/yyyy" class="mt-1" />
                             </label>
-                            <label class="block sm:col-span-6">
+                            <label class="block sm:col-span-6" :data-field="`row-Details-${index}`">
                                 <span class="text-sm text-gray-500 dark:text-gray-400">
                                     {{ tr('ការអភិវឌ្ឍន៍សំខាន់ៗ/សេវាដែលបានផ្តល់ឱ្យអតិថិជន') }}
                                 </span>

@@ -154,3 +154,69 @@ export const normaliseClientPayload = (body: Record<string, any>) =>
 
 export const normaliseGovernStaffPayload = (body: Record<string, any>) =>
   normalisePayload(body, GOVERN_STAFF_FIELDS);
+
+/**
+ * The repeatable rows on ទម្រង់ទី១ — ប្រវត្តិសេវា (ClientServeHistory) and
+ * កំណត់ត្រាវិវត្តន៍ (ClientProgress). Unlike the lists on forms ៣–៥ these rows
+ * are NOT dropped when partially filled, because both of their columns are NOT
+ * NULL: Prisma rejects the whole save with a message no one can act on.
+ *
+ * A row where every field is blank is one the user added and never used —
+ * dropped. A row that is half filled is a mistake the caller must report:
+ * `missing` names the list and the row number so the form can highlight it.
+ */
+export interface NormalisedRows {
+  rows: Record<string, any>[];
+  /** "ClientServeHistory[2].DateTimeServed" style names for the UI. */
+  missing: string[];
+}
+
+function normaliseRowList(
+  input: unknown,
+  fields: { date?: string; requiredText?: string[] },
+  listName: string
+): NormalisedRows {
+  const rows: Record<string, any>[] = [];
+  const missing: string[] = [];
+
+  const list = Array.isArray(input) ? input : [];
+  list.forEach((rawRow: any, i: number) => {
+    const row: Record<string, any> = { ...(rawRow ?? {}) };
+
+    let dateValue: Date | null = null;
+    if (fields.date && fields.date in row) {
+      dateValue = toDate(row[fields.date]);
+      if (dateValue) row[fields.date] = dateValue;
+    }
+
+    // Empty means unused; drop it silently. A row counts as empty only when
+    // nothing at all was typed anywhere in it.
+    const meaningful = Object.entries(row).filter(
+      ([k, v]) => k !== "id" && v !== null && v !== undefined && String(v).trim() !== ""
+    );
+    if (!meaningful.length) return;
+
+    if (fields.date && !dateValue) {
+      missing.push(`${listName}[${i}].${fields.date}`);
+    }
+    for (const f of fields.requiredText ?? []) {
+      if (!(String(row[f] ?? "").trim())) {
+        missing.push(`${listName}[${i}].${f}`);
+      }
+    }
+
+    rows.push(row);
+  });
+
+  return { rows, missing };
+}
+
+/** ប្រវត្តិនៃការធ្លាប់ចូលមជ្ឈមណ្ឌល/ពន្ធនាគារ — date required per row. */
+export function normaliseServeHistoryRows(input: unknown): NormalisedRows {
+  return normaliseRowList(input, { date: "DateTimeServed", requiredText: ["nameCenterorPrison"] }, "ClientServeHistory");
+}
+
+/** ការអភិវឌ្ឍន៍សំខាន់ៗ — date and details required per row. */
+export function normaliseProgressRows(input: unknown): NormalisedRows {
+  return normaliseRowList(input, { date: "NoteDateTime", requiredText: ["Details"] }, "ClientProgress");
+}
