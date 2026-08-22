@@ -402,6 +402,93 @@ export const REPORTS: ReportDefinition[] = [
       ];
     },
   },
+
+  // ------------------------------------------------------------------- staff
+  {
+    key: "staff",
+    title: "របាយការណ៍បុគ្គលិក (រដ្ឋ និងកិច្ចសន្យា)",
+    description: "បុគ្គលិករដ្ឋ និងមន្ត្រីកិច្ចសន្យា ក្នុងតារាងតែមួយ ជាមួយសេចក្ដីសង្ខេបតាមមជ្ឈមណ្ឌល",
+    filters: ["centre"],
+    columns: [
+      { key: "type", label: "ប្រភេទបុគ្គលិក", width: 16 },
+      { key: "nameKH", label: "ឈ្មោះ (ខ្មែរ)", width: 26 },
+      { key: "nameEN", label: "ឈ្មោះ (ឡាតាំង)", width: 24 },
+      { key: "gender", label: "ភេទ", width: 8 },
+      { key: "age", label: "អាយុ", numeric: true, width: 7 },
+      { key: "position", label: "មុខតំណែង/ឋានៈ", width: 20 },
+      { key: "phone", label: "ទូរស័ព្ទ", width: 15 },
+      { key: "email", label: "អ៊ីមែល", width: 22 },
+      { key: "idNumber", label: "លេខអត្តសញ្ញាណ", width: 16 },
+      { key: "started", label: "ថ្ងៃចាប់ផ្តើមធ្វើការ", width: 17 },
+      { key: "yearsOfService", label: "ឆ្នាំបម្រើការ", numeric: true, width: 12 },
+      { key: "centre", label: "មជ្ឈមណ្ឌល", width: 28 },
+    ],
+    async run(prisma, f) {
+      const centreWhere = f.centreId ? { serviceCenterID: f.centreId } : {};
+
+      const [gov, contract] = await Promise.all([
+        prisma.governStaff.findMany({
+          where: centreWhere,
+          orderBy: { firstNameKH: "asc" },
+          select: {
+            firstNameKH: true, lastNameKH: true, firstNameEN: true, lastNameEN: true,
+            gender: true, DateofBirth: true, CurrentRank: true, OfficialLevelKH: true,
+            telephone: true, email: true, officialID: true, DateStartOfficialWork: true,
+            ServiceCenter: { select: { nameKH: true } },
+          },
+        }),
+        prisma.staff.findMany({
+          where: centreWhere,
+          orderBy: { firstName: "asc" },
+          select: {
+            firstName: true, lastName: true, fullnameEN: true, gender: true,
+            dateofbirth: true, position: true, telephone: true,
+            workingPeroidStart: true,
+            serviceCenter: { select: { nameKH: true } },
+          },
+        }),
+      ]);
+
+      const tenureYears = (d?: Date | string | null) => {
+        if (!d) return null;
+        const start = new Date(d);
+        return Math.max(0, ((Date.now() - start.getTime()) / (365.25 * 86_400_000))).toFixed(1);
+      };
+
+      const govRows = gov.map((s: any) => ({
+        type: "បុគ្គលិករដ្ឋ",
+        nameKH: [s.lastNameKH, s.firstNameKH].filter(Boolean).join(" ") || "—",
+        nameEN: [s.lastNameEN, s.firstNameEN].filter(Boolean).join(" ") || "—",
+        gender: s.gender ?? "—",
+        age: ageFrom(s.DateofBirth) ?? "—",
+        position: [s.CurrentRank, s.OfficialLevelKH].filter(Boolean).join(" / ") || "—",
+        phone: s.telephone ?? "—",
+        email: s.email ?? "—",
+        idNumber: s.officialID ?? "—",
+        started: fmtDate(s.DateStartOfficialWork),
+        yearsOfService: tenureYears(s.DateStartOfficialWork) ?? "—",
+        centre: s.ServiceCenter?.nameKH ?? "—",
+      }));
+
+      const contractRows = contract.map((s: any) => ({
+        type: "មន្ត្រីកិច្ចសន្យា",
+        nameKH: [s.lastName, s.firstName].filter(Boolean).join(" ") || s.fullnameEN || "—",
+        nameEN: s.fullnameEN || "—",
+        gender: s.gender ?? "—",
+        age: ageFrom(s.dateofbirth) ?? "—",
+        position: s.position ?? "—",
+        phone: s.telephone ?? "—",
+        email: "—",
+        idNumber: "—",
+        started: fmtDate(s.workingPeroidStart),
+        yearsOfService: tenureYears(s.workingPeroidStart) ?? "—",
+        centre: s.serviceCenter?.nameKH ?? "—",
+      }));
+
+      // Gov first, then contract — stable and predictable for a ministry printout.
+      return [...govRows, ...contractRows];
+    },
+  },
 ];
 
 export const findReport = (key: unknown) =>

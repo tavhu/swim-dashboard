@@ -31,6 +31,7 @@ const REPORTS = computed(() => [
   { key: "outcomes", title: tr("លទ្ធផលបិទករណី"), hint: tr("ជោគជ័យ ឬមិនជោគជ័យ និងមូលហេតុ"), icon: "check-circle", filters: ["date", "centre"] },
   { key: "services", title: tr("សេវាកម្មដែលបានផ្តល់"), hint: tr("សេវាកម្មនីមួយៗ និងចំនួនដង"), icon: "layers", filters: ["date"] },
   { key: "centres", title: tr("មជ្ឈមណ្ឌល"), hint: tr("អតិថិជន បុគ្គលិក និងករណីបានបិទ"), icon: "home", filters: [] },
+  { key: "staff", title: tr("បុគ្គលិក (រដ្ឋ និងកិច្ចសន្យា)"), hint: tr("បុគ្គលិករដ្ឋ និងមន្ត្រីកិច្ចសន្យា ក្នុងតារាងតែមួយ"), icon: "users", filters: ["centre"] },
 ]) as const;
 
 const selected = ref<string>("clients");
