@@ -233,3 +233,23 @@ div[data-error="true"] {
 .vt-relative:has(> .vt-h-\[0\.35rem\]) {
   overflow: hidden;
 }
+
+/* ── Page background / overscroll ─────────────────────────────────────────
+   The white strip that appeared past the last section was the <body> showing
+   through: the dark-mode class lives on an inner div, so body kept its default
+   white. Match body to the app surface for both themes. */
+body {
+  background: #f3f4f6; /* gray-100, same as the app frame */
+}
+/* Modern browsers: follow the inner dark container. */
+body:has(#dark-mode.dark) {
+  background: #111827; /* gray-900 */
+}
+
+/* ── Sidebar sticky travel ────────────────────────────────────────────────
+   A sticky sidebar inside a flex row needs `align-self: start`, otherwise the
+   row stretches it to full content height and it scrolls away with the page
+   near the bottom. */
+#dark-mode nav[aria-label="Main"] {
+  align-self: flex-start;
+}
