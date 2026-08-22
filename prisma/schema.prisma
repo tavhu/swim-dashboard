@@ -309,12 +309,12 @@ model governStaffChildren {
   dateofBirth   DateTime
   occupation    String
   governStaffID String
-  governStaff   governStaff @relation(fields: [governStaffID], references: [id])
+  governStaff   governStaff @relation(fields: [governStaffID], references: [id], onDelete: Cascade)
 }
 
 model governStaffQualifitcation {
   id               String      @id @default(cuid())
-  governStaff      governStaff @relation(fields: [governStaffID], references: [id])
+  governStaff      governStaff @relation(fields: [governStaffID], references: [id], onDelete: Cascade)
   governStaffID    String
   couseLevel       String
   SchoolName       String
@@ -332,12 +332,12 @@ model governStaffLanuage {
   conversation  String
   writing       String
   governStaffID String
-  governStaff   governStaff @relation(fields: [governStaffID], references: [id])
+  governStaff   governStaff @relation(fields: [governStaffID], references: [id], onDelete: Cascade)
 }
 
 model governStaffWorkingHistoryPublic {
   id               String      @id @default(cuid())
-  governStaff      governStaff @relation(fields: [governStaffID], references: [id])
+  governStaff      governStaff @relation(fields: [governStaffID], references: [id], onDelete: Cascade)
   governStaffID    String
   DateStartWorking DateTime
   DateStopWorking  DateTime
@@ -349,7 +349,7 @@ model governStaffWorkingHistoryPublic {
 
 model governStaffWorkingHistoryPrivate {
   id               String      @id @default(cuid())
-  governStaff      governStaff @relation(fields: [governStaffID], references: [id])
+  governStaff      governStaff @relation(fields: [governStaffID], references: [id], onDelete: Cascade)
   governStaffID    String
   DateStartWorking DateTime
   DateStopWorking  DateTime
@@ -360,7 +360,7 @@ model governStaffWorkingHistoryPrivate {
 
 model governStaffPositionHistory {
   id               String      @id @default(cuid())
-  governStaff      governStaff @relation(fields: [governStaffID], references: [id])
+  governStaff      governStaff @relation(fields: [governStaffID], references: [id], onDelete: Cascade)
   ValidDate        DateTime
   governStaffID    String
   MinistryName     String
@@ -373,7 +373,7 @@ model governStaffPositionHistory {
 
 model governStaffCertificateLevelup {
   id                  String      @id @default(cuid())
-  governStaff         governStaff @relation(fields: [governStaffID], references: [id])
+  governStaff         governStaff @relation(fields: [governStaffID], references: [id], onDelete: Cascade)
   governStaffID       String
   validatDate         DateTime
   SchoolName          String
@@ -385,7 +385,7 @@ model governStaffCertificateLevelup {
 
 model governStaffSituationOutsideOriginalOfficial {
   id              String      @id @default(cuid())
-  governStaff     governStaff @relation(fields: [governStaffID], references: [id])
+  governStaff     governStaff @relation(fields: [governStaffID], references: [id], onDelete: Cascade)
   governStaffID   String
   startDate       DateTime
   endDate         DateTime
@@ -395,7 +395,7 @@ model governStaffSituationOutsideOriginalOfficial {
 
 model governStaffFreeNoSalary {
   id                   String      @id @default(cuid())
-  governStaff          governStaff @relation(fields: [governStaffID], references: [id])
+  governStaff          governStaff @relation(fields: [governStaffID], references: [id], onDelete: Cascade)
   governStaffID        String
   startDate            DateTime
   endDate              DateTime
@@ -405,7 +405,7 @@ model governStaffFreeNoSalary {
 
 model governStaffLetterAppreciation {
   id                   String      @id @default(cuid())
-  governStaff          governStaff @relation(fields: [governStaffID], references: [id])
+  governStaff          governStaff @relation(fields: [governStaffID], references: [id], onDelete: Cascade)
   governStaffID        String
   letterNumber         String
   OfficialDate         DateTime
@@ -416,7 +416,7 @@ model governStaffLetterAppreciation {
 
 model governStaffFineHistory {
   id                   String      @id @default(cuid())
-  governStaff          governStaff @relation(fields: [governStaffID], references: [id])
+  governStaff          governStaff @relation(fields: [governStaffID], references: [id], onDelete: Cascade)
   governStaffID        String
   letterNumber         String
   OffialDate           DateTime
