@@ -20,7 +20,7 @@ const isDark = computed(() => theme.isDark)
       <LayoutFloating />
       <LayoutHeader />
       <div class="text-slate-900 dark:text-white  dark:bg-gray-900 bg-gray-100 ">
-        <div class="flex min-h-screen text-slate-900 dark:text-white  dark:bg-gray-900 bg-gray-100  ">
+        <div class="flex min-h-screen text-slate-900 dark:text-white  dark:bg-gray-900 bg-gray-100  md:pl-56 lg:pl-64">
           <LayoutSidebar />
           <div class="flex-1 min-w-0">
             <div class="p-4 bg-gray-100 dark:bg-gray-900 h-full  font-[battambang]">
