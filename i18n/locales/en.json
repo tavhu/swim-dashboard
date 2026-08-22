@@ -220,7 +220,8 @@
     "about": "About us",
     "referral": "Referrals",
     "referralList": "Referrals",
-    "referralTypes": "Referral & Service Details"
+    "referralTypes": "Referral & Service Details",
+    "activityLog": "Activity log"
   },
   "message": {
     "clientNotFound": "Client not found",

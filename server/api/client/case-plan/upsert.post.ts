@@ -1,4 +1,5 @@
 import { getServerSession } from "#auth";
+import { writeActivityLog } from "~~/server/utils/activityLog";
 
 /**
  * ទម្រង់ទី៣ — create or update a client's case plan, with its ក. សកម្មភាពសេវាកម្ម
@@ -24,7 +25,10 @@ export default eventHandler(async (event) => {
   const { data: body, missing } = normalisePayload(rawBody, CASE_PLAN_FIELDS);
   if (missing.length) {
     setResponseStatus(event, 400);
-    return { error: `Missing or invalid: ${missing.join(", ")}`, fields: missing };
+    return {
+      error: `Missing or invalid: ${missing.join(", ")}`,
+      fields: missing,
+    };
   }
 
   if (!body?.clientId) {
@@ -62,9 +66,14 @@ export default eventHandler(async (event) => {
    * blank numbered lines. sortOrder comes from position, which is what the
    * manual's ១, ២, ៣ numbering means.
    */
-  const activities = (Array.isArray(rawBody?.activities) ? rawBody.activities : [])
+  const activities = (
+    Array.isArray(rawBody?.activities) ? rawBody.activities : []
+  )
     .map((row: any) => {
-      const { data: r } = normalisePayload(row ?? {}, CASE_PLAN_ACTIVITY_FIELDS);
+      const { data: r } = normalisePayload(
+        row ?? {},
+        CASE_PLAN_ACTIVITY_FIELDS,
+      );
       return {
         serviceId: r.serviceId || null,
         startDate: r.startDate ?? null,
@@ -75,14 +84,21 @@ export default eventHandler(async (event) => {
     .map((r: any, i: number) => ({ ...r, sortOrder: i }));
 
   /** ខ. សេវាបញ្ចូនបន្ត — same rules as ក. above, kept as its own list. */
-  const referralServices = (Array.isArray(rawBody?.referralServices) ? rawBody.referralServices : [])
+  const referralServices = (
+    Array.isArray(rawBody?.referralServices) ? rawBody.referralServices : []
+  )
     .map((row: any) => {
-      const { data: r } = normalisePayload(row ?? {}, CASE_PLAN_REFERRAL_FIELDS);
+      const { data: r } = normalisePayload(
+        row ?? {},
+        CASE_PLAN_REFERRAL_FIELDS,
+      );
       return {
         referralTypeId: r.referralTypeId || null,
         primaryReason: r.primaryReason || null,
         currentSituation: r.currentSituation || null,
-        urgency: (["ROUTINE", "URGENT", "EMERGENCY"].includes(r.urgency) ? r.urgency : "ROUTINE") as any,
+        urgency: (["ROUTINE", "URGENT", "EMERGENCY"].includes(r.urgency)
+          ? r.urgency
+          : "ROUTINE") as any,
         startDate: r.startDate ?? null,
         endDate: r.endDate ?? null,
         consentObtained: r.consentObtained === true,
@@ -91,7 +107,16 @@ export default eventHandler(async (event) => {
       };
     })
     // A row is real if any of its meaningful fields is filled.
-    .filter((r: any) => r.referralTypeId || r.primaryReason || r.currentSituation || r.attachments || r.signature || r.startDate || r.endDate)
+    .filter(
+      (r: any) =>
+        r.referralTypeId ||
+        r.primaryReason ||
+        r.currentSituation ||
+        r.attachments ||
+        r.signature ||
+        r.startDate ||
+        r.endDate,
+    )
     .map((r: any, i: number) => ({ ...r, sortOrder: i }));
 
   try {
@@ -99,17 +124,28 @@ export default eventHandler(async (event) => {
 
     const id = await prisma.$transaction(async (tx: any) => {
       if (body?.id) {
-        await tx.casePlan.update({ where: { id: body.id }, data, select: { id: true } });
-        await tx.casePlanActivity.deleteMany({ where: { casePlanId: body.id } });
+        await tx.casePlan.update({
+          where: { id: body.id },
+          data,
+          select: { id: true },
+        });
+        await tx.casePlanActivity.deleteMany({
+          where: { casePlanId: body.id },
+        });
         if (activities.length) {
           await tx.casePlanActivity.createMany({
             data: activities.map((a: any) => ({ ...a, casePlanId: body.id })),
           });
         }
-        await tx.casePlanReferralService.deleteMany({ where: { casePlanId: body.id } });
+        await tx.casePlanReferralService.deleteMany({
+          where: { casePlanId: body.id },
+        });
         if (referralServices.length) {
           await tx.casePlanReferralService.createMany({
-            data: referralServices.map((r: any) => ({ ...r, casePlanId: body.id })),
+            data: referralServices.map((r: any) => ({
+              ...r,
+              casePlanId: body.id,
+            })),
           });
         }
         return body.id;
@@ -125,7 +161,12 @@ export default eventHandler(async (event) => {
       });
       return created.id;
     });
-
+    await writeActivityLog(event, {
+      action: body?.id ? "UPDATE" : "CREATE",
+      entityType: "CASE_CLOSURE",
+      entityId: id, // or `id`
+      summary: `${body?.id ? "Updated" : "Created"} case closure for client ${body.clientId}`,
+    });
     setResponseStatus(event, body?.id ? 200 : 201);
     return { message: "saved", id };
   } catch (e: any) {

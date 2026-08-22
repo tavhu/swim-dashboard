@@ -216,5 +216,11 @@
     "route": "referral-type",
     "group": "referral",
     "nameKh": "ប្រភេទសេវាបញ្ជូន (កំណត់)"
+  },
+  {
+  "route": "activity-log",
+  "group": "account",
+  "nameKh": "កំណត់ត្រាសកម្មភាព",
+  "readOnlyPage": true
   }
 ]

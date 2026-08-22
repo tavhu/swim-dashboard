@@ -34,19 +34,18 @@ const snapshot = ref({
 });
 
 /**
- * Display helpers:
- * Prefer the current locale. Fall back to the other language if the preferred
- * one is empty. This is the behaviour the ministry asked for.
+ * Prefer current locale; fall back to the other language if empty.
+ * Matches localisedName.ts: anything other than "en" is treated as Khmer.
  */
 const displayTitle = computed(() => {
-  if (locale.value === "km" || locale.value === "kh") {
+  if (locale.value !== "en") {
     return titleKh.value || titleEn.value || "";
   }
   return titleEn.value || titleKh.value || "";
 });
 
 const displayContent = computed(() => {
-  if (locale.value === "km" || locale.value === "kh") {
+  if (locale.value !== "en") {
     return contentKh.value || contentEn.value || "";
   }
   return contentEn.value || contentKh.value || "";
@@ -182,7 +181,6 @@ const fmt = (d?: string | null) =>
 
         <p class="text-sm text-gray-500 dark:text-gray-400">
           {{ tr("ចន្លោះជួរដេកនឹងត្រូវបានរក្សាទុកតាមដែលអ្នកសរសេរ") }}
-          · If only one language is filled, it will be used as the default.
         </p>
 
         <div class="flex gap-2">

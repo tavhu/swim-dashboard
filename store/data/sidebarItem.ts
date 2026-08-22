@@ -270,6 +270,14 @@ export default [
     icon: "message-square",
     submenu: [],
   },
+  {
+    isTitle: false,
+    name: "Activity log",
+    i18nKey: "menu.activityLog",
+    url: "/activity-log",
+    icon: "activity",
+    submenu: [],
+  },
   // {
   //   isTitle: false,
   //   name: "របាយការណ៏",

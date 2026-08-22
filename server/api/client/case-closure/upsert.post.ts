@@ -1,4 +1,5 @@
 import { getServerSession } from "#auth";
+import { writeActivityLog } from "~~/server/utils/activityLog";
 
 /**
  * ទម្រង់ទី៦ — create or update a case closure.
@@ -53,7 +54,9 @@ export default eventHandler(async (event) => {
     successReason,
     // The free-text box belongs to ផ្សេងទៀត; on any other reason it is stale.
     successReasonOther:
-      successful && successReason === "ផ្សេងទៀត" ? text(body.successReasonOther) : null,
+      successful && successReason === "ផ្សេងទៀត"
+        ? text(body.successReasonOther)
+        : null,
 
     // ខ — kept only on an unsuccessful one.
     failureReasons: successful
@@ -75,9 +78,19 @@ export default eventHandler(async (event) => {
   try {
     const prisma = event.context.prisma;
     const result = body?.id
-      ? await prisma.caseClosure.update({ where: { id: body.id }, data, select: { id: true } })
+      ? await prisma.caseClosure.update({
+          where: { id: body.id },
+          data,
+          select: { id: true },
+        })
       : await prisma.caseClosure.create({ data, select: { id: true } });
 
+    await writeActivityLog(event, {
+      action: body?.id ? "UPDATE" : "CREATE",
+      entityType: "CASE_CLOSURE",
+      entityId: result.id, // or `id`
+      summary: `${body?.id ? "Updated" : "Created"} case closure for client ${body.clientId}`,
+    });
     setResponseStatus(event, body?.id ? 200 : 201);
     return { message: "saved", id: result.id };
   } catch (e: any) {

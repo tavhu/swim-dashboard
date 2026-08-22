@@ -220,7 +220,8 @@
     "about": "អំពីយើង",
     "referral": "ការបញ្ជូន",
     "referralList": "បញ្ជីការបញ្ជូន",
-    "referralTypes": "សេវាបញ្ជូន"
+    "referralTypes": "សេវាបញ្ជូន",
+    "activityLog": "កំណត់ត្រាសកម្មភាព"
   },
   "message": {
     "clientNotFound": "រកមិនឃើញអតិថិជននេះទេ",

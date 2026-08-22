@@ -914,5 +914,21 @@
   "មិនអាចលុបសេវាកម្មបានទេ": "Could not delete the service",
   "បានលុបសេវាកម្មដោយជោគជ័យ": "Service deleted successfully",
   "បញ្ជាក់ការលុប": "Confirm deletion",
-  "តើអ្នកប្រាកដថាចង់លុបសេវាកម្មនេះមែនទេ?": "Are you sure you want to delete this service?"
+  "តើអ្នកប្រាកដថាចង់លុបសេវាកម្មនេះមែនទេ?": "Are you sure you want to delete this service?",
+  "កំណត់ត្រាសកម្មភាព": "Activity log",
+  "ធ្វើបច្ចុប្បន្នភាព": "Refresh",
+  "តម្រង": "Filter",
+  "សម្អាត": "Clear",
+  "ឈ្មោះ ឬ ឈ្មោះអ្នកប្រើ": "Name or username",
+  "ពីថ្ងៃ": "From date",
+  "ស្វែងរក": "Search",
+  "រយៈពេលរក្សាទុក": "Retention period",
+  "រក្សាទុកជារៀងរហូត": "Keep forever",
+  "លុបកំណត់ត្រាចាស់": "Purge old logs",
+  "លុបកំណត់ត្រាចាស់តាមរយៈពេលរក្សាទុក?": "Delete logs older than the retention period?",
+  "កំណត់ត្រាត្រូវបានលុប": "logs deleted",
+  "មិនមានទិន្នន័យ": "No data",
+  "កំណត់ត្រានឹងបង្ហាញនៅពេលមានសកម្មភាពលើទម្រង់": "Entries will appear when forms are created, updated, or approved",
+  "ពេលវេលា": "Time",
+  "សេចក្ដីសង្ខេប": "Summary"
 }

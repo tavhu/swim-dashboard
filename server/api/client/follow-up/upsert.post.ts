@@ -1,4 +1,5 @@
 import { getServerSession } from "#auth";
+import { writeActivityLog } from "~~/server/utils/activityLog";
 
 /**
  * ទម្រង់ទី៥ — create or update a follow-up visit.
@@ -20,7 +21,10 @@ export default eventHandler(async (event) => {
   const { data: body, missing } = normalisePayload(rawBody, FOLLOW_UP_FIELDS);
   if (missing.length) {
     setResponseStatus(event, 400);
-    return { error: `Missing or invalid: ${missing.join(", ")}`, fields: missing };
+    return {
+      error: `Missing or invalid: ${missing.join(", ")}`,
+      fields: missing,
+    };
   }
 
   if (!body?.clientId) {
@@ -66,7 +70,10 @@ export default eventHandler(async (event) => {
     ? []
     : (Array.isArray(rawBody?.services) ? rawBody.services : [])
         .map((row: any) => {
-          const { data: r } = normalisePayload(row ?? {}, FOLLOW_UP_SERVICE_FIELDS);
+          const { data: r } = normalisePayload(
+            row ?? {},
+            FOLLOW_UP_SERVICE_FIELDS,
+          );
           return {
             serviceId: r.serviceId || null,
             startDate: r.startDate ?? null,
@@ -75,7 +82,9 @@ export default eventHandler(async (event) => {
           };
         })
         // A row with nothing filled in is one the user added and never used.
-        .filter((r: any) => r.serviceId || r.startDate || r.endDate || r.outcome)
+        .filter(
+          (r: any) => r.serviceId || r.startDate || r.endDate || r.outcome,
+        )
         .map((r: any, i: number) => ({ ...r, sortOrder: i }));
 
   try {
@@ -83,7 +92,11 @@ export default eventHandler(async (event) => {
 
     const id = await prisma.$transaction(async (tx: any) => {
       if (body?.id) {
-        await tx.followUp.update({ where: { id: body.id }, data, select: { id: true } });
+        await tx.followUp.update({
+          where: { id: body.id },
+          data,
+          select: { id: true },
+        });
         // Replaced rather than diffed, as the other forms' lists are. Runs even
         // when `services` is empty, which is how switching to section ៣ clears
         // rows left from section ២.
@@ -101,6 +114,13 @@ export default eventHandler(async (event) => {
         select: { id: true },
       });
       return created.id;
+    });
+
+    await writeActivityLog(event, {
+      action: body?.id ? "UPDATE" : "CREATE",
+      entityType: "FOLLOW_UP",
+      entityId: id, // or `id`
+      summary: `${body?.id ? "Updated" : "Created"} follow-up for client ${body.clientId}`,
     });
 
     setResponseStatus(event, body?.id ? 200 : 201);

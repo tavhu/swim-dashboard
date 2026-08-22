@@ -50,6 +50,7 @@ model User {
   contactMessage  contactMessage[]
   approvalEvents  ApprovalEvent[]
   feedback        Feedback[]
+  activityLogs    ActivityLog[]
 }
 
 model contactMessage {
@@ -1302,3 +1303,82 @@ enum ReferralUrgency {
 /// the manual defines and the order rule enforces; a referral can be raised at
 /// any point and gating it behind a form the client has not reached would stop
 /// the very thing it is for.
+// ─── Activity log (append-only audit) ───────────────────────────────────────
+//
+// Records meaningful writes: client forms 1–6, and Service / Centre / Staff /
+// User / Role changes. Reading the log is a grant (`activity-log`); writing is
+// done only from trusted server handlers via server/utils/activityLog.ts.
+//
+// Denormalised actor and centre names so history survives account or centre
+// deletion — same idea as Feedback.
+
+enum ActivityAction {
+  CREATE
+  UPDATE
+  DELETE
+  SUBMIT
+  APPROVE
+  REJECT
+}
+
+enum ActivityEntityType {
+  CLIENT
+  CLIENT_SERVICE
+  CASE_PLAN
+  REINTEGRATION
+  FOLLOW_UP
+  CASE_CLOSURE
+  SERVICE
+  CENTER
+  STAFF
+  GOVERN_STAFF
+  USER
+  ROLE
+  ORGANISATION
+  CLIENT_TYPE
+  REFERRAL_TYPE
+  ABOUT
+  OTHER
+}
+
+model ActivityLog {
+  id String @id @default(cuid())
+
+  actorID       String?
+  actor         User?   @relation(fields: [actorID], references: [id], onDelete: SetNull)
+  actorName     String?
+  actorUsername String?
+
+  action     ActivityAction
+  entityType ActivityEntityType
+  entityId   String?
+  summary    String?
+  /// Small JSON only (e.g. { "from": "DRAFT", "to": "SUBMITTED" }). Never full form bodies.
+  metadata   Json?
+
+  serviceCenterID String?
+  centreName      String?
+
+  ip        String?
+  userAgent String?
+
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([actorID, createdAt])
+  @@index([entityType, entityId, createdAt])
+  @@index([action, createdAt])
+  @@index([serviceCenterID, createdAt])
+  @@map("activityLogs")
+}
+
+/// Single-row settings for activity log retention.
+/// retentionYears = 0 means keep forever.
+model ActivityLogSettings {
+  id             String   @id @default("activity-log")
+  retentionYears Int      @default(5)
+  updatedAt      DateTime @updatedAt
+  updatedByID    String?
+
+  @@map("activityLogSettings")
+}

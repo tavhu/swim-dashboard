@@ -1,4 +1,5 @@
 import { getServerSession } from "#auth";
+import { writeActivityLog } from "~~/server/utils/activityLog";
 
 export default eventHandler(async (event) => {
   const session = await getServerSession(event);
@@ -12,7 +13,10 @@ export default eventHandler(async (event) => {
   const { data: body, missing } = normaliseClientPayload(rawBody);
   if (missing.length) {
     setResponseStatus(event, 400);
-    return { error: `Missing or invalid: ${missing.join(', ')}`, fields: missing };
+    return {
+      error: `Missing or invalid: ${missing.join(", ")}`,
+      fields: missing,
+    };
   }
 
   // Which centre this client is filed under is not the form's decision when the
@@ -110,12 +114,24 @@ export default eventHandler(async (event) => {
             },
           },
         },
-      }
+      },
     );
 
     //@ts-ignored
+    await writeActivityLog(event, {
+      action: "CREATE",
+      entityType: "CLIENT",
+      entityId: result.id,
+      summary: `Created client ${result.ReadableCode ?? result.id}`,
+      serviceCenterID: centreID,
+    });
+
     setResponseStatus(event, 201);
-    return { message: "User Update or Created", id: result.id, ReadableCode: result.ReadableCode };
+    return {
+      message: "User Update or Created",
+      id: result.id,
+      ReadableCode: result.ReadableCode,
+    };
   } catch (e: any) {
     // Was `error: "e"` — the literal string — so the form could only say
     // "unsuccessful" with no indication of which field was at fault.

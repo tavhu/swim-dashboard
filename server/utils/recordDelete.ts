@@ -1,5 +1,6 @@
 import fs from "fs/promises";
 import { resolveUploadPath } from "./uploads";
+import { writeActivityLog } from "~~/server/utils/activityLog";
 
 /**
  * Deleting one ទម្រង់ទី២-៦ record.
@@ -78,7 +79,10 @@ export async function runRecordDelete(opts: {
   // here, in the shared helper, so no form's delete endpoint can be the one that
   // was forgotten.
   const caller = await getAuthUser(event);
-  if (caller?.serviceCenterID && caller.serviceCenterID !== record.client?.serviceCenterID) {
+  if (
+    caller?.serviceCenterID &&
+    caller.serviceCenterID !== record.client?.serviceCenterID
+  ) {
     setResponseStatus(event, 403);
     return { error: errorMessage(event, "អ្នកមិនមានសិទ្ធិលើមជ្ឈមណ្ឌលនេះទេ") };
   }
@@ -108,6 +112,14 @@ export async function runRecordDelete(opts: {
       /* already gone, or never written */
     }
   }
+
+  await writeActivityLog(event, {
+    action: "DELETE",
+    entityType: recordType,
+    entityId: id,
+    summary: `Deleted ${label} ${id}`,
+    serviceCenterID: record.client?.serviceCenterID ?? null,
+  });
 
   setResponseStatus(event, 200);
   return {

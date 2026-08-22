@@ -2,6 +2,7 @@ import { getServerSession } from "#auth";
 import fs from "fs/promises";
 import path from "path";
 import { resolveUploadPath } from "../../utils/uploads";
+import { writeActivityLog } from "~~/server/utils/activityLog";
 
 /**
  * Deletes a client and the whole case file hanging off it.
@@ -64,7 +65,13 @@ export default eventHandler(async (event) => {
         photo: true,
         clientServices: { select: { id: true, attachments: true } },
         casePlans: { select: { id: true } },
-        reintegrations: { select: { id: true, goalAttachments: true, communityAttachments: true } },
+        reintegrations: {
+          select: {
+            id: true,
+            goalAttachments: true,
+            communityAttachments: true,
+          },
+        },
         followUps: { select: { id: true, attachments: true } },
         caseClosures: { select: { id: true } },
       },
@@ -87,7 +94,10 @@ export default eventHandler(async (event) => {
     const paths = [
       client.photo,
       ...client.clientServices.map((r) => r.attachments),
-      ...client.reintegrations.flatMap((r) => [r.goalAttachments, r.communityAttachments]),
+      ...client.reintegrations.flatMap((r) => [
+        r.goalAttachments,
+        r.communityAttachments,
+      ]),
       ...client.followUps.map((r) => r.attachments),
     ]
       .filter(Boolean)
@@ -113,13 +123,21 @@ export default eventHandler(async (event) => {
       prisma.caseClosure.deleteMany({ where: { clientId: id } }),
 
       // ទម្រង់ទី១'s own children.
-      prisma.clientProgress.deleteMany({ where: { Client_PersonalInformationID: id } }),
-      prisma.clientServeHistory.deleteMany({ where: { Client_PersonalInformationID: id } }),
+      prisma.clientProgress.deleteMany({
+        where: { Client_PersonalInformationID: id },
+      }),
+      prisma.clientServeHistory.deleteMany({
+        where: { Client_PersonalInformationID: id },
+      }),
       prisma.servicesOnClients.deleteMany({ where: { clientId: id } }),
-      prisma.clientHopelessMultiple.deleteMany({ where: { client_PersonalInformationId: id } }),
+      prisma.clientHopelessMultiple.deleteMany({
+        where: { client_PersonalInformationId: id },
+      }),
 
       // The audit trail for every record above.
-      prisma.approvalEvent.deleteMany({ where: { recordId: { in: recordIds } } }),
+      prisma.approvalEvent.deleteMany({
+        where: { recordId: { in: recordIds } },
+      }),
 
       prisma.client_PersonalInformation.delete({ where: { id } }),
     ]);
@@ -138,8 +156,19 @@ export default eventHandler(async (event) => {
       }
     }
 
+    await writeActivityLog(event, {
+      action: "DELETE",
+      entityType: "CLIENT",
+      entityId: id,
+      summary: `Deleted client ${id}`,
+    });
+
     setResponseStatus(event, 200);
-    return { message: "delete success", id, deleted: { ...counts, filesRemoved } };
+    return {
+      message: "delete success",
+      id,
+      deleted: { ...counts, filesRemoved },
+    };
   } catch (e: any) {
     console.error("[client/delete]", e);
     setResponseStatus(event, 502);

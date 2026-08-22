@@ -1,5 +1,5 @@
 import type { H3Event } from "h3";
-
+import { writeActivityLog } from "~~/server/utils/activityLog";
 /**
  * The ៥. សិទ្ធិអនុម័ត transition, shared by every ទម្រង់.
  *
@@ -38,12 +38,15 @@ export async function runApprovalTransition(opts: {
   reason?: unknown;
   actorID?: string;
 }) {
-  const { event, delegate, recordType, label, id, action, reason, actorID } = opts;
+  const { event, delegate, recordType, label, id, action, reason, actorID } =
+    opts;
 
   const rule = ALLOWED[action as string];
   if (!id || !rule) {
     setResponseStatus(event, 400);
-    return { error: "id and a valid action (submit, approve, reject) are required" };
+    return {
+      error: "id and a valid action (submit, approve, reject) are required",
+    };
   }
   if (action === "reject" && !String(reason ?? "").trim()) {
     setResponseStatus(event, 400);
@@ -98,7 +101,9 @@ export async function runApprovalTransition(opts: {
           });
 
     const recordCentre =
-      recordType === "CLIENT" ? scoped?.serviceCenterID : scoped?.client?.serviceCenterID;
+      recordType === "CLIENT"
+        ? scoped?.serviceCenterID
+        : scoped?.client?.serviceCenterID;
 
     if (!isInCenterScope(caller.serviceCenterID, recordCentre)) {
       setResponseStatus(event, 403);
@@ -112,7 +117,12 @@ export async function runApprovalTransition(opts: {
   // rejected.
   const data: Record<string, any> =
     action === "submit"
-      ? { approvalStatus: "SUBMITTED", submittedAt: now, submittedByID: actorID, rejectionReason: null }
+      ? {
+          approvalStatus: "SUBMITTED",
+          submittedAt: now,
+          submittedByID: actorID,
+          rejectionReason: null,
+        }
       : {
           approvalStatus: rule.to,
           decidedAt: now,
@@ -122,7 +132,11 @@ export async function runApprovalTransition(opts: {
 
   // One transaction: the record and its audit row move together or not at all.
   const [updated] = await prisma.$transaction([
-    delegate.update({ where: { id }, data, select: { id: true, approvalStatus: true } }),
+    delegate.update({
+      where: { id },
+      data,
+      select: { id: true, approvalStatus: true },
+    }),
     prisma.approvalEvent.create({
       data: {
         recordType: recordType as any,
@@ -134,6 +148,44 @@ export async function runApprovalTransition(opts: {
       },
     }),
   ]);
+
+  const actionMap: Record<string, "SUBMIT" | "APPROVE" | "REJECT"> = {
+    submit: "SUBMIT",
+    approve: "APPROVE",
+    reject: "REJECT",
+  };
+  const entityMap: Record<
+    string,
+    | "CLIENT"
+    | "CLIENT_SERVICE"
+    | "CASE_PLAN"
+    | "REINTEGRATION"
+    | "FOLLOW_UP"
+    | "CASE_CLOSURE"
+  > = {
+    CLIENT: "CLIENT",
+    CLIENT_SERVICE: "CLIENT_SERVICE",
+    CASE_PLAN: "CASE_PLAN",
+    REINTEGRATION: "REINTEGRATION",
+    FOLLOW_UP: "FOLLOW_UP",
+    CASE_CLOSURE: "CASE_CLOSURE",
+  };
+
+  const logAction = actionMap[action as string];
+  const logEntity = entityMap[recordType];
+  if (logAction && logEntity) {
+    await writeActivityLog(event, {
+      action: logAction,
+      entityType: logEntity,
+      entityId: id as string,
+      summary: `${logAction} ${label} (${current.approvalStatus} → ${rule.to})`,
+      metadata: {
+        from: current.approvalStatus,
+        to: rule.to,
+        reason: action === "reject" ? String(reason ?? "").trim() : null,
+      },
+    });
+  }
 
   setResponseStatus(event, 200);
   return { message: "ok", status: updated.approvalStatus };

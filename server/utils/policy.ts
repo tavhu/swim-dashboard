@@ -63,6 +63,7 @@ export const RESOURCE = {
   centerPlan: "center-plan",
   clientType: "client-type",
   clientTypeRegister: "client-type-register",
+  activityLog: "activity-log",
 } as const;
 
 export const RULES: Rule[] = [
@@ -367,7 +368,12 @@ export const RULES: Rule[] = [
   },
 
   // --- services -------------------------------------------------------------
-  { mode: "permission", pattern: /^\/api\/service\/?$/, resource: RESOURCE.service, action: "read" },
+  {
+    mode: "permission",
+    pattern: /^\/api\/service\/?$/,
+    resource: RESOURCE.service,
+    action: "read",
+  },
   {
     mode: "permission",
     method: "GET",
@@ -398,7 +404,12 @@ export const RULES: Rule[] = [
     resource: RESOURCE.clientTypeRegister,
     action: "write",
   },
-  { mode: "permission", pattern: /^\/api\/client-type\/?$/, resource: RESOURCE.clientType, action: "read" },
+  {
+    mode: "permission",
+    pattern: /^\/api\/client-type\/?$/,
+    resource: RESOURCE.clientType,
+    action: "read",
+  },
   {
     mode: "permission",
     method: "GET",
@@ -454,6 +465,33 @@ export const RULES: Rule[] = [
     mode: "permission",
     pattern: /^\/api\/deleteFile\/?$/,
     resource: RESOURCE.file,
+    action: "write",
+  },
+  // --- activity log ---------------------------------------------------------
+  {
+    mode: "permission",
+    pattern: /^\/api\/activity-log\/list\/?$/,
+    resource: RESOURCE.activityLog,
+    action: "read",
+  },
+  {
+    mode: "permission",
+    pattern: /^\/api\/activity-log\/settings\/?$/,
+    method: "GET",
+    resource: RESOURCE.activityLog,
+    action: "read",
+  },
+  {
+    mode: "permission",
+    pattern: /^\/api\/activity-log\/settings\/?$/,
+    method: "POST",
+    resource: RESOURCE.activityLog,
+    action: "write",
+  },
+  {
+    mode: "permission",
+    pattern: /^\/api\/activity-log\/purge\/?$/,
+    resource: RESOURCE.activityLog,
     action: "write",
   },
 ];

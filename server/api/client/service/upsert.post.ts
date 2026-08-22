@@ -1,4 +1,5 @@
 import { getServerSession } from "#auth";
+import { writeActivityLog } from "~~/server/utils/activityLog";
 
 /**
  * ទម្រង់ទី២ — create or update a client's service episode.
@@ -15,10 +16,16 @@ export default eventHandler(async (event) => {
   }
 
   const rawBody = await readBody(event);
-  const { data: body, missing } = normalisePayload(rawBody, CLIENT_SERVICE_FIELDS);
+  const { data: body, missing } = normalisePayload(
+    rawBody,
+    CLIENT_SERVICE_FIELDS,
+  );
   if (missing.length) {
     setResponseStatus(event, 400);
-    return { error: `Missing or invalid: ${missing.join(", ")}`, fields: missing };
+    return {
+      error: `Missing or invalid: ${missing.join(", ")}`,
+      fields: missing,
+    };
   }
 
   if (!body?.clientId) {
@@ -63,6 +70,13 @@ export default eventHandler(async (event) => {
           data,
           select: { id: true },
         });
+
+    await writeActivityLog(event, {
+      action: body?.id ? "UPDATE" : "CREATE",
+      entityType: "CLIENT_SERVICE",
+      entityId: result.id,
+      summary: `${body?.id ? "Updated" : "Created"} service record for client ${body.clientId}`,
+    });
 
     setResponseStatus(event, body?.id ? 200 : 201);
     return { message: "saved", id: result.id };

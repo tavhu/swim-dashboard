@@ -1,4 +1,5 @@
 import { getServerSession } from "#auth";
+import { writeActivityLog } from "~~/server/utils/activityLog";
 
 /**
  * ទម្រង់ទី៤ — create or update a reintegration record with its two service
@@ -17,10 +18,16 @@ export default eventHandler(async (event) => {
   }
 
   const rawBody = await readBody(event);
-  const { data: body, missing } = normalisePayload(rawBody, REINTEGRATION_FIELDS);
+  const { data: body, missing } = normalisePayload(
+    rawBody,
+    REINTEGRATION_FIELDS,
+  );
   if (missing.length) {
     setResponseStatus(event, 400);
-    return { error: `Missing or invalid: ${missing.join(", ")}`, fields: missing };
+    return {
+      error: `Missing or invalid: ${missing.join(", ")}`,
+      fields: missing,
+    };
   }
 
   if (!body?.clientId) {
@@ -86,7 +93,10 @@ export default eventHandler(async (event) => {
   const rows = (input: any, withOutcome: boolean) =>
     (Array.isArray(input) ? input : [])
       .map((row: any) => {
-        const { data: r } = normalisePayload(row ?? {}, REINTEGRATION_SERVICE_FIELDS);
+        const { data: r } = normalisePayload(
+          row ?? {},
+          REINTEGRATION_SERVICE_FIELDS,
+        );
         const base: any = {
           serviceId: r.serviceId || null,
           startDate: r.startDate ?? null,
@@ -106,19 +116,33 @@ export default eventHandler(async (event) => {
 
     const id = await prisma.$transaction(async (tx: any) => {
       if (body?.id) {
-        await tx.reintegration.update({ where: { id: body.id }, data, select: { id: true } });
+        await tx.reintegration.update({
+          where: { id: body.id },
+          data,
+          select: { id: true },
+        });
 
-        await tx.reintegrationPastService.deleteMany({ where: { reintegrationId: body.id } });
+        await tx.reintegrationPastService.deleteMany({
+          where: { reintegrationId: body.id },
+        });
         if (pastServices.length) {
           await tx.reintegrationPastService.createMany({
-            data: pastServices.map((r: any) => ({ ...r, reintegrationId: body.id })),
+            data: pastServices.map((r: any) => ({
+              ...r,
+              reintegrationId: body.id,
+            })),
           });
         }
 
-        await tx.reintegrationCommunityService.deleteMany({ where: { reintegrationId: body.id } });
+        await tx.reintegrationCommunityService.deleteMany({
+          where: { reintegrationId: body.id },
+        });
         if (communityServices.length) {
           await tx.reintegrationCommunityService.createMany({
-            data: communityServices.map((r: any) => ({ ...r, reintegrationId: body.id })),
+            data: communityServices.map((r: any) => ({
+              ...r,
+              reintegrationId: body.id,
+            })),
           });
         }
 
@@ -134,6 +158,13 @@ export default eventHandler(async (event) => {
         select: { id: true },
       });
       return created.id;
+    });
+
+    await writeActivityLog(event, {
+      action: body?.id ? "UPDATE" : "CREATE",
+      entityType: "REINTEGRATION",
+      entityId: id,
+      summary: `${body?.id ? "Updated" : "Created"} reintegration for client ${body.clientId}`,
     });
 
     setResponseStatus(event, body?.id ? 200 : 201);

@@ -1,4 +1,5 @@
 import { getServerSession } from "#auth";
+import { writeActivityLog } from "~~/server/utils/activityLog";
 
 export default eventHandler(async (event) => {
   const session = await getServerSession(event);
@@ -12,7 +13,10 @@ export default eventHandler(async (event) => {
   const { data: body, missing } = normaliseClientPayload(rawBody);
   if (missing.length) {
     setResponseStatus(event, 400);
-    return { error: `Missing or invalid: ${missing.join(', ')}`, fields: missing };
+    return {
+      error: `Missing or invalid: ${missing.join(", ")}`,
+      fields: missing,
+    };
   }
 
   // Two separate checks, and both are needed. The first says the caller may edit
@@ -97,7 +101,7 @@ export default eventHandler(async (event) => {
           InterviewerPosition: body?.InterviewerPosition,
           serviceCenterID: centreID,
         },
-      }
+      },
     );
 
     //   console.log(body?.governStaffChildren);
@@ -148,7 +152,14 @@ export default eventHandler(async (event) => {
 
     //console.log(deleteed, createMany);
 
-    //@ts-ignored
+    await writeActivityLog(event, {
+      action: "UPDATE",
+      entityType: "CLIENT",
+      entityId: result.id,
+      summary: `Updated client ${result.ReadableCode ?? result.id}`,
+      serviceCenterID: centreID,
+    });
+
     setResponseStatus(event, 201);
     return { message: "User Update or Created", id: result.id };
   } catch (e: any) {
