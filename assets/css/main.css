@@ -248,3 +248,43 @@ body:has(#dark-mode.dark) {
 
 /* Sidebar is position:fixed (see layouts/default.vue + Sidebar.vue) — viewport-anchored,
    so it can never scroll away regardless of page length. */
+
+/* ── VuePic datepicker — dark mode ────────────────────────────────────────
+   The picker always renders its light theme; it knows nothing about the app's
+   inner #dark-mode.dark container. These overrides re-skin every part of the
+   popover so it follows the rest of the UI. */
+#dark-mode.dark .dp__theme_light {
+  --dp-background-color: #1f2937;      /* gray-800 */
+  --dp-text-color: #e5e7eb;            /* gray-200 */
+  --dp-hover-color: #374151;           /* gray-700 */
+  --dp-hover-text-color: #f9fafb;      /* gray-50 */
+  --dp-hover-icon-color: #f9fafb;
+  --dp-primary-color: #3b82f6;         /* blue-500 */
+  --dp-primary-text-color: #ffffff;
+  --dp-secondary-color: #4b5563;       /* gray-600 */
+  --dp-border-color: #374151;
+  --dp-menu-border-color: #374151;
+  --dp-border-color-hover: #4b5563;
+  --dp-disabled-color: #374151;
+  --dp-scroll-bar-background: #374151;
+  --dp-scroll-bar-color: #4b5563;
+  --dp-icon-color: #9ca3af;            /* gray-400 */
+  --dp-shadow-color: rgba(0, 0, 0, 0.4);
+}
+/* The input box itself sits outside the themed vars in some versions. */
+#dark-mode.dark .dp__input,
+#dark-mode.dark .dp__input_wrap input.dp__pointer {
+  background: #111827;                 /* gray-900 */
+  border-color: #374151 !important;
+  color: #e5e7eb;
+}
+#dark-mode.dark .dp__calendar_item,
+#dark-mode.dark .dp__month_year_select,
+#dark-mode.dark .dp__btn {
+  color: #e5e7eb;
+}
+
+/* ── Organisation canvas form ─────────────────────────────────────────── */
+#dark-mode.dark .organisation-canvas-panel {
+  background: #1f2937;
+}

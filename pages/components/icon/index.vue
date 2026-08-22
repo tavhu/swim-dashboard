@@ -33,7 +33,7 @@ const copyText = (text: string) => {
     <hr class="my-2 border dark:border-gray-700" />
     <div class="mb-2">
       <TwInput
-        class="bg-white rounded w-full p-2 focus:outline focus:outline-offset-2 focus:outline-sky-800"
+        class="bg-white rounded w-full p-2 focus:outline focus:outline-offset-2 focus:outline-sky-800 dark:bg-gray-800"
         type="text"
         v-model="search"
         placeholder="Type to search icon . . ."

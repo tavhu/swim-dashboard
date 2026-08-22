@@ -221,7 +221,7 @@ async function submit() {
             <div class="mt-2 space-y-2">
               <label v-for="r in CLOSURE_FAILURE_REASON" :key="r" class="flex items-start gap-2">
                 <input v-model="failureReasons" :value="r" :disabled="readOnly" type="checkbox"
-                  class="mt-1 h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary" />
+                  class="mt-1 h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100" />
                 <span class="text-base text-gray-800 dark:text-gray-100">{{ tr(r) }}</span>
               </label>
             </div>

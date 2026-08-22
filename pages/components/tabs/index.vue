@@ -87,10 +87,10 @@ import { TwTabBody, TwTabNavigator, TwTabWrapper } from "vue3-tailwind";
       </div>
       <!-- <div class="col-span-12">
         <TwTabWrapper>
-          <div class="border border-gray-200 rounded-lg overflow-hidden">
+          <div class="border border-gray-200 rounded-lg overflow-hidden dark:border-gray-700">
             <div class="bg-gray-100 shadow-inner">
               <div class="text-lg p-2 bg-gray-300">Title</div>
-              <hr class="border-gray-300" />
+              <hr class="border-gray-300 dark:border-gray-700" />
               <TwTabNavigator class="bg-gray-100" type="horizontal">
                 <template #tab1>
                   <div class="p-2 w-full">Test</div>
@@ -104,17 +104,17 @@ import { TwTabBody, TwTabNavigator, TwTabWrapper } from "vue3-tailwind";
               </TwTabNavigator>
             </div>
             <TwTabBody id="tab1" v-slot="{ active }">
-              <div class="w-full p-2 rounded bg-white shadow" v-if="active">
+              <div class="w-full p-2 rounded bg-white shadow dark:bg-gray-800" v-if="active">
                 Test
               </div>
             </TwTabBody>
             <TwTabBody id="tab2" v-slot="{ active }">
-              <div class="w-full p-2 rounded bg-white shadow" v-if="active">
+              <div class="w-full p-2 rounded bg-white shadow dark:bg-gray-800" v-if="active">
                 Test 2
               </div>
             </TwTabBody>
             <TwTabBody id="tab3" v-slot="{ active }">
-              <div class="w-full p-2 rounded bg-white shadow" v-if="active">
+              <div class="w-full p-2 rounded bg-white shadow dark:bg-gray-800" v-if="active">
                 Test 3
               </div>
             </TwTabBody>

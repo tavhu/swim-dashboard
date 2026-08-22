@@ -268,7 +268,7 @@ async function submit() {
               <div class="mt-2 flex flex-wrap gap-x-6 gap-y-2">
                 <label v-for="i in INFORMANT" :key="i" class="flex items-center gap-2">
                   <input v-model="informants" :value="i" :disabled="readOnly" type="checkbox"
-                    class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary" />
+                    class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100" />
                   <span class="text-base text-gray-800 dark:text-gray-100">{{ tr(i) }}</span>
                 </label>
               </div>

@@ -160,7 +160,7 @@ const close = () => {
 
 <template>
   <div v-show="open" class="fixed   inset-0 z-50 bg-gray-500 bg-opacity-50 flex items-center justify-center">
-    <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-5xl">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-5xl">
       <div class="flex justify-between items-center mb- ">
         <h2 class="text-xl font-[Moul] text-primary">{{ item ? "កែប្រែ" : "ចុះឈ្មោះ" }} ស្ថាប័ន</h2>
         <UButton @click="close" color="red">
