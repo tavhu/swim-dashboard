@@ -286,11 +286,11 @@ describe("gradual rollout", () => {
     expect(isEnforced("/api/client/personalInformationUpdate")).toBe(true);
   });
 
-  it("leaves the rest in dry-run for now", () => {
-    // Not a requirement, just a record of the current rollout stage — update
-    // this list as endpoints are switched on.
-    expect(isEnforced("/api/center/upsert")).toBe(false);
-    expect(isEnforced("/api/role/create")).toBe(false);
+  it("enforces everything now that the rollout is over", () => {
+    // ENFORCED is [/^\/api\//] — every endpoint is guarded, and a new one
+    // without a policy rule fails closed in the middleware.
+    expect(isEnforced("/api/center/upsert")).toBe(true);
+    expect(isEnforced("/api/role/create")).toBe(true);
   });
 
   it("matches only paths that exist", () => {
@@ -300,8 +300,11 @@ describe("gradual rollout", () => {
     }
   });
 
-  it("does not enforce by accident on unrelated paths", () => {
-    expect(isEnforced("/api/contact")).toBe(false);
-    expect(isEnforced("/api/clientele/x")).toBe(false);
+  it("still refuses to enforce outside /api", () => {
+    // The middleware only ever sees /api/** — but the pattern must not
+    // silently claim pages, assets or the root either.
+    expect(isEnforced("/api/contact")).toBe(true);
+    expect(isEnforced("/login")).toBe(false);
+    expect(isEnforced("/")).toBe(false);
   });
 });
