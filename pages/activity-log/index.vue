@@ -69,8 +69,8 @@ const load = async () => {
                 dateTo: dateTo.value || undefined,
                 take: take.value,
                 skip: page.value * take.value,
-                sortBy: "createdAt",
-                sortType: "desc",
+                sortBy: sortBy.value,
+                sortType: sortType.value,
             },
         });
         rows.value = res?.data ?? [];
@@ -117,6 +117,38 @@ const goToPage = (p: number) => {
     if (p < 0 || p > totalPages.value - 1 || p === page.value) return;
     page.value = p;
     load();
+};
+
+// Column sorting — only columns the API whitelist allows (SORTABLE in
+// list.post.ts). Clicking a sorted column flips its direction; clicking an
+// unsorted one sorts descending by it, newest/strongest first.
+const sortBy = ref("createdAt");
+const sortType = ref<"asc" | "desc">("desc");
+
+const SORTABLE_COLUMNS: Record<string, string> = {
+    createdAt: "createdAt",
+    actorName: "actorName",
+    action: "action",
+    entityType: "entityType",
+};
+
+const toggleSort = (col: string) => {
+    const key = SORTABLE_COLUMNS[col];
+    if (!key) return;
+    if (sortBy.value === key) {
+        sortType.value = sortType.value === "desc" ? "asc" : "desc";
+    } else {
+        sortBy.value = key;
+        sortType.value = "desc";
+    }
+    page.value = 0;
+    load();
+};
+
+const sortIcon = (col: string) => {
+    const key = SORTABLE_COLUMNS[col];
+    if (!key || sortBy.value !== key) return "";
+    return sortType.value === "desc" ? "▼" : "▲";
 };
 
 const onSearch = useDebounceFn(() => {
@@ -406,10 +438,18 @@ const actionClass = (a: string) => {
                 <table class="w-full">
                     <thead>
                         <tr class="border-b text-left text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400">
-                            <th class="px-4 py-3 font-semibold">{{ tr("ពេលវេលា") }}</th>
-                            <th class="px-4 py-3 font-semibold">{{ tr("អ្នកប្រើប្រាស់") }}</th>
-                            <th class="px-4 py-3 font-semibold">{{ tr("សកម្មភាព") }}</th>
-                            <th class="px-4 py-3 font-semibold">{{ tr("ប្រភេទ") }}</th>
+                            <th class="cursor-pointer select-none px-4 py-3 font-semibold hover:text-gray-700 dark:hover:text-gray-200" @click="toggleSort('createdAt')">
+                                {{ tr("ពេលវេលា") }} {{ sortIcon("createdAt") }}
+                            </th>
+                            <th class="cursor-pointer select-none px-4 py-3 font-semibold hover:text-gray-700 dark:hover:text-gray-200" @click="toggleSort('actorName')">
+                                {{ tr("អ្នកប្រើប្រាស់") }} {{ sortIcon("actorName") }}
+                            </th>
+                            <th class="cursor-pointer select-none px-4 py-3 font-semibold hover:text-gray-700 dark:hover:text-gray-200" @click="toggleSort('action')">
+                                {{ tr("សកម្មភាព") }} {{ sortIcon("action") }}
+                            </th>
+                            <th class="cursor-pointer select-none px-4 py-3 font-semibold hover:text-gray-700 dark:hover:text-gray-200" @click="toggleSort('entityType')">
+                                {{ tr("ប្រភេទ") }} {{ sortIcon("entityType") }}
+                            </th>
                             <th class="px-4 py-3 font-semibold">{{ tr("សេចក្ដីសង្ខេប") }}</th>
                             <th class="px-4 py-3 font-semibold">{{ tr("មណ្ឌល") }}</th>
                         </tr>
