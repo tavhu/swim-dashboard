@@ -19,7 +19,6 @@ import { useToast } from "vue3-tailwind";
  *     canvas form last opened, so deleting from one table could delete from the
  *     other's table entirely.
  */
-const router = useRouter();
 const readOnly = checkIfPageReadOnly();
 const { t } = useI18n();
 const toast = useToast();
@@ -92,10 +91,6 @@ const deleteRecord = async (row: any, kind: "Contract" | "Official") => {
   refreshAll();
 };
 
-const viewRecord = (id: string, kind: "Contract" | "Official") => {
-  router.push({ path: `/center/staff/${id}`, query: { type: kind } });
-};
-
 const editRecord = (id: string, kind: string) => {
   if (readOnly) return;
   typeEmployee.value = kind;
@@ -147,8 +142,9 @@ const openRegisterForm = (kind: string) => {
         </template>
         <template #actions-data="{ row }">
           <div class="flex gap-2">
-            <UButton icon="i-heroicons-eye" size="sm" color="gray"
-              @click="viewRecord(row.id, 'Contract')">{{ tr('មើល') }}</UButton>
+            <NuxtLink :to="{ path: `/center/staff/${row.id}`, query: { type: 'Contract' } }">
+              <UButton icon="i-heroicons-eye" size="sm" color="gray">{{ tr('មើល') }}</UButton>
+            </NuxtLink>
             <UButton icon="i-heroicons-pencil-square" size="sm" color="primary" :disabled="readOnly"
               @click="editRecord(row.id, 'Contract')">{{ tr('កែសម្រួល') }}</UButton>
             <UButton icon="i-heroicons-trash" size="sm" color="red" :disabled="readOnly"
@@ -190,8 +186,9 @@ const openRegisterForm = (kind: string) => {
         </template>
         <template #actions-data="{ row }">
           <div class="flex gap-2">
-            <UButton icon="i-heroicons-eye" size="sm" color="gray"
-              @click="viewRecord(row.id, 'Official')">{{ tr('មើល') }}</UButton>
+            <NuxtLink :to="{ path: `/center/staff/${row.id}`, query: { type: 'Official' } }">
+              <UButton icon="i-heroicons-eye" size="sm" color="gray">{{ tr('មើល') }}</UButton>
+            </NuxtLink>
             <UButton icon="i-heroicons-pencil-square" size="sm" color="primary" :disabled="readOnly"
               @click="editRecord(row.id, 'Official')">{{ tr('កែសម្រួល') }}</UButton>
             <UButton icon="i-heroicons-trash" size="sm" color="red" :disabled="readOnly"
