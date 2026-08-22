@@ -11,6 +11,11 @@ export default eventHandler(async (event) => {
   // spouseDateOfBirth is optional but the form sends '' — Prisma rejects
   // that for a DateTime column. See server/utils/payload.ts.
   const { data: body, missing } = normaliseGovernStaffPayload(rawBody);
+
+  // Same row checks as insert: blank rows dropped, half-filled rows named back.
+  const rowLists = normaliseGovernStaffRows(rawBody);
+  missing.push(...rowLists.missing);
+
   if (missing.length) {
     setResponseStatus(event, 400);
     return { error: `Missing or invalid: ${missing.join(', ')}`, fields: missing };
@@ -115,7 +120,7 @@ export default eventHandler(async (event) => {
         },
       });
     const governStaffChildren = ContextPrisma.governStaffChildren.createMany({
-      data: body?.governStaffChildren,
+      data: rowLists.lists.governStaffChildren ?? [],
     });
 
     const deletegovernStaffQualifitcation =
@@ -127,7 +132,7 @@ export default eventHandler(async (event) => {
 
     const governStaffQualifitcation =
       ContextPrisma.governStaffQualifitcation.createMany({
-        data: body?.governStaffQualifitcation,
+        data: rowLists.lists.governStaffQualifitcation ?? [],
       });
 
     const deletegovernStaffLanuage =
@@ -137,7 +142,7 @@ export default eventHandler(async (event) => {
         },
       });
     const governStaffLanuage = ContextPrisma.governStaffLanuage.createMany({
-      data: body?.governStaffLanuage,
+      data: rowLists.lists.governStaffLanuage ?? [],
     });
 
     const deletegovernStaffWorkingHistoryPublic =
@@ -148,7 +153,7 @@ export default eventHandler(async (event) => {
       });
     const governStaffWorkingHistoryPublic =
       ContextPrisma.governStaffWorkingHistoryPublic.createMany({
-        data: body?.governStaffWorkingHistoryPublic,
+        data: rowLists.lists.governStaffWorkingHistoryPublic ?? [],
       });
 
     const deletegovernStaffPositionHistory =
@@ -159,7 +164,7 @@ export default eventHandler(async (event) => {
       });
     const governStaffPositionHistory =
       ContextPrisma.governStaffPositionHistory.createMany({
-        data: body?.governStaffPositionHistory,
+        data: rowLists.lists.governStaffPositionHistory ?? [],
       });
 
     const deletegovernStaffCertificateLevelup =
@@ -170,7 +175,7 @@ export default eventHandler(async (event) => {
       });
     const governStaffCertificateLevelup =
       ContextPrisma.governStaffCertificateLevelup.createMany({
-        data: body?.governStaffCertificateLevelup,
+        data: rowLists.lists.governStaffCertificateLevelup ?? [],
       });
 
     const deletegovernStaffSituationOutsideOriginalOfficial =
@@ -181,7 +186,7 @@ export default eventHandler(async (event) => {
       });
     const governStaffSituationOutsideOriginalOfficial =
       ContextPrisma.governStaffSituationOutsideOriginalOfficial.createMany({
-        data: body?.governStaffSituationOutsideOriginalOfficial,
+        data: rowLists.lists.governStaffSituationOutsideOriginalOfficial ?? [],
       });
 
     const deletegovernStaffFreeNoSalary =
@@ -192,7 +197,7 @@ export default eventHandler(async (event) => {
       });
     const governStaffFreeNoSalary =
       ContextPrisma.governStaffFreeNoSalary.createMany({
-        data: body?.governStaffFreeNoSalary,
+        data: rowLists.lists.governStaffFreeNoSalary ?? [],
       });
 
     const deletegovernStaffLetterAppreciation =
@@ -203,7 +208,7 @@ export default eventHandler(async (event) => {
       });
     const governStaffLetterAppreciation =
       ContextPrisma.governStaffLetterAppreciation.createMany({
-        data: body?.governStaffLetterAppreciation,
+        data: rowLists.lists.governStaffLetterAppreciation ?? [],
       });
 
     const deletegovernStaffFineHistory =
@@ -214,7 +219,7 @@ export default eventHandler(async (event) => {
       });
     const governStaffFineHistory =
       ContextPrisma.governStaffFineHistory.createMany({
-        data: body?.governStaffFineHistory,
+        data: rowLists.lists.governStaffFineHistory ?? [],
       });
     const deletegovernStaffWorkingHistoryPrivate =
       ContextPrisma.governStaffWorkingHistoryPrivate.deleteMany({
@@ -224,7 +229,7 @@ export default eventHandler(async (event) => {
       });
     const governStaffWorkingHistoryPrivate =
       ContextPrisma.governStaffWorkingHistoryPrivate.createMany({
-        data: body?.governStaffWorkingHistoryPrivate,
+        data: rowLists.lists.governStaffWorkingHistoryPrivate ?? [],
       });
 
     const deleteed = await Promise.all([

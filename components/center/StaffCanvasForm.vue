@@ -143,6 +143,144 @@ const clearEdit = () => {
   }, 100)
 }
 
+/**
+ * Repeatable-row checks — same contract as ទម្រង់ទី១'s. A row where nothing
+ * at all was typed is skipped (the server drops it); a half-filled row adds a
+ * named problem so the toast says which row and field, and the data-field
+ * wrapper on the row's inputs gets the red ring and the scroll.
+ */
+const ROW_SPECS: Record<string, { key: string; label: string }[]> = {
+    childrenDetails: [
+        { key: "fullnameKH", label: "ឈ្មោះពេញ" },
+        { key: "gender", label: "ភេទ" },
+        { key: "dateofBirth", label: "ថ្ងៃខែឆ្នាំកំណើត" },
+        { key: "occupation", label: "មុខរបរ" },
+    ],
+    EducationDetails: [
+        { key: "couseLevel", label: "កម្រិតវគ្គសិក្សា" },
+        { key: "SchoolName", label: "ឈ្មោះសាលា" },
+        { key: "SchoolLocation", label: "ទីតាំងសាលា" },
+        { key: "CertificateLevel", label: "កម្រិតសញ្ញាបត្រ" },
+        { key: "majoring", label: "ជំនាញ" },
+        { key: "StartDate", label: "ថ្ងៃចាប់ផ្តើម" },
+        { key: "finishDate", label: "ថ្ងៃបញ្ចប់" },
+    ],
+    governStaffLanuage: [
+        { key: "langName", label: "ភាសា" },
+        { key: "read", label: "អាន" },
+        { key: "conversation", label: "និយាយ" },
+        { key: "writing", label: "សរសេរ" },
+    ],
+    governStaffWorkingHistoryPublic: [
+        { key: "DateStartWorking", label: "ថ្ងៃចាប់ផ្តើម" },
+        { key: "DateStopWorking", label: "ថ្ងៃបញ្ចប់" },
+        { key: "OgnisationName", label: "អង្គការ" },
+        { key: "Department", label: "ដេប៉ាតេម៉ង់" },
+        { key: "position", label: "មុខតំណែង" },
+        { key: "SkillInPosition", label: "សមត្ថភាពក្នុងមុខតំណែង" },
+    ],
+    governStaffWorkingHistoryPrivate: [
+        { key: "DateStartWorking", label: "ថ្ងៃចាប់ផ្តើម" },
+        { key: "DateStopWorking", label: "ថ្ងៃបញ្ចប់" },
+        { key: "OgnisationName", label: "អង្គការ" },
+        { key: "position", label: "មុខតំណែង" },
+        { key: "SkillInPosition", label: "សមត្ថភាពក្នុងមុខតំណែង" },
+    ],
+    governStaffPositionHistory: [
+        { key: "ValidDate", label: "កាលបរិច្ឆេទ" },
+        { key: "MinistryName", label: "ក្រសួង" },
+        { key: "Department", label: "ដេប៉ាតេម៉ង់" },
+        { key: "OfficialSection", label: "គ្រឹះស្ថាន" },
+        { key: "oldOfficialLevel", label: "ថ្នាក់ចាស់" },
+        { key: "newOffcialLevel", label: "ថ្នាក់ថ្មី" },
+        { key: "changeTo", label: "ផ្លាស់ប្តូរទៅ" },
+    ],
+    governStaffCertificateLevelup: [
+        { key: "validatDate", label: "កាលបរិច្ឆេទ" },
+        { key: "SchoolName", label: "ឈ្មោះសាលា" },
+        { key: "PlaceStudy", label: "កន្លែងសិក្សា" },
+        { key: "ReceivedCertificate", label: "សញ្ញាបត្រដែលទទួលបាន" },
+        { key: "OldPosition", label: "មុខតំណែងចាស់" },
+        { key: "NewPosition", label: "មុខតំណែងថ្មី" },
+    ],
+    governStaffSituationOutsideOriginalOfficial: [
+        { key: "startDate", label: "ថ្ងៃចាប់ផ្តើម" },
+        { key: "endDate", label: "ថ្ងៃបញ្ចប់" },
+        { key: "OginasationName", label: "អង្គការ" },
+        { key: "Position", label: "មុខតំណែង" },
+    ],
+    GovernStaffFreeNoSalary: [
+        { key: "startDate", label: "ថ្ងៃចាប់ផ្តើម" },
+        { key: "endDate", label: "ថ្ងៃបញ្ចប់" },
+        { key: "Oginisationname", label: "អង្គការ" },
+        { key: "NumberofMonthandYear", label: "ចំនួនខែ/ឆ្នាំ" },
+    ],
+    GovernStaffLetterAppreciation: [
+        { key: "letterNumber", label: "លេខលិខិត" },
+        { key: "OfficialDate", label: "ថ្ងៃខែ" },
+        { key: "RequestedOrginsation", label: "អង្គការស្នើសុំ" },
+        { key: "LetterDetails", label: "សេចក្ដីលម្អិត" },
+        { key: "TypeReceived", label: "ប្រភេទដែលទទួលបាន" },
+    ],
+    governStaffFineHistory: [
+        { key: "letterNumber", label: "លេខលិខិត" },
+        { key: "OffialDate", label: "ថ្ងៃខែ" },
+        { key: "RequestedOrginsation", label: "អង្គការស្នើសុំ" },
+        { key: "LetterDetails", label: "សេចក្ដីលម្អិត" },
+        { key: "TypeRecieved", label: "ប្រភេទដែលទទួលបាន" },
+    ],
+};
+
+/** The refs holding each list, keyed by name for checkRows below. */
+const rowListRefs = {
+    childrenDetails,
+    EducationDetails,
+    governStaffLanuage,
+    governStaffWorkingHistoryPublic,
+    governStaffWorkingHistoryPrivate,
+    governStaffPositionHistory,
+    governStaffCertificateLevelup,
+    governStaffSituationOutsideOriginalOfficial,
+    GovernStaffFreeNoSalary,
+    GovernStaffLetterAppreciation,
+    governStaffFineHistory,
+};
+
+const SECTION_LABELS: Record<string, string> = {
+    childrenDetails: "កូន",
+    EducationDetails: "កម្រិតវគ្គសិក្សា",
+    governStaffLanuage: "ភាសា",
+    governStaffWorkingHistoryPublic: "ប្រវត្តិការងារ (រដ្ឋ)",
+    governStaffWorkingHistoryPrivate: "ប្រវត្តិការងារ (ឯកជន)",
+    governStaffPositionHistory: "ប្រវត្តិមុខតំណែង",
+    governStaffCertificateLevelup: "ការឡើងកម្រិតសញ្ញាបត្រ",
+    governStaffSituationOutsideOriginalOfficial: "ស្ថានភាពក្រៅមុខតំណែង",
+    GovernStaffFreeNoSalary: "ចាកចេញដោយគ្មានប្រាក់ខែ",
+    GovernStaffLetterAppreciation: "លិខិតកោតសរសើរ",
+    governStaffFineHistory: "ប្រវត្តិពិន័យ",
+};
+
+function checkRows(problems: { field: string; label: string }[]) {
+    for (const [listName, spec] of Object.entries(ROW_SPECS)) {
+        const list = (rowListRefs as any)[listName]?.value ?? [];
+        list.forEach((row: any, i: number) => {
+            const filled = Object.entries(row ?? {}).filter(
+                ([, v]) => v !== null && v !== undefined && String(v).trim() !== ""
+            );
+            if (!filled.length) return;
+            for (const f of spec) {
+                const v = row?.[f.key];
+                if (v === null || v === undefined || String(v).trim() === "") {
+                    problems.push({
+                        field: `row-${listName}-${f.key}-${i}`,
+                        label: `${SECTION_LABELS[listName] ?? listName} ${tr("ជួរដេក")} ${i + 1} — ${tr(f.label)}`,
+                    });
+                }
+            }
+        });
+    }
+}
+
 async function submitEdit() {
   if (prop.readOnly) return;
   if (!(await confirmDialog())) return;
@@ -229,9 +367,22 @@ async function submitEdit() {
   });
 
   if (error.value?.statusCode) {
-    toast.error({
-      message: tr("មិនជោគជ័យ"),
-    });
+    // The server names what it rejected — repeatable rows especially. Say so,
+    // and ring the named wrappers rather than leaving a bare "failed".
+    const fields: string[] = Array.isArray(error.value?.data?.fields)
+      ? error.value.data.fields
+      : [];
+    const detail = apiErrorMessage(error.value, tr("មិនជោគជ័យ"));
+    toast.error({ message: detail === tr("មិនជោគជ័យ") ? tr("មិនជោគជ័យ") : `${tr("មិនជោគជ័យ")} — ${detail}` });
+    if (fields.length) {
+      const names = fields.map((f) => {
+        const m = /^(\w+)\[(\d+)]\.(\w+)$/.exec(f);
+        return m ? `row-${m[1]}-${m[3]}-${m[2]}` : f;
+      });
+      await nextTick();
+      markFieldErrors(names);
+      scrollToFirstError();
+    }
   } else {
     toast.success({
       message: tr("ជោគជ័យ"),
@@ -841,13 +992,19 @@ const clearEditOfficial = () => {
 async function submitEditOfficial() {
   if (prop.readOnly) return;
   if (!(await confirmDialog())) return;
+  const rowProblems: { field: string; label: string }[] = [];
+  checkRows(rowProblems);
   validatorEditOfficial.value.clearErrors();
   await validatorEditOfficial.value.validate();
-  if (validatorEditOfficial.value.fail()) {
+  if (validatorEditOfficial.value.fail() || rowProblems.length) {
     const failed: string[] = validatorEditOfficial.value.getFailedFields?.() ?? [];
+    const labels = [
+      ...failed.map((f) => STAFF_FIELD_LABELS[f] ?? f),
+      ...rowProblems.map((p) => p.label),
+    ];
     toast.error({
-      message: failed.length
-        ? t('message.fillIn', { fields: failed.map((f) => STAFF_FIELD_LABELS[f] ?? f).join(' / ') })
+      message: labels.length
+        ? t('message.fillIn', { fields: labels.join(' / ') })
         : validatorEditOfficial.value.getErrorMessage(),
     });
     // Was isErrorEdit — the contract form's flag — so this form never shook.
@@ -856,6 +1013,7 @@ async function submitEditOfficial() {
       isErrorEditOfficial.value = false;
     }, 1000);
     await nextTick();
+    markFieldErrors(rowProblems.map((p) => p.field));
     scrollToFirstError();
     return true;
   }
@@ -974,9 +1132,22 @@ async function submitEditOfficial() {
   })
 
   if (error.value?.statusCode) {
-    toast.error({
-      message: tr("មិនជោគជ័យ"),
-    });
+    // The server names what it rejected — repeatable rows especially. Say so,
+    // and ring the named wrappers rather than leaving a bare "failed".
+    const fields: string[] = Array.isArray(error.value?.data?.fields)
+      ? error.value.data.fields
+      : [];
+    const detail = apiErrorMessage(error.value, tr("មិនជោគជ័យ"));
+    toast.error({ message: detail === tr("មិនជោគជ័យ") ? tr("មិនជោគជ័យ") : `${tr("មិនជោគជ័យ")} — ${detail}` });
+    if (fields.length) {
+      const names = fields.map((f) => {
+        const m = /^(\w+)\[(\d+)]\.(\w+)$/.exec(f);
+        return m ? `row-${m[1]}-${m[3]}-${m[2]}` : f;
+      });
+      await nextTick();
+      markFieldErrors(names);
+      scrollToFirstError();
+    }
   } else {
     toast.success({
       message: tr("ជោគជ័យ"),
@@ -1321,16 +1492,16 @@ watch(SelectedCityValue, () => {
               </div>
               <div class="col-span-12 grid  grid-cols-1 lg:grid-cols-4 gap-1" v-for="(child, index) in childrenDetails"
                 :key="index">
-                <div>
+                <div :data-field="`row-childrenDetails-fullnameKH-${index}`">
                   <TwInput :label="index + 1 + tr('. គោត្តនាម និងនាមខ្លួន') + ' '" v-model="child.fullnameKH" required
                     :placeholder="tr('គោត្តនាម និងនាមខ្លួន')" type="text" />
                 </div>
-                <div>
+                <div :data-field="`row-childrenDetails-gender-${index}`">
                   <TwSelect :label="tr('ភេទ')" v-model="child.gender" required
                     :items="[{ value: 'ប្រុស', label: tr('ប្រុស') }, { value: 'ស្រី', label: tr('ស្រី') }, { value: 'ផ្សេងៗ', label: tr('ផ្សេងៗ') }]"
                     :placeholder="tr('សូមជ្រើសរើស')" />
                 </div>
-                <div>
+                <div :data-field="`row-childrenDetails-dateofBirth-${index}`">
                   <label for="">{{ tr('ថ្ងៃខែឆ្នាំកំណើត') }}</label>
                   <Datepicker :flow="['year', 'month', 'calendar']" :text-input="true" v-model="child.dateofBirth" :dayNames="[
                     'Mo',
@@ -1342,7 +1513,7 @@ watch(SelectedCityValue, () => {
                     'Su',
                   ]" position="left" required :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
                 </div>
-                <div>
+                <div :data-field="`row-childrenDetails-occupation-${index}`">
                   <TwInput :label="tr('មុខរបរ')" required v-model="child.occupation" :placeholder="tr('មុខរបរ')" type="text" />
                 </div>
               </div>
@@ -1434,31 +1605,31 @@ watch(SelectedCityValue, () => {
               </div>
               <div class="col-span-12 grid  grid-cols-1 lg:grid-cols-4 gap-2 " v-for="(item, index) in EducationDetails"
                 :key="index">
-                <div>
+                <div :data-field="`row-EducationDetails-couseLevel-${index}`">
                   <TwInput :label="tr('វគ្គឬកម្រិតសិក្សា')" required v-model="item.couseLevel" :placeholder="tr('វគ្គឬកម្រិតសិក្សា')"
                     type="text" />
                   <CustomErrorMessage name="couseLevel" />
                 </div>
-                <div>
+                <div :data-field="`row-EducationDetails-SchoolName-${index}`">
                   <TwInput :label="tr('គ្រឹះស្ថានសិក្សាបណ្តុះបណ្តាល')" required v-model="item.SchoolName"
                     :placeholder="tr('គ្រឹះស្ថានសិក្សាបណ្តុះបណ្តាល')" type="text" />
                   <CustomErrorMessage name="SchoolName" />
                 </div>
-                <div>
+                <div :data-field="`row-EducationDetails-SchoolLocation-${index}`">
                   <TwInput :label="tr('រាជធានីខេត្តឬប្រទេស')" required v-model="item.SchoolLocation"
                     :placeholder="tr('រាជធានីខេត្តឬប្រទេស')" type="text" />
                   <CustomErrorMessage name="SchoolLocation" />
                 </div>
-                <div>
+                <div :data-field="`row-EducationDetails-CertificateLevel-${index}`">
                   <TwInput :label="tr('សញ្ញាបត្រ')" required v-model="item.CertificateLevel" :placeholder="tr('សញ្ញាបត្រ')"
                     type="text" />
                   <CustomErrorMessage name="CertificateLevel" />
                 </div>
-                <div>
+                <div :data-field="`row-EducationDetails-majoring-${index}`">
                   <TwInput :label="tr('ជំនាញ')" required v-model="item.majoring" :placeholder="tr('ជំនាញ')" type="text" />
                   <CustomErrorMessage name="majoring" />
                 </div>
-                <div>
+                <div :data-field="`row-EducationDetails-StartDate-${index}`">
                   <label for="">{{ tr('ថ្ងៃខែឆ្នាំចូលសិក្សា') }}</label>
                   <Datepicker :flow="['year', 'month', 'calendar']" :text-input="true" v-model="item.StartDate" :dayNames="[
                     'Mo',
@@ -1471,7 +1642,7 @@ watch(SelectedCityValue, () => {
                   ]" position="left" required :maxDate="new Date()" :enableTimePicker="false"></Datepicker>
                   <CustomErrorMessage name="DateStartOfficialWork" />
                 </div>
-                <div>
+                <div :data-field="`row-EducationDetails-finishDate-${index}`">
                   <label for="">{{ tr('ថ្ងៃខែឆ្នាំបញ្ចប់សិក្សា') }}</label>
                   <Datepicker :flow="['year', 'month', 'calendar']" :text-input="true" v-model="item.finishDate" :dayNames="[
                     'Mo',
@@ -1503,21 +1674,21 @@ watch(SelectedCityValue, () => {
               </div>
               <div class="col-span-12 grid grid-cols-1 lg:grid-cols-4 gap-2" v-for="(item, index) in governStaffLanuage"
                 :key="index">
-                <div>
+                <div :data-field="`row-governStaffLanuage-langName-${index}`">
                   <TwInput :label="tr('ភាសាបរទេស')" required v-model="item.langName" :placeholder="tr('ភាសាបរទេស')" type="text" />
                   <CustomErrorMessage name="langName" />
                 </div>
-                <div>
+                <div :data-field="`row-governStaffLanuage-read-${index}`">
                   <TwSelect :label="tr('ការអាន')" v-model="item.read" required
                     :items="[{ value: 'good', label: tr('ល្អ') }, { value: 'medium', label: tr('មធ្យម') }, { value: 'bad', label: tr('ខ្សោយ') }]"
                     :placeholder="tr('សូមជ្រើសរើស')" />
                 </div>
-                <div>
+                <div :data-field="`row-governStaffLanuage-conversation-${index}`">
                   <TwSelect :label="tr('ការសន្ទនា')" v-model="item.conversation" required
                     :items="[{ value: 'good', label: tr('ល្អ') }, { value: 'medium', label: tr('មធ្យម') }, { value: 'bad', label: tr('ខ្សោយ') }]"
                     :placeholder="tr('សូមជ្រើសរើស')" />
                 </div>
-                <div>
+                <div :data-field="`row-governStaffLanuage-writing-${index}`">
                   <TwSelect :label="tr('ការសរសេរ')" v-model="item.writing" required
                     :items="[{ value: 'good', label: tr('ល្អ') }, { value: 'medium', label: tr('មធ្យម') }, { value: 'bad', label: tr('ខ្សោយ') }]"
                     :placeholder="tr('សូមជ្រើសរើស')" />
@@ -1580,7 +1751,7 @@ watch(SelectedCityValue, () => {
               </div>
               <div class="col-span-12 grid grid-cols-1 lg:grid-cols-5 gap-2"
                 v-for="(item, index) in governStaffWorkingHistoryPublic" :key="index">
-                <div>
+                <div :data-field="`row-governStaffWorkingHistoryPublic-DateStartWorking-${index}`">
                   <label for="">{{ tr('ថ្ងៃខែឆ្នាំចូលបម្រើការងារ') }}</label>
                   <Datepicker :flow="['year', 'month', 'calendar']" :text-input="true" v-model="item.DateStartWorking" :dayNames="[
                     'Mo',
@@ -1593,7 +1764,7 @@ watch(SelectedCityValue, () => {
                   ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
                   <CustomErrorMessage name="DateWentFullTime" />
                 </div>
-                <div>
+                <div :data-field="`row-governStaffWorkingHistoryPublic-DateStopWorking-${index}`">
                   <label for="">{{ tr('ថ្ងៃខែបញ្ចប់ការងារ') }}</label>
                   <Datepicker :flow="['year', 'month', 'calendar']" :text-input="true" v-model="item.DateStopWorking" :dayNames="[
                     'Mo',
@@ -1605,16 +1776,16 @@ watch(SelectedCityValue, () => {
                     'Su',
                   ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
                 </div>
-                <div>
+                <div :data-field="`row-governStaffWorkingHistoryPublic-OgnisationName-${index}`">
                   <TwInput :label="tr('ក្រសួង-ស្ថាប័ន')" v-model="item.OgnisationName" placeholder="" type="text" />
                 </div>
-                <div>
+                <div :data-field="`row-governStaffWorkingHistoryPublic-Department-${index}`">
                   <TwInput :label="tr('នាយកដ្ឋាន-អង្គភាព')" v-model="item.Department" placeholder="" type="text" />
                 </div>
-                <div>
+                <div :data-field="`row-governStaffPositionHistory-position-${index}`">
                   <TwInput :label="tr('មុខតំណែង')" v-model="item.position" placeholder="" type="text" />
                 </div>
-                <div>
+                <div :data-field="`row-governStaffWorkingHistoryPublic-SkillInPosition-${index}`">
                   <TwInput :label="tr('ជំនាញ/បច្ចេកទេសក្នុងមុខតំណែង')" v-model="item.SkillInPosition" placeholder=""
                     type="text" />
                 </div>
@@ -1636,7 +1807,7 @@ watch(SelectedCityValue, () => {
               </div>
               <div class="col-span-12 grid grid-cols-1 lg:grid-cols-4 gap-2"
                 v-for="(item, index) in governStaffWorkingHistoryPrivate" :key="index">
-                <div>
+                <div :data-field="`row-governStaffWorkingHistoryPublic-DateStartWorking-${index}`">
                   <label for="">{{ tr('ថ្ងៃខែឆ្នាំចូលបម្រើការងារ') }}</label>
                   <Datepicker :flow="['year', 'month', 'calendar']" :text-input="true" v-model="item.DateStartWorking" :dayNames="[
                     'Mo',
@@ -1649,7 +1820,7 @@ watch(SelectedCityValue, () => {
                   ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
                   <CustomErrorMessage name="DateWentFullTime" />
                 </div>
-                <div>
+                <div :data-field="`row-governStaffWorkingHistoryPublic-DateStopWorking-${index}`">
                   <label for="">{{ tr('ថ្ងៃខែបញ្ចប់ការងារ') }}</label>
                   <Datepicker :flow="['year', 'month', 'calendar']" :text-input="true" v-model="item.DateStopWorking" :dayNames="[
                     'Mo',
@@ -1661,13 +1832,13 @@ watch(SelectedCityValue, () => {
                     'Su',
                   ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
                 </div>
-                <div>
+                <div :data-field="`row-governStaffWorkingHistoryPublic-OgnisationName-${index}`">
                   <TwInput :label="tr('គ្រឹះស្ថាន-អង្គភាព')" v-model="item.OgnisationName" placeholder="" type="text" />
                 </div>
-                <div>
+                <div :data-field="`row-governStaffPositionHistory-position-${index}`">
                   <TwInput :label="tr('តួនាទី')" v-model="item.position" placeholder="" type="text" />
                 </div>
-                <div>
+                <div :data-field="`row-governStaffWorkingHistoryPublic-SkillInPosition-${index}`">
                   <TwInput :label="tr('ជំនាញ/បច្ចេកទេស')" v-model="item.SkillInPosition" placeholder="" type="text" />
                 </div>
               </div>
@@ -1687,7 +1858,7 @@ watch(SelectedCityValue, () => {
               </div>
               <div class="col-span-12 grid grid-cols-1 lg:grid-cols-3 gap-2"
                 v-for="(item, index) in governStaffPositionHistory" :key="index">
-                <div>
+                <div :data-field="`row-governStaffPositionHistory-ValidDate-${index}`">
                   <label for="">{{ tr('ថ្ងៃខែបញ្ចប់ការងារ') }}</label>
                   <Datepicker :flow="['year', 'month', 'calendar']" :text-input="true" v-model="item.ValidDate" :dayNames="[
                     'Mo',
@@ -1699,24 +1870,24 @@ watch(SelectedCityValue, () => {
                     'Su',
                   ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
                 </div>
-                <div>
+                <div :data-field="`row-governStaffPositionHistory-MinistryName-${index}`">
                   <TwInput :label="tr('ក្រសួង-ស្ថាប័ន')" v-model="item.MinistryName" placeholder="" type="text" />
                 </div>
-                <div>
+                <div :data-field="`row-governStaffWorkingHistoryPublic-Department-${index}`">
                   <TwInput :label="tr('នាយកដ្ឋាន-អង្គភាព')" v-model="item.Department" placeholder="" type="text" />
                 </div>
-                <div>
+                <div :data-field="`row-governStaffPositionHistory-OfficialSection-${index}`">
                   <TwInput :label="tr('ការិយាល័យ-ផ្នែក')" v-model="item.OfficialSection" placeholder="" type="text" />
                 </div>
-                <div>
+                <div :data-field="`row-governStaffPositionHistory-oldOfficialLevel-${index}`">
                   <TwInput :label="tr('ក្របខណ្ឌឋានន្តរស័ក្តិនិងថ្នាក់ចាស់')" v-model="item.oldOfficialLevel" placeholder=""
                     type="text" />
                 </div>
-                <div>
+                <div :data-field="`row-governStaffPositionHistory-newOffcialLevel-${index}`">
                   <TwInput :label="tr('ក្របខណ្ឌឋានន្តរស័ក្តិនិងថ្នាក់ថ្មី')" v-model="item.newOffcialLevel" placeholder=""
                     type="text" />
                 </div>
-                <div>
+                <div :data-field="`row-governStaffPositionHistory-changeTo-${index}`">
                   <TwInput :label="tr('ប្រភេទដំឡើង/ប្តូរ')" v-model="item.changeTo" placeholder="" type="text" />
                 </div>
               </div>
@@ -1738,7 +1909,7 @@ watch(SelectedCityValue, () => {
               </div>
               <div class="col-span-12 grid grid-cols-1 lg:grid-cols-3 gap-2"
                 v-for="(item, index) in governStaffCertificateLevelup" :key="index">
-                <div>
+                <div :data-field="`row-governStaffCertificateLevelup-validatDate-${index}`">
                   <label for="">{{ tr('ថ្ងៃខែបញ្ចប់ការងារ') }}</label>
                   <Datepicker :flow="['year', 'month', 'calendar']" :text-input="true" v-model="item.validatDate" :dayNames="[
                     'Mo',
@@ -1750,20 +1921,20 @@ watch(SelectedCityValue, () => {
                     'Su',
                   ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
                 </div>
-                <div>
+                <div :data-field="`row-EducationDetails-SchoolName-${index}`">
                   <TwInput :label="tr('គ្រឹះស្ថានបណ្តុះបណ្តាល')" v-model="item.SchoolName" placeholder="" type="text" />
                 </div>
-                <div>
+                <div :data-field="`row-governStaffCertificateLevelup-PlaceStudy-${index}`">
                   <TwInput :label="tr('ទីកន្លែងសិក្សា')" v-model="item.PlaceStudy" placeholder="" type="text" />
                 </div>
-                <div>
+                <div :data-field="`row-governStaffCertificateLevelup-ReceivedCertificate-${index}`">
                   <TwInput :label="tr('សញ្ញាបត្រទទួលបាន')" v-model="item.ReceivedCertificate" placeholder="" type="text" />
                 </div>
-                <div>
+                <div :data-field="`row-governStaffCertificateLevelup-OldPosition-${index}`">
                   <TwInput :label="tr('ក្របខណ្ឌ ឋានន្តរស័ក្តិ និងថ្នាក់ចាស់')" v-model="item.OldPosition" placeholder=""
                     type="text" />
                 </div>
-                <div>
+                <div :data-field="`row-governStaffCertificateLevelup-NewPosition-${index}`">
                   <TwInput :label="tr('ក្របខណ្ឌ ឋានន្តរស័ក្តិ និងថ្នាក់ថ្មី')" v-model="item.NewPosition" placeholder=""
                     type="text" />
                 </div>
@@ -1785,7 +1956,7 @@ watch(SelectedCityValue, () => {
               </div>
               <div class="col-span-12 grid grid-cols-1 lg:grid-cols-3 gap-2"
                 v-for="(item, index) in governStaffSituationOutsideOriginalOfficial" :key="index">
-                <div>
+                <div :data-field="`row-governStaffSituationOutsideOriginalOfficial-startDate-${index}`">
                   <label for="">{{ tr('ថ្ងៃខែឆ្នាំចាប់ផ្តើម') }}</label>
                   <Datepicker :flow="['year', 'month', 'calendar']" :text-input="true" v-model="item.startDate" :dayNames="[
                     'Mo',
@@ -1797,7 +1968,7 @@ watch(SelectedCityValue, () => {
                     'Su',
                   ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
                 </div>
-                <div>
+                <div :data-field="`row-governStaffSituationOutsideOriginalOfficial-endDate-${index}`">
                   <label for="">{{ tr('ថ្ងៃខែឆ្នាំបញ្ចប់') }}</label>
                   <Datepicker :flow="['year', 'month', 'calendar']" :text-input="true" v-model="item.endDate" :dayNames="[
                     'Mo',
@@ -1809,10 +1980,10 @@ watch(SelectedCityValue, () => {
                     'Su',
                   ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
                 </div>
-                <div>
+                <div :data-field="`row-governStaffSituationOutsideOriginalOfficial-OginasationName-${index}`">
                   <TwInput :label="tr('ក្រសួង/ស្ថាប័ន')" v-model="item.OginasationName" placeholder="" type="text" />
                 </div>
-                <div>
+                <div :data-field="`row-governStaffSituationOutsideOriginalOfficial-Position-${index}`">
                   <TwInput :label="tr('មុខដំណែង')" v-model="item.Position" placeholder="" type="text" />
                 </div>
               </div>
@@ -1831,7 +2002,7 @@ watch(SelectedCityValue, () => {
               </div>
               <div class="col-span-12 grid grid-cols-1 lg:grid-cols-4 gap-2"
                 v-for="(item, index) in GovernStaffFreeNoSalary" :key="index">
-                <div>
+                <div :data-field="`row-governStaffSituationOutsideOriginalOfficial-startDate-${index}`">
                   <label for="">{{ tr('ថ្ងៃខែឆ្នាំចាប់ផ្តើម') }}</label>
                   <Datepicker :flow="['year', 'month', 'calendar']" :text-input="true" v-model="item.startDate" :dayNames="[
                     'Mo',
@@ -1843,7 +2014,7 @@ watch(SelectedCityValue, () => {
                     'Su',
                   ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
                 </div>
-                <div>
+                <div :data-field="`row-governStaffSituationOutsideOriginalOfficial-endDate-${index}`">
                   <label for="">{{ tr('ថ្ងៃខែឆ្នាំបញ្ចប់') }}</label>
                   <Datepicker :flow="['year', 'month', 'calendar']" :text-input="true" v-model="item.endDate" :dayNames="[
                     'Mo',
@@ -1855,10 +2026,10 @@ watch(SelectedCityValue, () => {
                     'Su',
                   ]" position="left" :maxDate="new Date()" required :enableTimePicker="false"></Datepicker>
                 </div>
-                <div>
+                <div :data-field="`row-GovernStaffFreeNoSalary-Oginisationname-${index}`">
                   <TwInput :label="tr('ក្រសួង/ស្ថាប័ន')" v-model="item.Oginisationname" placeholder="" type="text" />
                 </div>
-                <div>
+                <div :data-field="`row-GovernStaffFreeNoSalary-NumberofMonthandYear-${index}`">
                   <TwInput :label="tr('ចំនួន(ខែ/ឆ្នាំ)')" v-model="item.NumberofMonthandYear" placeholder="" type="text" />
                 </div>
               </div>
@@ -1880,10 +2051,10 @@ watch(SelectedCityValue, () => {
               </div>
               <div class="col-span-12 grid  grid-cols-1 lg:grid-cols-3 gap-1"
                 v-for="(item, index) in GovernStaffLetterAppreciation" :key="index">
-                <div>
+                <div :data-field="`row-governStaffLetterAppreciation-letterNumber-${index}`">
                   <TwInput :label="tr('លេខលិខិត')" v-model="item.letterNumber" placeholder="" type="text" />
                 </div>
-                <div>
+                <div :data-field="`row-governStaffLetterAppreciation-OfficialDate-${index}`">
                   <label for="">{{ tr('កាលបរិច្ចេទ') }}</label>
                   <Datepicker :flow="['year', 'month', 'calendar']" :text-input="true" v-model="item.OfficialDate" :dayNames="[
                     'Mo',
@@ -1896,14 +2067,14 @@ watch(SelectedCityValue, () => {
                   ]" position="left" :maxDate="new Date()" required :enableTimePicker="false">
                   </Datepicker>
                 </div>
-                <div>
+                <div :data-field="`row-governStaffLetterAppreciation-RequestedOrginsation-${index}`">
                   <TwInput :label="tr('ក្រសួង/ស្ថាប័ន/រាជធានី-ខេត្ត(ស្នើសុំ)')" v-model="item.RequestedOrginsation"
                     placeholder="" type="text" />
                 </div>
-                <div>
+                <div :data-field="`row-governStaffLetterAppreciation-LetterDetails-${index}`">
                   <TwInput :label="tr('បរិយាយ')" v-model="item.LetterDetails" placeholder="" type="text" />
                 </div>
-                <div>
+                <div :data-field="`row-governStaffLetterAppreciation-TypeReceived-${index}`">
                   <TwInput :label="tr('ប្រភេទ')" v-model="item.TypeReceived" placeholder="" type="text" />
                 </div>
               </div>
@@ -1923,10 +2094,10 @@ watch(SelectedCityValue, () => {
               </div>
               <div class="col-span-12 grid  grid-cols-1 lg:grid-cols-3 gap-1"
                 v-for="(item, index) in governStaffFineHistory" :key="index">
-                <div>
+                <div :data-field="`row-governStaffLetterAppreciation-letterNumber-${index}`">
                   <TwInput :label="tr('លេខលិខិត')" v-model="item.letterNumber" placeholder="" type="text" />
                 </div>
-                <div>
+                <div :data-field="`row-governStaffFineHistory-OffialDate-${index}`">
                   <label for="">{{ tr('កាលបរិច្ចេទ') }}</label>
                   <Datepicker :flow="['year', 'month', 'calendar']" :text-input="true" v-model="item.OffialDate" :dayNames="[
                     'Mo',
@@ -1939,14 +2110,14 @@ watch(SelectedCityValue, () => {
                   ]" position="left" :maxDate="new Date()" required :enableTimePicker="false">
                   </Datepicker>
                 </div>
-                <div>
+                <div :data-field="`row-governStaffLetterAppreciation-RequestedOrginsation-${index}`">
                   <TwInput :label="tr('ក្រសួង/ស្ថាប័ន/រាជធានី-ខេត្ត(ស្នើសុំ)')" v-model="item.RequestedOrginsation"
                     placeholder="" type="text" />
                 </div>
-                <div>
+                <div :data-field="`row-governStaffLetterAppreciation-LetterDetails-${index}`">
                   <TwInput :label="tr('បរិយាយ')" v-model="item.LetterDetails" placeholder="" type="text" />
                 </div>
-                <div>
+                <div :data-field="`row-governStaffFineHistory-TypeRecieved-${index}`">
                   <TwInput :label="tr('ប្រភេទ')" v-model="item.TypeRecieved" placeholder="" type="text" />
                 </div>
               </div>

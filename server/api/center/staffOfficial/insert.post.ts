@@ -11,6 +11,12 @@ export default eventHandler(async (event) => {
   // spouseDateOfBirth is optional but the form sends '' — Prisma rejects
   // that for a DateTime column. See server/utils/payload.ts.
   const { data: body, missing } = normaliseGovernStaffPayload(rawBody);
+
+  // Repeatable rows: blank rows dropped, half-filled rows named back instead of
+  // failing at Prisma with an internal error.
+  const rowLists = normaliseGovernStaffRows(rawBody);
+  missing.push(...rowLists.missing);
+
   if (missing.length) {
     setResponseStatus(event, 400);
     return { error: `Missing or invalid: ${missing.join(', ')}`, fields: missing };
@@ -105,57 +111,57 @@ export default eventHandler(async (event) => {
         serviceCenterID: centreID,
         governStaffChildren: {
           createMany: {
-            data: body?.governStaffChildren,
+            data: rowLists.lists.governStaffChildren ?? [],
           },
         },
         governStaffQualifitcation: {
           createMany: {
-            data: body?.governStaffQualifitcation,
+            data: rowLists.lists.governStaffQualifitcation ?? [],
           },
         },
         governStaffLanuage: {
           createMany: {
-            data: body?.governStaffLanuage,
+            data: rowLists.lists.governStaffLanuage ?? [],
           },
         },
         governStaffWorkingHistoryPublic: {
           createMany: {
-            data: body?.governStaffWorkingHistoryPublic,
+            data: rowLists.lists.governStaffWorkingHistoryPublic ?? [],
           },
         },
         governStaffWorkingHistoryPrivate: {
           createMany: {
-            data: body?.governStaffWorkingHistoryPrivate,
+            data: rowLists.lists.governStaffWorkingHistoryPrivate ?? [],
           },
         },
         governStaffPositionHistory: {
           createMany: {
-            data: body?.governStaffPositionHistory,
+            data: rowLists.lists.governStaffPositionHistory ?? [],
           },
         },
         governStaffCertificateLevelup: {
           createMany: {
-            data: body?.governStaffCertificateLevelup,
+            data: rowLists.lists.governStaffCertificateLevelup ?? [],
           },
         },
         governStaffSituationOutsideOriginalOfficial: {
           createMany: {
-            data: body?.governStaffSituationOutsideOriginalOfficial,
+            data: rowLists.lists.governStaffSituationOutsideOriginalOfficial ?? [],
           },
         },
         governStaffFreeNoSalary: {
           createMany: {
-            data: body?.governStaffFreeNoSalary,
+            data: rowLists.lists.governStaffFreeNoSalary ?? [],
           },
         },
         governStaffLetterAppreciation: {
           createMany: {
-            data: body?.governStaffLetterAppreciation,
+            data: rowLists.lists.governStaffLetterAppreciation ?? [],
           },
         },
         governStaffFineHistory: {
           createMany: {
-            data: body?.governStaffFineHistory,
+            data: rowLists.lists.governStaffFineHistory ?? [],
           },
         },
       },

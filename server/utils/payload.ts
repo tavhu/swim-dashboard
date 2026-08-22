@@ -220,3 +220,111 @@ export function normaliseServeHistoryRows(input: unknown): NormalisedRows {
 export function normaliseProgressRows(input: unknown): NormalisedRows {
   return normaliseRowList(input, { date: "NoteDateTime", requiredText: ["Details"] }, "ClientProgress");
 }
+
+
+/**
+ * បុគ្គលិករដ្ឋ (governStaff) repeatable lists. Every child table carries NOT
+ * NULL date and text columns, so a half-filled row used to reach Prisma and
+ * fail the whole save with an internal error. Same contract as the form-1 row
+ * checks: blank rows are dropped, half-filled rows are named back to the form.
+ *
+ * Keyed by the property name the endpoints receive, so the handlers can loop
+ * instead of repeating eleven near-identical blocks.
+ */
+export const GOVERN_STAFF_ROW_SPECS: Record<
+  string,
+  { dates: string[]; requiredText: string[] }
+> = {
+  governStaffChildren: {
+    dates: ["dateofBirth"],
+    requiredText: ["fullnameKH", "gender", "occupation"],
+  },
+  governStaffQualifitcation: {
+    dates: ["StartDate", "finishDate"],
+    requiredText: ["couseLevel", "SchoolName", "SchoolLocation", "CertificateLevel", "majoring"],
+  },
+  governStaffLanuage: {
+    requiredText: ["langName", "read", "conversation", "writing"],
+  },
+  governStaffWorkingHistoryPublic: {
+    dates: ["DateStartWorking", "DateStopWorking"],
+    requiredText: ["OgnisationName", "Department", "position", "SkillInPosition"],
+  },
+  governStaffWorkingHistoryPrivate: {
+    dates: ["DateStartWorking", "DateStopWorking"],
+    requiredText: ["OgnisationName", "position", "SkillInPosition"],
+  },
+  governStaffPositionHistory: {
+    dates: ["ValidDate"],
+    requiredText: ["MinistryName", "Department", "OfficialSection", "oldOfficialLevel", "newOffcialLevel", "changeTo"],
+  },
+  governStaffCertificateLevelup: {
+    dates: ["validatDate"],
+    requiredText: ["SchoolName", "PlaceStudy", "ReceivedCertificate", "OldPosition", "NewPosition"],
+  },
+  governStaffSituationOutsideOriginalOfficial: {
+    dates: ["startDate", "endDate"],
+    requiredText: ["OginasationName", "Position"],
+  },
+  GovernStaffFreeNoSalary: {
+    dates: ["startDate", "endDate"],
+    requiredText: ["Oginisationname", "NumberofMonthandYear"],
+  },
+  governStaffLetterAppreciation: {
+    dates: ["OfficialDate"],
+    requiredText: ["letterNumber", "RequestedOrginsation", "LetterDetails", "TypeReceived"],
+  },
+  governStaffFineHistory: {
+    dates: ["OffialDate"],
+    requiredText: ["letterNumber", "RequestedOrginsation", "LetterDetails", "TypeRecieved"],
+  },
+};
+
+/**
+ * Normalise every governStaff row list in a body at once.
+ *
+ * Returns the cleaned lists (blank rows dropped) and a flat `missing` array of
+ * `<list>[<index>].<field>` names for whatever was half filled.
+ */
+export function normaliseGovernStaffRows(body: Record<string, any>): {
+  lists: Record<string, any[]>;
+  missing: string[];
+} {
+  const lists: Record<string, any[]> = {};
+  const missing: string[] = [];
+
+  for (const [listName, spec] of Object.entries(GOVERN_STAFF_ROW_SPECS)) {
+    const raw = Array.isArray(body?.[listName]) ? body[listName] : [];
+    const rows: any[] = [];
+
+    raw.forEach((rawRow: any, i: number) => {
+      const row: Record<string, any> = { ...(rawRow ?? {}) };
+
+      for (const f of spec.dates) {
+        if (f in row) {
+          const d = toDate(row[f]);
+          if (d) row[f] = d;
+        }
+      }
+
+      // Blank means unused; drop silently.
+      const meaningful = Object.entries(row).filter(
+        ([k, v]) => k !== "id" && v !== null && v !== undefined && String(v).trim() !== ""
+      );
+      if (!meaningful.length) return;
+
+      for (const f of spec.dates) {
+        if (!(row[f] instanceof Date)) missing.push(`${listName}[${i}].${f}`);
+      }
+      for (const f of spec.requiredText) {
+        if (!String(row[f] ?? "").trim()) missing.push(`${listName}[${i}].${f}`);
+      }
+
+      rows.push(row);
+    });
+
+    lists[listName] = rows;
+  }
+
+  return { lists, missing };
+}

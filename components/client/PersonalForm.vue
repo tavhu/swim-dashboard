@@ -522,7 +522,14 @@ const submit = async () => {
         toast.success({
             message: t('message.saved'),
         });
-        ClientRegister.value = true
+        // Leave the form so a second click cannot create a duplicate client,
+        // and land on the record just saved.
+        const savedId = saved.value?.id ?? prop.id;
+        if (savedId) {
+            useRouter().push(`/client/id/${savedId}`);
+        } else {
+            ClientRegister.value = true;
+        }
     }
     saving.value = false
 };
