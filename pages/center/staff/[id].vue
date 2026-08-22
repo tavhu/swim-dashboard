@@ -295,10 +295,12 @@ onMounted(async () => {
   pending.value = true;
   error.value = null;
   try {
-    staff.value = await $fetch<any>("/api/center/staff/getSingleStaff", {
+    const res = await $fetch<any>("/api/center/staff/getSingleStaff", {
       method: "POST",
       body: { id: staffId.value, typeEmployee: kind.value },
     });
+    // The endpoint wraps the record in { data, error, status } — unwrap it.
+    staff.value = res?.data ?? null;
     if (!staff.value?.id) {
       error.value = tr("រកមិនឃើញបុគ្គលិកនេះទេ");
     }
